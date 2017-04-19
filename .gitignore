@@ -1,0 +1,29 @@
+#
+# Basic
+#
+
+.DS_Store
+
+*.sw[opn]
+
+node_modules/
+npm-debug.log*
+
+dist/
+
+#
+# PyCharm (local-only settings).
+#
+
+.idea/compiler.xml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/vcs.xml
+.idea/jsLibraryMappings.xml
+.idea/codeStyleSettings.xml
+.idea/copyright/
+
+venv/
+creds.data
+
