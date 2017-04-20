@@ -5,14 +5,13 @@
 import _ from 'lodash';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
-import debug from 'debug';
 import express from 'express';
 import favicon from 'serve-favicon';
 import handlebars from 'express-handlebars';
 import http from 'http';
 import path from 'path';
-import session from 'express-session';
-import uuid from 'node-uuid';
+
+import { ExpressUtil, HttpError, Logger } from 'alien-core';
 
 const __ENV__ = _.get(process.env, 'NODE_ENV', 'development');
 
@@ -20,21 +19,19 @@ const __DEVELOPMENT__   = __ENV__ === 'development';
 const __PRODUCTION__    = __ENV__ === 'production';
 
 const ENV = {
-  PORT: '5000',
+  PORT: 5000,
   HOST: __PRODUCTION__ ? '0.0.0.0' : '127.0.0.1',
-  MINDER_VIEWS_DIR: './src/views'
+
+  SERVER_VIEWS_DIR: _.get(process.env, 'SERVER_VIEWS_DIR', path.join(__dirname, './views')),
+  SERVER_PUBLIC_DIR: _.get(process.env, 'SERVER_PUBLIC_DIR', path.join(__dirname, './public')),
 };
 
-const logger2 = debug('server');
-
-const logger = {
-  info: (e) => logger2(e)
-};
+const logger = Logger.get('server');
 
 /**
- *
+ * Web server.
  */
-class WebServer {
+export class WebServer {
 
   constructor() {
     this._app = express();
@@ -42,11 +39,28 @@ class WebServer {
 
   async init() {
 
+    await this.initMiddleware();
     await this.initHandlebars();
     await this.initPages();
     await this.initErrorHandling();
 
     return this;
+  }
+
+  /**
+   * Express middleware.
+   */
+  initMiddleware() {
+
+    // https://expressjs.com/en/starter/static-files.html
+    this._app.use(favicon(path.join(ENV.SERVER_PUBLIC_DIR, '/favicon.ico')));
+
+    this._app.use(express.static(ENV.SERVER_PUBLIC_DIR));
+
+    this._app.use(bodyParser.urlencoded({ extended: false }));
+    this._app.use(bodyParser.json());
+
+    this._app.use(cookieParser());
   }
 
   /**
@@ -56,13 +70,13 @@ class WebServer {
   initHandlebars() {
 
     this._app.engine('handlebars', handlebars({
-      layoutsDir: path.join(ENV.MINDER_VIEWS_DIR, '/layouts'),
-      defaultLayout: 'main'
-//    helpers: ExpressUtil.Helpers
+      layoutsDir: path.join(ENV.SERVER_VIEWS_DIR, '/layouts'),
+      defaultLayout: 'main',
+      helpers: ExpressUtil.Helpers
     }));
 
     this._app.set('view engine', 'handlebars');
-    this._app.set('views', ENV.MINDER_VIEWS_DIR);
+    this._app.set('views', ENV.SERVER_VIEWS_DIR);
   }
 
 
@@ -76,7 +90,7 @@ class WebServer {
     });
 
     this._app.get('/home', (req, res) => {
-      res.render('home');
+      res.render('home', {});
     });
   }
 
@@ -100,8 +114,7 @@ class WebServer {
 
     // Handle missing resource.
     this._app.use((req, res, next) => {
-      // TODO(burdon): core.
-//    throw new HttpError(404);
+      throw new HttpError(404);
     });
 
     // Handle errors.

@@ -1,5 +1,5 @@
 {
-  "name": "alien-web",
+  "name": "alien-core",
   "version": "0.0.1",
   "description": "Beta.",
   "license": "UNLICENSED",
@@ -7,6 +7,7 @@
     "type": "git",
     "url": "git://github.com:alienlabs/beta.git"
   },
+  "main": "src/index.js",
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-core": "^6.24.1",
@@ -47,6 +48,11 @@
     "less-loader": "^4.0.3",
     "mocha": "^3.1.2",
     "react-hot-loader": "^3.0.0-beta.6",
+    "redux-devtools": "^3.3.1",
+    "redux-devtools-chart-monitor": "^1.5.1",
+    "redux-devtools-dock-monitor": "^1.1.1",
+    "redux-devtools-log-monitor": "^1.1.1",
+    "redux-devtools-themes": "^1.0.0",
     "sinon": "^2.1.0",
     "sinon-chai": "^2.9.0",
     "style-loader": "^0.16.1",
@@ -61,23 +67,49 @@
     "yaml-loader": "^0.4.0"
   },
   "dependencies": {
-    "alien-core": "0.0.1",
     "babel-polyfill": "^6.16.0",
     "babel-runtime": "^6.18.0",
     "body-parser": "^1.15.2",
     "chance": "^1.0.4",
     "cheerio": "^0.22.0",
+    "cookie-parser": "^1.4.3",
     "debug": "^2.6.3",
+    "express": "^4.14.0",
+    "express-handlebars": "^3.0.0",
+    "express-session": "^1.15.2",
+    "firebase": "^3.7.8",
+    "firebase-admin": "^4.2.1",
     "history": "^4.4.0",
+    "js-cookie": "^2.1.4",
     "lodash": "^4.17.2",
     "moment": "^2.18.1",
     "node-uuid": "^1.4.8",
     "node-yaml": "^3.0.3",
     "random-seed": "^0.3.0",
     "react": "^15.5.4",
+    "react-addons-update": "^15.5.2",
     "react-dom": "^15.5.4",
+    "react-ga": "^2.2.0",
+    "react-redux": "^5.0.4",
+    "react-router": "^3.0.5",
+    "react-router-redux": "^4.0.7",
+    "reduce-reducers": "^0.1.2",
     "redux": "^3.6.0",
+    "redux-thunk": "^2.2.0",
+    "serve-favicon": "^2.4.2",
     "uuid": "^3.0.1"
   },
-  "scripts": {}
+  "scripts": {
+    "//": [
+      "nodemon => babel-node: runs the server with auto-rebuild (via babel) on change.",
+      "start => runs the server with hot module replacement (server not updated)."
+    ],
+    "webpack": "webpack --watch",
+    "webpack-server": "webpack --config webpack.config.js",
+    "babel-node": "BABEL_DISABLE_CACHE=1 babel-node src/main.js",
+    "nodemon": "hilite nodemon --config nodemon.json --exec npm run babel-node",
+    "server": "webpack --config webpack.config.js && node dist/server.bundle.js",
+    "hot": "BABEL_DISABLE_CACHE=1 BABEL_ENV=hot NODE_ENV=hot hilite babel-node src/main.js",
+    "start": "npm run hot"
+  }
 }

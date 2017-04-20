@@ -38,5 +38,3 @@ pip install --upgrade virtualenv
 # export AWS_DEFAULT_PROFILE=xxx
 # export PATH=$PATH:~/Library/Python/2.7/bin
 pip install --upgrade --user awscli
-
-
