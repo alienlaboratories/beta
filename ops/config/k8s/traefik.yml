@@ -1,0 +1,92 @@
+#
+# Traefik Proxy Deployment and Service
+# https://medium.com/@alex__richards/getting-started-with-traefik-43fb7302b224
+# https://docs.traefik.io/user-guide/kubernetes
+#
+# The Service's Container has two processes:
+#   traefik-proxy   (:80      => 443)
+#   traefik-ui      (:8080    => 80)
+#
+# And references the SSL Cert via an annotation.
+#   kubectl create -f traefix-proxy.yml
+#
+# Get the ELB's IP (LoadBalancer Ingress):
+#   kubectl describe service traefik-proxy
+#
+# Then configure DNS (e.g., www CNAME a6c0cba62278711e7be8c0e9a1a6c20a-983992660.us-east-1.elb.amazonaws.com
+# NOTE: The IP changes when the Service is deleted and recreated (need to update DNS).
+#
+
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: traefik-proxy
+  labels:
+    app: traefik-proxy
+    tier: proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traefik-proxy
+      tier: proxy
+  template:
+    metadata:
+      labels:
+        app: traefik-proxy
+        tier: proxy
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+      - image: traefik:v1.2.0-rc1-alpine
+        name: traefik-proxy
+        resources:
+          limits:
+            cpu: "200m"
+            memory: "30Mi"
+          requests:
+            cpu: "100m"
+            memory: "20Mi"
+        ports:
+        - containerPort: 80
+          hostPort: 80
+          name: traefik-proxy
+        - containerPort: 8080
+          name: traefik-ui
+        args:
+        - --web
+        - --kubernetes
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-proxy
+  annotations:
+    # https://console.aws.amazon.com/acm (robotik.io)
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:us-east-1:861694698401:certificate/b6a53db9-f91a-4c25-b194-d0ab1a400137"
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+spec:
+  type: LoadBalancer
+  selector:
+    app: traefik-proxy
+    tier: proxy
+  ports:
+  - port: 443
+    targetPort: 80
+
+---
+
+apiVersion: v1
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-ui
+spec:
+  selector:
+    app: traefik-proxy
+    tier: proxy
+  ports:
+  - port: 80
+    targetPort: 8080

@@ -1,0 +1,38 @@
+#
+# Express server.
+#
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: alien-web-server
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: alien-web-server
+    spec:
+      containers:
+      - name: alien-web-server
+        # NOTE: Don't use the :latest tag in production.
+        # https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories
+        # http://kubernetes.io/docs/user-guide/config-best-practices/#container-images
+        image: 861694698401.dkr.ecr.us-east-1.amazonaws.com/alien-web-server:latest
+        ports:
+        - containerPort: 5000
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: alien-web-server
+  labels:
+    run: alien-web-server
+spec:
+  ports:
+  - port: 80
+    targetPort: 5000
+  selector:
+    run: alien-web-server

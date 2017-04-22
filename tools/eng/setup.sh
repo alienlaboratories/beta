@@ -7,6 +7,7 @@
 brew update
 brew outdated | xargs brew upgrade
 
+brew install cask
 brew install docker
 brew install docker-machine
 brew install hilite
@@ -20,8 +21,8 @@ brew install npm
 brew install redis
 brew install python
 
-brew install cask
 brew cask install virtualbox
+brew cask install minikube
 
 npm install -g babel-cli
 npm install -g firebase-tools

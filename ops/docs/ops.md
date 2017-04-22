@@ -1,13 +1,26 @@
 # Ops
 
+- https://kubernetes.io/docs/user-guide/kubectl-cheatsheet
 
-## Developer Set-up.
+
+## Tools
+
+~~~~
+  # DNS lookup.
+  dig robotik.io
+~~~~
+
+
+## Developer Set-up
 
 * Install tools.
   - ``./tools/eng/dev_setup.sh``
   - http://docs.aws.amazon.com/cli/latest/userguide/installing.html
 
-* Configure credentials:
+
+### AWS Set-up
+
+* Configure AWS credentials:
   - Create and download security credentials (CSV file with access keys):
   - https://coreos.com/kubernetes/docs/latest/kubernetes-on-aws.html#configure-aws-credentials
   - https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials
@@ -28,6 +41,27 @@
 
 NOTE: Download credentials CSV from: https://console.aws.amazon.com/iam/home#/users/burdon?section=security_credentials
 NOTE: One-time only: create new credentials to reset or if lost.
+
+
+## Minikube
+
+- https://github.com/kubernetes/minikube
+- https://kubernetes.io/docs/getting-started-guides/minikube
+
+~~~~
+  minikube start
+  minikube dashboard
+  
+  kubectl config use-context minikube
+
+  kubectl run hello-minikube --image=gcr.io/google_containers/echoserver:1.4 --port=8080
+  kubectl expose deployment hello-minikube --type=NodePort
+  kubectl get pod
+
+  curl $(minikube service hello-minikube --url)
+
+  minikube stop
+~~~~
 
 
 ## Troubleshooting
@@ -210,7 +244,24 @@ TODO(burdon): Copy config file to source repo on update.
 ~~~~
 
 
+### Dashboard
+
+- https://github.com/kubernetes/kops/blob/master/docs/addons.md
+- https://github.com/kubernetes/dashboard
+
+~~~~
+  # Get admin password.
+  kops get secrets kube --type secret -oplaintext
+  
+  open https://api.${CLUSTER}/ui
+~~~~
+
+NOTE: The UI shows the HTTPS Not Secure Warning (proceed via the Advanced option).
+
+
 ### Troubleshooting
+
+* Re-auth: `aws ecr get-login`
 
 ~~~~
   kubectl get nodes
@@ -230,110 +281,102 @@ TODO(burdon): Copy config file to source repo on update.
   - https://console.aws.amazon.com/support/home?region=us-east-1#/case/?displayId=2161442131&language=en
   
   
-## DNS
+## DNS (Google Domains)
 
 NOTE: Keep DNS at Google Domains to simplify GMail, etc.
   
 - Synthetic records:
   - Create @ => www.robotik.io (301 Forward Path).
+  - G-Suite (for MX, etc.)
 
 - Subdomain NS records => Route 53 NS records.
   
+- Google Admin Console
+  - Add Domain Alias
   
   
+## Docker Images (ECR)
   
+- http://docs.aws.amazon.com/AmazonECR/latest/userguide/Repositories.html
+- http://kubernetes.io/docs/user-guide/images
+  
+~~~~
+  docker login
+  aws ecr get-login --region us-east-1
+~~~~
+
+### Building and Pushing Docker Images
+
+- Create ECS Repo and use to tag images:
+  - https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories (View Push Commands)
+
+~~~~
+  export IMAGE_NAME=alien-web-server
+  export ECR_REPO=861694698401.dkr.ecr.us-east-1.amazonaws.com/alien-web-server
+
+  aws ecr get-login
+
+  docker build -t ${IMAGE_NAME} .
+  docker tag ${IMAGE_NAME}:latest ${ECR_REPO}:latest
+  docker push ${ECR_REPO}:latest
 ~~~~
 
 
-### Management
+## Deploying services
 
-- https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#
-
-
-
-
-
-### Using the Cluster
-
-- https://github.com/kubernetes/kops/blob/master/docs/aws.md#use-the-cluster
-
-
+~~~~
+  # Create Pod.
+  kubectl create -f ../../ops/config/k8s/alien_web_server.yml
+  
+  # Delete/Restart Pod.
+  kubectl delete $(kubectl get pods -l run=${RUN_LABEL} -o name)
+  
+  kubectl describe services alien-web-server
+~~~~
 
 
+### Troubleshooting
+
+* ELB doesn't have an external endpoint.
+  - `kubectl describe services alien-web-server` to see error (e.g., invalid certificate)
+  - Check exposed port matches container port.
 
 
-- https://kubernetes.io/docs/tutorials/stateless-application/expose-external-ip-address-service/#before-you-begin
+## SSL Certificates
+
+- https://console.aws.amazon.com/acm/home
+
+- Request and validate subdomains via parent domain admin@ email address.
+- NOTE: www validation uses the parent domain:
+  - https://console.aws.amazon.com/support/home?region=us-east-1#/case/?displayId=2163077101&language=en
+
+~~~~
+aws acm request-certificate \
+  --domain-name robotik.io \
+  --subject-alternative-names www.robotik.io beta.robotik.io admin.robotik.io \
+  --domain-validation-options \
+DomainName=www.robotik.io,ValidationDomain=robotik.io,\
+DomainName=beta.robotik.io,ValidationDomain=robotik.io,\
+DomainName=admin.robotik.io,ValidationDomain=robotik.io
+~~~~
 
 
+## Services
 
-TODO(burdon): AWS Org (https://console.aws.amazon.com/organizations/home?#/accounts)
-TODO(burdon): Local minikube: https://kubernetes.io/docs/getting-started-guides/minikube
-TODO(burdon): Dashboard: https://github.com/kubernetes/kops/blob/master/docs/addons.md
-TODO(burdon): ECR for Docker images.
-TODO(burdon): Billing. Where to view resources, current bill, etc. https://console.aws.amazon.com/billing/home#/
+- https://kubernetes.io/docs/tutorials/stateless-application/expose-external-ip-address-service
 
 
+## TODO
 
-
-
-
-
-
-
-
-
-
-## Glossary
-
-### AWS
-
-CloudFormation              Manage AWS resources (using feature to enhance Kubernetes).
-Elastic Beanstalk           Orchestration (hidden by Kubernetes.)
-EC2                         Hosted virtual machines.
-S3                          File storage.
-Route53                     DNS.
-CloudFront                  CDN.
-Elastic Load Balancing      Distribute traffic across EC2 instances.
-
-EC2 Key Pairs               http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html
-KMS (Key Management)        http://docs.aws.amazon.com/kms/latest/developerguide/overview.html
-
-aws-cli                     AWS CLI.
-
-- https://aws.amazon.com/getting-started/projects/deploy-nodejs-web-app
-
-### Kubernetes (Container Orchestration)
-
-Pod                         
-Service                     
-Replication Container       
-
-Instance Group              = AWS Autoscaling Group
-
-KMS Key                     
-
-kubectl                     Kubernetes CLI.
-kube-aws                    CloudFormation generator.
-
-- https://coreos.com/kubernetes/docs/latest/pods.html
-- https://coreos.com/kubernetes/docs/latest/kubernetes-on-aws.html
-- https://github.com/kubernetes-incubator/kube-aws
-- https://kubernetes.io
-
-
-TLS Certificate:
-SSL Certificate:
-
-CoreOS:
-
-Firebase:
-Google APIs:
-
-
-### Docker
-
-docker:             CLI
-docker-machine:     (local) virtual machine management.
-VirtualBox:
-
-
+- ELB Security Group (Inbound): https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#SecurityGroups:sort=groupId
+- https://console.aws.amazon.com/support/home?region=us-east-1#/case/?displayId=2164614881&language=en
+- nodes.beta.kube.robotik.io
+- https://github.com/kubernetes/community/blob/master/contributors/design-proposals/aws_under_the_hood.md#nodeport-and-loadbalancer-services  
+- https://kubernetes.io/docs/concepts/services-networking/ingress
+- https://kubernetes.io/docs/concepts/services-networking/service/#external-ips  
+- https://github.com/nginxinc/kubernetes-ingress
+- https://daemonza.github.io/2017/02/13/kubernetes-nginx-ingress-controller
+- https://github.com/kubernetes/ingress/tree/master/controllers/nginx
+- https://docs.traefik.io/user-guide/kubernetes/
+- https://medium.com/@alex__richards/getting-started-with-traefik-43fb7302b224
+- https://kubernetes.io/docs/concepts/configuration/overview

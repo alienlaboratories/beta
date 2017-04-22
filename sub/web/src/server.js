@@ -28,6 +28,8 @@ const ENV = {
 
 const logger = Logger.get('server');
 
+logger.info('ENV = ' + JSON.stringify(ENV, null, 2));
+
 /**
  * Web server.
  */
@@ -53,7 +55,7 @@ export class WebServer {
   initMiddleware() {
 
     // https://expressjs.com/en/starter/static-files.html
-    this._app.use(favicon(path.join(ENV.SERVER_PUBLIC_DIR, '/favicon.ico')));
+    this._app.use(favicon(path.join(ENV.SERVER_PUBLIC_DIR, 'favicon.ico')));
 
     this._app.use(express.static(ENV.SERVER_PUBLIC_DIR));
 

@@ -1,5 +1,5 @@
 {
-  "name": "alien-web",
+  "name": "alien-web-server",
   "version": "0.0.1",
   "description": "Beta.",
   "license": "UNLICENSED",
@@ -69,6 +69,7 @@
     "cheerio": "^0.22.0",
     "cookie-parser": "^1.4.3",
     "debug": "^2.6.3",
+    "express": "^4.15.2",
     "express-handlebars": "^3.0.0",
     "history": "^4.4.0",
     "lodash": "^4.17.2",

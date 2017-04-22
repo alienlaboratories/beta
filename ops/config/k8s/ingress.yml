@@ -1,0 +1,16 @@
+#
+# Expose services via Traefik
+#
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: alien-web-server
+spec:
+  rules:
+  - host: www.robotik.io
+    http:
+      paths:
+      - backend:
+          serviceName: alien-web-server
+          servicePort: 80
