@@ -1,0 +1,14 @@
+/*
+ * TODO(burdon): Replace wth webpack app.
+ */
+
+body {
+  background-color: #333;
+}
+
+h1 {
+  margin: 60px;
+  color: cadetblue;
+  font-family: Monaco, "Lucida Console", monospace;
+  font-size: 60px;
+}

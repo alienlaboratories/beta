@@ -1,0 +1,9 @@
+#
+# https://medium.com/@patrickeasters/using-traefik-with-tls-on-kubernetes-cb67fb43a948
+#
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+    [entryPoints.http.redirect]
+      entryPoint = "https"

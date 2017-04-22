@@ -361,7 +361,16 @@ DomainName=admin.robotik.io,ValidationDomain=robotik.io
 ~~~~
 
 
-## Services
+## Ingress Controller
+
+### Traefic
+
+- https://medium.com/@alex__richards/getting-started-with-traefik-43fb7302b224
+- https://docs.traefik.io/user-guide/kubernetes/
+
+TODO: Config http=>https
+- https://medium.com/@patrickeasters/using-traefik-with-tls-on-kubernetes-cb67fb43a948 (Traefik conf)
+
 
 - https://kubernetes.io/docs/tutorials/stateless-application/expose-external-ip-address-service
 
@@ -377,6 +386,4 @@ DomainName=admin.robotik.io,ValidationDomain=robotik.io
 - https://github.com/nginxinc/kubernetes-ingress
 - https://daemonza.github.io/2017/02/13/kubernetes-nginx-ingress-controller
 - https://github.com/kubernetes/ingress/tree/master/controllers/nginx
-- https://docs.traefik.io/user-guide/kubernetes/
-- https://medium.com/@alex__richards/getting-started-with-traefik-43fb7302b224
 - https://kubernetes.io/docs/concepts/configuration/overview

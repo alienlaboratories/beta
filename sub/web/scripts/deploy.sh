@@ -42,16 +42,14 @@ docker push ${ECR_REPO}:latest
 # Restart service.
 #
 
-#POD=$(kubectl get pods -l run=${RUN_LABEL} -o name)
-#if [ -z "${POD}" ]; then
-#  # Create.
-#  kubectl create -f ../../ops/config/k8s/alien-web-server.yml
-#else
-#  # Restart.
-#  kubectl delete ${POD}
-#fi
-
-kubectl apply -f ../../ops/config/k8s/alien-web-server.yml
+POD=$(kubectl get pods -l run=${RUN_LABEL} -o name)
+if [ -z "${POD}" ]; then
+  # Create.
+  kubectl create -f ../../ops/config/k8s/alien-web-server.yml
+else
+  # Restart.
+  kubectl delete ${POD}
+fi
 
 #
 # Info.

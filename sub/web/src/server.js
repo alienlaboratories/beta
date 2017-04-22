@@ -58,6 +58,7 @@ export class WebServer {
     this._app.use(favicon(path.join(ENV.SERVER_PUBLIC_DIR, 'favicon.ico')));
 
     this._app.use(express.static(ENV.SERVER_PUBLIC_DIR));
+    console.log(ENV.SERVER_PUBLIC_DIR);
 
     this._app.use(bodyParser.urlencoded({ extended: false }));
     this._app.use(bodyParser.json());
