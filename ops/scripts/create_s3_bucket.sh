@@ -9,7 +9,7 @@ export ROBOTIK_CLUSTERS=kube.robotik.io
 export CLUSTER=${CLUSTER_NAME}.${ROBOTIK_CLUSTERS}
 
 #
-# S3 Buckets.
+# S3 Bucket for Kubernetes config.
 # https://console.aws.amazon.com/s3/home?region=us-east-1
 #
 

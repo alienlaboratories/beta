@@ -246,13 +246,26 @@ TODO(burdon): Copy config file to source repo on update.
 
 ### Dashboard
 
+- Each cluster has it's own dashboard (add-on to master node).
 - https://github.com/kubernetes/kops/blob/master/docs/addons.md
 - https://github.com/kubernetes/dashboard
 
+Auth:
+- https://kubernetes.io/docs/admin/authorization/
+
 ~~~~
-  # Get admin password.
-  kops get secrets kube --type secret -oplaintext
-  
+  # Install.
+  kubectl create -f https://raw.githubusercontent.com/kubernetes/kops/master/addons/kubernetes-dashboard/v1.5.0.yaml
+
+  # Access via proxy.
+  kubectl proxy
+  open http://localhost:8001/ui
+
+  # Other info pages:
+  open http://localhost:8001
+
+  # Get admin password for public API.
+  kops get secrets kube --type secret -oplaintext  
   open https://api.${CLUSTER}/ui
 ~~~~
 
@@ -368,11 +381,15 @@ DomainName=admin.robotik.io,ValidationDomain=robotik.io
 - https://medium.com/@alex__richards/getting-started-with-traefik-43fb7302b224
 - https://docs.traefik.io/user-guide/kubernetes/
 
-TODO: Config http=>https
-- https://medium.com/@patrickeasters/using-traefik-with-tls-on-kubernetes-cb67fb43a948 (Traefik conf)
+- Dashboard
 
+~~~~
+  kubectl port-forward $(kubectl get pods | grep traefik-proxy | awk -F' ' '{print $1}') 8080:8080
+~~~~
 
-- https://kubernetes.io/docs/tutorials/stateless-application/expose-external-ip-address-service
+- Config http=>https
+  - https://medium.com/@patrickeasters/using-traefik-with-tls-on-kubernetes-cb67fb43a948 (Traefik conf)
+
 
 
 ## TODO
@@ -387,3 +404,4 @@ TODO: Config http=>https
 - https://daemonza.github.io/2017/02/13/kubernetes-nginx-ingress-controller
 - https://github.com/kubernetes/ingress/tree/master/controllers/nginx
 - https://kubernetes.io/docs/concepts/configuration/overview
+- https://kubernetes.io/docs/tutorials/stateless-application/expose-external-ip-address-service

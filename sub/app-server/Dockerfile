@@ -16,11 +16,11 @@ FROM node
 # Environment.
 #
 
+ENV NODE_ENV=production
+
 ENV HOME=/home/nx
 
-ENV PORT=5000
-
-ENV NODE_ENV=production
+ENV PORT=3000
 
 #
 # Create the nx user and home directory.
@@ -59,10 +59,10 @@ ADD dist                    $HOME/app/dist
 ADD src/public              $HOME/app/dist/public
 ADD src/views               $HOME/app/dist/views
 
-ENV SERVER_NODE_MODULES="$HOME/app/node_modules"
-ENV SERVER_ASSETS_DIR="$HOME/app/dist"
-ENV SERVER_PUBLIC_DIR="$HOME/app/dist/public"
-ENV SERVER_VIEWS_DIR="$HOME/app/dist/views"
+ENV APP_SERVER_NODE_MODULES="$HOME/app/node_modules"
+ENV APP_SERVER_ASSETS_DIR="$HOME/app/dist"
+ENV APP_SERVER_PUBLIC_DIR="$HOME/app/dist/public"
+ENV APP_SERVER_VIEWS_DIR="$HOME/app/dist/views"
 
 EXPOSE $PORT
 

@@ -1,0 +1,22 @@
+{
+  //
+  // http://babeljs.io/docs/usage/babelrc
+  // http://babeljs.io/docs/usage/options
+  //
+
+  "presets": [
+    "es2015",
+    "stage-0",
+    "react"
+  ],
+
+  "env": {
+    "hot": {
+      "plugins": [
+
+        // http://gaearon.github.io/react-hot-loader/getstarted
+        "react-hot-loader/babel"
+      ]
+    }
+  }
+}

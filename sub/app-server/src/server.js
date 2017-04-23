@@ -1,5 +1,5 @@
 //
-// Copyright 2017 Minder Labs.
+// Copyright 2017 Alien Labs.
 //
 
 import _ from 'lodash';
@@ -19,11 +19,11 @@ const __DEVELOPMENT__   = __ENV__ === 'development';
 const __PRODUCTION__    = __ENV__ === 'production';
 
 const ENV = {
-  PORT: 5000,
-  HOST: __PRODUCTION__ ? '0.0.0.0' : '127.0.0.1',
+  PORT: _.get(process.env, 'PORT', 3000),
+  HOST: _.get(process.env, 'HOST', __PRODUCTION__ ? '0.0.0.0' : '127.0.0.1'),
 
-  SERVER_VIEWS_DIR: _.get(process.env, 'SERVER_VIEWS_DIR', path.join(__dirname, './views')),
-  SERVER_PUBLIC_DIR: _.get(process.env, 'SERVER_PUBLIC_DIR', path.join(__dirname, './public')),
+  APP_SERVER_VIEWS_DIR: _.get(process.env, 'APP_SERVER_VIEWS_DIR', path.join(__dirname, './views')),
+  APP_SERVER_PUBLIC_DIR: _.get(process.env, 'APP_SERVER_PUBLIC_DIR', path.join(__dirname, './public')),
 };
 
 const logger = Logger.get('server');
@@ -55,10 +55,9 @@ export class WebServer {
   initMiddleware() {
 
     // https://expressjs.com/en/starter/static-files.html
-    this._app.use(favicon(path.join(ENV.SERVER_PUBLIC_DIR, 'favicon.ico')));
+    this._app.use(favicon(path.join(ENV.APP_SERVER_PUBLIC_DIR, 'favicon.ico')));
 
-    this._app.use(express.static(ENV.SERVER_PUBLIC_DIR));
-    console.log(ENV.SERVER_PUBLIC_DIR);
+    this._app.use(express.static(ENV.APP_SERVER_PUBLIC_DIR));
 
     this._app.use(bodyParser.urlencoded({ extended: false }));
     this._app.use(bodyParser.json());
@@ -73,13 +72,13 @@ export class WebServer {
   initHandlebars() {
 
     this._app.engine('handlebars', handlebars({
-      layoutsDir: path.join(ENV.SERVER_VIEWS_DIR, '/layouts'),
+      layoutsDir: path.join(ENV.APP_SERVER_VIEWS_DIR, '/layouts'),
       defaultLayout: 'main',
       helpers: ExpressUtil.Helpers
     }));
 
     this._app.set('view engine', 'handlebars');
-    this._app.set('views', ENV.SERVER_VIEWS_DIR);
+    this._app.set('views', ENV.APP_SERVER_VIEWS_DIR);
   }
 
 

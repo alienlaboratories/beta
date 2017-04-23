@@ -7,43 +7,5 @@
   "presets": [
     "es2015",
     "stage-0"
-  ],
-
-  // TODO(burdon): Remove?
-  "plugins": [
-
-    // Used for async/wait support and other ES6 built-ins.
-    // TODO(burdon): ReferenceError: regeneratorRuntime is not defined
-    // https://github.com/babel/babel/tree/master/packages/babel-plugin-transform-runtime
-    // http://stackoverflow.com/questions/33527653/babel-6-regeneratorruntime-is-not-defined-with-async-await
-//    ["transform-runtime", {
-//      "polyfill": false,
-//      "regenerator": true
-//    }],
-
-    // https://babeljs.io/docs/plugins/transform-async-to-generator
-//    "transform-async-to-generator",
-
-    // https://babeljs.io/docs/plugins/transform-decorators
-    // https://github.com/babel/babel/issues/2645
-    // https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.60y0ukiag
-//    "transform-decorators-legacy",
-
-    // https://www.npmjs.com/package/babel-plugin-inline-import
-    // NOTE: BABEL_DISABLE_CACHE=1 otherwise cached.
-//    "babel-plugin-inline-import"
-  ],
-
-  "env": {
-    "hot": {
-      "plugins": [
-
-        // http://gaearon.github.io/react-hot-loader/getstarted
-        "react-hot-loader/babel"
-      ]
-    }
-
-    // TODO(burdon): Prod.
-    // "babel-preset-react-optimize"
-  }
+  ]
 }

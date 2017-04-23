@@ -13,6 +13,9 @@
 # Get the ELB's IP (LoadBalancer Ingress):
 #   kubectl describe service traefik-proxy
 #
+# UI
+#
+#
 # Then configure DNS (e.g., www CNAME a6c0cba62278711e7be8c0e9a1a6c20a-983992660.us-east-1.elb.amazonaws.com
 # NOTE: The IP changes when the Service is deleted and recreated (need to update DNS).
 #
@@ -47,6 +50,9 @@ spec:
           requests:
             cpu: "100m"
             memory: "20Mi"
+        volumeMounts:
+        - mountPath: "/config"
+          name: "config"
         ports:
         - containerPort: 80
           hostPort: 80
@@ -54,8 +60,9 @@ spec:
         - containerPort: 8080
           name: traefik-ui
         args:
-        - --web
+        - --configfile=/config/traefik.toml
         - --kubernetes
+        - --web
 
 ---
 

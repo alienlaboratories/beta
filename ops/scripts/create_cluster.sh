@@ -37,6 +37,9 @@ kops create cluster \
     --dns-zone=${ROBOTIK_CLUSTERS} \
     --yes
 
+mkdir -p ./config/kube
+cp ~/.kube/config ./config/kube.conf
+
 kops validate cluster
 
 echo "This could take 5-10 minutes..."
