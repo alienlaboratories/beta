@@ -1,0 +1,73 @@
+//
+// Copyright 2017 Alien Labs.
+//
+
+@import (reference) './css/mixin';
+@import './css/theme';
+
+.ux-picker {
+
+  > div {
+    display: flex;
+
+    input {
+      flex-grow: 1;
+    }
+  }
+
+  .ux-picker-popup {
+    display: flex;
+    position: absolute;
+
+    background-color: white;
+
+    > div:empty {                 // TODO(burdon): Use class name.
+      display: none;
+    }
+    > div {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+
+      max-height: 120px;          // (20 + 4) x 5
+      overflow-y: auto;
+      overflow-x: hidden;
+
+      border: 1px solid #AAA;     // TODO(burdon): Factor out defs.
+      border-top: none;
+
+      > input {
+        .ux-text-noselect;
+
+        padding: 0 4px;           // TODO(burdon): Normalize with data row
+
+        line-height: 20px;
+
+        border: none;
+        cursor: pointer;
+      }
+      > input:focus {
+        background-color: @color-200-blue;
+      }
+      > input:hover {
+        background-color: @color-200-blue;
+      }
+    }
+
+    > div::-webkit-scrollbar {
+      width: 4px;
+    }
+    > div::-webkit-scrollbar-thumb {
+      background-color: #666;
+    }
+  }
+}
+
+.ux-toolbar {
+  .ux-picker {
+    margin-left: @ux-toolbar-padding;
+  }
+  .ux-picker:first-child {
+    margin-left: 0;
+  }
+}

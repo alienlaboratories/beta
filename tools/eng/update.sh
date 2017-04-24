@@ -9,9 +9,9 @@
 # https://facebook.github.io/react/warnings/refs-must-have-owner.html#multiple-copies-of-react
 #
 
-WORKSPACE_MODULES=( "web" )
+MODULES=$(ls sub)
 
-for mod in ${WORKSPACE_MODULES[@]}; do
+for mod in ${MODULES[@]}; do
   pushd sub/$mod
   npm-workspace install
   popd
@@ -20,8 +20,6 @@ done
 #
 # List and update deps.
 #
-
-MODULES=( "core" "web" )
 
 UPDATE=0
 PROMPT=0
@@ -38,20 +36,23 @@ case $i in
 esac
 done
 
-for mod in "${MODULES[@]}"; do
+for mod in ${MODULES[@]}; do
+  echo
   echo "### [$mod] ###"
-  pushd sub/$mod
+  echo
 
-  grunt npm-outdated
+  pushd sub/$mod
 
   if [ $UPDATE -eq 1 ]; then
     echo "Updating $@"
     grunt npm-update
-  fi
 
-  if [ $PROMPT -eq 1 ]; then
+  elif [ $PROMPT -eq 1 ]; then
     echo "Updating $@"
     grunt npm-prompt
+
+  else
+    grunt npm-outdated
   fi
 
   npm prune

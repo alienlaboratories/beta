@@ -1,0 +1,340 @@
+#
+# Copyright 2017 Alien Labs.
+#
+
+#
+# http://graphql.org/learn/schema
+# https://facebook.github.io/graphql
+#
+
+#===================================================================================================
+# Item.
+# TODO(burdon): Move common fields into meta?
+# http://dev.apollodata.com/tools/graphql-tools/resolvers.html#Unions-and-interfaces
+# https://github.com/apollostack/graphql-server/issues/172
+#===================================================================================================
+
+interface Item {
+  namespace: String           # External namespace (query provider).
+  bucket: ID                  # ID of User or Group (null for system item).
+  type: String!
+  id: ID!
+
+  fkey: String                # TODO(burdon): Multiple foreign keys (e.g., email, linkedin).
+  alias: String               # Short-name for URLs (unique, human-readable).
+  created: Timestamp!
+  modified: Timestamp!
+
+  title: String!
+  description: String
+  labels: [String]
+
+  # NOTE: Don't provide generic links; instead allow mixins of sub-types.
+# items(type: String, filter: FilterInput): [Item]!
+}
+
+#===================================================================================================
+# System Types.
+#===================================================================================================
+
+type User implements Item {
+  namespace: String
+  bucket: ID
+  type: String!
+  id: ID!
+  fkey: String
+  alias: String
+  created: Timestamp!
+  modified: Timestamp!
+  title: String!
+  description: String
+  labels: [String]
+
+  active: Boolean
+
+  # TODO(burdon): Part of contact?
+  email: String
+
+  # TODO(burdon): Bi-directional? (ref from User to System store?)
+  contact: Contact
+
+  # TODO(burdon): Remove (only query via project links).
+  tasks(filter: FilterInput): [Task]!
+
+  groups: [Group]
+}
+
+type Group implements Item {
+  namespace: String
+  bucket: ID
+  type: String!
+  id: ID!
+  fkey: String
+  alias: String
+  created: Timestamp!
+  modified: Timestamp!
+  title: String!
+  description: String
+  labels: [String]
+
+  whitelist: [String]
+  members: [User]!
+
+  # TODO(burdon): Shouldn't be part of Group (i.e., span namespaces). Instead link (since many-to-may).
+  projects: [Project]!
+}
+
+#===================================================================================================
+# Item Types.
+#===================================================================================================
+
+type Contact implements Item {
+  namespace: String
+  bucket: ID
+  type: String!
+  id: ID!
+  fkey: String
+  alias: String
+  created: Timestamp!
+  modified: Timestamp!
+  title: String!
+  description: String
+  labels: [String]
+
+  email: String
+  thumbnailUrl: String
+
+  user: User
+
+  # TODO(burdon): Implement as links.
+  tasks: [Task]!
+}
+
+type Document implements Item {
+  namespace: String
+  bucket: ID
+  type: String!
+  id: ID!
+  fkey: String
+  alias: String
+  created: Timestamp!
+  modified: Timestamp!
+  title: String!
+  description: String
+  labels: [String]
+
+  # TODO(burdon): Move url, iconUrl, thumbnailUrl (avatar) to ItemFragment
+  url: String
+  iconUrl: String
+  thumbnailUrl: String
+}
+
+type Event implements Item {
+  namespace: String
+  bucket: ID
+  type: String!
+  id: ID!
+  fkey: String
+  alias: String
+  created: Timestamp!
+  modified: Timestamp!
+  title: String!
+  description: String
+  labels: [String]
+
+  location: Place
+  participants: [Contact]
+}
+
+type Folder implements Item {
+  namespace: String
+  bucket: ID
+  type: String!
+  id: ID!
+  fkey: String
+  alias: String
+  created: Timestamp!
+  modified: Timestamp!
+  title: String!
+  description: String
+  labels: [String]
+
+  icon: String
+
+  # JSON serialized FilterInput.
+  filter: String!
+}
+
+type Place implements Item {
+  namespace: String
+  bucket: ID
+  type: String!
+  id: ID!
+  fkey: String
+  alias: String
+  created: Timestamp!
+  modified: Timestamp!
+  title: String!
+  description: String
+  labels: [String]
+
+  geo: Geo
+}
+
+type Project implements Item {
+  namespace: String
+  bucket: ID
+  type: String!
+  id: ID!
+  fkey: String
+  alias: String
+  created: Timestamp!
+  modified: Timestamp!
+  title: String!
+  description: String
+  labels: [String]
+
+  # All projects are owned by a Group (each User has a private Group).
+  group: Group!
+
+  # TODO(burdon): Don't expose "Links" to the GQL. Instead multiple child types (WRITE-UP).
+  # TODO(burdon): Different sub-types (e.g., Pipeline with orgs/contacts and separate boards).
+  tasks: [Task]!
+
+  # TODO(burdon): Factor out Pipeline mixin.
+  contacts: [Contact]
+
+  # TODO(burdon): Map type (array of typed values).
+  boards: [Board]
+}
+
+type Task implements Item {
+  namespace: String
+  bucket: ID
+  type: String!
+  id: ID!
+  fkey: String
+  alias: String
+  created: Timestamp!
+  modified: Timestamp!
+  title: String!
+  description: String
+  labels: [String]
+
+  # All tasks belong to a project.
+  project: Project
+
+  # Sub-tasks.
+  tasks: [Task]!
+
+  owner: User!
+  assignee: User
+  status: Int!
+}
+
+#===================================================================================================
+# Root Viewer for authenticated User.
+#===================================================================================================
+
+type Client {
+
+  id: String!
+}
+
+type Viewer {
+
+  # Authenticated user.
+  user: User!
+
+  # All Groups User belongs to.
+  groups: [Group]
+
+  # Folders.
+  folders: [Folder]!
+}
+
+#===================================================================================================
+# Search Results.
+#===================================================================================================
+
+# TODO(burdon): Add metadata (e.g., timestamp).
+type SearchResult {
+
+  # Results.
+  items: [Item]!
+
+  # Grouped results.
+  groupedItems: [GroupedItems]
+}
+
+# Groups items (via groupBy query).
+# TODO(burdon): Generalize to a Tree?
+type GroupedItems {
+
+  # Parent item ID.
+  id: ID!
+
+  # Grouped children IDs.
+  groups: [GroupSet]
+}
+
+type GroupSet {
+
+  field: String!
+
+  ids: [ID]!
+}
+
+#===================================================================================================
+# Queries.
+# NOTE: Must only have Input types (since regular types might be recursive and therefore not serializable).
+# https://github.com/graphql/graphql-js/issues/312
+#===================================================================================================
+
+type RootQuery {
+
+  # Current user.
+  viewer: Viewer!
+
+  # Get specific.
+  item(itemId: ID!): Item!
+
+  # Search.
+  # TODO(burdon): Rename items.
+  search(filter: FilterInput): SearchResult!
+}
+
+#===================================================================================================
+# Mutations.
+# NOTE: The namespace is provided in the resolver context.
+#===================================================================================================
+
+input ItemMutationInput {
+
+  # TODO(burdon): Regular ID + type?
+  # Item to mutate.
+  itemId: ID!
+
+  # Bucket.
+  bucket: String!
+
+  # Array of generic mutations.
+  mutations: [ObjectMutationInput]!
+}
+
+type RootMutation {
+
+  # Generic mutations.
+  upsertItems(namespace: String, mutations: [ItemMutationInput]!): [Item]!
+}
+
+#===================================================================================================
+# Schema.
+#===================================================================================================
+
+schema {
+
+  query: RootQuery
+
+  mutation: RootMutation
+}

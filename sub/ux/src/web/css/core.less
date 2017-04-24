@@ -1,0 +1,291 @@
+//
+// Copyright 2017 Alien Labs.
+//
+
+@import (reference) './material';
+@import (reference) './mixin';
+
+@import './dom';
+@import './layout';
+@import './theme';
+
+//
+// Theme.
+//
+
+.ux-font-xsmall   { font-size: @ux-font-xsmall; }
+.ux-font-small    { font-size: @ux-font-small;  }
+.ux-font-medium   { font-size: @ux-font-medium; }
+.ux-font-large    { font-size: @ux-font-large;  }
+.ux-font-xlarge   { font-size: @ux-font-xlarge; }
+
+.ux-link {
+  color: #185588;
+  cursor: pointer;
+}
+
+.ux-debug {
+  overflow: hidden;
+}
+
+//
+// Loading bar.
+// https://www.pexels.com/blog/css-only-loaders/
+//
+
+@keyframes ux-loading {
+  from { left: 50%; width: 0;z-index:100; }
+  33.3333% { left: 0; width: 100%;z-index: 10; }
+  to { left: 0; width: 100%; }
+}
+
+.ux-loading-bar {
+  position: relative;
+  width: 100%;
+  height: 6px;
+
+  background-color: #fdba2c;
+
+  .ux-load-bar {
+    content: '';
+    display: inline;
+    position: absolute;
+    width: 0;
+    height: 100%;
+    left: 50%;
+    text-align: center;
+  }
+
+  .ux-load-bar:nth-child(1) {
+    background-color: #da4733;
+    animation: ux-loading 3s linear infinite;
+  }
+  .ux-load-bar:nth-child(2) {
+    background-color: #3b78e7;
+    animation: ux-loading 3s linear 1s infinite;
+  }
+  .ux-load-bar:nth-child(3) {
+    background-color: #fdba2c;
+    animation: ux-loading 3s linear 2s infinite;
+  }
+}
+
+.ux-loading-title {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+
+  h1 {
+    font-family: Poiret One, sans-serif;
+    color: #000;
+    opacity: .05;
+    font-size: 200px;
+  }
+}
+
+//
+// Loading indicator.
+// NOTE: Inner span is necessary.
+//
+
+.ux-loading {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  font-size: 0;               // Prevent space at top.
+}
+.ux-loading > div {
+  display: flex;
+  justify-content: flex-end;
+
+  span {
+    display: inline-block;
+    padding: 2px 4px;
+    background: #EEE;
+    color: #666;
+  }
+  span:after {
+    content: 'Loading...';
+    font-size: 10px;
+  }
+}
+
+//
+// Icons
+// <i class="ux-icon"></i>
+// TODO(burdon): Use :after pseudo to insert all material-icon types (and remove from React).
+//
+
+i.ux-icon {
+  .ux-text-noselect;
+  .material-icons;
+
+  cursor: pointer;
+
+  font-size: 18px;
+}
+
+i.ux-icon-img {
+  width: 18px;
+  display: flex;
+  justify-content: center;
+}
+
+i.ux-icon-medium {
+  font-size: @ux-font-medium;
+}
+i.ux-icon-large {
+  font-size: @ux-font-xlarge;
+}
+
+.ux-icon-star {
+  color: @ux-color-star;
+}
+
+i.ux-icon-action {
+  color: #CCC;
+}
+i.ux-icon-action:hover {
+  color: #999;
+}
+
+i.ux-icon-add:after {
+  color: #999;
+  content: 'add';
+}
+i.ux-icon-add:hover:after {
+  color: darkred;
+  content: 'add_circle';
+}
+
+i.ux-icon-edit:after {
+  content: 'edit';
+}
+i.ux-icon-edit:hover {
+  color: darkblue;
+}
+
+i.ux-icon-save:after {
+  content: 'check';
+}
+i.ux-icon-save:hover {
+  color: darkgreen;
+}
+
+i.ux-icon-cancel:after {
+  content: 'cancel';
+}
+i.ux-icon-cancel:hover {
+  color: darkred;
+}
+
+i.ux-icon-error:after {
+  content: 'radio_button_unchecked';
+  color: lightgreen;
+}
+i.ux-icon-error.ux-icon-on:after {
+  content: 'error';
+  color: indianred;
+}
+
+ul.ux-inline {
+  list-style-type: none;
+
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+
+  li {
+    display: inline;
+    padding-left: 12px;
+    font-size: @ux-font-small;
+  }
+}
+
+.ux-selector {
+  cursor: pointer;
+}
+
+//
+// Forms
+// TODO(burdon): Clean-up. Move to layout.
+//
+
+// TODO(burdon): Remove/Rename form?
+.ux-data {
+  display: flex;
+  flex-direction: column;
+
+  .ux-data-row {
+    margin-bottom: 4px;
+  }
+}
+
+// TODO(burdon): Rename ux-control-row?
+.ux-data-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  .ux-data-label {
+    font-size: @ux-font-small;
+    padding-right: 4px;
+    min-width: 100px;
+  }
+
+  .ux-text {
+    .ux-text-nowrap;
+
+    margin: 1px;                    // Align with inline input (border).
+    padding: 2px 4px;
+  }
+
+  .ux-text-block {
+    margin: 1px;                    // Align with inline input (border).
+    padding: 2px 4px;
+  }
+
+  input[type=text] {
+    padding: 2px 4px;
+  }
+
+  select {
+    padding: 2px 4px;
+  }
+}
+
+//
+// Elements
+//
+
+.ux-tag {
+  margin-left: 4px;
+  padding: 3px 4px;
+  border-radius: 4px;
+  background-color: @ux-color-tag;
+  color: white;
+  cursor: pointer;
+}
+.ux-tag:first-child {
+  margin-left: 0;
+}
+
+.ux-debug {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  font-family: Monaco, monospace;
+  font-size: 10px;
+  color: @ux-color-debug;
+}
+
+.ux-error {
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  font-family: Monaco, monospace;
+  font-size: 14px;
+  color: @ux-color-error;
+}

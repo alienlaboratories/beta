@@ -1,0 +1,52 @@
+//
+// Copyright 2017 Alien Labs.
+//
+
+@import './css/theme';
+
+@ux-sidebar-width: 200px;
+
+// https://docs.intercom.com/configure-intercom-for-your-product-or-site/customize-the-intercom-messenger/customize-the-intercom-messenger-basics
+#intercom-container .intercom-launcher-frame {
+  bottom: 40px !important;
+}
+
+.ux-sidebar {
+  position: relative;
+
+  .ux-sidebar-drawer {
+    position: absolute;
+    box-sizing: border-box;
+    width: @ux-sidebar-width;
+    overflow: hidden;
+    height: 100%;
+
+    background-color: whitesmoke;
+    border-right: 1px solid transparent;
+    box-shadow: none;
+
+    -webkit-transform: translateX(-@ux-sidebar-width);
+    transition: all 0.2s ease;
+
+    z-index: 999;
+
+    > div {
+      position: relative;
+
+      input {
+        position: absolute;
+
+        margin: 0;
+        padding: 0;
+        height: 0;
+        border: none;
+      }
+    }
+  }
+  .ux-sidebar-drawer.ux-open {
+    -webkit-transform: translateX(0);
+
+    border-right: 1px solid gray;
+    box-shadow: @ux-boxshadow;
+  }
+}

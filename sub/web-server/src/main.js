@@ -1,5 +1,5 @@
 //
-// Copyright 2017 Minder Labs.
+// Copyright 2017 Alien Labs.
 //
 
 import { WebServer } from './server';

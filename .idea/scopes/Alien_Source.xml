@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Alien Source" pattern="file[beta]:sub//*&amp;&amp;!file[beta]:sub/*/dist//*" />
+</component>
