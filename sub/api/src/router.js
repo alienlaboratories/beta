@@ -9,8 +9,8 @@ import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 import { makeExecutableSchema } from 'graphql-tools';
 import { GraphQLError, BREAK } from 'graphql';
 
-import { ErrorUtil, Logger } from 'minder-core';
-import { hasJwtHeader } from 'minder-services';
+import { ErrorUtil, Logger } from 'alien-util';
+import { hasJwtHeader } from 'alien-services';
 
 import { Resolvers } from './resolvers';
 import { graphqlLogger } from './util/logger';

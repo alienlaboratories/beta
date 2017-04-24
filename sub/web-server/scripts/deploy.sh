@@ -48,7 +48,7 @@ docker push ${ECR_REPO}:latest
 POD=$(kubectl get pods -l run=${RUN_LABEL} -o name)
 if [ -z "${POD}" ]; then
   # Create.
-  kubectl create -f ../../ops/config/k8s/alien-web-server.yml
+  kubectl create -f ../../ops/conf/k8s/alien-web-server.yml
 else
   # Restart.
   kubectl delete ${POD}

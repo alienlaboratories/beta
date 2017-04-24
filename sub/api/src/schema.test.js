@@ -16,7 +16,7 @@ import {
 import { concatenateTypeDefs, makeExecutableSchema, mockServer } from 'graphql-tools';
 import { introspectionQuery } from 'graphql/utilities';
 
-import { Database, IdGenerator, Matcher, MemoryItemStore } from 'minder-core';
+import { Database, IdGenerator, Matcher, MemoryItemStore } from 'alien-core';
 
 import { Resolvers } from './resolvers';
 

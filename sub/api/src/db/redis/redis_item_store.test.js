@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import bluebird from 'bluebird';
 import fakeredis from 'fakeredis';
 
-import { IdGenerator, Matcher, ItemStoreTests } from 'minder-core';
+import { IdGenerator, Matcher, ItemStoreTests } from 'alien-core';
 
 import { RedisItemStore } from './redis_item_store';
 

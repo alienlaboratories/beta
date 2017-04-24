@@ -6,7 +6,7 @@ import _ from 'lodash';
 import bluebird from 'bluebird';
 import redis from 'redis';
 
-import { BaseItemStore, Key, QueryProcessor } from 'minder-core';
+import { BaseItemStore, Key, QueryProcessor } from 'alien-core';
 
 // https://github.com/NodeRedis/node_redis#promises
 bluebird.promisifyAll(redis.RedisClient.prototype);

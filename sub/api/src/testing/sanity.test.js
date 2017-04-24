@@ -7,7 +7,7 @@ import { expect } from 'chai';
 // TODO(burdon): ERROR
 // SyntaxError: Cannot declare a parameter named 'error' in strict mode
 
-import { TypeUtil } from 'minder-core';
+import { TypeUtil } from 'alien-util';
 
 // import { Randomizer } from './testing/randomizer';    // OK
 // import { graphqlLogger } from './util/logger';        // Bad => core

@@ -4,7 +4,8 @@
 
 import gql from 'graphql-tag';
 
-// TODO(burdon): Move to sub/api
+// TODO(burdon): Move to sub/api (client deps).
+
 // TODO(burdon): Refine fragments returned by mutation.
 // TODO(burdon): Organize into slices.
 

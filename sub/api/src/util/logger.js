@@ -5,7 +5,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 
-import { $$, Logger, TypeUtil } from 'minder-core';
+import { Logger, TypeUtil } from 'alien-util';
 
 const TS = 'hh:mm:ss.SSS';
 
@@ -31,10 +31,10 @@ export const graphqlLogger = (options={ pretty: false }) => {
     let { operationName, query, variables } = req.body;
 
     if (options.pretty) {
-      logger.log($$(PRETTY_REQ, moment().format(TS), query, stringify(variables)));
+      logger.log(Logger.format(PRETTY_REQ, moment().format(TS), query, stringify(variables)));
     } else {
       query = query.replace(/\s*\n\s*/g, ' ');
-      logger.log($$('### REQ ### %s %s', query, stringify(variables || {})));
+      logger.log(Logger.format('### REQ ### %s %s', query, stringify(variables || {})));
     }
 
     // Monkey patch.
@@ -47,9 +47,9 @@ export const graphqlLogger = (options={ pretty: false }) => {
         case 200: {
           let json = JSON.parse(data);
           if (options.pretty) {
-            logger.log($$(PRETTY_RES, moment().format(TS), stringify(json)));
+            logger.log(Logger.format(PRETTY_RES, moment().format(TS), stringify(json)));
           } else {
-            logger.log($$('### RES ### %s', stringify(json)));
+            logger.log(Logger.format('### RES ### %s', stringify(json)));
           }
 
           break;

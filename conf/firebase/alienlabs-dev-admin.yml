@@ -1,0 +1,18 @@
+#
+# Admin defs.
+# https://firebase.google.com/docs/admin/setup
+#
+# var admin = require("firebase-admin");
+# var serviceAccount = require("path/to/serviceAccountKey.json");
+# admin.initializeApp({
+#   credential: admin.credential.cert(serviceAccount),
+#   databaseURL: "https://alienlabs-dev.firebaseio.com"
+# });
+#
+
+serviceAccount: "firebase-adminsdk-dmpna@alienlabs-dev.iam.gserviceaccount.com"
+
+# NOTE: Secret Credentials.
+# Generated 04/24/17 (Generate Private Key)
+# https://console.firebase.google.com/project/alienlabs-dev/settings/serviceaccounts/adminsdk
+credentialPath: "./firebase/alienlabs-dev-firebase-adminsdk-dmpna-e07a9566cb.json"

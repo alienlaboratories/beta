@@ -339,7 +339,7 @@ NOTE: Keep DNS at Google Domains to simplify GMail, etc.
 
 ~~~~
   # Create Pod.
-  kubectl create -f ../../ops/config/k8s/alien_web_server.yml
+  kubectl create -f ../../ops/conf/k8s/alien_web_server.yml
   
   # Delete/Restart Pod.
   kubectl delete $(kubectl get pods -l run=${RUN_LABEL} -o name)

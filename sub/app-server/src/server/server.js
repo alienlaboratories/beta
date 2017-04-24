@@ -20,15 +20,23 @@ import ENV from './env';
 
 const logger = Logger.get('server');
 
-logger.info('ENV = ' + JSON.stringify(ENV, null, 2));
-
 /**
  * Web server.
  */
 export class WebServer {
 
-  constructor() {
+  constructor(config) {
+    console.assert(config);
+
+    this._config = config;
     this._app = express();
+  }
+
+  get info() {
+    return {
+      env: ENV,
+      config: this._config
+    };
   }
 
   async init() {
@@ -93,7 +101,7 @@ export class WebServer {
     //
     // Web app.
     //
-    this._app.use('/app', appRouter({
+    this._app.use('/app', appRouter(this._config, {
       assets: ENV.APP_SERVER_ASSETS_DIR,
       bundle: 'test'
     }));
@@ -171,6 +179,7 @@ export class WebServer {
       this._server = http.Server(this._app);
       this._server.listen(ENV.PORT, ENV.HOST, () => {
         let addr = this._server.address();
+        logger.info(this.constructor.name + ' = ' + JSON.stringify(this.info, 0, 2));
         logger.info(`http://${addr.address}:${addr.port} [${__ENV__}]`);
         resolve(this);
       });

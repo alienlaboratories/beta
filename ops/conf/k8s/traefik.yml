@@ -60,7 +60,7 @@ spec:
         - containerPort: 8080
           name: traefik-ui
         args:
-        - --configfile=/config/traefik.toml
+        - --configfile=/conf/traefik.toml
         - --kubernetes
         - --web
 

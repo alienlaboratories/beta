@@ -4,7 +4,8 @@
 
 import _ from 'lodash';
 
-import { BaseItemStore, Logger } from 'minder-core';
+import { Logger } from 'alien-util';
+import { BaseItemStore } from 'alien-core';
 
 const logger = Logger.get('store.firebase');
 

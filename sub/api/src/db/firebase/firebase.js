@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 import admin from 'firebase-admin';
 
-import { Logger } from 'minder-core';
+import { Logger } from 'alien-util';
 
 const logger = Logger.get('firebase');
 

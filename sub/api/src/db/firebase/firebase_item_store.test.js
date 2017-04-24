@@ -8,7 +8,7 @@ import path from 'path';
 
 import admin from 'firebase-admin';
 
-import { IdGenerator, Matcher, ItemStoreTests } from 'minder-core';
+import { IdGenerator, Matcher, ItemStoreTests } from 'alien-core';
 
 import { FirebaseItemStore } from './firebase_item_store';
 import { FirebaseTestConfig } from './conf/defs';

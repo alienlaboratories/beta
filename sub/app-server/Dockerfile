@@ -55,10 +55,12 @@ RUN npm install
 # TODO(burdon): Set-up for Jenkins local build.
 # TODO(burdon): Currently just add all unbuilt assets.
 
+ADD conf                    $HOME/app/conf
 ADD dist                    $HOME/app/dist
 ADD src/public              $HOME/app/dist/public
 ADD src/views               $HOME/app/dist/views
 
+ENV APP_SERVER_CONF_DIR="$HOME/app/conf"
 ENV APP_SERVER_NODE_MODULES="$HOME/app/node_modules"
 ENV APP_SERVER_ASSETS_DIR="$HOME/app/dist"
 ENV APP_SERVER_PUBLIC_DIR="$HOME/app/dist/public"

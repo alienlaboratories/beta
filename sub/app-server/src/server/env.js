@@ -19,7 +19,11 @@ const PORT = _.get(process.env, 'PORT', 3000);
  */
 export default {
 
+  ENV: __ENV__,
+
   HOST, PORT,
+
+  APP_SERVER_CONF_DIR:    _.get(process.env, 'APP_SERVER_CONF_DIR',   path.join(__dirname, '../../../../conf')),
 
   APP_SERVER_ASSETS_DIR:  _.get(process.env, 'APP_SERVER_VIEWS_DIR',  path.join(__dirname, '../../dist')),
   APP_SERVER_PUBLIC_DIR:  _.get(process.env, 'APP_SERVER_PUBLIC_DIR', path.join(__dirname, './public')),

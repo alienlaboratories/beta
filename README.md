@@ -12,38 +12,37 @@
 
 
 
-
-
-
-
-
-
 ## TODO
 
-MS1
-- Run test apollo client in alien-app-server (hot mode with custom config).
-- Hot mode.
+
+- clean node_modules in each sub
 
 
-
-- split util into client/server
 
 MS2
-- OAuth
+- Port services (OAuth)
+  - OAuth server routers
   - Google APIs config
   - Firebase config
   - Port sub/services
 
-Port services
-Port scheduler
+
 
 MS3
-- Schedulder demo
-- Port sub/graphql (=> sub/framework?)
+- API server router
+- move API framework to core.
 
 MS4
+- Port scheduler
+
+
+
+
+
+MS5
 - Re-org client (dfferent entry points: web, crx)
 - Move ux to client.
+- split util into client/server
 
 
 ## Cleanup
@@ -61,5 +60,7 @@ MS4
 - Port sub/core
 - Facgtor out sub/core/util => sub/util
 - Build API and graphql plugin => sub/api
+- Hot mode.
+- Run test apollo client in alien-app-server (hot mode with custom config).
 
 

@@ -7,7 +7,8 @@ import _ from 'lodash';
 import { Kind } from 'graphql';
 import { concatenateTypeDefs } from 'graphql-tools';
 
-import { $$, Logger, HttpError, Database, ID, ItemStore, TypeUtil } from 'minder-core';
+import { Logger, HttpError, TypeUtil } from 'alien-util';
+import { Database, ID, ItemStore } from 'alien-core';
 
 import Framework from './gql/framework.graphql';
 import Schema from './gql/schema.graphql';
@@ -330,7 +331,7 @@ export class Resolvers {
           // TODO(burdon): Enforce bucket.
 
           let { namespace=Database.NAMESPACE.USER, mutations } = args;
-          logger.log($$('UPDATE[%s]: %o', namespace, mutations));
+          logger.log(`UPDATE[${namespace}]: ` + TypeUtil.stringify(mutations));
 
           let itemStore = database.getItemStore(namespace);
           return ItemStore.applyMutations(itemStore, context, mutations)

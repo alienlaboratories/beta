@@ -2,6 +2,8 @@
 # Copyright 2017 Alien Labs.
 #
 
+# TODO(burdon): Move to core (with Item and Mutation def).
+
 #
 # http://graphql.org/learn/schema
 # https://facebook.github.io/graphql

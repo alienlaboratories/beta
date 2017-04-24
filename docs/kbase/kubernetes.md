@@ -35,7 +35,7 @@ mkdir -p ~/.kube && cp ${PROJECTS}/minderlabs/prod-ops/kube/config/dev ~/.kube/c
 
 * Deploying the demo-dev stack for the first time:
     ```
-    cd config/k8s
+    cd conf/k8s
     kubectl create -f demo.yml
     ```
 * Pushing a new docker image to the `demo-dev` stack (if there are no configuration changes).
@@ -50,7 +50,7 @@ mkdir -p ~/.kube && cp ${PROJECTS}/minderlabs/prod-ops/kube/config/dev ~/.kube/c
     Note that this is a disruptive push (the service will go down temporarily, don't use for
     prod.)
     ```
-    cd config/k8s
+    cd conf/k8s
     kubectl replace -f demo.yml
     ```
 
@@ -287,7 +287,7 @@ it's a beta feature. Currently (2016-12-29) there is an
 
 * Another option is [k8s-nginx-proxy](https://github.com/metral/k8s-nginx-proxy), but that needs skyDNS and predates Ingress.
 
-The file `//config/k8s/nginx-ingress.yml` has a basic config to deploy the nginx ingress controller, with a simple
+The file `//conf/k8s/nginx-ingress.yml` has a basic config to deploy the nginx ingress controller, with a simple
 default http service (some default service is required). Deploy with:
 ```
 kubectl create -f nginx-ingress.yml
