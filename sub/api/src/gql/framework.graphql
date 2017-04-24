@@ -54,7 +54,7 @@ type Key {
 
 #===================================================================================================
 # Core.
-# TODO(burdon): Factor out to minder-framework.
+# TODO(burdon): Factor out to alien-core.
 # http://docs.oracle.com/javadb/10.8.3.0/ref (WHERE boolean expression)
 # https://github.com/ghislainfourny/jsoniq-tutorial
 # http://www.jinqjs.com/Examples
@@ -125,7 +125,7 @@ input ArrayMutationInput {
 #
 # Object mutation.
 # TODO(burdon): Rename FieldMutationInput
-# E.g., { field: 'title', value: { string: 'Minder' } }
+# E.g., { field: 'title', value: { string: 'Alien' } }
 #
 
 input ObjectMutationInput {

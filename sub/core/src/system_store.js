@@ -17,7 +17,7 @@ const logger = Logger.get('system');
  */
 export class SystemStore extends DelegateItemStore {
 
-  // TODO(burdon): Namespace prefix Group/minderlabs_com/xxx, Group/system, etc?
+  // TODO(burdon): Namespace prefix Group/alienlabs_com/xxx, Group/system, etc?
 
   /**
    * Make legal firebase key.

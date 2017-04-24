@@ -17,7 +17,7 @@ describe('Matcher:', () => {
     {
       id: 'b',
       type: 'User',
-      title: 'Minder Admin'
+      title: 'Alien Admin'
     },
     {
       id: 'c',

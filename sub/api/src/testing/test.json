@@ -1,34 +1,24 @@
 {
   "Group": [
     {
-      "id": "minderlabs_com",
-      "alias": "minderlabs_com",
-      "title": "Minder Labs",
+      "id": "alienlabs_com",
+      "alias": "alienlabs_com",
+      "title": "Alien Labs",
       "members": [
-        "adam",
-        "matt",
         "rich",
-        "trey"
+        "lucas"
       ]
     }
   ],
 
   "User": [
     {
-      "id": "adam",
-      "title": "Adam Berenzweig"
-    },
-    {
-      "id": "matt",
-      "title": "Matt Sullivan"
-    },
-    {
       "id": "rich",
       "title": "Rich Burdon"
     },
     {
-      "id": "trey",
-      "title": "Trey Lawrence"
+      "id": "lucas",
+      "title": "Lucas Geiger"
     }
   ],
 

@@ -5,7 +5,7 @@
   "license": "UNLICENSED",
   "repository": {
     "type": "git",
-    "url": "git://github.com:minderlabs/demo.git"
+    "url": "git://github.com:alienlabs/beta.git"
   },
   "main": "src/index.js",
   "devDependencies": {

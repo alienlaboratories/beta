@@ -15,4 +15,4 @@ serviceAccount: "firebase-adminsdk-dmpna@alienlabs-dev.iam.gserviceaccount.com"
 # NOTE: Secret Credentials.
 # Generated 04/24/17 (Generate Private Key)
 # https://console.firebase.google.com/project/alienlabs-dev/settings/serviceaccounts/adminsdk
-credentialPath: "./firebase/alienlabs-dev-firebase-adminsdk-dmpna-e07a9566cb.json"
+credentialPath: "./firebase/alienlabs-dev-credentials.json"

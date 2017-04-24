@@ -10,14 +10,7 @@
     update.sh       Update deps in all modules.
 ~~~~
 
-
-
 ## TODO
-
-
-- clean node_modules in each sub
-
-
 
 MS2
 - Port services (OAuth)
@@ -43,6 +36,11 @@ MS5
 - Re-org client (dfferent entry points: web, crx)
 - Move ux to client.
 - split util into client/server
+
+- reach-router (4) backwards compat?
+- react-hot-loader (latest vs beta?) file issue.
+
+
 
 
 ## Cleanup

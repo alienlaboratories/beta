@@ -77,7 +77,7 @@ function createDatabase() {
 //
 
 describe('GraphQL Mock Server:', () => {
-  let context = { userId: 'minder' };
+  let context = { userId: 'alien' };
 
   // http://dev.apollodata.com/tools/graphql-tools/resolvers.html
   let resolverMap = {
@@ -89,7 +89,7 @@ describe('GraphQL Mock Server:', () => {
           user: {
             id,
             type: 'User',
-            title: 'Minder'
+            title: 'Alien'
           }
         }
       }
@@ -103,8 +103,8 @@ describe('GraphQL Mock Server:', () => {
     server.query(query).then(result => test(result, {
       viewer: {
         user: {
-          id: 'minder',
-          title: 'Minder'
+          id: 'alien',
+          title: 'Alien'
         }
       }
     }).then(done));
@@ -119,7 +119,7 @@ describe('GraphQL Mock Server:', () => {
 
 describe('GraphQL Executable Schema:', () => {
   let context = {
-    userId: 'minder',
+    userId: 'alien',
     clientId: 'client-1'
   };
 
@@ -136,19 +136,19 @@ describe('GraphQL Executable Schema:', () => {
 
   database.getItemStore(Database.NAMESPACE.SYSTEM)
     .upsertItems(context, [
-      { id: 'minder', type: 'User', displayName: 'Minder' }
+      { id: 'alien', type: 'User', displayName: 'Alien' }
     ])
     .then(() => {
       it('Query viewer', (done) => {
-        database.getItemStore(Database.NAMESPACE.SYSTEM).getItem(context, 'User', 'minder').then(item => {
-          expect(item.id).to.equal('minder');
+        database.getItemStore(Database.NAMESPACE.SYSTEM).getItem(context, 'User', 'alien').then(item => {
+          expect(item.id).to.equal('alien');
 
           // https://github.com/graphql/graphql-js/blob/master/src/graphql.js
           graphql(schema, query, null, context).then(result => test(result, {
             viewer: {
               user: {
-                id: 'minder',
-                title: 'Minder'
+                id: 'alien',
+                title: 'Alien'
               }
             }
           }).then(done));
@@ -163,7 +163,7 @@ describe('GraphQL Executable Schema:', () => {
 //
 
 describe('GraphQL JS API:', () => {
-  let context = { userId: 'minder' };
+  let context = { userId: 'alien' };
 
   let database = createDatabase();
 
@@ -212,7 +212,7 @@ describe('GraphQL JS API:', () => {
   });
 
   database.getItemStore(Database.NAMESPACE.SYSTEM)
-    .upsertItems(context, [{ id: 'minder', type: 'User', title: 'Minder' }])
+    .upsertItems(context, [{ id: 'alien', type: 'User', title: 'Alien' }])
     .then(() => {
 
       it('Query viewer', (done) => {
@@ -220,8 +220,8 @@ describe('GraphQL JS API:', () => {
         graphql(schema, query, null, context).then(result => test(result, {
           viewer: {
             user: {
-              id: 'minder',
-              title: 'Minder'
+              id: 'alien',
+              title: 'Alien'
             }
           }
         })).then(done);

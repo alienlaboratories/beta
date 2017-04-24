@@ -20,7 +20,7 @@ export class QueryRegistry {
     return _.uniqueId('S-');
   }
 
-  // TODO(burdon): Factor out (move to minder-core).
+  // TODO(burdon): Factor out (move to alien-core).
   // http://dev.apollodata.com/core/apollo-client-api.html#QuerySubscription
 
   constructor(config) {

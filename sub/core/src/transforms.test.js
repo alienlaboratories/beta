@@ -14,16 +14,16 @@ describe('Transforms:', () => {
 
     let mutations = [{
       field: 'title',
-      value: { string: 'Minder' }
+      value: { string: 'Alien' }
     }];
 
     let result = Transforms.applyObjectMutations(object, mutations);
-    expect(_.get(result, 'title')).to.equal('Minder');
+    expect(_.get(result, 'title')).to.equal('Alien');
   });
 
   it('Apply object mutation to remove field.', () => {
     let object = {
-      title: 'Minder'
+      title: 'Alien'
     };
 
     let mutations = [{

@@ -12,6 +12,10 @@
 MODULES=$(ls sub)
 
 for mod in ${MODULES[@]}; do
+  echo
+  echo "### npm-workspace [$mod] ###"
+  echo
+
   pushd sub/$mod
   npm-workspace install
   popd
@@ -38,7 +42,7 @@ done
 
 for mod in ${MODULES[@]}; do
   echo
-  echo "### [$mod] ###"
+  echo "### update [$mod] ###"
   echo
 
   pushd sub/$mod
@@ -59,3 +63,4 @@ for mod in ${MODULES[@]}; do
 
   popd
 done
+

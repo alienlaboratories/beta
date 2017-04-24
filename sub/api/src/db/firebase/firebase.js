@@ -16,7 +16,7 @@ const logger = Logger.get('firebase');
  * https://firebase.google.com/docs/reference/js/firebase.database.Database
  *
  * Console:
- * https://console.firebase.google.com/project/minder-beta/database/data
+ * https://console.firebase.google.com
  */
 export class Firebase {
 
@@ -27,6 +27,7 @@ export class Firebase {
    */
   constructor(config) {
 
+    // TODO(burdon): Remove?
     // https://firebase.google.com/docs/admin/setup
     // https://firebase.google.com/docs/reference/admin/node/admin
     this._app = admin.initializeApp(_.defaults(config, {

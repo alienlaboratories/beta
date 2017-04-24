@@ -2,10 +2,11 @@
   "//": "Add shared modules here, then add to package.json and run 'npm-workspace install' in root and sub directory.",
 
   "links": {
-    "alien-api":      "sub/api",
-    "alien-client":   "sub/client",
-    "alien-core":     "sub/core",
-    "alien-util":     "sub/util",
-    "alien-ux":       "sub/ux"
+    "alien-api":        "sub/api",
+    "alien-client":     "sub/client",
+    "alien-core":       "sub/core",
+    "alien-services":   "sub/services",
+    "alien-util":       "sub/util",
+    "alien-ux":         "sub/ux"
   }
 }

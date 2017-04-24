@@ -1,63 +1,75 @@
 //
-// Copyright 2017 Minder Labs.
+// Copyright 2017 Alien Labs.
 //
 
 import _ from 'lodash';
 import moment from 'moment'
 import path from 'path';
+import yaml from 'node-yaml';
 
 import admin from 'firebase-admin';
 
-import { FirebaseTestConfig } from './conf/defs';
+const CONF_DIR = path.join(__dirname, '../../../../../conf');
 
-const config = _.defaults(FirebaseTestConfig, {
-  credential: admin.credential.cert(path.join(__dirname, './conf', FirebaseTestConfig.credentialPath))
-});
+// TODO(burdon): Make configurable.
+async function config(baseDir) {
+  return await {
+    'firebase':       await yaml.read(path.join(baseDir, 'firebase/alienlabs-dev.yml')),
+    'firebase-admin': await yaml.read(path.join(baseDir, 'firebase/alienlabs-dev-admin.yml')),
+  };
+}
 
-const db = admin.initializeApp(config).database();
+config(CONF_DIR).then(config => {
+  console.log('Config = ' + JSON.stringify(config, null, 2));
 
-//
-// Data migration.
-//
+  const db = admin.initializeApp({
+    databaseURL: _.get(config, 'firebase.databaseURL'),
+    credential: admin.credential.cert(path.join(CONF_DIR, _.get(config, 'firebase-admin.credentialPath')))
+  }).database();
 
-// TODO(burdon): Process command line options.
+  //
+  // Data migration.
+  //
 
-db.ref('/users').once('value', data => {
-  let oldUsers = data.val();
+  // TODO(burdon): Process command line options.
 
-  Promise.all(_.map(oldUsers, (oldUser, id) => {
-    let { created, credentials, profile } = oldUser;
-    let { email, name:title } = profile;
+  db.ref('/users').once('value', data => {
+    let oldUsers = data.val();
 
-    if (!created) {
-      created = moment().unix();
-    }
+    Promise.all(_.map(oldUsers, (oldUser, id) => {
+      let { created, credentials, profile } = oldUser;
+      let { email, name:title } = profile;
 
-    let newUser = {
-      type: 'User',
-      id,
-      active: true,
-      created,
-      credentials,
-      title,
-      email
-    };
+      if (!created) {
+        created = moment().unix();
+      }
 
-    return new Promise((resolve, reject) => {
-      let key = '/system/User/' + id;
-      console.log(key + ' => ' + JSON.stringify(_.pick(newUser, ['email'])));
-      db.ref(key).set(newUser, error => {
-        if (error) { reject(); } else { resolve(key); }
+      let newUser = {
+        type: 'User',
+        id,
+        active: true,
+        created,
+        credentials,
+        title,
+        email
+      };
+
+      return new Promise((resolve, reject) => {
+        let key = '/system/User/' + id;
+        console.log(key + ' => ' + JSON.stringify(_.pick(newUser, ['email'])));
+        db.ref(key).set(newUser, error => {
+          if (error) { reject(); } else { resolve(key); }
+        });
       });
-    });
 
-  }))
-    .then(() => {
-      console.log('OK');
-      process.exit();
-    })
-    .catch(error => {
-      console.log('ERROR:', error);
-      process.exit();
-    });
+    }))
+      .then(() => {
+        console.log('OK');
+        process.exit();
+      })
+      .catch(error => {
+        console.log('ERROR:', error);
+        process.exit();
+      });
+  });
 });

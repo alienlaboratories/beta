@@ -17,7 +17,7 @@ export const Const = {
 
   APP_PATH: '/app',
 
-  APP_NAME: 'minder',
+  APP_NAME: 'robotik',
 
   // NOTE: Changed by grunt:version
   APP_VERSION: "0.0.1",
