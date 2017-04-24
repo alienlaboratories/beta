@@ -51,22 +51,21 @@ export class UserManager {
  * @param userManager
  * @param oauthRegistry
  * @param systemStore
- * @param options
+ * @param {{ home }} options
  * @returns {Router}
  */
-export const userRouter = (userManager, oauthRegistry, systemStore, options) => {
+export const loginRouter = (userManager, oauthRegistry, systemStore, options) => {
   console.assert(userManager && oauthRegistry && systemStore);
+
+  let router = express.Router();
 
   // OAuth provider used for login.
   let loginAuthProvider = userManager.loginAuthProvider;
-
-  let router = express.Router();
 
   //
   // Login.
   //
   router.get('/login', function(req, res) {
-    // TODO(burdon): Path const.
     res.redirect('/oauth/login/' + loginAuthProvider.providerId);
   });
 
@@ -76,8 +75,7 @@ export const userRouter = (userManager, oauthRegistry, systemStore, options) => 
   router.get('/logout', function(req, res) {
     // http://passportjs.org/docs/logout
     req.logout();
-    // TODO(burdon): Path const.
-    res.redirect('/home');
+    res.redirect(options.home);
   });
 
   //
@@ -91,23 +89,6 @@ export const userRouter = (userManager, oauthRegistry, systemStore, options) => 
       redirectType: 'jsonp',
       callback
     }));
-  });
-
-  //
-  // Profile page.
-  //
-  router.get('/profile', isAuthenticated('/home'), function(req, res, next) {
-    let user = req.user;
-    return systemStore.getGroups(user.id).then(groups => {
-      res.render('profile', {
-        user,
-        groups,
-        idToken:    getIdToken(user),
-        providers:  oauthRegistry.providers,
-        crxUrl:     options.crxUrl
-      });
-    })
-    .catch(next);
   });
 
   return router;

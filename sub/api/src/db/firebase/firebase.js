@@ -23,16 +23,16 @@ export class Firebase {
   /**
    * Creates the Firebase singleton app and wraps utils.
    *
-   * @param config
+   * @param {{ databaseURL, credentialPath }} config
    */
   constructor(config) {
 
-    // TODO(burdon): Remove?
     // https://firebase.google.com/docs/admin/setup
     // https://firebase.google.com/docs/reference/admin/node/admin
-    this._app = admin.initializeApp(_.defaults(config, {
+    this._app = admin.initializeApp({
+      databaseURL: config.databaseURL,
       credential: admin.credential.cert(config.credentialPath)
-    }));
+    });
 
     logger.info('Initialized: ' + config.databaseURL);
   }

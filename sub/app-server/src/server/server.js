@@ -12,6 +12,31 @@ import http from 'http';
 import path from 'path';
 
 import { ExpressUtil, HttpError, Logger } from 'alien-util';
+import { Database, IdGenerator, Matcher, SystemStore } from 'alien-core';
+
+import {
+  apiRouter,              // TODO(burdon): Rename.
+
+  Firebase,
+  FirebaseItemStore
+} from 'alien-api';
+
+import {
+  getIdToken,
+  isAuthenticated,
+  oauthRouter,
+  loginRouter,             // TODO(burdon): Separate login from user (e.g., profile)
+
+  OAuthProvider,
+  OAuthRegistry,
+  ServiceRegistry,
+  UserManager,
+
+  GoogleOAuthProvider,
+  GoogleDriveQueryProcessor,
+  GoogleDriveServiceProvider,
+  GoogleMailServiceProvider
+} from 'alien-services';
 
 import { appRouter } from './router/app';
 import { hotRouter } from './router/hot';
@@ -41,13 +66,74 @@ export class WebServer {
 
   async init() {
 
+    await this.initDatabase();
     await this.initMiddleware();
+    await this.initAuth();
+
     await this.initHandlebars();
     await this.initApp();
     await this.initPages();
     await this.initErrorHandling();
 
     return this;
+  }
+
+  /**
+   * Database and query processors.
+   */
+  initDatabase() {
+
+    // NOTE: The seed provide repeatable IDs in dev but not production.
+    this._idGenerator = new IdGenerator(!__PRODUCTION__ && 1234);
+
+    // Query item matcher.
+    this._matcher = new Matcher();
+
+    // Firebase
+    // https://firebase.google.com/docs/database/admin/start
+    this._firebase = new Firebase({
+      databaseURL: _.get(this._config, 'firebase.databaseURL'),
+      credentialPath: path.join(ENV.APP_SERVER_CONF_DIR, _.get(this._config, 'firebase-admin.credentialPath'))
+    });
+
+    //
+    // Database.
+    //
+
+    this._systemStore = new SystemStore(
+      new FirebaseItemStore(new IdGenerator(), this._matcher, this._firebase.db, Database.NAMESPACE.SYSTEM, false));
+
+    // TODO(burdon): ItemStore/QueryProcessor.
+    this._database = new Database()
+      .registerItemStore(this._systemStore)
+      .registerQueryProcessor(this._systemStore);
+  }
+
+  /**
+   * Authentication and user/client management.
+   */
+  initAuth() {
+
+    // Default login.
+    this._googleAuthProvider = new GoogleOAuthProvider(_.get(this._config, 'google'), ENV.APP_SERVER_URL);
+
+    // OUath providers.
+    this._oauthRegistry = new OAuthRegistry()
+      .registerProvider(this._googleAuthProvider);
+
+    // User manager.
+    this._userManager = new UserManager(this._googleAuthProvider, this._systemStore);
+
+    // TODO(burdon): Factor out path constants (e.g., OAuthProvider.PATH).
+    // NOTE: This must be defined ("used') before other services.
+    this._app.use(OAuthProvider.PATH, oauthRouter(this._userManager, this._systemStore, this._oauthRegistry, {
+      app: this._app  // TODO(burdon): Externalize app.use().
+    }));
+
+    // User registration.
+    this._app.use('/user', loginRouter(this._userManager, this._oauthRegistry, this._systemStore, {
+      home: '/home'
+    }));
   }
 
   /**
@@ -118,6 +204,20 @@ export class WebServer {
 
     this._app.get('/home', (req, res) => {
       res.render('home', {});
+    });
+
+    this._app.get('/profile', isAuthenticated('/home'), function(req, res, next) {
+      let user = req.user;
+      return this._systemStore.getGroups(user.id).then(groups => {
+        res.render('profile', {
+          user,
+          groups,
+          idToken: getIdToken(user),
+          providers: this._oauthRegistry.providers,
+//        crxUrl: _.get(this._config, 'app.crxUrl')       // TODO(burdon): ???
+        });
+      })
+      .catch(next);
     });
   }
 

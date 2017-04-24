@@ -67,7 +67,7 @@ export const getIdToken = (user) => {
  * @param userManager
  * @param systemStore
  * @param oauthRegistry
- * @param config
+ * @param {{ app }} config
  * @return {*}
  */
 export const oauthRouter = (userManager, systemStore, oauthRegistry, config={}) => {

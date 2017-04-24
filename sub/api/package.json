@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "alien-core": "0.0.1",
+    "alien-services": "0.0.1",
     "alien-util": "0.0.1",
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.1",

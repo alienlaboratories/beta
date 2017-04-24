@@ -31,7 +31,7 @@ const logger = Logger.get('gql');
  *
  * @returns {Router}
  */
-export const graphqlRouter = (database, options) => {
+export const apiRouter = (database, options) => {
   console.assert(database);
 
   options = _.defaults(options, {

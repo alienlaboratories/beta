@@ -23,6 +23,8 @@ export default {
 
   HOST, PORT,
 
+  APP_SERVER_URL:         _.get(process.env, 'APP_SERVER_URL',        'http://localhost:' + PORT),
+
   APP_SERVER_CONF_DIR:    _.get(process.env, 'APP_SERVER_CONF_DIR',   path.join(__dirname, '../../../../conf')),
 
   APP_SERVER_ASSETS_DIR:  _.get(process.env, 'APP_SERVER_VIEWS_DIR',  path.join(__dirname, '../../dist')),

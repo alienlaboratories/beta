@@ -12,6 +12,15 @@
 
 ## TODO
 
+
+
+- whitelist user
+- userRouter (profile)
+
+
+
+
+
 MS2
 - Port services (OAuth)
   - OAuth server routers
