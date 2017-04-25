@@ -12,53 +12,35 @@
 
 ## TODO
 
-
-
-- whitelist user
-- userRouter (profile)
-
-
-
-
-
 MS2
-- Port services (OAuth)
-  - OAuth server routers
-  - Google APIs config
-  - Firebase config
-  - Port sub/services
-
-
+- site app (home, profile, admin, etc.)
 
 MS3
-- API server router
-- move API framework to core.
+- API router (with trivial apollo app: query, mutate).
+- graphiql
 
 MS4
-- Port scheduler
-
-
-
-
+- Scheduler (null demo)
 
 MS5
 - Re-org client (dfferent entry points: web, crx)
-- Move ux to client.
-- split util into client/server
-
-- reach-router (4) backwards compat?
-- react-hot-loader (latest vs beta?) file issue.
-
-
-
+- Look at Parabol
+- Move ux to client (shared less defs; redo CSS layout?).
 
 ## Cleanup
+
+- move API framework to core.
+- split util into client/server
+- ItemStore/QueryProcessor
+- db start-up/admin tool
 
 - COPYRIGHT
 - REMOVE: "minder"
 - JS tests (with sourcemaps)
 - Update deps
 
+- reach-router (4) backwards compat?
+- react-hot-loader (latest vs beta?) file issue.
 
 ## Done
 
@@ -69,5 +51,8 @@ MS5
 - Build API and graphql plugin => sub/api
 - Hot mode.
 - Run test apollo client in alien-app-server (hot mode with custom config).
-
-
+- Port sub/services (OAuth)
+- OAuth server routers
+- Google APIs config
+- Firebase config
+- db init; whitelist user

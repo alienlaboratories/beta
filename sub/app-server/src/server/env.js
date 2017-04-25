@@ -23,11 +23,14 @@ export default {
 
   HOST, PORT,
 
-  APP_SERVER_URL:         _.get(process.env, 'APP_SERVER_URL',        'http://localhost:' + PORT),
+  ALIEN_JWT_SECRET:       _.get(process.env, 'ALIEN_JWT_SECRET',        'alien-jwt-secret'),
+  ALIEN_SESSION_SECRET:   _.get(process.env, 'ALIEN_SESSION_SECRET',    'alien-session-secret'),
 
-  APP_SERVER_CONF_DIR:    _.get(process.env, 'APP_SERVER_CONF_DIR',   path.join(__dirname, '../../../../conf')),
+  APP_SERVER_URL:         _.get(process.env, 'APP_SERVER_URL',          'http://localhost:' + PORT),
 
-  APP_SERVER_ASSETS_DIR:  _.get(process.env, 'APP_SERVER_VIEWS_DIR',  path.join(__dirname, '../../dist')),
-  APP_SERVER_PUBLIC_DIR:  _.get(process.env, 'APP_SERVER_PUBLIC_DIR', path.join(__dirname, './public')),
-  APP_SERVER_VIEWS_DIR:   _.get(process.env, 'APP_SERVER_VIEWS_DIR',  path.join(__dirname, './views')),
+  APP_SERVER_CONF_DIR:    _.get(process.env, 'APP_SERVER_CONF_DIR',     path.join(__dirname, '../../../../conf')),
+  APP_SERVER_DATA_DIR:    _.get(process.env, 'APP_SERVER_DATA_DIR',     path.join(__dirname, '../../../../data')),
+  APP_SERVER_ASSETS_DIR:  _.get(process.env, 'APP_SERVER_VIEWS_DIR',    path.join(__dirname, '../../dist')),
+  APP_SERVER_PUBLIC_DIR:  _.get(process.env, 'APP_SERVER_PUBLIC_DIR',   path.join(__dirname, './public')),
+  APP_SERVER_VIEWS_DIR:   _.get(process.env, 'APP_SERVER_VIEWS_DIR',    path.join(__dirname, './views')),
 };

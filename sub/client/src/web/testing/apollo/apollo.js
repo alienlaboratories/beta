@@ -13,11 +13,9 @@ import ApolloClient from 'apollo-client';
 import gql from 'graphql-tag';
 import update from 'immutability-helper';
 
-import { ItemUtil, MutationUtil, Transforms, TypeUtil } from 'alien-core';
+import { TypeUtil } from 'alien-util';
+import { ItemUtil, MutationUtil, Transforms } from 'alien-core';
 
-// TODO(burdon): Get hot mode working first. Then graphql (and plugin)
-// TODO(burdon): Look at Parabol.
-// TODO(burdon): Transitive deps to alien-ux have problems; move ux into client (also can benefit from share .less defs)
 import { ReactUtil } from '../../util/index';
 
 import './apollo.less';

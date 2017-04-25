@@ -68,7 +68,7 @@ export const getIdToken = (user) => {
  * @param systemStore
  * @param oauthRegistry
  * @param {{ app }} config
- * @return {*}
+ * @return {Router}
  */
 export const oauthRouter = (userManager, systemStore, oauthRegistry, config={}) => {
   console.assert(userManager && systemStore && oauthRegistry && config);

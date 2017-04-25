@@ -10,12 +10,14 @@ import favicon from 'serve-favicon';
 import handlebars from 'express-handlebars';
 import http from 'http';
 import path from 'path';
+import session from 'express-session';
+import uuid from 'node-uuid';
 
 import { ExpressUtil, HttpError, Logger } from 'alien-util';
-import { Database, IdGenerator, Matcher, SystemStore } from 'alien-core';
+import { Database, IdGenerator, Matcher, MemoryItemStore, SystemStore, TestItemStore } from 'alien-core';
 
 import {
-  apiRouter,              // TODO(burdon): Rename.
+  apiRouter,
 
   Firebase,
   FirebaseItemStore
@@ -24,8 +26,8 @@ import {
 import {
   getIdToken,
   isAuthenticated,
+  loginRouter,
   oauthRouter,
-  loginRouter,             // TODO(burdon): Separate login from user (e.g., profile)
 
   OAuthProvider,
   OAuthRegistry,
@@ -38,8 +40,14 @@ import {
   GoogleMailServiceProvider
 } from 'alien-services';
 
+import { Loader } from './data/loader';
+import { TestGenerator } from './data/testing';
+
+import { adminRouter } from './router/admin';
 import { appRouter } from './router/app';
+import { clientRouter, ClientManager } from './router/client';
 import { hotRouter } from './router/hot';
+import { loggingRouter } from './router/log';
 
 import ENV from './env';
 
@@ -69,11 +77,16 @@ export class WebServer {
     await this.initDatabase();
     await this.initMiddleware();
     await this.initAuth();
+    await this.initServices();
 
     await this.initHandlebars();
     await this.initApp();
     await this.initPages();
+    await this.initAdmin();
+
     await this.initErrorHandling();
+
+    await this.reset();
 
     return this;
   }
@@ -100,13 +113,40 @@ export class WebServer {
     // Database.
     //
 
+    this._settingsStore = new MemoryItemStore(this._idGenerator, this._matcher, Database.NAMESPACE.SETTINGS, false);
+
     this._systemStore = new SystemStore(
       new FirebaseItemStore(new IdGenerator(), this._matcher, this._firebase.db, Database.NAMESPACE.SYSTEM, false));
 
+    this._userDataStore = __TESTING__ ?
+      // TODO(burdon): Config file for testing options.
+      new TestItemStore(new MemoryItemStore(this._idGenerator, this._matcher, Database.NAMESPACE.USER), { delay: 0 }) :
+      new FirebaseItemStore(new IdGenerator(), this._matcher, this._firebase.db, Database.NAMESPACE.USER, true);
+
     // TODO(burdon): ItemStore/QueryProcessor.
+    // TODO(burdon): Distinguish search from basic lookup (e.g., Key-range implemented by ItemStore).
     this._database = new Database()
       .registerItemStore(this._systemStore)
-      .registerQueryProcessor(this._systemStore);
+      .registerItemStore(this._settingsStore)
+      .registerItemStore(this._userDataStore)
+
+      .registerQueryProcessor(this._systemStore)
+      .registerQueryProcessor(this._settingsStore)
+      .registerQueryProcessor(this._userDataStore)
+
+      .onMutation((context, itemMutations, items) => {
+        // TODO(burdon): Options.
+        // TODO(burdon): QueryRegistry.
+        // Notify clients of changes.
+        this._clientManager.invalidateClients(context.clientId);
+      });
+
+    //
+    // External query processors.
+    //
+
+    this._database
+      .registerQueryProcessor(new GoogleDriveQueryProcessor(this._idGenerator, _.get(this._config, 'google')));
   }
 
   /**
@@ -137,6 +177,24 @@ export class WebServer {
   }
 
   /**
+   * Application services.
+   */
+  initServices() {
+
+    // Service registry.
+    this._serviceRegistry = new ServiceRegistry()
+      .registerProvider(new GoogleDriveServiceProvider(this._googleAuthProvider))
+      .registerProvider(new GoogleMailServiceProvider(this._googleAuthProvider));
+//    .registerProvider(new SlackServiceProvider());
+
+    // Client manager.
+    this._clientManager = new ClientManager(this._config, this._idGenerator);
+
+    // Client registration.
+    this._app.use('/client', clientRouter(this._userManager, this._clientManager, this._systemStore));
+  }
+
+  /**
    * Express middleware.
    */
   initMiddleware() {
@@ -150,6 +208,29 @@ export class WebServer {
     this._app.use(bodyParser.json());
 
     this._app.use(cookieParser());
+
+    // Session used by passport.
+    this._app.use(session({
+      secret: ENV.ALIEN_SESSION_SECRET,
+      resave: false,                        // Don't write to the store if not modified.
+      saveUninitialized: false,             // Don't save new sessions that haven't been initialized.
+      genid: req => uuid.v4()
+    }));
+
+    // Logging.
+    // TODO(burdon): Prod logging.
+    if (__PRODUCTION__ && false) {
+      this._app.use('/', loggingRouter({}));
+    } else {
+      this._app.use((req, res, next) => {
+        if (req.method === 'POST') {
+          logger.log(req.method, req.url);
+        }
+
+        // Continue to actual route.
+        next();
+      });
+    }
   }
 
   /**
@@ -206,7 +287,11 @@ export class WebServer {
       res.render('home', {});
     });
 
-    this._app.get('/profile', isAuthenticated('/home'), function(req, res, next) {
+    this._app.get('/welcome', isAuthenticated('/home'), (req, res) => {
+      res.render('home', {});
+    });
+
+    this._app.get('/profile', isAuthenticated('/home'), (req, res, next) => {
       let user = req.user;
       return this._systemStore.getGroups(user.id).then(groups => {
         res.render('profile', {
@@ -219,6 +304,33 @@ export class WebServer {
       })
       .catch(next);
     });
+
+    this._app.get('/services', isAuthenticated('/home'), (req, res) => {
+      res.render('services', {
+        providers: this._serviceRegistry.providers
+      });
+    });
+  }
+
+  /**
+   * Admin pages and services.
+   */
+  initAdmin() {
+
+    this._app.use('/admin', adminRouter(this._clientManager, this._firebase, {
+
+      scheduler: false, // TODO(burdon): ???
+
+      handleDatabaseDump: (__PRODUCTION__ ? () => {
+        return this._userDataStore.dump().then(debug => {
+          logger.log('Database:\n', JSON.stringify(debug, null, 2));
+        });
+      } : null),
+
+      handleDatabaseReset: (__PRODUCTION__ ? () => {
+        return this.reset();
+      } : null)
+    }));
   }
 
   /**
@@ -267,6 +379,33 @@ export class WebServer {
           res.redirect('/');
         }
       }
+    });
+  }
+
+  /**
+   * Reset the datastore.
+   */
+  // TODO(burdon): Factor out testing and admin startup tools.
+  reset() {
+    _.each([ Database.NAMESPACE.USER, Database.NAMESPACE.SETTINGS ], namespace => {
+      this._database.getItemStore(namespace).clear();
+    });
+
+    let loader = new Loader(this._database);
+    return Promise.all([
+      // TODO(burdon): Testing only?
+      loader.parse(require(
+        path.join(ENV.APP_SERVER_DATA_DIR, './accounts.json')), Database.NAMESPACE.SYSTEM, /^(Group)\.(.+)\.(.+)$/),
+      loader.parse(require(
+        path.join(ENV.APP_SERVER_DATA_DIR, './folders.json')), Database.NAMESPACE.SETTINGS, /^(Folder)\.(.+)$/)
+    ]).then(() => {
+      logger.log('Initializing groups...');
+      return loader.initGroups().then(() => {
+        if (__TESTING__) {
+          logger.log('Generating test data...');
+          return new TestGenerator(this._database).generate();
+        }
+      });
     });
   }
 

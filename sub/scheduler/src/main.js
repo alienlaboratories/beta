@@ -17,8 +17,8 @@ import ENV from './env';
  */
 async function config(baseDir) {
   return await {
-    'firebase':         await yaml.read(path.join(baseDir, 'firebase/minder-beta.yml')),
-    'firebase_server':  await yaml.read(path.join(baseDir, 'firebase/minder-beta-server.yml')),
+    'firebase':         await yaml.read(path.join(baseDir, 'firebase/alienlabs-dev.yml')),
+    'firebase-admin':   await yaml.read(path.join(baseDir, 'firebase/alienlabs-dev-admin.yml')),
     'google':           await yaml.read(path.join(baseDir, 'google.yml'))
   };
 }

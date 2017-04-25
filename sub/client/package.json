@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "alien-core": "0.0.1",
-    "alien-ux": "0.0.1",
+    "alien-util": "0.0.1",
     "apollo-client": "^1.0.3",
     "body-parser": "^1.17.1",
     "chance": "^1.0.6",
