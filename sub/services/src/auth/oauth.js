@@ -118,7 +118,7 @@ export const oauthRouter = (userManager, systemStore, oauthRegistry, config={}) 
   // https://www.npmjs.com/package/passport-jwt
   //
 
-  // TODO(burdon): Config.
+  // TODO(burdon): Get from ENV or config.
   const ALIEN_JWT_SECRET = _.get(process.env, 'ALIEN_JWT_SECRET', 'alien-jwt-secret');
   const ALIEN_JWT_AUDIENCE = 'alienlabs.com';
 

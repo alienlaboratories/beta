@@ -5,7 +5,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
-const nodeExternals = require('webpack-node-externals');
+const nodeExternals = require('./webpack-node-externals');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 //
@@ -174,12 +174,25 @@ const srvConfig = webpackMerge(baseConfig, {
     publicPath: '/app/assets/' // Path for webpack-dev-server
   },
 
+  // TODO(burdon): Need to build with all deps in local node_modules.
+  // https://github.com/liady/webpack-node-externals/issues/29
+
   // Define modules that should not be bundled.
   // https://www.npmjs.com/package/webpack-node-externals
   externals: [nodeExternals({
+
+    modulesFromFile: true,
+
+    // modulesDir: [
+    //   '.',
+    //   '../api',
+    //   '../core',
+    //   '../services',
+    //   '../util'
+    // ],
+
     whitelist: [
       'alien-api',
-      'alien-client',
       'alien-core',
       'alien-services',
       'alien-util'

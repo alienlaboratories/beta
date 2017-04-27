@@ -103,7 +103,6 @@ IMAGE=alien-app-server
 
 AWS_ECS_REPO=861694698401.dkr.ecr.us-east-1.amazonaws.com
 
-set +x
 if [ ${LOCAL} -eq 1 ]; then
 
   eval $(minikube docker-env)
@@ -114,15 +113,17 @@ if [ ${LOCAL} -eq 1 ]; then
 else
 
   # TODO(burdon): Is this necessary?
-# eval $(docker-machine env ${DOCKER_MACHINE})
+  eval $(docker-machine env ${DOCKER_MACHINE})
 
   # Get token (valid for 12 hours).
   # http://docs.aws.amazon.com/cli/latest/reference/ecr/get-login.html
+  # Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+  set +x
   eval $(aws ecr get-login)
+  set -x
 
   REPO=${AWS_ECS_REPO}
 fi
-set -x
 
 # Create via console.
 # https://console.aws.amazon.com/ecs/home

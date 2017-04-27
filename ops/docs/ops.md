@@ -120,6 +120,15 @@ NOTE: One-time only: create new credentials to reset or if lost.
 - https://mtpereira.com/local-development-k8s.html
  
  
+ 
+#####
+THIS FAILS IF USING xhyve
+Just make sure you tag your Docker image with something other than ‘latest’ and use that tag while you pull the image 
+#####
+ 
+ 
+ 
+ 
 ### SSH 
 
 ~~~~
