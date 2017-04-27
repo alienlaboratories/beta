@@ -4,11 +4,7 @@
 
 import express from 'express';
 
-import { Logger, HttpUtil } from 'alien-util';
-
-import { getIdToken, hasJwtHeader, isAuthenticated } from './oauth';
-
-const logger = Logger.get('user');
+import { HttpUtil } from 'alien-util';
 
 /**
  * Manage authentication.

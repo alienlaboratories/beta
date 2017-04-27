@@ -82,7 +82,7 @@ There are many tools:
     docker-machine inspect ${DOCKER_MACHINE}
 
     # Set env vars.
-    eval "$(docker-machine env ${DOCKER_MACHINE})"
+    eval $(docker-machine env ${DOCKER_MACHINE})
 
     docker-machine ls
 

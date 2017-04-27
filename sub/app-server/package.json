@@ -62,8 +62,8 @@
   },
   "dependencies": {
     "alien-api": "0.0.1",
-    "alien-core": "0.0.1",
     "alien-client": "0.0.1",
+    "alien-core": "0.0.1",
     "alien-services": "0.0.1",
     "alien-util": "0.0.1",
     "babel-polyfill": "^6.16.0",

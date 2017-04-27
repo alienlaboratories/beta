@@ -9,7 +9,6 @@ import { QueryProcessor } from 'alien-core';
 
 const logger = Logger.get('slack');
 
-
 // TODO(madadam): Move to util.
 class QueryUtil {
 
@@ -32,7 +31,6 @@ class QueryUtil {
     });
     return value;
   }
-
 }
 
 /**
@@ -87,7 +85,7 @@ export class SlackQueryProcessor extends QueryProcessor {
    */
   convertToContactItems(bot, slackApiToken, slackUserIds) {
     // TODO(madadam): Batch API calls? I don't see any support for batch in Slack API docs.
-    let promises = _.map(slackUserIds, slackUserId => {
+    return Promise.all(_.map(slackUserIds, slackUserId => {
       return this._botManager.slackbot.getSlackUserInfo(bot, slackApiToken, slackUserId)
         .then(userInfo => {
           let email = _.get(userInfo, 'profile.email');
@@ -113,8 +111,7 @@ export class SlackQueryProcessor extends QueryProcessor {
               return contact;
             });
         });
-    });
-    return Promise.all(promises);
+    }));
   }
 
   /**

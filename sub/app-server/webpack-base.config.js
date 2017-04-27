@@ -75,8 +75,10 @@ const baseConfig = {
         exclude: /node_modules/,    // Don't transpile deps.
         include: [
           path.resolve('src'),
+          path.resolve(__dirname, '../api/src'),
           path.resolve(__dirname, '../client/src'),
           path.resolve(__dirname, '../core/src'),
+          path.resolve(__dirname, '../services/src'),
           path.resolve(__dirname, '../util/src'),
         ],
         options: {
@@ -146,14 +148,15 @@ const srvConfig = webpackMerge(baseConfig, {
 
     // https://webpack.js.org/configuration/node
     console: false,
-    fs:  'empty',
+    // fs:  'empty',
     net: 'empty',
     tls: 'empty'
   },
 
   // Source map shows original source and line numbers (and works with hot loader).
   // https://webpack.github.io/docs/configuration.html#devtool
-  devtool: '#source-map',
+//devtool: '#source-map',
+  devtool: '#eval-source-map',
 
   entry: {
     server: [
@@ -171,15 +174,18 @@ const srvConfig = webpackMerge(baseConfig, {
     publicPath: '/app/assets/' // Path for webpack-dev-server
   },
 
+  // Define modules that should not be bundled.
   // https://www.npmjs.com/package/webpack-node-externals
   externals: [nodeExternals({
     whitelist: [
+      'alien-api',
       'alien-client',
-      'alien-core'
+      'alien-core',
+      'alien-services',
+      'alien-util'
     ]}
   )]
 });
-
 
 //
 // Web config.

@@ -9,6 +9,12 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: alien-ingress
+
+  # Preserve root URL.
+  # https://medium.com/@Oskarr3/setting-up-ingress-on-minikube-6ae825e98f82
+#  annotations:
+#    ingress.kubernetes.io/rewrite-target: /
+
 spec:
   rules:
 

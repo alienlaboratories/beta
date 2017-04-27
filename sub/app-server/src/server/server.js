@@ -16,6 +16,9 @@ import uuid from 'node-uuid';
 import { ExpressUtil, HttpError, Logger } from 'alien-util';
 import { Database, IdGenerator, Matcher, MemoryItemStore, SystemStore, TestItemStore } from 'alien-core';
 
+// TODO(burdon): faye-websockets? referenced by bundle directly.
+// webpack-node-externals
+
 import {
   apiRouter,
 
@@ -24,30 +27,30 @@ import {
 } from 'alien-api';
 
 import {
-  getIdToken,
-  isAuthenticated,
-  loginRouter,
-  oauthRouter,
+  // getIdToken,
+  // isAuthenticated,
+  // loginRouter,
+  // oauthRouter,
 
-  OAuthProvider,
-  OAuthRegistry,
-  ServiceRegistry,
-  UserManager,
+  // OAuthProvider,
+  // OAuthRegistry,
+  // ServiceRegistry,
+  // UserManager,
 
-  GoogleOAuthProvider,
-  GoogleDriveQueryProcessor,
-  GoogleDriveServiceProvider,
-  GoogleMailServiceProvider
+  // GoogleOAuthProvider,
+  // GoogleDriveQueryProcessor,
+  // GoogleDriveServiceProvider,
+  // GoogleMailServiceProvider
 } from 'alien-services';
 
 import { Loader } from './data/loader';
 import { TestGenerator } from './data/testing';
 
-import { adminRouter } from './router/admin';
+// import { adminRouter } from './router/admin';
 import { appRouter } from './router/app';
-import { clientRouter, ClientManager } from './router/client';
+// import { clientRouter, ClientManager } from './router/client';
 import { hotRouter } from './router/hot';
-import { loggingRouter } from './router/log';
+// import { loggingRouter } from './router/log';
 
 import ENV from './env';
 
@@ -73,20 +76,21 @@ export class WebServer {
   }
 
   async init() {
+    logger.log('Initializing...');
 
-    await this.initDatabase();
+    // await this.initDatabase();
     await this.initMiddleware();
-    await this.initAuth();
-    await this.initServices();
+    // await this.initAuth();
+    // await this.initServices();
 
     await this.initHandlebars();
     await this.initApp();
     await this.initPages();
-    await this.initAdmin();
+    // await this.initAdmin();
 
     await this.initErrorHandling();
 
-    await this.reset();
+    // await this.reset();
 
     return this;
   }
@@ -95,6 +99,7 @@ export class WebServer {
    * Database and query processors.
    */
   initDatabase() {
+    logger.log('initDatabase');
 
     // NOTE: The seed provide repeatable IDs in dev but not production.
     this._idGenerator = new IdGenerator(!__PRODUCTION__ && 1234);
@@ -145,14 +150,15 @@ export class WebServer {
     // External query processors.
     //
 
-    this._database
-      .registerQueryProcessor(new GoogleDriveQueryProcessor(this._idGenerator, _.get(this._config, 'google')));
+    // this._database
+    //   .registerQueryProcessor(new GoogleDriveQueryProcessor(this._idGenerator, _.get(this._config, 'google')));
   }
 
   /**
    * Authentication and user/client management.
    */
   initAuth() {
+    logger.log('initAuth');
 
     // Default login.
     this._googleAuthProvider = new GoogleOAuthProvider(_.get(this._config, 'google'), ENV.APP_SERVER_URL);
@@ -180,11 +186,12 @@ export class WebServer {
    * Application services.
    */
   initServices() {
+    logger.log('initServices');
 
     // Service registry.
     this._serviceRegistry = new ServiceRegistry()
-      .registerProvider(new GoogleDriveServiceProvider(this._googleAuthProvider))
-      .registerProvider(new GoogleMailServiceProvider(this._googleAuthProvider));
+      // .registerProvider(new GoogleDriveServiceProvider(this._googleAuthProvider))
+      // .registerProvider(new GoogleMailServiceProvider(this._googleAuthProvider));
 //    .registerProvider(new SlackServiceProvider());
 
     // Client manager.
@@ -198,6 +205,7 @@ export class WebServer {
    * Express middleware.
    */
   initMiddleware() {
+    logger.log('initMiddleware');
 
     // https://expressjs.com/en/starter/static-files.html
     this._app.use(favicon(path.join(ENV.APP_SERVER_PUBLIC_DIR, 'favicon.ico')));
@@ -238,6 +246,7 @@ export class WebServer {
    * https://github.com/ericf/express-handlebars
    */
   initHandlebars() {
+    logger.log('initHandlebars');
 
     this._app.engine('handlebars', handlebars({
       layoutsDir: path.join(ENV.APP_SERVER_VIEWS_DIR, '/layouts'),
@@ -253,6 +262,7 @@ export class WebServer {
    * Client application.
    */
   initApp() {
+    logger.log('initApp');
 
     //
     // Hot loader.
@@ -278,6 +288,7 @@ export class WebServer {
    * Handlebars pages.
    */
   initPages() {
+    logger.log('initPages');
 
     this._app.get('/', (req, res) => {
       res.redirect('/home');
@@ -287,35 +298,36 @@ export class WebServer {
       res.render('home', {});
     });
 
-    this._app.get('/welcome', isAuthenticated('/home'), (req, res) => {
-      res.render('home', {});
-    });
-
-    this._app.get('/profile', isAuthenticated('/home'), (req, res, next) => {
-      let user = req.user;
-      return this._systemStore.getGroups(user.id).then(groups => {
-        res.render('profile', {
-          user,
-          groups,
-          idToken: getIdToken(user),
-          providers: this._oauthRegistry.providers,
-//        crxUrl: _.get(this._config, 'app.crxUrl')       // TODO(burdon): ???
-        });
-      })
-      .catch(next);
-    });
-
-    this._app.get('/services', isAuthenticated('/home'), (req, res) => {
-      res.render('services', {
-        providers: this._serviceRegistry.providers
-      });
-    });
+//     this._app.get('/welcome', isAuthenticated('/home'), (req, res) => {
+//       res.render('home', {});
+//     });
+//
+//     this._app.get('/profile', isAuthenticated('/home'), (req, res, next) => {
+//       let user = req.user;
+//       return this._systemStore.getGroups(user.id).then(groups => {
+//         res.render('profile', {
+//           user,
+//           groups,
+//           idToken: getIdToken(user),
+//           providers: this._oauthRegistry.providers,
+// //        crxUrl: _.get(this._config, 'app.crxUrl')       // TODO(burdon): ???
+//         });
+//       })
+//       .catch(next);
+//     });
+//
+//     this._app.get('/services', isAuthenticated('/home'), (req, res) => {
+//       res.render('services', {
+//         providers: this._serviceRegistry.providers
+//       });
+//     });
   }
 
   /**
    * Admin pages and services.
    */
   initAdmin() {
+    logger.log('initAdmin');
 
     this._app.use('/admin', adminRouter(this._clientManager, this._firebase, {
 
@@ -350,6 +362,7 @@ export class WebServer {
    * });
    */
   initErrorHandling() {
+    logger.log('initErrorHandling');
 
     // Handle missing resource.
     this._app.use((req, res, next) => {
@@ -387,17 +400,20 @@ export class WebServer {
    */
   // TODO(burdon): Factor out testing and admin startup tools.
   reset() {
+    logger.log('reset');
+
     _.each([ Database.NAMESPACE.USER, Database.NAMESPACE.SETTINGS ], namespace => {
       this._database.getItemStore(namespace).clear();
     });
 
+    const fs = require('fs');
     let loader = new Loader(this._database);
     return Promise.all([
       // TODO(burdon): Testing only?
-      loader.parse(require(
-        path.join(ENV.APP_SERVER_DATA_DIR, './accounts.json')), Database.NAMESPACE.SYSTEM, /^(Group)\.(.+)\.(.+)$/),
-      loader.parse(require(
-        path.join(ENV.APP_SERVER_DATA_DIR, './folders.json')), Database.NAMESPACE.SETTINGS, /^(Folder)\.(.+)$/)
+      loader.parse(JSON.parse(fs.readFileSync(path.join(ENV.APP_SERVER_DATA_DIR, 'accounts.json'), 'utf8')),
+        Database.NAMESPACE.SYSTEM, /^(Group)\.(.+)\.(.+)$/),
+      loader.parse(JSON.parse(fs.readFileSync(path.join(ENV.APP_SERVER_DATA_DIR, 'folders.json'), 'utf8')),
+        Database.NAMESPACE.SETTINGS, /^(Folder)\.(.+)$/)
     ]).then(() => {
       logger.log('Initializing groups...');
       return loader.initGroups().then(() => {
@@ -410,10 +426,12 @@ export class WebServer {
   }
 
   /**
-   *
+   * Start the app.
    * @return {Promise.<WebServer>}
    */
   start() {
+    logger.log('starting...');
+
     return new Promise((resolve, reject) => {
       this._server = http.Server(this._app);
       this._server.listen(ENV.PORT, ENV.HOST, () => {

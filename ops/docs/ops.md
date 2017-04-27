@@ -17,7 +17,6 @@
   - ``./tools/eng/dev_setup.sh``
   - http://docs.aws.amazon.com/cli/latest/userguide/installing.html
 
-
 ### AWS Set-up
 
 * Configure AWS credentials:
@@ -42,25 +41,109 @@
 NOTE: Download credentials CSV from: https://console.aws.amazon.com/iam/home#/users/burdon?section=security_credentials
 NOTE: One-time only: create new credentials to reset or if lost.
 
+### Bash completion
+
+- https://blog.fabric8.io/enable-bash-completion-for-kubernetes-with-kubectl-506bc89fe79e
+
+~~~~
+  ~/.bashrc
+  [ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion
+  source <(kubectl completion bash)
+~~~~
+
 
 ## Minikube
 
+- Use https://github.com/mist64/xhyve (lighter than VirtualBox)
+
 - https://github.com/kubernetes/minikube
+- https://github.com/kubernetes/minikube/blob/master/README.md
 - https://kubernetes.io/docs/getting-started-guides/minikube
 
 ~~~~
+  # Start VM and local cluster (5 mins).
   minikube start
+  
+  # Start with local repo.
+  minikube start --vm-driver xhyve --insecure-registry localhost:5000
+  
+  # Start and open dashboard.
+  # http://192.168.99.101:30000
   minikube dashboard
   
+  # Switch context (and get existing).
+  kubectl config get-contexts
   kubectl config use-context minikube
 
   kubectl run hello-minikube --image=gcr.io/google_containers/echoserver:1.4 --port=8080
   kubectl expose deployment hello-minikube --type=NodePort
-  kubectl get pod
+  kubectl get pods
 
   curl $(minikube service hello-minikube --url)
 
   minikube stop
+~~~~
+
+### Accessing Services
+
+- Expose services with "type NodePort" (rather than the default ClusterIP) for minikube to expose them directly.
+
+~~~~
+  minikube ip
+
+  kubectl get services
+  minikube service ${SERVICE} --url
+~~~~
+
+### Access AWS ECR from minikube
+
+- https://github.com/kubernetes/minikube#private-container-registries
+- https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry
+- https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod
+- Pod Status: Waiting: ErrImagePull
+  - Failed to pull image "...amazonaws.com/alien-app-server:latest": rpc error: code = 2 desc = unauthorized: authentication required
+ 
+~~~~
+  # Add creds from ~/.aws/credentials
+  # Creates secret "awsecr-cred"
+  minikube addons configure registry-creds
+  minikube addons enable registry-creds
+  
+  # Then add to the Service Deployment:
+  spec:
+    imagePullSecrets:
+    - name awsecr-cred
+~~~~
+
+### Local Docker Repo
+
+- https://mtpereira.com/local-development-k8s.html
+ 
+ 
+### SSH 
+
+~~~~
+  minikube ssh
+  
+  # Note: Container must be running (i.e., not have crashed).
+  docker ps
+  docker docker exec -it ${CONTAINER} bash
+  
+  # OR  
+  ssh -i ~/.minikube/machines/minikube/id_rsa docker@$(minikube ip)
+~~~~ 
+
+### Ingress
+
+It isn't necessary to configure Ingress or Ingress Controllers for minikube.
+Instead expose services and "type: NodePort"
+
+- https://medium.com/@Oskarr3/setting-up-ingress-on-minikube-6ae825e98f82
+- https://github.com/containous/traefik/blob/master/docs/user-guide/kubernetes.md
+
+~~~~
+  minikube addons enable ingress
+  minikube ip
 ~~~~
 
 
@@ -274,7 +357,21 @@ NOTE: The UI shows the HTTPS Not Secure Warning (proceed via the Advanced option
 
 ### Troubleshooting
 
-* Re-auth: `aws ecr get-login`
+* Waiting: ErrImagePull
+* Waiting: ImagePullBackOff
+  - Check image in Repo:
+    - https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories
+
+~~~~
+  # Check add-on is enabled (and configured).
+  minikube addons enable registry-creds
+  
+  # Test if image can be downloaded (i.e., registry is accessible, and network OK).
+  eval $(minikube docker-env)
+  docker pull 861694698401.dkr.ecr.us-east-1.amazonaws.com/alien-app-server:latest
+~~~~
+
+* Re-authenticate: `aws ecr get-login`
 
 ~~~~
   kubectl get nodes
@@ -308,10 +405,12 @@ NOTE: Keep DNS at Google Domains to simplify GMail, etc.
   - Add Domain Alias
   
   
-## Docker Images (ECR)
+## Docker Images (ECR via ECS)
   
-- http://docs.aws.amazon.com/AmazonECR/latest/userguide/Repositories.html
-- http://kubernetes.io/docs/user-guide/images
+- https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories
+- https://docs.aws.amazon.com/AmazonECR/latest/userguide/Repositories.html
+- https://kubernetes.io/docs/user-guide/images
+- https://kubernetes.io/docs/concepts/containers/images/#using-aws-ec2-container-registry (Permissions)
   
 ~~~~
   docker login
@@ -337,6 +436,8 @@ NOTE: Keep DNS at Google Domains to simplify GMail, etc.
 
 ## Deploying services
 
+- https://kubernetes.io/docs/tasks/debug-application-cluster/debug-service/
+
 ~~~~
   # Create Pod.
   kubectl create -f ../../ops/conf/k8s/alien_web_server.yml
@@ -344,11 +445,19 @@ NOTE: Keep DNS at Google Domains to simplify GMail, etc.
   # Delete/Restart Pod.
   kubectl delete $(kubectl get pods -l run=${RUN_LABEL} -o name)
   
-  kubectl describe services alien-web-server
+  kubectl describe services
 ~~~~
 
+### Logging
+
+~~~~
+  kubectl get pods -o name
+  kubectl logs ${POD} -f  
+~~~~
 
 ### Troubleshooting
+
+- https://kubernetes.io/docs/tasks/debug-application-cluster/debug-service/
 
 * ELB doesn't have an external endpoint.
   - `kubectl describe services alien-web-server` to see error (e.g., invalid certificate)

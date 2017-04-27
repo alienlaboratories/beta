@@ -13,10 +13,13 @@ import ENV from './env';
 
 const logger = Logger.get('server');
 
+logger.info('Config');
+
 /**
  * Asynchronously load the configuration.
  */
-// TODO(burdon): Separate file with logging.
+// TODO(burdon): ENV to determine conf files (-dev, -testing).
+// TODO(burdon): Separate file with loggiong.
 async function config(baseDir) {
   return await {
     'firebase':         await yaml.read(path.join(baseDir, 'firebase/alienlabs-dev.yml')),
@@ -31,6 +34,9 @@ async function config(baseDir) {
 
 ErrorUtil.handleErrors(process, error => {
   logger.error(error);
+
+  // TODO(burdon): Options to exit.
+  process.exit(1);
 });
 
 //
@@ -38,5 +44,8 @@ ErrorUtil.handleErrors(process, error => {
 //
 
 config(ENV.APP_SERVER_CONF_DIR).then(config => {
+  logger.info('Starting...');
+
   global.server = new WebServer(config).init().then(server => server.start());
+  logger.info(global.server);
 });

@@ -1,7 +1,7 @@
 #
 # Copyright 2016 Alien Labs.
 #
-# Alen Web Server
+# Alen App Server.
 #
 
 #
@@ -46,25 +46,28 @@ ADD dist/package.json       $HOME/app/package.json
 
 WORKDIR $HOME/app
 
-RUN npm install
+RUN npm install --production
 
 #
 # Add sources.
 #
 
-# TODO(burdon): Set-up for Jenkins local build.
-# TODO(burdon): Currently just add all unbuilt assets.
-
-ADD conf                    $HOME/app/conf
 ADD dist                    $HOME/app/dist
-ADD src/public              $HOME/app/dist/public
-ADD src/views               $HOME/app/dist/views
+ADD dist/conf               $HOME/app/conf
+ADD dist/data               $HOME/app/data
+ADD src/server/public       $HOME/app/public
+ADD src/server/views        $HOME/app/views
 
-ENV APP_SERVER_CONF_DIR="$HOME/app/conf"
+ENV APP_SERVER_URL="https://robotik.io"
+
+# TODO(burdon): Why is this needed?
 ENV APP_SERVER_NODE_MODULES="$HOME/app/node_modules"
+
 ENV APP_SERVER_ASSETS_DIR="$HOME/app/dist"
-ENV APP_SERVER_PUBLIC_DIR="$HOME/app/dist/public"
-ENV APP_SERVER_VIEWS_DIR="$HOME/app/dist/views"
+ENV APP_SERVER_CONF_DIR="$HOME/app/conf"
+ENV APP_SERVER_DATA_DIR="$HOME/app/data"
+ENV APP_SERVER_PUBLIC_DIR="$HOME/app/public"
+ENV APP_SERVER_VIEWS_DIR="$HOME/app/views"
 
 EXPOSE $PORT
 

@@ -1,61 +1,178 @@
 #!/usr/bin/env bash
 
-set -x
-
 # TODO(burdon): Options.
 # TODO(burdon): Factor out with other containers.
+# TODO(burdon): Errors.
 
-webpack --config webpack-srv.config.js
+set -e  # Stop on error.
+
+#===============================================================================
+# Options.
+#===============================================================================
+
+BUILD=1
+LOCAL=0
+DELETE=0
+for i in "$@"
+do
+case $i in
+  --nobuild)
+  BUILD=0
+  ;;
+
+  --local)
+  LOCAL=1
+  ;;
+
+  --delete)
+  DELETE=1
+  ;;
+esac
+done
+
+#===============================================================================
+# Build.
+#===============================================================================
+
+mkdir -p ./dist
 
 #
-# Strip non-prod deps.
+# Merge package.json from all modules (since we use npm link).
+# We use nodeExternals in webpack so that modules are not bundled.
 #
 
-cat package.json \
-  | jq 'del(.scripts)' \
-  | jq 'del(.devDependencies)' \
-  | jq 'del(.dependencies."alien-core")' \
+MODULES="api core services util"
+
+I=0
+JQ_SPEC=".[0]"
+JQ_PACKAGES="./package.json"
+for mod in ${MODULES[@]}; do
+  ((I++))
+  JQ_SPEC="${JQ_SPEC} * .[${I}]"
+  JQ_PACKAGES="../$mod/package.json $JQ_PACKAGES"
+done
+
+#
+# Then Strip devDependencies and alien source modules.
+#
+
+MODULES="alien-api alien-core alien-client alien-services alien-util"
+
+JQ_DELETE=""
+for mod in ${MODULES[@]}; do
+  JQ_DELETE="$JQ_DELETE .dependencies.\"$mod\""
+done
+
+function join { local IFS="$1"; shift; echo "$*"; }
+
+jq --sort-keys -s "${JQ_SPEC}" ${JQ_PACKAGES} \
+  | jq '{ name, version, dependencies }' \
+  | jq "del($(join , ${JQ_DELETE}))" \
   > dist/package.json
+
+cat dist/package.json
+echo
+
+#
+# Build Node assets.
+#
+
+set -x  # Echo.
+
+if [ ${BUILD} -eq 1 ]; then
+  webpack
+fi
+
+#===============================================================================
+# Docker: Build and push image.
+#===============================================================================
+
+#
+# Copy resources for Dockerfile.
+#
+
+cp -R ../../conf dist
+cp -R ../../data dist
 
 #
 # Build and push Docker image.
 # https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories
 #
 
-export IMAGE_NAME=alien-app-server
+IMAGE=alien-app-server
 
-export RUN_LABEL=alien-app-server
+AWS_ECS_REPO=861694698401.dkr.ecr.us-east-1.amazonaws.com
+
+set +x
+if [ ${LOCAL} -eq 1 ]; then
+
+  eval $(minikube docker-env)
+
+  # minikube repo.
+  # https://mtpereira.com/local-development-k8s.html
+  REPO=localhost:5000
+else
+
+  # TODO(burdon): Is this necessary?
+# eval $(docker-machine env ${DOCKER_MACHINE})
+
+  # Get token (valid for 12 hours).
+  # http://docs.aws.amazon.com/cli/latest/reference/ecr/get-login.html
+  eval $(aws ecr get-login)
+
+  REPO=${AWS_ECS_REPO}
+fi
+set -x
 
 # Create via console.
 # https://console.aws.amazon.com/ecs/home
-export ECR_REPO=861694698401.dkr.ecr.us-east-1.amazonaws.com/${IMAGE_NAME}
+REPO_IMAGE=${REPO}/${IMAGE}
 
-eval "$(docker-machine env ${DOCKER_MACHINE})"
+if [ ${BUILD} -eq 1 ]; then
+  docker build -t ${IMAGE} .
+fi
 
-#docker login
+docker tag ${IMAGE}:latest ${REPO_IMAGE}:latest
+docker push ${REPO_IMAGE}:latest
 
-eval $(aws ecr get-login)
 
-docker build -t ${IMAGE_NAME} .
-docker tag ${IMAGE_NAME}:latest ${ECR_REPO}:latest
-docker push ${ECR_REPO}:latest
-
+#===============================================================================
+# Kubernetes: Create/restart service.
 #
-# Restart service.
-# NOTE: Delete and re-create when changing service definitions (kubectl delete -f).
-#
+# NOTE: Deleting the pod automatically creates a new service.
+# NOTE: To actually remnove the service and deployment:
+# kubectl delete -f ../../ops/conf/k8s/alien-app-server.yml
+#===============================================================================
+
+RUN_LABEL=alien-app-server
+
+CONF=../../ops/conf/k8s/alien-app-server.yml
+
+if [ ${DELETE} -eq 1 ]; then
+  kubectl delete -f ${CONF}
+fi
 
 POD=$(kubectl get pods -l run=${RUN_LABEL} -o name)
 if [ -z "${POD}" ]; then
+
+  if [ ${LOCAL} -eq 1 ]; then
+    cat ${CONF} | sed -e 's/image: \(.*.amazonaws.com\)/image: localhost:5000/g' > /tmp/alien-app-server.yml
+    CONF=/tmp/alien-app-server.yml
+  fi
+
   # Create.
-  kubectl create -f ../../ops/conf/k8s/alien-app-server.yml
+  kubectl create -f ${CONF}
 else
   # Restart.
   kubectl delete ${POD}
 fi
 
 #
-# Info.
+# Validate.
+# TODO(burdon): Loop to curl status (check version).
 #
 
+echo
+
 kubectl describe services ${RUN_LABEL}
+kubectl get pods -w
