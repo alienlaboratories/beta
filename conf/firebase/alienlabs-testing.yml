@@ -1,0 +1,13 @@
+#
+# Client defs.
+#
+# https://console.firebase.google.com/project/alienlabs-testing/authentication/providers (Web Setup)
+# firebase.initializeApp(config);
+#
+
+apiKey: "AIzaSyAMO_eYC4AlgyPJ78UxYYUPyLBKL_FjlTk"
+authDomain: "alienlabs-testing.firebaseapp.com"
+databaseURL: "https://alienlabs-testing.firebaseio.com"
+projectId: "alienlabs-testing"
+storageBucket: "alienlabs-testing.appspot.com"
+messagingSenderId: "592110280997"

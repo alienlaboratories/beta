@@ -1,0 +1,37 @@
+{
+  "Group": {
+
+    "_": {
+      "admin": {
+        "title": "Admin",
+        "whitelist": [
+          "eng-admin@alienlabs.com"
+        ]
+      }
+    },
+
+    "alienlabs_com": {
+      "eng" : {
+        "title": "Alien Labs Eng",
+        "whitelist": [
+          "rich@alienlabs.com"
+        ]
+      }
+    },
+
+    "testers": {
+      "rich_burdon_gmail_com": {
+        "title": "Rich (Private)",
+        "whitelist": [
+          "rich.burdon@gmail.com"
+        ]
+      },
+      "lucas_geiger_gmail_com": {
+        "title": "Lucas (Private)",
+        "whitelist": [
+          "lucas.geiger@gmail.com"
+        ]
+      }
+    }
+  }
+}

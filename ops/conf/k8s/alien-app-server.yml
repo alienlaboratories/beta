@@ -1,0 +1,45 @@
+#
+# Express server.
+#
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: alien-app-server
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: alien-app-server
+    spec:
+      containers:
+      - name: alien-app-server
+        # NOTE: Don't use the :latest tag in production.
+        # https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories
+        # http://kubernetes.io/docs/user-guide/config-best-practices/#container-images
+        image: 861694698401.dkr.ecr.us-east-1.amazonaws.com/alien-app-server:prod
+        ports:
+        - containerPort: 3000
+
+      # AWS ECR secret.
+      # https://github.com/kubernetes/minikube#private-container-registries
+      imagePullSecrets:
+      - name: awsecr-cred
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: alien-app-server
+  labels:
+    run: alien-app-server
+spec:
+  # Important for minikube service to be exposed directly.
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 3000
+  selector:
+    run: alien-app-server

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tables</title>
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+
+      margin: 0;
+      overflow: hidden;                   /* Prevent bounce. */
+
+      background-color: #CCC;
+
+      font-family: Roboto, sans-serif;
+      font-size: 24px;
+    }
+
+    input[type=text] {
+      outline: none;
+      font-size: 24px;
+      border: 1px solid #333;
+      padding: 0 4px;
+    }
+
+    div.test-text {
+      padding: 0 4px;
+    }
+
+    h1 {
+      font-weight: 100;
+    }
+
+    .test-container {
+      width: 600px;
+
+      background-color: white;
+      padding: 8px;
+    }
+
+    .test-outer-panel {
+      overflow: hidden;
+    }
+
+    .test-inner-panel {
+    }
+
+    .test-table {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+      border: 1px solid lightgray;
+    }
+
+    .test-table-row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+    .test-table-row:nth-child(odd) {
+      background-color: #EEE;
+    }
+    .test-table-row:hover {
+      background-color: ghostwhite;
+    }
+
+    .test-table-row i.material-icons {
+      width: 24px;
+    }
+
+    .test-expand {
+      flex-grow: 1;
+    }
+
+    .test-popup-container {
+      width: 200px;
+      /*
+      This would constrain the popup's width to the parent, but causes the popup to be clipped
+      by ancestors.
+      position: relative;
+      */
+    }
+    .test-popup-container input[type=text] {
+      width: 100%;
+    }
+    .test-popup-panel {
+      position: absolute;
+      /*
+      With position:relative above, this would expand to the width of the parent.
+      width: 100%;
+      */
+      width: 200px;
+      max-height: 90px;                 /* NOTE: Row height must at least 4 pixels more than the font size. */
+      overflow-y: scroll;
+
+      background-color: red;
+      border: 1px solid #333;
+      border-top: none;
+    }
+    .test-popup-panel::-webkit-scrollbar {
+      width: 8px;
+    }
+    .test-popup-panel::-webkit-scrollbar-thumb {
+      background-color: #666;
+    }
+    .test-popup-panel > div > div {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      background-color: whitesmoke;
+      height: 30px;
+    }
+    .test-popup-panel > div > div:nth-child(odd) {
+      background-color: white;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="test-container">
+    <h1>Tables</h1>
+
+    <div class="test-outer-panel">
+      <div class="test-inner-panel">
+
+        <div class="test-table">
+
+          <div class="test-table-row">
+            <i class="material-icons">star_border</i>
+            <div class="test-expand">Title 1</div>
+
+            <!--
+            TODO(burdon): How to pop-up out of overflow:hidden parent.
+            TODO(burdon): Popover must be child of parent (non-overflow overflow container).
+            https://v4-alpha.getbootstrap.com/components/popovers
+            -->
+
+            <div class="test-popup-container">
+              <input type="text" value="A">
+              <div class="test-popup-panel">
+                <div>
+                  <div class="test-text">A</div>
+                  <div class="test-text">B</div>
+                  <div class="test-text">C</div>
+                  <div class="test-text">D</div>
+                  <div class="test-text">E</div>
+                </div>
+              </div>
+            </div>
+
+            <i class="material-icons">done</i>
+          </div>
+
+          <div class="test-table-row">
+            <i class="material-icons"></i>
+            <div class="test-expand">Title 2</div>
+            <i class="material-icons">done</i>
+          </div>
+          <div class="test-table-row">
+            <i class="material-icons">star_border</i>
+            <div class="test-expand">Title 3</div>
+          </div>
+          <div class="test-table-row">
+            <i class="material-icons">star_border</i>
+            <div class="test-expand">Title 4</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

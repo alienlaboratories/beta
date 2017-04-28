@@ -1,5 +1,5 @@
 //
-// Copyright 2017 Minder Labs.
+// Copyright 2017 Alien Labs.
 //
 
 import _ from 'lodash';
@@ -11,7 +11,7 @@ import handlebars from 'express-handlebars';
 import http from 'http';
 import path from 'path';
 
-import { ExpressUtil, HttpError, Logger } from 'alien-core';
+import { ExpressUtil, HttpError, Logger } from 'alien-util';
 
 const __ENV__ = _.get(process.env, 'NODE_ENV', 'development');
 
@@ -80,7 +80,6 @@ export class WebServer {
     this._app.set('view engine', 'handlebars');
     this._app.set('views', ENV.WEB_SERVER_VIEWS_DIR);
   }
-
 
   /**
    * Handlebars pages.

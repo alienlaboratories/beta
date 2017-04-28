@@ -1,0 +1,33 @@
+#
+# Expose services (via Traefik).
+# kubectl apply -f ./conf/k8s/ingress.yml
+# kubectl port-forward $(kubectl get pods | grep traefik-proxy | awk -F' ' '{print $1}') 8080:8080
+# http://localhost:8080
+#
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: alien-ingress
+
+  # Preserve root URL.
+  # https://medium.com/@Oskarr3/setting-up-ingress-on-minikube-6ae825e98f82
+#  annotations:
+#    ingress.kubernetes.io/rewrite-target: /
+
+spec:
+  rules:
+
+  - host: www.robotik.io
+    http:
+      paths:
+      - backend:
+          serviceName: alien-web-server
+          servicePort: 80
+
+  - host: beta.robotik.io
+    http:
+      paths:
+      - backend:
+          serviceName: alien-app-server
+          servicePort: 80

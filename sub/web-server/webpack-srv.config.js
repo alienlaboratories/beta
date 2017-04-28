@@ -1,5 +1,5 @@
 //
-// Copyright 2016 Minder Labs.
+// Copyright 2017 Alien Labs.
 //
 
 module.exports = require('./webpack-base.config.js')['srv'];

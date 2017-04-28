@@ -1,0 +1,21 @@
+/*
+ * TODO(burdon): Replace with webpack app.
+ */
+
+body {
+  background-color: #333;
+}
+
+h1 {
+  color: cadetblue;
+  font-family: Monaco, "Lucida Console", monospace;
+  font-size: 60px;
+}
+
+a {
+  color: whitesmoke;
+}
+
+.app-panel {
+  margin: 60px;
+}

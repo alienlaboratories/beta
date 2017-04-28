@@ -1,0 +1,75 @@
+//
+// Copyright 2017 Alien Labs.
+//
+
+import _ from 'lodash';
+import moment from 'moment'
+import path from 'path';
+import yaml from 'node-yaml';
+
+import admin from 'firebase-admin';
+
+const CONF_DIR = path.join(__dirname, '../../../../../conf');
+
+// TODO(burdon): Make configurable.
+async function config(baseDir) {
+  return await {
+    'firebase':       await yaml.read(path.join(baseDir, 'firebase/alienlabs-dev.yml')),
+    'firebase-admin': await yaml.read(path.join(baseDir, 'firebase/alienlabs-dev-admin.yml')),
+  };
+}
+
+config(CONF_DIR).then(config => {
+  console.log('Config = ' + JSON.stringify(config, null, 2));
+
+  const db = admin.initializeApp({
+    databaseURL: _.get(config, 'firebase.databaseURL'),
+    credential: admin.credential.cert(path.join(CONF_DIR, _.get(config, 'firebase-admin.credentialPath')))
+  }).database();
+
+  //
+  // Data migration.
+  //
+
+  // TODO(burdon): Process command line options.
+
+  db.ref('/users').once('value', data => {
+    let oldUsers = data.val();
+
+    Promise.all(_.map(oldUsers, (oldUser, id) => {
+      let { created, credentials, profile } = oldUser;
+      let { email, name:title } = profile;
+
+      if (!created) {
+        created = moment().unix();
+      }
+
+      let newUser = {
+        type: 'User',
+        id,
+        active: true,
+        created,
+        credentials,
+        title,
+        email
+      };
+
+      return new Promise((resolve, reject) => {
+        let key = '/system/User/' + id;
+        console.log(key + ' => ' + JSON.stringify(_.pick(newUser, ['email'])));
+        db.ref(key).set(newUser, error => {
+          if (error) { reject(); } else { resolve(key); }
+        });
+      });
+
+    }))
+      .then(() => {
+        console.log('OK');
+        process.exit();
+      })
+      .catch(error => {
+        console.log('ERROR:', error);
+        process.exit();
+      });
+  });
+});

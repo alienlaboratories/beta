@@ -7,9 +7,11 @@
 brew update
 brew outdated | xargs brew upgrade
 
+brew install bash-completion
 brew install cask
 brew install docker
 brew install docker-machine
+brew install docker-machine-driver-xhyve
 brew install hilite
 brew install jq
 brew install kops
@@ -18,8 +20,9 @@ brew install kubectl
 brew install kubernetes-cli
 brew install memcached
 brew install npm
-brew install redis
 brew install python
+brew install redis
+brew install --HEAD xhyve
 
 brew cask install virtualbox
 brew cask install minikube

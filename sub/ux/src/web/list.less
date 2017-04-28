@@ -1,0 +1,109 @@
+//
+// Copyright 2017 Alien Labs.
+//
+
+@import './css/theme';
+
+.ux-list {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+  // Outer class should expand and overflow:hidden
+  overflow-y: scroll;
+
+  // .ux-list.ux-list-highlight
+  &.ux-list-highlight {
+    .ux-list-item:hover {
+      background-color: @ux-list-highlight;
+    }
+  }
+
+  .ux-list-item {
+    padding: 0 4px;
+
+    i.ux-icon-hover {
+      visibility: hidden;
+    }
+  }
+
+  // Only hover icons in rows directly under the list item.
+  // Prevents grandchildren from being activated when grandfather list-item has mouse over.
+  .ux-list-item > .ux-row:hover {
+    i.ux-icon-hover {
+      visibility: visible;
+    }
+  }
+
+  .ux-list-editor { // Undo hover.
+    background-color: transparent !important;
+  }
+
+  //
+  // Drag and Drop
+  //
+
+  .ux-drag-source {
+    > .ux-debug {
+      display: none;
+      text-align: right;
+    }
+  }
+  .ux-drag-source.ux-dragging {
+    display: none;
+    background-color: pink;
+  }
+
+  .ux-drop-target {
+    .ux-drop-placeholder {
+      height: 0;
+
+      // Close quickly.
+      -webkit-transition: height 0s;
+      -moz-transition: height 0s;
+      transition: height 0s;
+
+      font-size: 12px;
+      font-family: Monaco, monospace;
+
+      > .ux-debug {
+        display: none;
+        text-align: left;
+        color: blue;
+      }
+    }
+  }
+  .ux-drop-target.ux-active {
+    .ux-drop-placeholder {
+      display: flex;
+      min-height: 40px;
+
+      -webkit-transition: height 0.2s;
+      -moz-transition: height 0.2s;
+      transition: height 0.2s;
+
+      margin: 8px 0;
+      background-color: #EEE;
+      border-radius: 2px;
+    }
+  }
+  .ux-drop-target.ux-last {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
+    .ux-drop-placeholder {
+      // Show immediately.
+      -webkit-transition: height 0s !important;
+      -moz-transition: height 0s !important;
+      transition: height 0s !important;
+    }
+  }
+}
+
+.ux-list::-webkit-scrollbar {
+  width: 2px;
+}
+.ux-list::-webkit-scrollbar-thumb {
+  background-color: #333;
+}

@@ -2,7 +2,14 @@
 <module type="PYTHON_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/sub/api/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/sub/api/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/sub/app-server/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/sub/client/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/sub/core/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/sub/scheduler/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/sub/services/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/sub/ux/dist" />
       <excludeFolder url="file://$MODULE_DIR$/sub/web-server/dist" />
       <excludeFolder url="file://$MODULE_DIR$/sub/web-server/node_modules" />
     </content>

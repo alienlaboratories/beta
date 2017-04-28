@@ -30,7 +30,11 @@ const baseConfig = {
     // https://facebook.github.io/react/warnings/refs-must-have-owner.html#multiple-copies-of-react
     // http://stackoverflow.com/questions/31169760/how-to-avoid-react-loading-twice-with-webpack-when-developing
     alias: {
-      'react' : path.resolve('./node_modules/react'),
+      'react'                           : path.resolve('./node_modules/react'),
+
+      // NOTE: Order is important.
+      'alien-client/web/testing/apollo' : path.resolve('./node_modules/alien-client/src/web/testing/apollo/apollo.js'),
+      'alien-client/web'                : path.resolve('./node_modules/alien-client/src/web/index.js'),
     }
   },
 
@@ -71,10 +75,11 @@ const baseConfig = {
         exclude: /node_modules/,    // Don't transpile deps.
         include: [
           path.resolve('src'),
+          path.resolve(__dirname, '../api/src'),
+          path.resolve(__dirname, '../client/src'),
           path.resolve(__dirname, '../core/src'),
-          path.resolve(__dirname, '../graphql/src'),
           path.resolve(__dirname, '../services/src'),
-          path.resolve(__dirname, '../ux/src'),
+          path.resolve(__dirname, '../util/src'),
         ],
         options: {
           cacheDirectory: './dist/babel-cache/'
@@ -143,14 +148,15 @@ const srvConfig = webpackMerge(baseConfig, {
 
     // https://webpack.js.org/configuration/node
     console: false,
-    fs:  'empty',
+    // fs:  'empty',
     net: 'empty',
     tls: 'empty'
   },
 
   // Source map shows original source and line numbers (and works with hot loader).
   // https://webpack.github.io/docs/configuration.html#devtool
-  devtool: '#source-map',
+//devtool: '#source-map',
+  devtool: '#eval-source-map',
 
   entry: {
     server: [
@@ -158,22 +164,59 @@ const srvConfig = webpackMerge(baseConfig, {
       // https://babeljs.io/docs/usage/polyfill
       'babel-polyfill',
 
-      path.resolve(baseConfig.context, 'src/main.js')
+      path.resolve(baseConfig.context, 'src/server/main.js')
     ]
   },
 
   output: {
     path: path.resolve(baseConfig.context, 'dist'),
     filename: '[name].bundle.js',
-    publicPath: '/assets/' // Path for webpack-dev-server
+    publicPath: '/app/assets/' // Path for webpack-dev-server
   },
 
+  // Define modules that should not be bundled.
   // https://www.npmjs.com/package/webpack-node-externals
+  // https://github.com/liady/webpack-node-externals/issues/29 [richburdon]
+  // NOTE: "googleapis" must be declared in this package, otherwise:
+  // Error: ENOENT: no such file or directory, scandir '/app-server/apis'
   externals: [nodeExternals({
+
+    modulesFromFile: true,
+
     whitelist: [
-      'alien-core'
+      'alien-api',
+      'alien-core',
+      'alien-services',
+      'alien-util'
     ]}
   )]
+});
+
+//
+// Web config.
+//
+
+const webConfig = webpackMerge(baseConfig, {
+
+  target: 'web',
+
+  // Source map shows original source and line numbers (and works with hot loader).
+  // https://webpack.js.org/configuration/devtool/#components/sidebar/sidebar.jsx
+  devtool: '#eval-source-map',
+
+  // NOTE: entries cannot be compiled individually.
+  entry: {
+
+    test: [
+      path.resolve(baseConfig.context, 'src/client/test.js')
+    ]
+  },
+
+  output: {
+    path: path.resolve(baseConfig.context, 'dist'),
+    filename: '[name].bundle.js',
+    publicPath: '/app/assets/' // Path for webpack-dev-server
+  }
 });
 
 //
@@ -182,5 +225,6 @@ const srvConfig = webpackMerge(baseConfig, {
 //
 
 module.exports = {
-  srv: srvConfig
+  srv: srvConfig,
+  web: webConfig
 };

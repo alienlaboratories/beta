@@ -17,7 +17,6 @@
   - ``./tools/eng/dev_setup.sh``
   - http://docs.aws.amazon.com/cli/latest/userguide/installing.html
 
-
 ### AWS Set-up
 
 * Configure AWS credentials:
@@ -42,33 +41,7 @@
 NOTE: Download credentials CSV from: https://console.aws.amazon.com/iam/home#/users/burdon?section=security_credentials
 NOTE: One-time only: create new credentials to reset or if lost.
 
-
-## Minikube
-
-- https://github.com/kubernetes/minikube
-- https://kubernetes.io/docs/getting-started-guides/minikube
-
-~~~~
-  minikube start
-  minikube dashboard
-  
-  kubectl config use-context minikube
-
-  kubectl run hello-minikube --image=gcr.io/google_containers/echoserver:1.4 --port=8080
-  kubectl expose deployment hello-minikube --type=NodePort
-  kubectl get pod
-
-  curl $(minikube service hello-minikube --url)
-
-  minikube stop
-~~~~
-
-
-## Troubleshooting
-
-- kubernetes.slack.com/message
-
-- AWS_PROFILE should reference section of ~/.aws/credentials
+- `AWS_PROFILE` should reference section of ~/.aws/credentials
 
 ~~~~
   ~/.aws/credentials
@@ -85,6 +58,142 @@ NOTE: One-time only: create new credentials to reset or if lost.
   aws iam list-users
   aws iam list-groups
 ~~~~
+
+### Bash completion
+
+- https://blog.fabric8.io/enable-bash-completion-for-kubernetes-with-kubectl-506bc89fe79e
+
+~~~~
+  ~/.bashrc
+  [ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion
+  source <(kubectl completion bash)
+~~~~
+
+## Minikube
+
+- https://github.com/mist64/xhyve (xhyve lighter than VirtualBox)
+
+- https://github.com/kubernetes/minikube
+- https://github.com/kubernetes/minikube/blob/master/README.md
+- https://kubernetes.io/docs/getting-started-guides/minikube
+
+~~~~
+  # Start VM and local cluster (5 mins).
+  minikube start
+  minikube status
+  
+  # Start with local repo.
+  # https://mtpereira.com/local-development-k8s.html
+  minikube start --vm-driver xhyve --insecure-registry localhost:5000
+  
+  # Start and open dashboard.
+  # http://192.168.99.101:30000
+  minikube dashboard
+  
+  # Switch context (and get existing).
+  kubectl config get-contexts
+  kubectl config use-context minikube
+
+  kubectl run hello-minikube --image=gcr.io/google_containers/echoserver:1.4 --port=8080
+  kubectl expose deployment hello-minikube --type=NodePort
+  kubectl get pods
+
+  curl $(minikube service hello-minikube --url)
+
+  minikube stop
+~~~~
+
+### Accessing Services
+
+- Expose services with "type NodePort" (rather than the default ClusterIP) for minikube to expose them directly.
+
+~~~~
+  minikube ip
+
+  kubectl get services
+  minikube service ${SERVICE} --url
+~~~~
+
+### Access AWS ECR from minikube
+
+- https://github.com/kubernetes/minikube#private-container-registries
+- https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry
+- https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod
+- Pod Status: Waiting: ErrImagePull
+  - Failed to pull image "...amazonaws.com/alien-app-server:latest": rpc error: code = 2 desc = unauthorized: authentication required
+ 
+~~~~
+  # Add creds from ~/.aws/credentials
+  # Creates secret "awsecr-cred"
+  minikube addons configure registry-creds
+  minikube addons enable registry-creds
+  
+  # Then add to the Service Deployment:
+  spec:
+    imagePullSecrets:
+    - name awsecr-cred
+~~~~
+
+### Local Docker Repo
+
+- https://kubernetes.io/docs/getting-started-guides/minikube/#reusing-the-docker-daemon
+- https://mtpereira.com/local-development-k8s.html
+  - Minikube Dashboard:
+    - http://192.168.64.2:30000/#!/service?namespace=kube-system
+
+~~~~
+  kubectl apply -f ./conf/k8s/local-docker-registry.yml
+~~~~
+ 
+### SSH 
+
+~~~~
+  minikube ssh
+  
+  # Note: Container must be running (i.e., not have crashed).
+  docker ps
+  docker docker exec -it ${CONTAINER} bash
+  
+  # OR  
+  ssh -i ~/.minikube/machines/minikube/id_rsa docker@$(minikube ip)
+~~~~ 
+
+### Ingress
+
+It isn't necessary to configure Ingress or Ingress Controllers for minikube.
+Instead expose services and "type: NodePort"
+
+- https://medium.com/@Oskarr3/setting-up-ingress-on-minikube-6ae825e98f82
+- https://github.com/containous/traefik/blob/master/docs/user-guide/kubernetes.md
+
+~~~~
+  minikube addons enable ingress
+  minikube ip
+~~~~
+
+
+## Troubleshooting
+
+* Startup:
+  - minikube status
+  - Error getting machine status: Error: Unrecognize output from GetLocalkubeStatus: sudo: systemctl: command not found
+Stopped
+  - Error starting host:  Error creating host:
+  - Error starting host:  Error creating new host: Driver "xhyve" not found.
+  - Error starting host:  Error getting state for host: machine does not exist
+    - delete `rm -rf ~/.minikube`
+
+~~~~
+  # https://github.com/kubernetes/minikube/issues/646
+  brew update
+  brew install --HEAD xhyve
+  brew install docker-machine-driver-xhyve
+  sudo chown root:wheel $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
+  sudo chmod u+s $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
+~~~~
+
+* Pushing to minikube's Docker Repo:
+  Put http://localhost:5000/v1/repositories/alien-app-server/: dial tcp 127.0.0.1:5000: getsockopt: connection refused
 
 
 ## Kubernetes Cluster Management on AWS (using kops).
@@ -274,7 +383,23 @@ NOTE: The UI shows the HTTPS Not Secure Warning (proceed via the Advanced option
 
 ### Troubleshooting
 
-* Re-auth: `aws ecr get-login`
+- Help: kubernetes.slack.com/message
+
+* Waiting: ErrImagePull
+* Waiting: ImagePullBackOff
+  - Check image in Repo:
+    - https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories
+
+~~~~
+  # Check add-on is enabled (and configured).
+  minikube addons enable registry-creds
+  
+  # Test if image can be downloaded (i.e., registry is accessible, and network OK).
+  eval $(minikube docker-env)
+  docker pull 861694698401.dkr.ecr.us-east-1.amazonaws.com/alien-app-server:latest
+~~~~
+
+* Re-authenticate: `aws ecr get-login`
 
 ~~~~
   kubectl get nodes
@@ -292,7 +417,7 @@ NOTE: The UI shows the HTTPS Not Secure Warning (proceed via the Advanced option
   - https://github.com/kubernetes/kops/issues/1915
   - https://github.com/kubernetes/kops/issues/2263
   - https://console.aws.amazon.com/support/home?region=us-east-1#/case/?displayId=2161442131&language=en
-  
+
   
 ## DNS (Google Domains)
 
@@ -308,10 +433,12 @@ NOTE: Keep DNS at Google Domains to simplify GMail, etc.
   - Add Domain Alias
   
   
-## Docker Images (ECR)
+## Docker Images (ECR via ECS)
   
-- http://docs.aws.amazon.com/AmazonECR/latest/userguide/Repositories.html
-- http://kubernetes.io/docs/user-guide/images
+- https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories
+- https://docs.aws.amazon.com/AmazonECR/latest/userguide/Repositories.html
+- https://kubernetes.io/docs/user-guide/images
+- https://kubernetes.io/docs/concepts/containers/images/#using-aws-ec2-container-registry (Permissions)
   
 ~~~~
   docker login
@@ -337,18 +464,28 @@ NOTE: Keep DNS at Google Domains to simplify GMail, etc.
 
 ## Deploying services
 
+- https://kubernetes.io/docs/tasks/debug-application-cluster/debug-service/
+
 ~~~~
   # Create Pod.
-  kubectl create -f ../../ops/config/k8s/alien_web_server.yml
+  kubectl create -f ../../ops/conf/k8s/alien_web_server.yml
   
   # Delete/Restart Pod.
   kubectl delete $(kubectl get pods -l run=${RUN_LABEL} -o name)
   
-  kubectl describe services alien-web-server
+  kubectl describe services
 ~~~~
 
+### Logging
+
+~~~~
+  kubectl get pods -o name
+  kubectl logs ${POD} -f  
+~~~~
 
 ### Troubleshooting
+
+- https://kubernetes.io/docs/tasks/debug-application-cluster/debug-service/
 
 * ELB doesn't have an external endpoint.
   - `kubectl describe services alien-web-server` to see error (e.g., invalid certificate)

@@ -1,0 +1,30 @@
+{{#section 'head'}}
+  <link rel="manifest" href="/app/manifest.json">
+  <link rel="stylesheet" href="/app/assets/{{ bundle }}.css">
+{{/section}}
+
+<div id="{{ config.root }}" class="app-web">
+
+  {{!-- Loader gets replaced when app loads. --}}
+  {{#if loadingIndicator}}
+  <div>
+    <div class="ux-loading-bar">
+      <div class="ux-load-bar"></div>
+      <div class="ux-load-bar"></div>
+      <div class="ux-load-bar"></div>
+    </div>
+
+    <div class="ux-loading-title">
+      <h1>robotik</h1>
+    </div>
+  </div>
+  {{/if}}
+
+</div>
+
+{{!-- Safestring syntax. --}}
+<script>
+  window.config = {{{ json config }}};
+</script>
+
+<script src="/app/assets/{{ bundle }}.bundle.js"></script>

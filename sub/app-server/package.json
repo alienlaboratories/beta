@@ -1,7 +1,7 @@
 {
   "name": "alien-app-server",
   "version": "0.0.1",
-  "description": "Beta.",
+  "description": "App Server.",
   "license": "UNLICENSED",
   "repository": {
     "type": "git",
@@ -53,7 +53,7 @@
     "time-grunt": "^1.4.0",
     "webpack": "^2.4.1",
     "webpack-dev-middleware": "^1.8.4",
-    "webpack-dev-server": "^2.4.2",
+    "webpack-dev-server": "^2.4.4",
     "webpack-hot-middleware": "^2.18.0",
     "webpack-merge": "^4.1.0",
     "webpack-node-externals": "^1.5.4",
@@ -61,7 +61,11 @@
     "yaml-loader": "^0.4.0"
   },
   "dependencies": {
+    "alien-api": "0.0.1",
+    "alien-client": "0.0.1",
     "alien-core": "0.0.1",
+    "alien-services": "0.0.1",
+    "alien-util": "0.0.1",
     "babel-polyfill": "^6.16.0",
     "babel-runtime": "^6.18.0",
     "body-parser": "^1.15.2",
@@ -71,6 +75,8 @@
     "debug": "^2.6.3",
     "express": "^4.15.2",
     "express-handlebars": "^3.0.0",
+    "express-session": "^1.15.2",
+    "googleapis": "^19.0.0",
     "history": "^4.4.0",
     "lodash": "^4.17.2",
     "moment": "^2.18.1",
@@ -90,10 +96,10 @@
     ],
     "webpack": "webpack --watch",
     "webpack-server": "webpack --config webpack.config.js",
-    "babel-node": "BABEL_DISABLE_CACHE=1 babel-node src/main.js",
+    "babel-node": "BABEL_DISABLE_CACHE=1 babel-node src/server/main.js",
     "nodemon": "hilite nodemon --config nodemon.json --exec npm run babel-node",
     "server": "webpack --config webpack.config.js && node dist/server.bundle.js",
-    "hot": "BABEL_DISABLE_CACHE=1 BABEL_ENV=hot NODE_ENV=hot hilite babel-node src/main.js",
+    "hot": "BABEL_DISABLE_CACHE=1 BABEL_ENV=hot NODE_ENV=hot hilite babel-node src/server/main.js",
     "start": "npm run hot"
   }
 }
