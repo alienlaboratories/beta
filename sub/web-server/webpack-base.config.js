@@ -71,10 +71,7 @@ const baseConfig = {
         exclude: /node_modules/,    // Don't transpile deps.
         include: [
           path.resolve('src'),
-          path.resolve(__dirname, '../core/src'),
-          path.resolve(__dirname, '../graphql/src'),
-          path.resolve(__dirname, '../services/src'),
-          path.resolve(__dirname, '../ux/src'),
+          path.resolve(__dirname, '../util/src'),
         ],
         options: {
           cacheDirectory: './dist/babel-cache/'
@@ -170,8 +167,11 @@ const srvConfig = webpackMerge(baseConfig, {
 
   // https://www.npmjs.com/package/webpack-node-externals
   externals: [nodeExternals({
+
+    modulesFromFile: true,
+
     whitelist: [
-      'alien-core'
+      'alien-util'
     ]}
   )]
 });

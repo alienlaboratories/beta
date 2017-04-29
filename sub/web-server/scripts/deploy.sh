@@ -1,60 +1,16 @@
 #!/usr/bin/env bash
 
-set -e  # Stop on error.
-set -x  # Echo.
+# Node packages.
+export PACKAGE_DIRS="util"
 
-# TODO(burdon): Options.
-# TODO(burdon): Factor out with other containers.
+# Docker image name.
+export DOCKER_IMAGE="alien-web-server"
 
-webpack --config webpack-srv.config.js
+# Kubernetes service label.
+export RUN_LABEL="alien-web-server"
 
-#
-# Strip non-prod deps.
-#
+# Kubernetes Deployment and Service config.
+export SERVICE_CONF="../../ops/conf/k8s/alien-web-server.yml"
 
-cat package.json \
-  | jq 'del(.scripts)' \
-  | jq 'del(.devDependencies)' \
-  | jq 'del(.dependencies."alien-util")' \
-  > dist/package.json
-
-#
-# Build and push Docker image.
-# https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories
-#
-
-export IMAGE_NAME=alien-web-server
-
-export RUN_LABEL=alien-web-server
-
-# Create via console.
-# https://console.aws.amazon.com/ecs/home
-export ECR_REPO=861694698401.dkr.ecr.us-east-1.amazonaws.com/${IMAGE_NAME}
-
-eval $(docker-machine env ${DOCKER_MACHINE})
-
-eval $(aws ecr get-login)
-
-docker build -t ${IMAGE_NAME} .
-docker tag ${IMAGE_NAME}:latest ${ECR_REPO}:latest
-docker push ${ECR_REPO}:latest
-
-#
-# Restart service.
-# NOTE: Delete and re-create when changing service definitions (kubectl delete -f).
-#
-
-POD=$(kubectl get pods -l run=${RUN_LABEL} -o name)
-if [ -z "${POD}" ]; then
-  # Create.
-  kubectl create -f ../../ops/conf/k8s/alien-web-server.yml
-else
-  # Restart.
-  kubectl delete ${POD}
-fi
-
-#
-# Info.
-#
-
-kubectl describe services ${RUN_LABEL}
+# Run deploy.
+../../tools/k8s/deploy.sh $@

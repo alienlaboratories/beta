@@ -30,9 +30,30 @@
     dig www.darkzerk.net
 ~~~~
 
+~~~~
+    function join { local IFS="$1"; shift; echo "$*"; }
+~~~~
+    
+~~~~
+    FILE=""
+    
+    while [[ $# -gt 0 ]]
+    do
+      key="$1"
+      case $key in
+        -f)
+        FILE="$2"
+        shift
+        ;;
+      esac
+      shift
+    done
+~~~~
+
 
 ## Refs
 
 - http://tldp.org/LDP/abs/html
 - http://www.faqs.org/docs/abs/HTML/options.html
 - http://wiki.bash-hackers.org/syntax/quoting
+- https://askubuntu.com/questions/420981/how-do-i-save-terminal-output-to-a-file

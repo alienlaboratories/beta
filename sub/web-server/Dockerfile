@@ -60,6 +60,7 @@ ADD src/public              $HOME/app/public
 ADD src/views               $HOME/app/views
 
 ENV WEB_SERVER_NODE_MODULES="$HOME/app/node_modules"
+
 ENV WEB_SERVER_ASSETS_DIR="$HOME/app/dist"
 ENV WEB_SERVER_PUBLIC_DIR="$HOME/app/public"
 ENV WEB_SERVER_VIEWS_DIR="$HOME/app/views"

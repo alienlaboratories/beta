@@ -13,6 +13,8 @@ import path from 'path';
 
 import { ExpressUtil, HttpError, Logger } from 'alien-util';
 
+import { Const } from './const';
+
 const __ENV__ = _.get(process.env, 'NODE_ENV', 'development');
 
 const __DEVELOPMENT__   = __ENV__ === 'development';
@@ -44,6 +46,7 @@ export class WebServer {
     await this.initMiddleware();
     await this.initHandlebars();
     await this.initPages();
+    await this.initStatus();
     await this.initErrorHandling();
 
     return this;
@@ -96,6 +99,21 @@ export class WebServer {
   }
 
   /**
+   * Status.
+   */
+  initStatus() {
+
+    // Status.
+    this._app.get('/status', (req, res, next) => {
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify({
+        env: __ENV__,
+        version: Const.APP_VERSION
+      }, null, 2));
+    });
+  }
+
+  /**
    * Error handling middleware (e.g., uncaught exceptions).
    * https://expressjs.com/en/guide/error-handling.html
    * https://strongloop.com/strongblog/async-error-handling-expressjs-es7-promises-generators/
@@ -111,6 +129,7 @@ export class WebServer {
    *   }).catch(next);
    * });
    */
+  // TODO(burdon): Factor out.
   initErrorHandling() {
 
     // Handle missing resource.
@@ -130,7 +149,8 @@ export class WebServer {
           res.status(code).end();
         } else {
           // TODO(burdon): User facing page in prod.
-          res.render('error', { code, err });
+          res.redirect('/');
+//        res.render('error', { code, err });
         }
       } else {
         logger.warn(`[${req.method} ${req.url}]:`, err);
