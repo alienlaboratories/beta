@@ -47,6 +47,7 @@ export const appRouter = (config, options) => {
     let { bundle='web' } = req.query;
 
     res.render('app', {
+      layout: 'app',
 
       // Loading animation.
       loadingIndicator: __PRODUCTION__,
@@ -56,9 +57,7 @@ export const appRouter = (config, options) => {
 
       // Client config.
       config: _.defaults({
-
         root: Const.DOM_ROOT,
-
       }, _.get(options, 'config'))
     });
   });

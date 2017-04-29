@@ -4,7 +4,12 @@
 
 body {
   margin: 0;
-  background-color: #1da1f2;
+  font-family: Roboto, sans-serif;
+  background-color: #F5F5F5;
+}
+
+a {
+  color: #333;
 }
 
 div.site-container {
@@ -17,24 +22,50 @@ div.site-container {
   bottom: 0;
 }
 
-div.site-column {
-  display: flex;
-  flex-direction: column;
+div.site-container h1 {
+  margin: 30px;
+  font-family: monospace;
+  font-size: 60px;
+  color: #000;
+  opacity: .5;
+}
+
+div.site-home {
+  background-color: #148ad6;
+}
+
+div.site-home img {
+  opacity: .3;
 }
 
 div.site-center {
   display: flex;
+  flex-direction: row;
   justify-content: center;
 }
 
-h1 {
-  margin: 60px;
-/*font-family: Monaco, "Lucida Console", monospace;*/
-  font-family: monospace;
-  font-size: 60px;
-  color: #148ad6;
+div.site-header {
+  background-color: #1da1f2;
 }
 
-img {
-  opacity: .3;
+div.site-body {
+}
+
+div.site-body h2 {
+  margin: 0;
+  font-weight: 100;
+}
+
+div.site-body div.site-panel {
+  padding: 8px;
+  background-color: white;
+  box-shadow: 0 2px 2px #DDD;
+  margin: 16px;
+}
+
+table {
+  border-collapse: collapse;
+}
+table th {
+  font-weight: 100;
 }
