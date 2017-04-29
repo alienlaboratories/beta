@@ -1,8 +1,14 @@
 # Ops Cheatsheet
 
-# Prod
+TODO(burdon): Env vars.
+TODO(burdon): Shell command to print this.
+
+# Kubernetes
 
 ~~~~
+  kubectl config get-contexts
+  kubectl config use-context beta.kube.robotik.io
+
   # Start proxy to cluster.
   # Dashboard: http://127.0.0.1:8001/ui
   kubectl proxy
@@ -15,11 +21,16 @@
   # Get logs.
   kubectl get pods -o name
   kubectl logs ${POD} -f
+  
+  # SSH
+  kubectl exec $(kubectl get pods -o name) -ti bash
 ~~~~
 
 # Minikube
 
 ~~~~
+  kubectl config use-context minikube
+
   minikube status
 
   minikube start
@@ -49,6 +60,7 @@
 # Docker
 
 ~~~~
+  eval $(minikube docker-env)
   eval $(docker-machine env ${DOCKER_MACHINE})
 
   docker login

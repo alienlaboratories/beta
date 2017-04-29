@@ -47,6 +47,8 @@ done
 # TODO(burdon): Standardize tools env.
 CLUSTER="beta.kube.robotik.io"
 
+log "Setting context"
+
 if [ ${MINIKUBE} -eq 1 ]; then
   kubectl config set-context minikube
 else
@@ -121,26 +123,29 @@ cp -R ../../data dist
 
 #
 # Build and push Docker image.
-# https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories
 #
+
+# https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories
+AWS_ECS_DOCKER_REPO="861694698401.dkr.ecr.us-east-1.amazonaws.com"
+
+# Minikube runs insecure Docker daemon.
+# https://mtpereira.com/local-development-k8s.html
+MINIKUBE_DOCKER_REPO="localhost:5000"
 
 DOCKER_IMAGE="alien-app-server"
 
-MINIKUBE_DOCKER_REPO="localhost:5000"
-
-AWS_ECS_DOCKER_REPO="861694698401.dkr.ecr.us-east-1.amazonaws.com"
-
 if [ ${MINIKUBE} -eq 1 ]; then
 
+  # Use minikube's docker daemon.
   eval $(minikube docker-env)
 
   # minikube repo.
-  # https://mtpereira.com/local-development-k8s.html
   DOCKER_REPO=${MINIKUBE_DOCKER_REPO}
 else
 
-  # TODO(burdon): Requires local docker demon.
-  eval $(docker-machine env ${DOCKER_MACHINE})
+  # Use minikube's docker daemon.
+  eval $(minikube docker-env)
+# eval $(docker-machine env ${DOCKER_MACHINE})
 
   # Get token (valid for 12 hours).
   # http://docs.aws.amazon.com/cli/latest/reference/ecr/get-login.html
@@ -151,10 +156,6 @@ else
 
   DOCKER_REPO=${AWS_ECS_DOCKER_REPO}
 fi
-
-# Create via console.
-# https://console.aws.amazon.com/ecs/home
-DOCKER_IMAGE_URI=${DOCKER_REPO}/${DOCKER_IMAGE}
 
 # If using minikube, docker build automatically puts the image into the minikube docker registry.
 if [ ${BUILD} -eq 1 ]; then
@@ -188,6 +189,14 @@ if [ ${MINIKUBE} -eq 1 ]; then
 
 else
   TAG="prod"
+
+  # Create via console.
+  # https://console.aws.amazon.com/ecs/home
+  DOCKER_IMAGE_URI=${DOCKER_REPO}/${DOCKER_IMAGE}
+
+  set +x
+  log "Pushing Image: ${DOCKER_IMAGE_URI}:${TAG}"
+  set -x
 
   docker tag ${DOCKER_IMAGE}:latest ${DOCKER_IMAGE_URI}:${TAG}
 
