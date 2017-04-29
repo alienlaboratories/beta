@@ -5,7 +5,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Async, DomUtil } from 'alien-core';
+import { Async, DomUtil } from 'alien-util';
 
 /**
  * Text box.

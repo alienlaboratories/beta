@@ -55,7 +55,6 @@ const baseConfig = {
           path.resolve('src'),
           path.resolve(__dirname, '../core/src'),
           path.resolve(__dirname, '../util/src'),
-          path.resolve(__dirname, '../ux/src'),
         ],
         options: {
           cacheDirectory: './dist/babel-cache/'
@@ -92,7 +91,7 @@ const baseConfig = {
 
     new webpack.ProvidePlugin({ _: 'lodash' }),
     new webpack.ProvidePlugin({ $: 'jquery' }),
-    new webpack.ProvidePlugin({ Logger: 'alien-core/src/util/logger' })
+    new webpack.ProvidePlugin({ Logger: 'alien-util/src/util/logger' })
   ]
 };
 //
@@ -108,9 +107,15 @@ const webConfig = webpackMerge(baseConfig, {
   devtool: '#source-map',
 
   entry: {
+    web_app: [
+      path.resolve(baseConfig.context, 'src/web/index.js'),
+    ],
+    test_components: [
+      path.resolve(baseConfig.context, 'src/web/components/testing/components.js'),
+    ],
     test_apollo: [
       path.resolve(baseConfig.context, 'src/web/testing/apollo/main.js'),
-    ]
+    ],
   },
 
   output: {

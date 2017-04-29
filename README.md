@@ -46,7 +46,6 @@ MS7
 - ItemStore/QueryProcessor
 - db start-up/admin tool
 
-- REMOVE: "minder" (clear cache first)
 - JS tests (with sourcemaps)
 
 - reach-router (4) backwards compat?

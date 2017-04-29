@@ -2,12 +2,18 @@
 // Copyright 2017 Alien Labs.
 //
 
-// TODO(burdon): ???
-// import { WebApp } from 'alien-client/web'
-// http://stackoverflow.com/questions/40053344/npm-multiple-entry-points
+import React from 'react';
 
-//export * from './web/testing/apollo/apollo';
+import './index.less';
 
-export const Const = {
-  foo: 100
-};
+/**
+ * Web App.
+ */
+export class WebApp {
+
+  get root() {
+    return (
+      <div>WebApp</div>
+    );
+  }
+}

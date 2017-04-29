@@ -20,10 +20,9 @@ const logger = Logger.get('app');
  */
 export const appRouter = (config, options) => {
   console.assert(config && options);
-  const router = express.Router();
-
   console.assert(options.assets);
-  console.assert(options.bundle);
+
+  const router = express.Router();
 
   //
   // Webpack assets (either from dist or HMR).
@@ -45,13 +44,15 @@ export const appRouter = (config, options) => {
   // App loader.
   //
   router.get('/', (req, res) => {
+    let { bundle='web' } = req.query;
+
     res.render('app', {
 
       // Loading animation.
       loadingIndicator: __PRODUCTION__,
 
       // Client bundle.
-      bundle: options.bundle,
+      bundle: options.bundle || bundle,
 
       // Client config.
       config: _.defaults({

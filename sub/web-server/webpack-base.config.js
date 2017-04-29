@@ -120,7 +120,7 @@ const baseConfig = {
     // Automatically include packages without import statement.
     new webpack.ProvidePlugin({ _: 'lodash' }),
     new webpack.ProvidePlugin({ $: 'jquery' }),
-    new webpack.ProvidePlugin({ Logger: 'alien-core/src/util/logger' })
+    new webpack.ProvidePlugin({ Logger: 'alien-util/src/util/logger' })
   ]
 };
 

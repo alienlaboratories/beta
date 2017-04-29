@@ -6,7 +6,6 @@
     "alien-client":     "sub/client",
     "alien-core":       "sub/core",
     "alien-services":   "sub/services",
-    "alien-util":       "sub/util",
-    "alien-ux":         "sub/ux"
+    "alien-util":       "sub/util"
   }
 }

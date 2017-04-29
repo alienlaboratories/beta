@@ -281,8 +281,7 @@ export class WebServer {
     // Web app.
     //
     this._app.use('/app', appRouter(this._config, {
-      assets: ENV.APP_SERVER_ASSETS_DIR,
-      bundle: 'test'
+      assets: ENV.APP_SERVER_ASSETS_DIR
     }));
   }
 
