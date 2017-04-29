@@ -3,6 +3,10 @@
 TODO(burdon): Env vars.
 TODO(burdon): Shell command to print this.
 
+# Troubleshooting
+
+- https://kukulinski.com/10-most-common-reasons-kubernetes-deployments-fail-part-1/
+
 # Kubernetes
 
 ~~~~

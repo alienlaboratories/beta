@@ -240,7 +240,7 @@ fi
 
 set +x
 duration=$(( SECONDS - start ))
-log "OK [${duration}s]"
+log "OK $(date) [${duration}s]"
 set -x
 
 kubectl describe services ${RUN_LABEL}

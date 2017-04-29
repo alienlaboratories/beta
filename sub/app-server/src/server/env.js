@@ -29,9 +29,9 @@ export default {
 
   APP_SERVER_URL:         _.get(process.env, 'APP_SERVER_URL',          'http://localhost:' + PORT),
 
+  APP_SERVER_ASSETS_DIR:  _.get(process.env, 'APP_SERVER_ASSETS_DIR',   path.join(__dirname, '../../dist')),
   APP_SERVER_CONF_DIR:    _.get(process.env, 'APP_SERVER_CONF_DIR',     path.join(__dirname, '../../../../conf')),
   APP_SERVER_DATA_DIR:    _.get(process.env, 'APP_SERVER_DATA_DIR',     path.join(__dirname, '../../../../data')),
-  APP_SERVER_ASSETS_DIR:  _.get(process.env, 'APP_SERVER_VIEWS_DIR',    path.join(__dirname, '../../dist')),
   APP_SERVER_PUBLIC_DIR:  _.get(process.env, 'APP_SERVER_PUBLIC_DIR',   path.join(__dirname, './public')),
   APP_SERVER_VIEWS_DIR:   _.get(process.env, 'APP_SERVER_VIEWS_DIR',    path.join(__dirname, './views')),
 };

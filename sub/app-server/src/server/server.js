@@ -339,6 +339,17 @@ export class WebServer {
       }, null, 2));
     });
 
+    // TODO(burdon): Show in admin page.
+    // http://thejackalofjavascript.com/list-all-rest-endpoints
+    logger.log('Stack', JSON.stringify(_.compact(_.map(this._app._router.stack, item => {
+      let route = item.route;
+      if (route) {
+        let { methods, path } = route;
+        return { methods, path };
+      }
+    })), 0, 2));
+
+    // TODO(burdon): Permissions.
     // Admin pages and services.
     this._app.use('/admin', adminRouter(this._clientManager, this._firebase, {
 
