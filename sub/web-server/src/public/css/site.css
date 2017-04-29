@@ -29,7 +29,8 @@ div.site-center {
 
 h1 {
   margin: 60px;
-  font-family: Monaco, "Lucida Console", monospace;
+/*font-family: Monaco, "Lucida Console", monospace;*/
+  font-family: monospace;
   font-size: 60px;
   color: #148ad6;
 }

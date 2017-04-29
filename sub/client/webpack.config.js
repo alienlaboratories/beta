@@ -54,6 +54,7 @@ const baseConfig = {
         include: [
           path.resolve('src'),
           path.resolve(__dirname, '../core/src'),
+          path.resolve(__dirname, '../util/src'),
           path.resolve(__dirname, '../ux/src'),
         ],
         options: {
