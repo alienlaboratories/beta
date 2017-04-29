@@ -11,9 +11,7 @@ import { WebServer } from './server';
 
 import ENV from './env';
 
-const logger = Logger.get('server');
-
-logger.info('Config');
+const logger = Logger.get('main');
 
 /**
  * Asynchronously load the configuration.
@@ -41,11 +39,14 @@ ErrorUtil.handleErrors(process, error => {
 
 //
 // Startup.
-//
+// The server can be tested in the following ways:
+// - locally via nodemon.
+// - locally via the webpack bundle.
+// - deployed on the local minikube.
+// - deployed to the test cluster.
 
 config(ENV.APP_SERVER_CONF_DIR).then(config => {
-  logger.info('Starting...');
-
-  global.server = new WebServer(config).init().then(server => server.start());
-  logger.info(global.server);
+  global.server = new WebServer(config);
+  logger.info(WebServer.name, JSON.stringify(global.server.info, null, 2));
+  global.server.init().then(server => server.start());
 });

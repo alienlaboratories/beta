@@ -30,7 +30,7 @@ export class Loader {
    */
   parse(data, namespace=Database.NAMESPACE.USER, index) {
     console.assert(data && namespace && index);
-    logger.log('Parsing data: ' + index);
+    logger.log('Parsing: ' + index);
 
     // Build map of items.
     let itemsByAlias = new Map();
@@ -73,7 +73,7 @@ export class Loader {
       }
     };
 
-    // Lookup up items with alias.
+    // Lookup up and patch items with alias.
     let itemStore = this._database.getItemStore(namespace);
     return itemStore.queryItems({}, {}, filter).then(matchedItems => {
 
@@ -88,7 +88,6 @@ export class Loader {
       });
 
       let items = Array.from(itemsByAlias.values());
-
       return itemStore.upsertItems({}, items);
     });
   }

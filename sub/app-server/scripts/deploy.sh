@@ -162,7 +162,20 @@ if [ ${BUILD} -eq 1 ]; then
   log "Building Docker Image: ${DOCKER_IMAGE}"
   set -x
 
-  docker build -t ${DOCKER_IMAGE} .
+  DOCKERFILE='./Dockerfile'
+  if [ ${MINIKUBE} -eq 1 ]; then
+    MINIKUBE_DOCKERFILE='./dist/Dockerfile'
+    MINIKUBE_APP_SERVER_URL='http://minikube.robotik.io:9000'
+
+    cat ${DOCKERFILE} | sed -e "s~ENV APP_SERVER_URL\(.*\)~ENV APP_SERVER_URL=\"${MINIKUBE_APP_SERVER_URL}\"~g" > \
+      ${MINIKUBE_DOCKERFILE}
+
+    cat ${MINIKUBE_DOCKERFILE}
+
+    DOCKERFILE=${MINIKUBE_DOCKERFILE}
+  fi
+
+  docker build -f ${DOCKERFILE} -t ${DOCKER_IMAGE} .
 fi
 
 if [ ${MINIKUBE} -eq 1 ]; then
@@ -208,7 +221,7 @@ if [ -z "${POD}" ]; then
   if [ ${MINIKUBE} -eq 1 ]; then
     PROD_CONF=${CONF}
     CONF=/tmp/alien-app-server.yml
-    cat ${PROD_CONF} | sed -e 's/image: \(.*.amazonaws.com\)/image: ${DOCKER_IMAGE}:${TAG}/g' > ${CONF}
+    cat ${PROD_CONF} | sed -e "s/image: \(.*.amazonaws.com\)/image: ${DOCKER_IMAGE}:${TAG}/g" > ${CONF}
   fi
 
   set +x
@@ -250,5 +263,3 @@ echo
 echo "kubectl logs $(kubectl get pods -o name | grep ${DOCKER_IMAGE}) -f"
 echo
 set -x
-
-# TODO(burdon): For OAuth callback set /etc/hosts (need Ingress?) Proxy server?

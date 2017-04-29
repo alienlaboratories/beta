@@ -2,8 +2,6 @@
 // Copyright 2017 Alien Labs.
 //
 
-import _ from 'lodash';
-
 import admin from 'firebase-admin';
 
 import { Logger } from 'alien-util';
@@ -17,6 +15,9 @@ const logger = Logger.get('firebase');
  *
  * Console:
  * https://console.firebase.google.com
+ *
+ * NOTE: Firebase requires the server's clock to be in sync with NTP.
+ * http://stackoverflow.com/questions/30115933/access-token-and-refresh-token-giving-invalid-grant-in-google-plus-in-python/30117441#30117441
  */
 export class Firebase {
 
@@ -30,23 +31,25 @@ export class Firebase {
     // https://firebase.google.com/docs/admin/setup
     // https://firebase.google.com/docs/reference/admin/node/admin
     this._app = admin.initializeApp({
-      databaseURL: config.databaseURL,
-      credential: admin.credential.cert(config.credentialPath)
+      credential: admin.credential.cert(config.credentialPath),
+      databaseURL: config.databaseURL
     });
+
+    // NOTE: Clock-skew will cause API calls to hang (without errors).
+    // This can happen on minikube due to the computer sleeping.
+    // https://firebase.google.com/docs/reference/admin/node/admin.database
+    admin.database.enableLogging(message => {
+      if (message.indexOf('Error') !== -1) {
+        logger.error(message);
+      }
+    });
+
+    this._db = this._app.database();
 
     logger.info('Initialized: ' + config.databaseURL);
   }
 
-  /**
-   * https://firebase.google.com/docs/auth/admin/verify-id-tokens#verify_id_tokens_using_the_firebase_admin_sdks
-   * @param token
-   * @return { uid, email }
-   */
-  verifyIdToken(token) {
-    return this._app.auth().verifyIdToken(token);
-  }
-
   get db() {
-    return this._app.database();
+    return this._db;
   }
 }

@@ -78,18 +78,18 @@ NOTE: One-time only: create new credentials to reset or if lost.
 - https://kubernetes.io/docs/getting-started-guides/minikube
 
 ~~~~
+  brew cask install minikube
+
   # Start VM and local cluster (5 mins).
-  minikube start
-  minikube status
-  
-  # Start with local repo.
+  # Start using xhyve (replaces "minikube start").
   # https://mtpereira.com/local-development-k8s.html
   minikube start --vm-driver xhyve --insecure-registry localhost:5000
+  minikube status
   
   # Start and open dashboard.
   # http://192.168.99.101:30000
   minikube dashboard
-  
+
   # Switch context (and get existing).
   kubectl config get-contexts
   kubectl config use-context minikube
@@ -112,6 +112,28 @@ NOTE: One-time only: create new credentials to reset or if lost.
 
   kubectl get services
   minikube service ${SERVICE} --url
+~~~~
+
+### OAuth Redirect URIs.
+
+~~~~
+  # Map registered URI (in Google Console Credentials) to localhost.
+  # http://minikube.robotik.io:9000/oauth/callback/google
+
+  sudo vi /etc/hosts
+  127.0.0.1 minikube.robotik.io
+  
+  # Port forward (CTRL-C to exit).
+  SERVICE="alien-app-server"
+  ssh -L 127.0.0.1:9000:$(minikube service ${SERVICE} --url | sed 's~http[s]*://~~g') -N 127.0.0.1
+  
+  # OAuth flow
+  127.0.0.1:9000/oauth/login/google
+    => https://googe.com&redirect=minikube.robotik.io:9000 
+      => /etc/hosts 
+        => ssh -L
+          => http://192.168.64.2:30058
+            => 127.0.0.1:3000/oauth/callback/google
 ~~~~
 
 ### Access AWS ECR from minikube
@@ -152,7 +174,7 @@ NOTE: One-time only: create new credentials to reset or if lost.
   
   # Note: Container must be running (i.e., not have crashed).
   docker ps
-  docker docker exec -it ${CONTAINER} bash
+  docker exec -it ${CONTAINER} bash
   
   # OR  
   ssh -i ~/.minikube/machines/minikube/id_rsa docker@$(minikube ip)
@@ -383,7 +405,8 @@ NOTE: The UI shows the HTTPS Not Secure Warning (proceed via the Advanced option
 
 ### Troubleshooting
 
-- Help: kubernetes.slack.com/message
+* Help
+  - kubernetes.slack.com
 
 * Waiting: ErrImagePull
 * Waiting: ImagePullBackOff

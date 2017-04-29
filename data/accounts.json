@@ -5,7 +5,7 @@
       "admin": {
         "title": "Admin",
         "whitelist": [
-          "eng-admin@alienlabs.com"
+          "eng-admin@alienlabs.io"
         ]
       }
     },
@@ -14,7 +14,7 @@
       "eng" : {
         "title": "Alien Labs Eng",
         "whitelist": [
-          "rich@alienlabs.com"
+          "rich@alienlabs.io"
         ]
       }
     },

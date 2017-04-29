@@ -72,7 +72,7 @@ export class WebServer {
 
   get info() {
     return {
-      env: ENV,
+      ENV,
       config: this._config
     };
   }
@@ -442,13 +442,11 @@ export class WebServer {
    * @return {Promise.<WebServer>}
    */
   start() {
-    logger.log('starting...');
-
+    logger.log('start...');
     return new Promise((resolve, reject) => {
       this._server = http.Server(this._app);
       this._server.listen(ENV.PORT, ENV.HOST, () => {
         let addr = this._server.address();
-        logger.info(this.constructor.name + ' = ' + JSON.stringify(this.info, 0, 2));
         logger.info(`http://${addr.address}:${addr.port} [${__ENV__}]`);
         resolve(this);
       });

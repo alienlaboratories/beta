@@ -58,7 +58,8 @@ ADD dist/data               $HOME/app/data
 ADD src/server/public       $HOME/app/public
 ADD src/server/views        $HOME/app/views
 
-ENV APP_SERVER_URL="https://robotik.io"
+# Required for OAuth callback.
+ENV APP_SERVER_URL="https://beta.robotik.io"
 
 # TODO(burdon): Why is this needed?
 ENV APP_SERVER_NODE_MODULES="$HOME/app/node_modules"

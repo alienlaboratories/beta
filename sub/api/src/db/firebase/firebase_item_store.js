@@ -37,7 +37,6 @@ export class FirebaseItemStore extends BaseItemStore {
    */
   key(args=[]) {
     _.each(args, arg => console.assert(!_.isNil(arg), 'Invalid key: ' + JSON.stringify(args)));
-
     return '/' + this.namespace + '/' + args.join('/');
   }
 
@@ -64,7 +63,11 @@ export class FirebaseItemStore extends BaseItemStore {
     return new Promise((resolve, reject) => {
       let ref = this._db.ref(this.key());
       ref.set(null, error => {
-        if (error) { reject(error); } else { resolve(this); }
+        if (error) {
+          reject(error);
+        } else {
+          resolve(this);
+        }
       });
     });
   }
@@ -75,11 +78,9 @@ export class FirebaseItemStore extends BaseItemStore {
    * @returns {Promise}
    */
   _getValue(key) {
-    return new Promise((resolve, reject) => {
-      // https://firebase.google.com/docs/database/web/lists-of-data#sorting_and_filtering_data
-      this._db.ref(key).once('value', data => {
-        resolve(data.val());
-      });
+    // https://firebase.google.com/docs/database/web/lists-of-data#sorting_and_filtering_data
+    return this._db.ref(key).once('value').then(data => {
+      return data.val();
     });
   }
 

@@ -15,7 +15,6 @@ brew install docker-machine-driver-xhyve
 brew install hilite
 brew install jq
 brew install kops
-brew install kube-aws
 brew install kubectl
 brew install kubernetes-cli
 brew install memcached
@@ -24,8 +23,8 @@ brew install python
 brew install redis
 brew install --HEAD xhyve
 
-brew cask install virtualbox
 brew cask install minikube
+brew cask install virtualbox
 
 npm install -g babel-cli
 npm install -g firebase-tools
