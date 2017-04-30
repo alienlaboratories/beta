@@ -250,10 +250,21 @@ export class WebServer {
   initHandlebars() {
     logger.log('initHandlebars');
 
+    const helpers = _.assign(ExpressUtil.Helpers, {
+      global: (key) => {
+        return _.get({
+          version: Const.APP_VERSION
+        }, key);
+      }
+    });
+
     this._app.engine('handlebars', handlebars({
       layoutsDir: path.join(ENV.APP_SERVER_VIEWS_DIR, '/layouts'),
       defaultLayout: 'main',
-      helpers: ExpressUtil.Helpers
+      helpers,
+      partials: {
+        foo: ''
+      }
     }));
 
     this._app.set('view engine', 'handlebars');
@@ -296,7 +307,10 @@ export class WebServer {
     });
 
     this._app.get('/home', (req, res) => {
-      res.render('home', {});
+      res.render('home', {
+        layout: 'home',
+        redirectUrl: '/profile'
+      });
     });
 
     this._app.get('/welcome', isAuthenticated('/home'), (req, res) => {
@@ -339,19 +353,15 @@ export class WebServer {
       }, null, 2));
     });
 
-    // TODO(burdon): Show in admin page.
-    // http://thejackalofjavascript.com/list-all-rest-endpoints
-    logger.log('Stack', JSON.stringify(_.compact(_.map(this._app._router.stack, item => {
-      let route = item.route;
-      if (route) {
-        let { methods, path } = route;
-        return { methods, path };
-      }
-    })), 0, 2));
-
     // TODO(burdon): Permissions.
     // Admin pages and services.
     this._app.use('/admin', adminRouter(this._clientManager, this._firebase, {
+
+      env: ENV,
+
+      app: this._app,
+
+      config: this._config,
 
       scheduler: false, // TODO(burdon): ???
 
@@ -406,12 +416,11 @@ export class WebServer {
           res.render('error', { code, err });
         }
       } else {
-        logger.warn(`[${req.method} ${req.url}]:`, err);
-
         if (json) {
           res.status(err.code).end();
         } else {
-          res.redirect('/');
+          res.render('error', { code, err });
+//        res.redirect('/');
         }
       }
     });

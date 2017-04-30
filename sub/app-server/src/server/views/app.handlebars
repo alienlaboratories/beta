@@ -1,11 +1,14 @@
 {{#section 'head'}}
+  {{! Service worker permissions. }}
   <link rel="manifest" href="/app/manifest.json">
+
+  {{! Webpack bnundle. }}
   <link rel="stylesheet" href="/app/assets/{{ bundle }}.css">
 {{/section}}
 
 <div id="{{ config.root }}" class="app-web">
 
-  {{!-- Loader gets replaced when app loads. --}}
+  {{! Loader gets replaced when app loads. }}
   {{#if loadingIndicator}}
   <div>
     <div class="ux-loading-bar">
@@ -22,7 +25,7 @@
 
 </div>
 
-{{!-- Safestring syntax. --}}
+{{! Safestring syntax. }}
 <script>
   window.config = {{{ json config }}};
 </script>

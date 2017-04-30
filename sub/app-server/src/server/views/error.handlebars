@@ -1,16 +1,11 @@
-{{#section 'head'}}
-  <link rel="stylesheet" href="/assets/website.css">
+{{#section 'header'}}
+  <div class="site-user">
+    <h1>{{ code }}</h1>
+  </div>
 {{/section}}
 
-<div class="site-container">
-  <div class="site-column">
-    <div class="site-window-container">
-      <div class="site-window site-admin-window">
-        <div class="site-section">
-          <h1>Error {{ code }}</h1>
-          <pre>{{ err.stack }}</pre>
-        </div>
-      </div>
-    </div>
+{{#section 'body'}}
+  <div class="site-panel">
+    <pre>{{ err.stack }}</pre>
   </div>
-</div>
+{{/section}}

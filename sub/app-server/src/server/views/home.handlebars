@@ -1,11 +1,17 @@
-<div class="site-container site-home">
-  <div>
+{{#section 'body'}}
+  <div class="site-home">
     <div class="site-center">
       <h1>beta</h1>
     </div>
 
     <div class="site-center">
-      <img src="/img/logo.png"/>
+      <img class="site-logo" src="/img/logo.png"/>
+    </div>
+
+    <div class="site-center">
+      <a href="/user/login?redirectUrl={{ encodeURI redirectUrl }}">
+        <img class="site-login" alt="Google Login">
+      </a>
     </div>
   </div>
-</div>
+{{/section}}

@@ -17,23 +17,9 @@
 
   <body>
     <div class="site-container">
-      <div class="site-header">
-        {{{ sections.header }}}
-      </div>
-
       <div class="site-body">
-        <div>
-          {{{ sections.body }}}
-        </div>
-      </div>
-
-      <div class="site-footer">
-        <span>version {{ global "version" }}</span>
+        {{{ sections.body }}}
       </div>
     </div>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-
-    {{{ sections.script }}}
   </body>
 </html>

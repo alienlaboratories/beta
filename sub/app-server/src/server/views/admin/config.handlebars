@@ -1,0 +1,31 @@
+{{#section 'header'}}
+  <div class="site-admin">
+    <h1>Config</h1>
+  </div>
+
+  <div class="site-toolbar">
+    <a class="site-button"
+       href="/admin">Admin</a>
+    <a class="site-button" target="ALIEN_KUBE"
+       href="https://api.beta.kube.robotik.io/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard">Kubernetes</a>
+    <a class="site-button" target="ALIEN_FIREBASE"
+       href="https://console.firebase.google.com/project/alienlabs-dev/database/data">Firebase</a>
+  </div>
+{{/section}}
+
+{{#section 'body'}}
+  <div class="site-panel">
+    <h2>ENV</h2>
+    <pre>{{{ json env 2 }}}</pre>
+  </div>
+
+  <div class="site-panel">
+    <h2>Config</h2>
+    <pre>{{{ json config 2 }}}</pre>
+  </div>
+
+  <div class="site-panel">
+    <h2>Routes</h2>
+    <pre>{{{ json routes 2 }}}</pre>
+  </div>
+{{/section}}

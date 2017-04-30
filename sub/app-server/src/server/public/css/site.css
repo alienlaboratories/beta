@@ -1,16 +1,46 @@
 /*
  * TODO(burdon): Replace wth webpack app.
+ * TODO(burdon): Convert to less (and use pycharm/grunt to watch).
+ * https://cloud.google.com/solutions
  */
 
 body {
   margin: 0;
   font-family: Roboto, sans-serif;
   background-color: #F5F5F5;
+  overflow: hidden;
 }
 
 a {
   color: #333;
+  padding: 4px;
+  margin-right: 2px;
+  text-decoration: none;
+  line-height: 1.5;
+  cursor: pointer;
 }
+a.site-button {
+}
+a.site-button:hover {
+  background-color: orange;
+}
+
+table {
+  border-collapse: collapse;
+}
+table th {
+  font-weight: 100;
+}
+
+div.site-center {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+/**
+ * Container
+ */
 
 div.site-container {
   display: flex;
@@ -21,34 +51,84 @@ div.site-container {
   top: 0;
   bottom: 0;
 }
-
 div.site-container h1 {
-  margin: 30px;
+  margin: 16px;
   font-family: monospace;
   font-size: 60px;
   color: #000;
   opacity: .5;
 }
 
+/**
+ * Home
+ * https://developers.google.com/identity/sign-in/web/build-button
+ * https://developers.google.com/identity/branding-guidelines
+ */
+
 div.site-home {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
   background-color: #148ad6;
 }
-
-div.site-home img {
+div.site-home img.site-logo {
+  margin: 20px 0 100px;
   opacity: .3;
 }
 
-div.site-center {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
+.site-login {
+  width: 191px;
+  height: 46px;
+  content: url("/img/btn_google_signin_light_normal_web.png");
 }
+.site-login:hover {
+  content: url("/img/btn_google_signin_light_focus_web.png");
+}
+.site-login:active {
+  content: url("/img/btn_google_signin_light_pressed_web.png");
+}
+
+/**
+ * Header
+ */
 
 div.site-header {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+div.site-header .site-user {
   background-color: #1da1f2;
 }
+div.site-header .site-admin {
+  background-color: green;
+}
+
+/**
+ * Menu
+ */
+
+div.site-toolbar {
+  display: flex;
+  flex-direction: row;
+  background-color: #DDD;
+}
+
+/**
+ * Body
+ */
 
 div.site-body {
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+div.site-body::-webkit-scrollbar {
+  width: 2px;
+}
+div.site-body::-webkit-scrollbar-thumb {
+  background-color: #333;
 }
 
 div.site-body h2 {
@@ -61,11 +141,19 @@ div.site-body div.site-panel {
   background-color: white;
   box-shadow: 0 2px 2px #DDD;
   margin: 16px;
+  overflow: hidden;
 }
 
-table {
-  border-collapse: collapse;
-}
-table th {
-  font-weight: 100;
+/**
+ * Footer
+ */
+
+div.site-footer {
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  justify-content: center;
+  padding: 8px;
+  background-color: #DDD;
+  font-size: 14px;
 }

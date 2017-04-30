@@ -36,9 +36,46 @@ export const adminRouter = (clientManager, firebase, options) => {
   //
   router.get('/', isAuthenticated('/home', true), (req, res) => {
     return clientManager.getClients().then(clients => {
-      res.render('admin', {
+      res.render('admin/admin', {
         testing: __TESTING__,
         clients
+      });
+    });
+  });
+
+  router.get('/config', isAuthenticated('/home', true), (req, res) => {
+
+    // TODO(burdon): ExpressUtil.
+    // http://thejackalofjavascript.com/list-all-rest-endpoints
+    let routes = _.compact(_.map(options.app._router.stack, item => {
+      let { route, path, regexp } = item;
+      console.log('####', item);
+      if (route) {
+        return {
+          path: route.path || route.regexp
+        };
+      } else {
+        let stack = _.get(item, 'handle.stack');
+        if (!_.isEmpty(stack)) {
+          return {
+            path: path || regexp,             // TODO(burdon): !!!
+            sub: _.map(stack, item => {
+              console.log('==', item);
+              let { route, path } = item;
+              if (route || path) {
+                return path || route.path || route.regexp;
+              }
+            })
+          };
+        }
+      }
+    }));
+
+    return clientManager.getClients().then(clients => {
+      res.render('admin/config', {
+        env: options.env,
+        config: options.config,
+        routes
       });
     });
   });

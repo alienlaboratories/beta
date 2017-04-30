@@ -1,71 +1,48 @@
 {{#section 'head'}}
-  <link rel="stylesheet" href="/assets/website.css">
-
-  {{!-- Chrome Extension. --}}
+  {{! Chrome Extension. }}
   <link rel="chrome-webstore-item" href="{{ crxUrl }}">
 {{/section}}
 
-<div class="site-container">
-  <div class="site-column">
-
-    <div class="site-window-container">
-      <div class="site-window site-profile-window">
-
-        <div class="site-section">
-          <h1>Profile</h1>
-          <div class="site-buttons">
-            <div>
-              <a class="site-button" target="_blank"
-                 href="/home">Home</a>
-              <a class="site-button"
-                 href="/user/logout">Logout</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="site-section">
-          <div class="site-buttons">
-            <div>
-              <a class="site-img" href="/user/login?redirect={{ encodeURI loginRedirect }}">
-                <img class="site-login" alt="Google Login">
-              </a>
-
-              <a class="site-img" onclick="return installCrx()">
-                <img class="site-install-crx" alt="Chrome Extension">
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <div class="site-section">
-          <h2>User</h2>
-          <div class="site-buttons">
-            <div>
-              <a class="site-button" target="_blank"
-                 href="/services">Services</a>
-              <a class="site-button" target="_blank"
-                 href="https://myaccount.google.com/permissions">Google App Permissions</a>
-
-              <!--
-              <a class="site-button" target="_blank"
-                 onclick="return testToken('{{ idToken }}')">Test ID Token</a>
-                 -->
-            </div>
-          </div>
-        </div>
-        <pre class="site-json">{{{ json user 2 }}}</pre>
-        <pre class="site-json" id="token"></pre>
-
-        <div class="site-section">
-          <h2>Groups</h2>
-        </div>
-        {{#each groups}}
-        <pre class="site-json">{{{ json . 2 }}}</pre>
-        {{/each}}
-      </div>
-    </div>
+{{#section 'header'}}
+  <div class="site-user">
+    <h1>Profile</h1>
   </div>
 
+  <div class="site-toolbar">
+    <a class="site-button" href="/home">Home</a>
+    <a class="site-button" href="/services">Services</a>
+    <a class="site-button" target="_blank" href="https://myaccount.google.com/permissions">Google App Permissions</a>
+    <a class="site-button" onclick="return installCrx()">Chrome Extension</a>
+    <a class="site-button" href="/user/login?redirectUrl={{ encodeURI '/profile' }}">Login</a>
+    <a class="site-button" href="/user/logout">Logout</a>
+
+    <!--
+    <a class="site-button" target="_blank" onclick="return testToken('{{ idToken }}')">Test ID Token</a>
+      -->
+  </div>
+{{/section}}
+
+{{#section 'body'}}
+  <div class="site-panel">
+    <h2>User</h2>
+    <pre class="site-json">{{{ json user 2 }}}</pre>
+  </div>
+
+  <!--
+  <div class="site-panel">
+    <pre class="site-json" id="token"></pre>
+  </div>
+  -->
+
+  <div class="site-panel">
+    <h2>Groups</h2>
+    {{#each groups}}
+    <pre class="site-json">{{{ json . 2 }}}</pre>
+    {{/each}}
+  </div>
+{{/section}}
+
+{{#section 'script'}}
   <script src="/assets/website.bundle.js"></script>
   <script>
 //  new Words().start(3, 30);
@@ -100,4 +77,4 @@
     */
 
   </script>
-</div>
+{{/section}}
