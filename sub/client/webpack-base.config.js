@@ -94,11 +94,21 @@ const baseConfig = {
     new webpack.ProvidePlugin({ Logger: 'alien-util/src/util/logger' })
   ]
 };
+
+//
+// Karma config.
+//
+
+const karma = webpackMerge(baseConfig, {
+
+  devtool: 'inline-source-map'
+});
+
 //
 // Web config.
 //
 
-const webConfig = webpackMerge(baseConfig, {
+const web = webpackMerge(baseConfig, {
 
   target: 'web',
 
@@ -125,4 +135,7 @@ const webConfig = webpackMerge(baseConfig, {
   }
 });
 
-module.exports = webConfig;
+module.exports = {
+  karma,
+  web
+};

@@ -7,12 +7,6 @@
  */
 export const Const = {
 
-  PLATFORM: {
-    WEB: 'web',
-    CRX: 'crx',
-    MOBILE: 'mobile'
-  },
-
   DOM_ROOT: 'app-root',
 
   APP_PATH: '/app',
