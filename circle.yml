@@ -1,0 +1,8 @@
+# https://circleci.com/docs/1.0/manually
+# https://circleci.com/docs/1.0/configuration
+
+# TODO(burdon): Prod branch and push if successful
+# TODO(burdon): Checkout post (npm-workspace init)
+
+general:
+  build_dir: util

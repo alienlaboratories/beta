@@ -1,13 +1,13 @@
 {{#section 'header'}}
   <div class="site-admin">
-    <h1>Config</h1>
+    <h1>Ops</h1>
   </div>
 
   <div class="site-toolbar">
     <a class="site-button"
        href="/admin">Admin</a>
     <a class="site-button"
-       href="/admin/ops">Ops</a>
+       href="/admin/config">Config</a>
     <a class="site-button" target="ALIEN_KUBE"
        href="https://api.beta.kube.robotik.io/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard">Kubernetes</a>
     <a class="site-button" target="ALIEN_FIREBASE"
@@ -15,19 +15,43 @@
   </div>
 {{/section}}
 
+<!-- TODO(burdon): Dashboard links -->
+
 {{#section 'body'}}
   <div class="site-panel">
-    <h2>ENV</h2>
-    <pre>{{{ json env 2 }}}</pre>
+    <h2>Kubernetes</h2>
+    <!-- TODO(burdon): Get from JSON cheatsheet: comment, commands, links -->
+    <pre>
+    kubectl config get-contexts
+    kubectl config use-context beta.kube.robotik.io
+    </pre>
   </div>
 
   <div class="site-panel">
-    <h2>Config</h2>
-    <pre>{{{ json config 2 }}}</pre>
+    <h2>Minikube</h2>
   </div>
 
   <div class="site-panel">
-    <h2>Routes</h2>
-    <pre>{{{ json routes 2 }}}</pre>
+    <h2>AWS</h2>
+  </div>
+
+  <div class="site-panel">
+    <h2>Docker</h2>
+  </div>
+
+  <div class="site-panel">
+    <h2>CircleCI</h2>
+  </div>
+
+  <div class="site-panel">
+    <h2>Github</h2>
+  </div>
+
+  <div class="site-panel">
+    <h2>Firebase</h2>
+  </div>
+
+  <div class="site-panel">
+    <h2>Google APIs</h2>
   </div>
 {{/section}}

@@ -32,8 +32,9 @@ export const adminRouter = (clientManager, firebase, options) => {
   // }
 
   //
-  // Admin page.
+  // Admin pages.
   //
+
   router.get('/', isAuthenticated('/home', true), (req, res) => {
     return clientManager.getClients().then(clients => {
       res.render('admin/admin', {
@@ -80,10 +81,15 @@ export const adminRouter = (clientManager, firebase, options) => {
     });
   });
 
+  router.get('/ops', isAuthenticated('/home', true), (req, res) => {
+    res.render('admin/ops');
+  });
+
   //
   // Admin API.
   // TODO(burdon): Authenticate.
   //
+
   router.post('/api', isAuthenticated(undefined, true), (req, res) => {
     let { action, clientId } = req.body;
 
