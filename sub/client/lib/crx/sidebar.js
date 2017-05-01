@@ -4,9 +4,8 @@
 
 Logger.setLevel({}, Logger.Level.debug);
 
-import { HttpUtil, KeyListener } from 'minder-core';
-
-import { Const } from '../../common/defs';
+import { AppDefs } from '../common/defs';
+import { HttpUtil, KeyListener } from 'alien-core';
 
 import { BackgroundCommand, KeyCodes } from './common';
 
@@ -18,14 +17,14 @@ import { Application, SidebarApp } from './sidebar/app';
 //
 
 const config = _.merge({
-  root: Const.DOM_ROOT,
+  root: AppDefs.DOM_ROOT,
 
   // TODO(burdon): Build option (based on CRX ID?)
   env: 'development',
 
   app: {
-    platform: Const.PLATFORM.CRX,
-    name: Const.APP_NAME
+    platform: AppDefs.PLATFORM.CRX,
+    name: AppDefs.APP_NAME
   }
 }, HttpUtil.parseUrlParams());
 

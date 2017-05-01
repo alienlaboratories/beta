@@ -15,6 +15,7 @@ import uuid from 'node-uuid';
 
 import { ExpressUtil, HttpError, Logger } from 'alien-util';
 import { Database, IdGenerator, Matcher, MemoryItemStore, SystemStore, TestItemStore } from 'alien-core';
+import { AppDefs } from 'alien-client';
 
 // TODO(burdon): faye-websockets? referenced by bundle directly.
 // webpack-node-externals
@@ -52,7 +53,7 @@ import { clientRouter, ClientManager } from './router/client';
 import { hotRouter } from './router/hot';
 import { loggingRouter } from './router/log';
 
-import { Const } from '../common/const';
+import { Const } from '../common/defs';
 
 import ENV from './env';
 
@@ -253,7 +254,7 @@ export class WebServer {
     const helpers = _.assign(ExpressUtil.Helpers, {
       global: (key) => {
         return _.get({
-          version: Const.APP_VERSION
+          version: AppDefs.APP_VERSION
         }, key);
       }
     });
@@ -281,9 +282,10 @@ export class WebServer {
     // Hot loader.
     // NOTE: Must come above other asset handlers.
     //
-
     if (__HOT__) {
       this._app.use(hotRouter({
+
+        // Bundle definitions.
         webpackConfig: require('../../webpack-web.config')
       }));
     }
@@ -291,7 +293,9 @@ export class WebServer {
     //
     // Web app.
     //
-    this._app.use('/app', appRouter(this._config, {
+    this._app.use(AppDefs.APP_PATH, appRouter(this._config, this._clientManager, {
+
+      // Webpack bundles.
       assets: ENV.APP_SERVER_ASSETS_DIR
     }));
   }
@@ -355,13 +359,11 @@ export class WebServer {
 
     // TODO(burdon): Permissions.
     // Admin pages and services.
-    this._app.use('/admin', adminRouter(this._clientManager, this._firebase, {
+    this._app.use('/admin', adminRouter(this._config, this._clientManager, {
 
       env: ENV,
 
       app: this._app,
-
-      config: this._config,
 
       scheduler: false, // TODO(burdon): ???
 

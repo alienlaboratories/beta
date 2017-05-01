@@ -5,9 +5,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { ReactUtil } from 'minder-ux';
+import { ProtoDefs } from 'alien-core';
 
-import { Const } from '../../../common/defs';
+import { ReactUtil } from 'minder-ux';
 
 import Finder from '../view/finder';
 
@@ -46,7 +46,7 @@ class FinderActivity extends React.Component {
 
       let content = null;
       let platform = _.get(config, 'app.platform');
-      if (platform !== Const.PLATFORM.MOBILE && platform !== Const.PLATFORM.CRX) {
+      if (platform !== ProtoDefs.PLATFORM.MOBILE && platform !== ProtoDefs.PLATFORM.CRX) {
         content = <div/>;
       }
 

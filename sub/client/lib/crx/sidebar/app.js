@@ -53,7 +53,7 @@ export class SidebarApp extends BaseApp {
             }
 
             if (message.visible) {
-              this._analytics && this._analytics.track('sidebar.open');
+              this._analytics.track('sidebar.open');
             }
 
             this.store.dispatch(SidebarAction.updateVisibility(message.visible));
@@ -137,7 +137,7 @@ export class SidebarApp extends BaseApp {
           logger.log('Registered: ' + JSON.stringify(userProfile));
 
           // Init analytics with the current user.
-          this._analytics && this._analytics.identify(userProfile.id);
+          this._analytics.identify(userProfile.id);
 
           // Initialize the app.
           this.store.dispatch(AppAction.register(userProfile, server));

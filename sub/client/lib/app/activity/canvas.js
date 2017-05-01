@@ -5,9 +5,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { ReactUtil } from 'minder-ux';
+import { ProtoDefs } from 'alien-core';
 
-import { Const } from '../../../common/defs';
+import { ReactUtil } from 'minder-ux';
 
 import Finder from '../view/finder';
 
@@ -56,7 +56,7 @@ class CanvasActivity extends React.Component {
 
       let finder = null;
       let platform = _.get(config, 'app.platform');
-      if (platform !== Const.PLATFORM.MOBILE && platform !== Const.PLATFORM.CRX) {
+      if (platform !== ProtoDefs.PLATFORM.MOBILE && platform !== ProtoDefs.PLATFORM.CRX) {
         finder = <Finder viewer={ viewer } folder={ 'inbox' }/>;
       }
 

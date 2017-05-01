@@ -32,10 +32,9 @@ const baseConfig = {
     alias: {
       'react'                           : path.resolve('./node_modules/react'),
 
-      // NOTE: Order is important.
       // http://stackoverflow.com/questions/40053344/npm-multiple-entry-points
-      'alien-client/web/testing/apollo' : path.resolve('./node_modules/alien-client/src/web/testing/apollo/apollo.js'),
-      'alien-client/web'                : path.resolve('./node_modules/alien-client/src/web/index.js'),
+      'alien-client/web-app'            : path.resolve('./node_modules/alien-client/src/web/app'),
+      'alien-client/web-testing-apollo' : path.resolve('./node_modules/alien-client/src/web/app/testing/apollo/apollo.js'),
     }
   },
 
@@ -129,7 +128,6 @@ const baseConfig = {
     // Automatically include packages without import statement.
     new webpack.ProvidePlugin({ _: 'lodash' }),
     new webpack.ProvidePlugin({ $: 'jquery' }),
-    new webpack.ProvidePlugin({ Logger: 'alien-util/src/util/logger' })
   ]
 };
 
@@ -149,7 +147,7 @@ const srvConfig = webpackMerge(baseConfig, {
 
     // https://webpack.js.org/configuration/node
     console: false,
-    // fs:  'empty',
+    // fs:  'empty',    // TODO(burdon): ???
     net: 'empty',
     tls: 'empty'
   },
@@ -186,6 +184,7 @@ const srvConfig = webpackMerge(baseConfig, {
 
     whitelist: [
       'alien-api',
+      'alien-client',
       'alien-core',
       'alien-services',
       'alien-util'
@@ -208,10 +207,28 @@ const webConfig = webpackMerge(baseConfig, {
   // NOTE: entries cannot be compiled individually.
   entry: {
     web: [
-      path.resolve(baseConfig.context, 'src/client/web.js')
+      path.resolve(baseConfig.context, 'src/client/web_bootstrap.js')
     ],
-    test: [
-      path.resolve(baseConfig.context, 'src/client/test.js')
+
+    // TODO(burdon): Runtime server switch.
+    // web_hot: [
+    //   path.resolve(baseConfig.context, 'src/client/web_bootstrap.js'),
+    //
+    //   // BABEL_NODE=hot NODE_ENV=hot
+    //   'webpack/hot/dev-server',
+    //   'webpack-hot-middleware/client'
+    // ],
+
+    test_hot: [
+      path.resolve(baseConfig.context, 'src/client/test_hot.js'),
+
+      // BABEL_NODE=hot NODE_ENV=hot
+      'webpack/hot/dev-server',
+      'webpack-hot-middleware/client'
+    ],
+
+    test_apollo: [
+      path.resolve(baseConfig.context, 'src/client/test_apollo.js')
     ]
   },
 

@@ -11,8 +11,8 @@ import { isAuthenticated } from 'alien-services';
 /**
  * Admin endpoints.
  */
-export const adminRouter = (clientManager, firebase, options) => {
-  console.assert(clientManager && firebase);
+export const adminRouter = (config, clientManager, options) => {
+  console.assert(config && clientManager && options);
   let router = express.Router();
 
   // Kue.
@@ -75,7 +75,7 @@ export const adminRouter = (clientManager, firebase, options) => {
     return clientManager.getClients().then(clients => {
       res.render('admin/config', {
         env: options.env,
-        config: options.config,
+        config: this._config,
         routes
       });
     });

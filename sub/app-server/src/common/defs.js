@@ -1,22 +1,12 @@
 //
-// Copyright 2016 Alien Labs.
+// Copyright 2017 Alien Labs.
 //
 
 /**
- * Task levels.
+ * App-wide constants.
  */
-export const TASK_LEVELS = {
+export const Const = {
 
-  UNSTARTED: 0,
-  ACTIVE:    1,
-  COMPLETE:  2,
-  BLOCKED:   3,
-
-  // Enums with properties in javascript: https://stijndewitt.com/2014/01/26/enums-in-javascript
-  properties: {
-    0: { title: 'Unstarted' },
-    1: { title: 'Active'    },
-    2: { title: 'Complete'  },
-    3: { title: 'Blocked'   }
-  }
+  // Changed via grunt:version
+  APP_VERSION: "0.0.2",
 };

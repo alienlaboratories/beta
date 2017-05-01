@@ -3,6 +3,7 @@
 //
 
 import { Logger } from './logger';
+import { TypeUtil } from './type';
 
 const logger = Logger.get('event');
 

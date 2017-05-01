@@ -1,78 +1,108 @@
 //
-// Copyright 2016 Minder Labs.
+// Copyright 2017 Alien Labs.
 //
 
-import { DomUtil } from 'alien-util';
+import React from 'react';
+import { browserHistory } from 'react-router';
 
-import { Const } from '../../common/defs';
+// import { Injector } from 'alien-util';
 
-import { WebApp, Application } from './app';
+import { BaseApp } from '../common/base_app';
+import { AppAction, AppReducer, GlobalAppReducer } from '../common/reducers';
 
-import './config';
+import { AuthManager } from '../common/auth';
+import { ConnectionManager } from '../common/client';
+import { NetworkManager } from '../common/network';
+import { FirebaseCloudMessenger } from '../common/cloud_messenger';
+
+//import { TypeRegistryFactory } from './framework/type_factory';
 
 /**
- * Configuration (from server).
+ * Base class for Web apps.
  */
-const config = _.defaultsDeep(window.config, {
+export class WebApp extends BaseApp {
 
-  debug: (window.config.env !== 'production'),
+  /**
+   * Apollo network.
+   */
+  initNetwork() {
 
-  // Framework debug options.
-  options: {
-    reducer: true,
-    optimistic: true,
-    invalidation: true,
-    networkDelay: 0
-  },
+    // Manages OAuth.
+    this._authManager = new AuthManager(this._config);
 
-  app: {
-    platform: DomUtil.isMobile() ? Const.PLATFORM.MOBILE : Const.PLATFORM.WEB
+    // FCM Push Messenger.
+    this._cloudMessenger = new FirebaseCloudMessenger(this._config, this._eventHandler).listen(message => {
+      if (_.get(this._config, 'options.invalidate')) {
+        this._queryRegistry.invalidate();
+      }
+    });
+
+    // Manages the client connection and registration.
+    this._connectionManager = new ConnectionManager(this._config, this._authManager, this._cloudMessenger);
+
+    // TODO(burdon): Local transient item store.
+    /*
+    let idGenerator = this._injector.get(IdGenerator);
+    let matcher = this._injector.get(Matcher);
+    this._itemStore = new MemoryItemStore(idGenerator, matcher, Database.NAMESPACE.LOCAL, false);
+    */
+    this._itemStore = null;
+
+    // Apollo network requests.
+    this._networkManager =
+      new NetworkManager(this._config, this._authManager, this._connectionManager, this._eventHandler)
+        .init(this._itemStore);
   }
-});
 
-//
-// App instance.
-//
+  postInit() {
 
-const app = new WebApp(config);
+    // Register client.
+    return this._authManager.authenticate().then(userProfile => {
+      let { id, email, displayName:name, photoUrl:avatar } = userProfile;
 
-//
-// React Hot Loader.
-// https://github.com/gaearon/react-hot-boilerplate/pull/61
-// https://webpack.github.io/docs/hot-module-replacement.html
-//
+      // Map to Segment well-known fields (https://segment.com/docs/spec/identify/#traits).
+      this._analytics.identify(id, _.omitBy({ email, name, avatar }, _.isNil));
 
-if (module.hot && _.get(config, 'env') === 'hot') {
-  // TODO(burdon): Factor out path.
-  // List modules that can be dynamically reloaded.
-  module.hot.accept('./app', () => {
-    const App = require('./app').default;
-    app.render(App);
-  });
+      // TODO(burdon): Retry?
+      return this._connectionManager.register().then(client => {
+        this.store.dispatch(AppAction.register(userProfile));
+      });
+    });
+  }
+
+  terminate() {
+    // Unregister client.
+    this._connectionManager && this._connectionManager.unregister();
+  }
+
+  get itemStore() {
+    return this._itemStore;
+  }
+
+  // get providers() {
+  //   return [
+  //     Injector.provide(TypeRegistryFactory())
+  //   ];
+  // }
+
+  get globalReducer() {
+    return GlobalAppReducer;
+  }
+
+  get reducers() {
+    return {
+      // Main app reducer.
+      // TODO(burdon): Push to BaseApp.
+      [AppAction.namespace]: AppReducer(this.injector, this.config, this.client)
+    }
+  }
+
+  get networkInterface() {
+    return this._networkManager.networkInterface;
+  }
+
+  get history() {
+    // https://github.com/ReactTraining/react-router/blob/master/docs/guides/Histories.md#browserhistory
+    return browserHistory;
+  }
 }
-
-//
-// Prevent/warn unload.
-// https://developer.mozilla.org/en-US/docs/Web/Events/beforeunload
-//
-
-window.addEventListener('beforeunload', event => {
-  // TODO(burdon): Check for unsaved data.
-  if (false) {
-    // NOTE: On Chrome the system message cannot be overridden.
-    event.returnValue = 'Leave minder?';
-  }
-});
-
-window.addEventListener('unload', () => {
-  // Unregister from BG page.
-  app.terminate();
-});
-
-//
-// Start app.
-//
-
-app.init().then(() => {
-  app.render(Application);
-});

@@ -2,7 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
-import { HttpUtil } from 'alien-core';
+import { HttpUtil } from 'alien-util';
 
 /**
  * Web network utils.

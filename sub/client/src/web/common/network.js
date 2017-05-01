@@ -1,15 +1,15 @@
 //
-// Copyright 2016 Minder Labs.
+// Copyright 2017 Alien Labs.
 //
 
 import _ from 'lodash';
 import { print } from 'graphql/language/printer';
 import { createNetworkInterface } from 'apollo-client';
 
-import { AuthUtil, UpsertItemsMutationName, ItemStore, HttpUtil, TypeUtil, Wrapper } from 'minder-core';
+import { HttpUtil, TypeUtil, Logger, Wrapper } from 'alien-util';
+import { AuthUtil, ItemStore, UpsertItemsMutationName } from 'alien-core';
 
-import { Const } from '../../common/defs';
-
+import { AppDefs } from '../../common/defs';
 import { AuthManager } from './auth';
 import { ConnectionManager } from './client';
 
@@ -136,7 +136,7 @@ export class NetworkManager {
 
         // Add header to track response.
         options.headers = _.assign(options.headers, {
-          [Const.HEADER.REQUEST_ID]: requestId
+          [AppDefs.HEADER.REQUEST_ID]: requestId
         });
 
         this._logger.logRequest(requestId, request, options.headers);
@@ -159,7 +159,7 @@ export class NetworkManager {
         let clonedResponse = response.clone();
 
         // Match request.
-        const requestId = options.headers[Const.HEADER.REQUEST_ID];
+        const requestId = options.headers[AppDefs.HEADER.REQUEST_ID];
         let removed = this._requestMap.delete(requestId);
         console.assert(removed, 'Request not found: %s', requestId);
 
@@ -275,11 +275,8 @@ class NetworkLogger {
     this._options = options;
   }
 
-  // TODO(burdon): printRequest
-  // https://github.com/apollographql/apollo-client/blob/master/src/transport/networkInterface.ts
-
   logRequest(requestId, request, headers) {
-    logger.log($$('[_TS_] ===>>> [%s] %o', requestId, request.variables || {}));
+    logger.log(`[_TS_] ===>>> [${requestId}] ${JSON.stringify(request.variables || {})}`);
 
     //
     // Show GraphiQL link.
@@ -287,7 +284,7 @@ class NetworkLogger {
     if (_.get(this._options, 'debug', true) || true) {  // TODO(burdon): Config detail.
       let url = HttpUtil.absoluteUrl(_.get(this._options, 'graphiql', '/graphiql'));
       logger.info('[' + TypeUtil.pad(requestId, 24) + ']: ' + url + '?' + HttpUtil.toUrlArgs({
-        clientId:   headers[Const.HEADER.CLIENT_ID],
+        clientId:   headers[AppDefs.HEADER.CLIENT_ID],
         query:      print(request.query),
         variables:  JSON.stringify(request.variables)
       }));
@@ -295,11 +292,11 @@ class NetworkLogger {
   }
 
   logResponse(requestId, response) {
-    logger.log($$('[_TS_] <<<=== [%s] %o', requestId, response.data));
+    logger.log(`[_TS_] <<<=== [${requestId}] ${JSON.stringify(response.data)}`);
   }
 
   logErrors(requestId, errors) {
-    logger.error($$('GraphQL Error [%s]: %s', requestId, NetworkLogger.stringify(errors)));
+    logger.error(`GraphQL Error [${requestId}]: ${NetworkLogger.stringify(errors)}`);
   }
 }
 
@@ -310,7 +307,7 @@ class NetworkLogger {
  */
 export class ChromeNetworkInterface { // extends NetworkInterface {
 
-  // TODO(burdon): Move to minder-core.
+  // TODO(burdon): Move to alien-core.
 
   static CHANNEL = 'apollo';
 

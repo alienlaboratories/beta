@@ -403,7 +403,7 @@ export class Mutator {
     // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
     // http://dev.apollodata.com/react/cache-updates.html
 
-    this._analytics && this._analytics.track('item.create', { label: type });
+    this._analytics.track('item.create', { label: type });
 
     logger.log('createItem: ' + TypeUtil.stringify({ bucket, item: { type, id: itemId }, mutations }));
     this._mutate({
@@ -554,7 +554,7 @@ export class Mutator {
     // Submit mutation.
     //
 
-    this._analytics && this._analytics.track('item.update', { label: item.type });
+    this._analytics.track('item.update', { label: item.type });
 
     // TODO(burdon): labels: {"type":"json","json":["_default"]} ??? for Project; DUMP SERVER ITEMS.
 

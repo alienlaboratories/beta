@@ -91,7 +91,6 @@ const baseConfig = {
 
     new webpack.ProvidePlugin({ _: 'lodash' }),
     new webpack.ProvidePlugin({ $: 'jquery' }),
-    new webpack.ProvidePlugin({ Logger: 'alien-util/src/util/logger' })
   ]
 };
 

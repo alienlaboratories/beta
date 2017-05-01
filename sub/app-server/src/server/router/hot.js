@@ -20,7 +20,7 @@ import moment from 'moment';
  * @param {{ webpackConfig }} options
  * @return {Router}
  */
-// TODO(burdon): Move to util (shared with web-server).
+// TODO(burdon): Move to client (shared with web-server).
 export const hotRouter = (options) => {
   const router = express.Router();
 

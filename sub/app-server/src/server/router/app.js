@@ -5,9 +5,11 @@
 import _ from 'lodash';
 import express from 'express';
 
-import { Logger } from 'alien-util';
+import { AppDefs } from 'alien-client';
+import { Logger, TypeUtil } from 'alien-util';
+import { getUserSession, isAuthenticated } from 'alien-services';
 
-import { Const } from '../../common/const';
+import { Const } from '../../common/defs';
 
 const logger = Logger.get('app');
 
@@ -15,11 +17,12 @@ const logger = Logger.get('app');
  * Sets-up serving the app (and related assets).
  *
  * @param {{ firebase }} config
- * @param {{ assets, bundle, config }} options
+ * @param {ClientManager} clientManager
+ * @param {{ assets, bundle, appConfig }} options
  * @return {Router}
  */
-export const appRouter = (config, options) => {
-  console.assert(config && options);
+export const appRouter = (config, clientManager, options) => {
+  console.assert(config && clientManager && options);
   console.assert(options.assets);
 
   const router = express.Router();
@@ -41,25 +44,76 @@ export const appRouter = (config, options) => {
   });
 
   //
-  // App loader.
+  // Web app.
   //
-  router.get('/', (req, res) => {
-    let { bundle='web' } = req.query;
+  router.get(new RegExp(/(.*)/), isAuthenticated('/user/login'), (req, res, next) => {
+    let { user } = req;
+    let { bundle = 'web' } = req.query;
 
-    res.render('app', {
-      layout: 'app',
+    // Create the client.
+    // TODO(burdon): Client should register after startup? (might store ID -- esp. if has worker, etc.)
+    clientManager.create(user.id, AppDefs.PLATFORM.WEB).then(client => {
+      console.assert(client);
 
-      // Loading animation.
-      loadingIndicator: __PRODUCTION__,
+      //
+      // Client app config.
+      // NOTE: This is the canonical shape of the config object.
+      // The CRX has to construct this by registering the user (post auth) and client.
+      //
+      let appConfig = _.defaults({
 
-      // Client bundle.
-      bundle: options.bundle || bundle,
+        env: __ENV__,
 
-      // Client config.
-      config: _.defaults({
-        root: Const.DOM_ROOT,
-      }, _.get(options, 'config'))
-    });
+        app: {
+          version: Const.APP_VERSION
+        },
+
+        // DOM root element.
+        root: AppDefs.DOM_ROOT,
+
+        // Apollo.
+        graphql: '/graphql',
+        graphiql: '/graphiql',
+
+        // Client registration.
+        client: _.pick(client, ['id', 'messageToken']),
+
+        // Credentials.
+        credentials: _.pick(getUserSession(user), ['id_token', 'id_token_exp']),
+
+        // Canonical profile.
+        userProfile: _.pick(user, ['email', 'displayName', 'photoUrl']),
+
+        // Firebase config.
+        firebase: _.get(config, 'firebase'),
+
+        // Google config.
+        google: {
+          projectNumber: _.get(config, 'google.projectNumber')
+        }
+      }, options.appConfig);
+
+      logger.log('Client config = ' + TypeUtil.stringify(config));
+
+      //
+      // Render the app page.
+      //
+      res.render('app', {
+
+        // Handlebars layout.
+        layout: 'app',
+
+        // Loading animation.
+        loadingIndicator: __PRODUCTION__,
+
+        // Client bundle.
+        // TODO(burdon): Hot mode.
+        bundle: options.bundle || bundle,
+
+        // Client JSON config.
+        config: appConfig
+      });
+    }).catch(next);
   });
 
   return router;

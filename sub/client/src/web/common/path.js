@@ -1,12 +1,12 @@
 //
-// Copyright 2016 Minder Labs.
+// Copyright 2017 Alien Labs.
 //
 
 import { goBack, goForward, push } from 'react-router-redux';
 
-import { ID } from 'minder-core';
+import { ID } from 'alien-core';
 
-import { Const } from '../../common/defs';
+import { AppDefs } from '../../common/defs';
 
 /**
  * Router paths.
@@ -25,10 +25,10 @@ export class Path {
   // app/card/xxx       Card canvas Item xxx
   // app/board/xxx      Board canvas
 
-  static ROOT     = Const.APP_PATH;
-  static HOME     = Const.APP_PATH + '/inbox';
-  static TESTING  = Const.APP_PATH + '/testing';
-  static ADMIN    = Const.APP_PATH + '/admin';
+  static ROOT     = AppDefs.APP_PATH;
+  static HOME     = AppDefs.APP_PATH + '/inbox';
+  static TESTING  = AppDefs.APP_PATH + '/testing';
+  static ADMIN    = AppDefs.APP_PATH + '/admin';
 
   /**
    * Generates path for router.

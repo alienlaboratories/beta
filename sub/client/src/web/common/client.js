@@ -1,14 +1,14 @@
 //
-// Copyright 2016 Minder Labs.
+// Copyright 2017 Alien Labs.
 //
 
 import _ from 'lodash';
 
-import { AuthDefs, AuthUtil } from 'minder-core';
-import { NetUtil } from 'minder-ux';
+import { Logger } from 'alien-util';
+import { AuthUtil } from 'alien-core';
 
-import { Const } from '../../common/defs';
-
+import { AppDefs } from '../../common/defs';
+import { NetUtil } from '../util/net';
 import { AuthManager } from './auth';
 
 const logger = Logger.get('client');
@@ -27,7 +27,7 @@ export class ConnectionManager {
   static setClientHeader(headers, clientId) {
     console.assert(_.isString(clientId), 'Invalid client ID.');
     return _.assign(headers, {
-      [Const.HEADER.CLIENT_ID]: clientId
+      [AppDefs.HEADER.CLIENT_ID]: clientId
     });
   }
 
@@ -106,7 +106,7 @@ export class ConnectionManager {
       ConnectionManager.setClientHeader(headers, clientId);
     } else {
       // Web client should have ID.
-      console.assert(platform !== Const.PLATFORM.WEB);
+      console.assert(platform !== AppDefs.PLATFORM.WEB);
     }
 
     let request = { platform, messageToken };

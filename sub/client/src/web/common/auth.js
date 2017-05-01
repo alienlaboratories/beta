@@ -1,13 +1,13 @@
 //
-// Copyright 2016 Minder Labs.
+// Copyright 2017 Alien Labs.
 //
 
 import _ from 'lodash';
 
-import { AuthDefs, AuthUtil, HttpUtil } from 'minder-core';
-import { NetUtil } from 'minder-ux';
+import { HttpUtil, Logger } from 'alien-util';
+import { AuthDefs } from 'alien-core';
 
-import { Const, GoogleApiConfig } from '../../common/defs';
+import { NetUtil } from '../util/net';
 
 const logger = Logger.get('auth');
 

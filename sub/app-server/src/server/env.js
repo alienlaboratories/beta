@@ -8,7 +8,7 @@ import path from 'path';
 global.__ENV__            = _.get(process.env, 'NODE_ENV', 'development');
 global.__DEVELOPMENT__    = __ENV__ === 'development';
 global.__PRODUCTION__     = __ENV__ === 'production';
-global.__HOT__            = __ENV__.startsWith('hot');
+global.__HOT__            = __ENV__ === 'hot';
 global.__TESTING__        = !__PRODUCTION__;
 
 const HOST = _.get(process.env, 'HOST', __PRODUCTION__ ? '0.0.0.0' : '127.0.0.1');

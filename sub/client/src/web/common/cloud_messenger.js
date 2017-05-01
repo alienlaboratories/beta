@@ -1,12 +1,12 @@
 //
-// Copyright 2016 Minder Labs.
+// Copyright 2017 Alien Labs.
 //
 
 import * as firebase from 'firebase';
 
-import { Async, ErrorUtil } from 'minder-core';
+import { Async, ErrorUtil, Logger } from 'alien-util';
 
-import { GoogleApiConfig, FirebaseAppConfig } from '../../common/defs';
+import { GoogleApiConfig, FirebaseAppConfig } from '../../common/defs';   // TODO(burdon): !!!
 
 const logger = Logger.get('cloud');
 
@@ -107,8 +107,8 @@ export class FirebaseCloudMessenger extends CloudMessenger {
 
   connect() {
 
-    // https://console.firebase.google.com/project/minder-beta/overview
-    firebase.initializeApp(FirebaseAppConfig);
+    // https://console.firebase.google.com/project/alien-dev/overview
+    firebase.initializeApp(_.get(this._config, 'firebase'));
 
     // https://firebase.google.caom/docs/cloud-messaging/js/receive#handle_messages_when_your_web_app_is_in_the_foreground
     firebase.messaging().onMessage(data => {
@@ -193,7 +193,8 @@ export class GoogleCloudMessenger extends CloudMessenger {
       logger.log('Requesting message token...');
 
       // https://developers.google.com/cloud-messaging/chrome/client
-      chrome.gcm.register([ String(GoogleApiConfig.projectNumber) ], messageToken => {
+      const projectNumber = String(_.get(this._config, 'google.projectNumber'));
+      chrome.gcm.register([ projectNumber ], messageToken => {
         if (chrome.runtime.lastError) {
           throw new Error(chrome.runtime.lastError);
         }

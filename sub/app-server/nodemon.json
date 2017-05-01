@@ -10,7 +10,8 @@
     "src",
     "../api/*",
     "../core/*",
-    "../services/*"
+    "../services/*",
+    "../util/*"
   ],
 
   "ignore": [

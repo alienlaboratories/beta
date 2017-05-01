@@ -9,8 +9,6 @@ import { compose, graphql } from 'react-apollo';
 
 import { EventHandler, IdGenerator, Mutator, PropertyProvider, QueryRegistry, Fragments } from 'minder-core';
 
-import { Const } from '../../../common/defs';
-
 import { Navigator, WindowNavigator } from '../../common/path';
 import { AppAction } from '../../common/reducers';
 import { Analytics } from '../../common/analytics';
@@ -40,7 +38,7 @@ const mapStateToProps = (state, ownProps) => {
 
   // CRX Navigator opens in new window (overridden in mapDispatchToProps for web).
   let navigator = undefined;
-  if (_.get(config, 'app.platform') === Const.PLATFORM.CRX) {
+  if (_.get(config, 'app.platform') === ProtoDefs.PLATFORM.CRX) {
     navigator = new WindowNavigator(new PropertyProvider(appState, 'server'));
   }
 

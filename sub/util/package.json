@@ -7,7 +7,7 @@
     "type": "git",
     "url": "git://github.com:alienlabs/beta.git"
   },
-  "main": "src/index.js",
+  "main": "index.js",
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-core": "^6.24.1",

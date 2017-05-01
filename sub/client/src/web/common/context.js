@@ -2,7 +2,8 @@
 // Copyright 2017 Minder Labs.
 //
 
-import { Database, ItemUtil } from 'minder-core';
+import { Logger } from 'alien-util';
+import { Database, ItemUtil } from 'alien-core';
 
 const logger = Logger.get('context');
 

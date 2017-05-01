@@ -12,11 +12,14 @@ import ApolloClient from 'apollo-client';
 import moment from 'moment';
 
 import {
-  ErrorUtil, EventHandler, ID, IdGenerator, Injector, Matcher, QueryParser, QueryRegistry, TypeUtil
-} from 'minder-core';
+  ErrorUtil, EventHandler, Logger, Injector, TypeUtil
+} from 'alien-util';
 
-import { Analytics, SegmentAnalytics } from './analytics';
+import {
+  ID, IdGenerator, Matcher, QueryParser, QueryRegistry
+} from 'alien-core';
 
+import { Analytics } from './analytics';
 import { ContextManager } from './context';
 
 const logger = Logger.get('app');
@@ -43,7 +46,7 @@ export class BaseApp {
     this._queryRegistry = new QueryRegistry(config);
 
     // TODO(burdon): Runtime option. This currently breaks if null.
-    this._analytics = new SegmentAnalytics(this._config);
+    this._analytics = new Analytics(this._config); // new SegmentAnalytics(this._config);
 
     // Global error handling.
     ErrorUtil.handleErrors(window, error => this.onError(error));
@@ -64,7 +67,7 @@ export class BaseApp {
       message: message
     });
 
-    this._analytics && this._analytics.track('error', { message });
+    this._analytics.track('error', { message });
   }
 
   /**
@@ -260,7 +263,7 @@ export class BaseApp {
 
     this.history.listen(location => {
       logger.log('Router: ' + location.pathname);
-      this._analytics && this._analytics.pageview(location);
+      this._analytics.pageview(location);
     });
   }
 
@@ -368,11 +371,11 @@ export class BaseApp {
    * </Activity>
    */
   render(App) {
-    logger.info($$('### [%s %s] ###', moment().format('YYYY-MM-DD HH:mm Z'), _.get(this._config, 'env')));
+    logger.info(`### [${moment().format('YYYY-MM-DD HH:mm Z')} ${_.get(this._config, 'env')}] ###`);
 
     // Construct app.
     const app = (
-      // TODO(burdon): Get injector from store?
+      // TODO(burdon): Get injector from redux store?
       <App
         injector={ this._injector }
         history={ this._reduxHistory }

@@ -7,11 +7,10 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import PropTypes from 'prop-types';
 
-import { DomUtil, ID, TypeUtil } from 'minder-core';
+import { DomUtil, ID, TypeUtil } from 'alien-core';
 import { NetUtil, ReactUtil, Sidebar, SidebarToggle } from 'minder-ux';
 
 import { AppAction } from '../../common/reducers';
-import { Const } from '../../../common/defs';
 import { Path } from '../../common/path';
 
 import SidePanel from '../view/sidepanel';
@@ -95,7 +94,7 @@ export class LayoutComponent extends React.Component {
       let sidePanel = <SidePanel typeRegistry={ typeRegistry }/>;
 
       let content;
-      let showFinder = finder && (platform !== Const.PLATFORM.WEB || search.text);
+      let showFinder = finder && (platform !== ProtoDefs.PLATFORM.WEB || search.text);
       if (showFinder) {
         if (children) {
           content = (
@@ -132,11 +131,11 @@ export class LayoutComponent extends React.Component {
           <div className={ DomUtil.className('ux-main-layout', 'ux-column', 'app-layout-' + platform, className) }>
 
             {/* Header */}
-            { platform !== Const.PLATFORM.CRX &&
+            { platform !== ProtoDefs.PLATFORM.CRX &&
             <div className="ux-header ux-row">
               <div className="ux-row ux-expand">
                 <SidebarToggle sidebar={ () => this.refs.sidebar }/>
-                <h1>{ Const.APP_NAME }</h1>
+                <h1>{ AppDefs.APP_NAME }</h1>
               </div>
               <div>
                 <ul className="ux-inline">

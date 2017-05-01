@@ -16,7 +16,7 @@ import update from 'immutability-helper';
 import { TypeUtil } from 'alien-util';
 import { ItemUtil, MutationUtil, Transforms } from 'alien-core';
 
-import { ReactUtil } from '../../util/index';
+import { ReactUtil } from '../../../util/index';
 
 import './apollo.less';
 

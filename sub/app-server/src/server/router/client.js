@@ -7,9 +7,8 @@ import express from 'express';
 import moment from 'moment';
 
 import { Async, HttpError, Logger } from 'alien-util';
+import { AppDefs } from 'alien-client';
 import { hasJwtHeader, PushManager } from 'alien-services';
-
-import { Const } from '../../common/const';
 
 const logger = Logger.get('client');
 
@@ -29,7 +28,7 @@ export const clientRouter = (userManager, clientManager, systemStore, options={}
     let user = req.user;
 
     // Register the client (and create it if necessary).
-    let clientId = req.headers[Const.HEADER.CLIENT_ID];
+    let clientId = req.headers[AppDefs.HEADER.CLIENT_ID];
     clientManager.register(user.id, platform, clientId, messageToken).then(client => {
       if (!client) {
         throw new HttpError('Invalid client: ' + clientId, 400);
@@ -45,7 +44,7 @@ export const clientRouter = (userManager, clientManager, systemStore, options={}
   // Unregisters the client.
   //
   router.post('/unregister', hasJwtHeader(), function(req, res, next) {
-    let clientId = req.headers[Const.HEADER.CLIENT_ID];
+    let clientId = req.headers[AppDefs.HEADER.CLIENT_ID];
     let user = req.user;
     clientManager.unregister(user.id, clientId);
 

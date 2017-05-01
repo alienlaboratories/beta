@@ -8,9 +8,7 @@ Logger.setLevel({
 
 import moment from 'moment';
 
-import { Async, ChromeMessageChannelDispatcher, ErrorUtil, EventHandler, Listeners, TypeUtil } from 'minder-core';
-
-import { Const } from '../../common/defs';
+import { Async, ChromeMessageChannelDispatcher, ErrorUtil, EventHandler, Listeners, ProtoDefs, TypeUtil } from 'minder-core';
 
 import { AuthManager } from '../common/auth';
 import { ConnectionManager } from '../common/client';
@@ -47,7 +45,7 @@ class BackgroundApp {
   static Config = {
     env: 'development',
     app: {
-      platform: Const.PLATFORM.CRX
+      platform: ProtoDefs.PLATFORM.CRX
     }
   };
 

@@ -2,9 +2,8 @@
 // Copyright 2017 Minder Labs.
 //
 
-import { Const } from '../../common/defs';
-
-import { Logger } from 'minder-core';
+import { Logger } from 'alien-util';
+import { ProtoDefs } from 'alien-core';
 
 import { AppAction, AppReducer, ContextAction, ContextReducer } from '../common/reducers';
 import { WebApp } from '../web/app';
@@ -41,7 +40,7 @@ class TestSidebarApp extends WebApp {
 const config = _.assign(window.config, {
   debug: true,
   app: {
-    platform: Const.PLATFORM.CRX
+    platform: ProtoDefs.PLATFORM.CRX
   }
 });
 

@@ -95,7 +95,7 @@ export class StatusBar extends React.Component {
         icon: 'report_problem'
       },
       {
-        href: 'https://console.firebase.google.com/project/minder-beta/database/data',
+        href: 'https://console.firebase.google.com/project/alien-dev/database/data',
         title: 'Firebase',
         icon: 'cloud_circle'
       },

@@ -2,23 +2,25 @@
 // Copyright 2017 Minder Labs.
 //
 
+import _ from 'lodash';
 import ReactGA from 'react-ga';
 
-import { AnalyticsConfig } from '../../common/defs';
+import { Logger } from 'alien-util';
+
+const logger = Logger.get('analytics');
 
 /**
  * Service-agnostic Analytics interface.
  *
  * Most analytics and metrics reporting services support a similar interface, e.g. Mixpanel, Intercom, Firebase
  * Analytics. Provide a generic interface which can be specialized to report to various services.
- *
  */
 export class Analytics {
 
   /**
-   * Injector key to inject Analytics subclasses. For example:
+   * Injector key.
    */
-  static INJECTOR_KEY = 'INJECTOR_KEY_ANALYTICS';
+  static INJECTOR_KEY = 'ANALYTICS';
 
   // TODO(madadam): More events.
   // x Login/logout
@@ -32,6 +34,7 @@ export class Analytics {
   // - Exceptions/errors
 
   constructor(config) {
+    console.assert(config);
     this._config = config;
   }
 
@@ -41,7 +44,7 @@ export class Analytics {
    * @param attributes dict of user attributes, e.g. email.
    */
   identify(userId, attributes) {
-    throw new Error('Not implemented.');
+    logger.log(`identify(${userId})`);
   }
 
   /**
@@ -49,7 +52,7 @@ export class Analytics {
    * @param location
    */
   pageview(location) {
-    throw new Error('Not implemented.');
+    logger.log(`pageview(${location})`);
   }
 
   /**
@@ -61,7 +64,7 @@ export class Analytics {
    * GoogleAnalytics:   event(category, action, label, numeric_value)
    */
   track(name, params) {
-    throw new Error('Not implemented.');
+    logger.log(`track(${name}, ${JSON.stringify(params)})`);
   }
 
   // TODO(madadam): Add a group() method? for e.g. https://segment.com/docs/sources/website/analytics.js/#group
@@ -83,12 +86,15 @@ export class SegmentAnalytics extends Analytics {
   constructor(config) {
     super(config);
 
-    // TODO(madadam): will this work in CRX? Might need to use the node library.
+    let key = _.get(config, 'analytics.segmentWriteKey');
+    console.assert(key);
+
+    // TODO(madadam): will this work in CRX? Might need to ufse the node library.
     this.analytics = function() {
       // Loads script.
       // https://segment.com/docs/sources/website/analytics.js/quickstart
       let analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on"];analytics.factory=function(t){return function(){var e=Array.prototype.slice.call(arguments);e.unshift(t);analytics.push(e);return analytics}};for(var t=0;t<analytics.methods.length;t++){var e=analytics.methods[t];analytics[e]=analytics.factory(e)}analytics.load=function(t){var e=document.createElement("script");e.type="text/javascript";e.async=!0;e.src="https://cdn.segment.com/analytics.js/v1/"+t+"/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(e,n)};analytics.SNIPPET_VERSION="4.0.0";
-      analytics.load(AnalyticsConfig.segmentWriteKey);
+      analytics.load(key);
       analytics.page();}
       return analytics;
     }();
@@ -100,6 +106,7 @@ export class SegmentAnalytics extends Analytics {
    */
   identify(userId, attributes) {
     let options = {
+
       // https://segment.com/docs/integrations/intercom/#conditionally-show-the-intercom-chat-widget
       Intercom: { hideDefaultLauncher: true }
     };
@@ -136,7 +143,7 @@ export class GoogleAnalytics extends Analytics {
 
     // TODO(madadam): Add a client identifier, e.g. web, crx, mobile -- or does GA handle this?
     // TODO(madadam): Add appVersion, appName, get from config.
-    ReactGA.initialize(AnalyticsConfig.googleAnalyticsTrackingId, { titleCase: false });
+    ReactGA.initialize(_.get(this._config, 'analytics.googleAnalyticsTrackingId'), { titleCase: false });
   }
 
   identify(userId, attributes) {
