@@ -1,5 +1,5 @@
 //
-// Copyright 2017 Minder Labs.
+// Copyright 2017 Alien Labs.
 //
 
 import _ from 'lodash';
@@ -44,6 +44,7 @@ export class Analytics {
    * @param attributes dict of user attributes, e.g. email.
    */
   identify(userId, attributes) {
+    console.assert(userId);
     logger.log(`identify(${userId})`);
   }
 
@@ -52,6 +53,7 @@ export class Analytics {
    * @param location
    */
   pageview(location) {
+    console.assert(location);
     logger.log(`pageview(${location})`);
   }
 
@@ -64,6 +66,7 @@ export class Analytics {
    * GoogleAnalytics:   event(category, action, label, numeric_value)
    */
   track(name, params) {
+    console.assert(name, params);
     logger.log(`track(${name}, ${JSON.stringify(params)})`);
   }
 

@@ -49,8 +49,8 @@
     "react-addons-test-utils": "^15.5.1",
     "regenerator-runtime": "^0.10.5",
     "sinon": "^2.1.0",
-    "sinon-chai": "^2.8.0",
-    "style-loader": "^0.16.1",
+    "sinon-chai": "^2.10.0",
+    "style-loader": "^0.17.0",
     "webpack": "^2.3.3",
     "webpack-dev-middleware": "^1.8.4",
     "webpack-dev-server": "^2.4.5",
@@ -65,7 +65,7 @@
     "chance": "^1.0.8",
     "fbemitter": "^2.1.1",
     "firebase": "^3.9.0",
-    "immutability-helper": "^2.1.2",
+    "immutability-helper": "^2.2.0",
     "jquery": "^3.2.1",
     "lodash": "^4.17.2",
     "moment": "^2.18.1",
@@ -98,6 +98,6 @@
   "scripts": {
     "//": "https://webpack.github.io/docs/webpack-dev-server.html#content-base",
     "test": "jest",
-    "start": "webpack-dev-server --content-base=src/web/testing/"
+    "start": "webpack-dev-server --content-base=src/web/"
   }
 }

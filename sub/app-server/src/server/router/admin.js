@@ -50,7 +50,6 @@ export const adminRouter = (config, clientManager, options) => {
     // http://thejackalofjavascript.com/list-all-rest-endpoints
     let routes = _.compact(_.map(options.app._router.stack, item => {
       let { route, path, regexp } = item;
-      console.log('####', item);
       if (route) {
         return {
           path: route.path || route.regexp
@@ -59,9 +58,9 @@ export const adminRouter = (config, clientManager, options) => {
         let stack = _.get(item, 'handle.stack');
         if (!_.isEmpty(stack)) {
           return {
-            path: path || regexp,             // TODO(burdon): !!!
+            path: path || regexp,
             sub: _.map(stack, item => {
-              console.log('==', item);
+//            console.log('==', item);
               let { route, path } = item;
               if (route || path) {
                 return path || route.path || route.regexp;
@@ -75,7 +74,7 @@ export const adminRouter = (config, clientManager, options) => {
     return clientManager.getClients().then(clients => {
       res.render('admin/config', {
         env: options.env,
-        config: this._config,
+        config,
         routes
       });
     });

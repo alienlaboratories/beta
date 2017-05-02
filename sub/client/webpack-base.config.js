@@ -115,15 +115,13 @@ const web = webpackMerge(baseConfig, {
   // https://webpack.github.io/docs/configuration.html#devtool
   devtool: '#source-map',
 
+  // http://localhost:8080/assets/
   entry: {
-    web_app: [
-      path.resolve(baseConfig.context, 'src/web/index.js'),
+    gallery: [
+      path.resolve(baseConfig.context, 'src/web/components/testing/gallery.js'),
     ],
-    test_components: [
-      path.resolve(baseConfig.context, 'src/web/components/testing/components.js'),
-    ],
-    test_apollo: [
-      path.resolve(baseConfig.context, 'src/web/testing/apollo/main.js'),
+    apollo: [
+      path.resolve(baseConfig.context, 'src/web/app/testing/apollo/main.js'),
     ],
   },
 
@@ -135,6 +133,5 @@ const web = webpackMerge(baseConfig, {
 });
 
 module.exports = {
-  karma,
   web
 };

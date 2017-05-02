@@ -14,7 +14,15 @@ PS4=''  # Don't print "+" in trace.
 
 set -e  # Stop on error.
 
-function log { echo; echo "###"; echo "### $1"; echo "###"; echo; }
+COL_RESET='\033[0m'
+COL_BLACK='\033[0;30m'
+COL_GREEN='\033[0;32m'
+COL_BLUE='\033[1;94m'
+COL_RED='\033[0;31m'
+
+# Colors:
+# http://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
+function log { echo; echo -e "${COL_GREEN}###\n### $1\n###${COL_RESET}"; echo; }
 
 #===============================================================================
 # Globals.
@@ -123,7 +131,7 @@ if [ ${MINIKUBE} -eq 1 ]; then
   DOCKER_REPO=${MINIKUBE_DOCKER_REPO}
 else
 
-  # Use minikube's docker daemon.
+  # Use minikube's docker daemon (minikube must be running).
   eval $(minikube docker-env)
 # eval $(docker-machine env ${DOCKER_MACHINE})
 
@@ -240,7 +248,7 @@ fi
 
 set +x
 duration=$(( SECONDS - start ))
-log "OK $(date) [${duration}s]"
+log "OK: $(date) [${duration}s]"
 set -x
 
 kubectl describe services ${RUN_LABEL}

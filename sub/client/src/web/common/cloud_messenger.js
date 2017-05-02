@@ -2,11 +2,12 @@
 // Copyright 2017 Alien Labs.
 //
 
-import * as firebase from 'firebase';
+// Only install messaging.
+// https://firebase.google.com/docs/web/setup
+import firebase from 'firebase/app';
+import 'firebase/messaging';
 
 import { Async, ErrorUtil, Logger } from 'alien-util';
-
-import { GoogleApiConfig, FirebaseAppConfig } from '../../common/defs';   // TODO(burdon): !!!
 
 const logger = Logger.get('cloud');
 
@@ -100,13 +101,14 @@ class CloudMessenger {
  */
 export class FirebaseCloudMessenger extends CloudMessenger {
 
-  static TIMEOUT = 3000;
+  static TIMEOUT = 5000;
 
   // TODO(burdon): Instance API (server side admin for client).
   // https://developers.google.com/instance-id/reference/server#get_information_about_app_instances
 
   connect() {
 
+    // TODO(burdon): Remove unnecessary keys from server config?
     // https://console.firebase.google.com/project/alien-dev/overview
     firebase.initializeApp(_.get(this._config, 'firebase'));
 
@@ -124,6 +126,8 @@ export class FirebaseCloudMessenger extends CloudMessenger {
       });
     });
 
+    // TODO(burdon): Ask for permissions before app is loaded.
+    // NOTE: Timesout if user is presented with permissions prompt (requires reload anyway).
     return Async.abortAfter(() => {
 
       // https://firebase.google.com/docs/cloud-messaging/js/client#request_permission_to_receive_notifications
@@ -132,7 +136,7 @@ export class FirebaseCloudMessenger extends CloudMessenger {
 
           // NOTE: Requires HTTPS (for Service workers); localhost supported for development.
           // https://developers.google.com/web/fundamentals/getting-started/primers/service-workers#you_need_https
-          logger.log('Requesting message token...');
+          logger.log('Permission OK. Requesting message token...');
           return firebase.messaging().getToken().then(messageToken => {
             if (!messageToken) {
               throw new Error('FCM Token expired.');
@@ -146,11 +150,15 @@ export class FirebaseCloudMessenger extends CloudMessenger {
         .catch(error => {
 
           // Errors: error.code
+          // - Failed to update a ServiceWorker
+          //   mainfest.json not loaded (LINK in HTML head).
           // - messaging/permission-blocked
           //   TODO(burdon): Show UX warning.
           //   Permission not set (set in Chrome (i) button to the left of the URL bar).
           // - messaging/failed-serviceworker-registration
           //   Invalid Firebase console registration.
+          //   TODO(burdon): Ticket submitted 5/1/17 [3-9319000017148] messaging/incorrect-gcm-sender-id
+          // - messaging/incorrect-gcm-sender-id
           throw new Error('FCM registration failed: ' + ErrorUtil.message(error.code));
         });
 
@@ -193,7 +201,7 @@ export class GoogleCloudMessenger extends CloudMessenger {
       logger.log('Requesting message token...');
 
       // https://developers.google.com/cloud-messaging/chrome/client
-      const projectNumber = String(_.get(this._config, 'google.projectNumber'));
+      const projectNumber = String(_.get(this._config, 'firebase.messagingSenderId'));
       chrome.gcm.register([ projectNumber ], messageToken => {
         if (chrome.runtime.lastError) {
           throw new Error(chrome.runtime.lastError);

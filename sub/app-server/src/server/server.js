@@ -254,7 +254,7 @@ export class WebServer {
     const helpers = _.assign(ExpressUtil.Helpers, {
       global: (key) => {
         return _.get({
-          version: AppDefs.APP_VERSION
+          version: Const.APP_VERSION
         }, key);
       }
     });

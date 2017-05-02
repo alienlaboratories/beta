@@ -66,6 +66,8 @@ export class ConnectionManager {
    * Clients also register their Cloud Messaging (FCM, GCM) tokens (which may need to be refreshed).
    * Client must also provide the clientId to request headers.
    *
+   * https://console.developers.google.com/apis/api/googlecloudmessaging.googleapis.com
+   *
    * [ConnectionManager] ==> [ClientManager]
    *
    * @return {Promise<Client>}

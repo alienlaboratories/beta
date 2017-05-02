@@ -28,8 +28,16 @@ a.site-button:hover {
 table {
   border-collapse: collapse;
 }
+table td {
+  padding-right: 8px;
+  font-size: 12px;
+  font-family: Monaco, monospace;
+}
 table th {
+  padding-right: 8px;
+  text-align: left;
   font-weight: 100;
+  color: #666;
 }
 
 div.site-center {
@@ -132,7 +140,7 @@ div.site-body::-webkit-scrollbar-thumb {
 }
 
 div.site-body h2 {
-  margin: 0;
+  margin: 0 0 8px;
   font-weight: 100;
 }
 

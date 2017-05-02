@@ -7,7 +7,8 @@ import PropTypes from 'prop-types';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { DragDropContext } from 'react-dnd';
 
-import { DomUtil, ItemUtil, MutationUtil } from 'alien-core';
+import { DomUtil } from 'alien-util';
+import { MutationUtil } from 'alien-core';
 
 import { TextBox } from './textbox';
 import { ItemDragSource, ItemDropTarget, DragOrderModel } from './dnd';

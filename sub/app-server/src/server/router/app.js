@@ -82,15 +82,11 @@ export const appRouter = (config, clientManager, options) => {
         credentials: _.pick(getUserSession(user), ['id_token', 'id_token_exp']),
 
         // Canonical profile.
-        userProfile: _.pick(user, ['email', 'displayName', 'photoUrl']),
+        userProfile: _.pick(user, ['id', 'email', 'displayName', 'photoUrl']),
 
         // Firebase config.
         firebase: _.get(config, 'firebase'),
 
-        // Google config.
-        google: {
-          projectNumber: _.get(config, 'google.projectNumber')
-        }
       }, options.appConfig);
 
       logger.log('Client config = ' + TypeUtil.stringify(config));

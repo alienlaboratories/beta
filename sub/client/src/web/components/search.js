@@ -5,7 +5,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { DomUtil } from 'alien-core';
+import { DomUtil } from 'alien-util';
 
 import { TextBox } from './textbox';
 

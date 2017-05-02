@@ -7,7 +7,7 @@ import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { DragSource, DropTarget } from 'react-dnd';
 
-import { DomUtil } from 'alien-core';
+import { DomUtil } from 'alien-util';
 
 /**
  * Drag container wraps the list item.

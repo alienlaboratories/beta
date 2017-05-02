@@ -1,0 +1,133 @@
+//
+// Copyright 2017 Alien Labs.
+//
+
+@sidebar-width: 350px;
+@sidebar-offset: 370px;   // Additional distance to hide box-shadow.
+
+@zindex: 2147483647;      // Max.
+
+//
+// Root element in host DOM.
+//
+.crx-content-script {
+
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  justify-content: center;
+  right: -28px;
+  top: 60px;
+  z-index: 99999999999;
+
+  //
+  // Components are in iframes for CSS and JS isolation, and deferred loading.
+  //
+
+  iframe {
+    border: none;
+  }
+
+  //
+  // Toggle Button
+  //
+
+  button {
+    margin: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    opacity: .5;
+
+    img {
+      width: 48px;
+      height: 48px;
+    }
+
+    -webkit-animation-duration: 1s;
+  }
+
+  button.crx-bounce {
+    -webkit-animation-name: bounce;
+  }
+
+  @-webkit-keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateX(0); }
+    40% { transform: translateX(-30px); }
+    60% { transform: translateX(-15px); }
+  }
+
+  //
+  // Sidebar
+  //
+
+  .crx-sidebar {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: @sidebar-width;
+    z-index: @zindex;
+
+    background-color: white;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+
+    transition-property: -webkit-transform, transform, opacity;
+    transition-duration: 0.2s;
+    transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+
+    -webkit-transform: translateX(@sidebar-offset);
+  }
+
+  .crx-sidebar.crx-open {
+    -webkit-transform: translateX(0px);
+  }
+}
+
+//
+// Toggle hint bubble.
+// http://www.cssarrowplease.com/
+//
+
+.crx-hint {
+  position: fixed;
+  top: 65px;
+  right: 25px;
+  padding: 8px 2px;
+  color: whitesmoke;
+  background-color: #333;
+  border: 2px solid #000;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 100;
+
+  span.crx-key {
+    padding: 4px;
+    margin: 0 2px;
+  }
+}
+.crx-hint:after, .arrow_box:before {
+  left: 100%;
+  top: 50%;
+  border: solid transparent;
+  content: ' ';
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+.crx-hint:after {
+  border-color: rgba(51, 51, 51, 0);
+  border-left-color: #333;
+  border-width: 8px;
+  margin-top: -8px;
+}
+.crx-hint:before {
+  border-color: rgba(0, 0, 0, 0);
+  border-left-color: #000;
+  border-width: 11px;
+  margin-top: -11px;
+}

@@ -6,7 +6,7 @@ import React from 'react';
 
 import { Transforms } from 'alien-core';
 
-import { List, ListItem, ListItemEditor } from '../../index';
+import { List, ListItem, ListItemEditor } from '../list';
 
 /**
  * Test List.
