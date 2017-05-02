@@ -16,3 +16,6 @@ serviceAccount: "firebase-adminsdk-dmpna@alienlabs-dev.iam.gserviceaccount.com"
 # Generated 04/24/17 (Generate Private Key)
 # https://console.firebase.google.com/project/alienlabs-dev/settings/serviceaccounts/adminsdk
 credentialPath: "./firebase/alienlabs-dev-credentials.json"
+
+# https://console.firebase.google.com/project/alienlabs-dev/settings/cloudmessaging
+serverKey: "AAAA2WoJo9A:APA91bHz3soGENkkRJNI5yZ4C8ywA157b3J7uIxpyiTRAw6_doNxAbivXIMYP-fOoyPR1KxRmvaXF9qpaEXoKI9NIpYvCS-5vmMK-HSQZj7CyG_2lqUalHK0htOG5MmRdBRttGUS0gVu"

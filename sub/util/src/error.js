@@ -19,19 +19,14 @@ const Errors = {
 
 /**
  * Custom HTTP error that preserves stack traces and can be used to wrap exceptions.
+ * Based on: http://stackoverflow.com/questions/1382107/whats-a-good-way-to-extend-error-in-javascript
  *
- * @param {number|string|Error} message Original error, error message, or error code.
  * @param {number} code HTTP code.
+ * @param {string|Error} message Original error, error message, or error code.
  * @constructor
  */
-export function HttpError(message, code=500) {
-
-  // Based on: http://stackoverflow.com/questions/1382107/whats-a-good-way-to-extend-error-in-javascript
-
-  if (_.isNumber(message)) {
-    code = message;
-    message = Errors[code];
-  }
+export function HttpError(code=500, message=undefined) {
+  message = message || Errors[code];
 
   Object.defineProperty(this, 'name', {
     enumerable: false,
@@ -98,7 +93,7 @@ export class ErrorUtil {
 
         // NOTE: Return true to stop propagation.
 //        return true;
-      }
+      };
 
       // https://developer.mozilla.org/en-US/docs/Web/Events/unhandledrejection
       root.addEventListener('unhandledrejection', error => callback(error));

@@ -2,9 +2,11 @@
 // Copyright 2017 Alien Labs.
 //
 
+import _ from 'lodash';
 import request from 'request';
 
 import { Logger } from 'alien-util';
+import { AppDefs } from 'alien-client';
 
 const logger = Logger.get('push');
 
@@ -43,12 +45,17 @@ export class PushManager {
       };
 
       let url;
-      if (platform === ``) {
-        // https://developers.google.com/cloud-messaging/downstream
-        url = 'https://gcm-http.googleapis.com/gcm/send';
-      } else {
-        // https://firebase.google.com/docs/cloud-messaging/http-server-ref
-        url = 'https://fcm.googleapis.com/fcm/send';
+      switch (platform) {
+        case AppDefs.PLATFORM.CRX:
+          // https://developers.google.com/cloud-messaging/downstream
+          url = 'https://gcm-http.googleapis.com/gcm/send';
+          break;
+
+        case AppDefs.PLATFORM.WEB:
+        default:
+          // https://firebase.google.com/docs/cloud-messaging/http-server-ref
+          url = 'https://fcm.googleapis.com/fcm/send';
+          break;
       }
 
       let options = {
@@ -58,13 +65,12 @@ export class PushManager {
         // https://github.com/request/request#custom-http-headers
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'key=' + this._config.messagingSenderId
+          'Authorization': 'key=' + _.get(this._config, 'serverKey')
         },
 
         body: JSON.stringify({
           // No support for multiple recipients.
           to: messageToken,
-
           data
         })
       };

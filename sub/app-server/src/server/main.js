@@ -33,8 +33,8 @@ async function config(baseDir) {
 ErrorUtil.handleErrors(process, error => {
   logger.error(error);
 
-  // TODO(burdon): Options to exit.
-  process.exit(1);
+  // TODO(burdon): Options to exit in dev mode.
+//process.exit(1);
 });
 
 //

@@ -19,6 +19,7 @@
     "webpack": "^2.4.1"
   },
   "dependencies": {
+    "alien-client": "0.0.1",
     "alien-core": "0.0.1",
     "alien-util": "0.0.1",
     "express": "^4.15.2",

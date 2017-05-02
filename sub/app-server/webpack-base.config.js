@@ -229,6 +229,10 @@ const webConfig = webpackMerge(baseConfig, {
 
     test_apollo: [
       path.resolve(baseConfig.context, 'src/client/test_apollo.js')
+    ],
+
+    site: [
+      path.resolve(baseConfig.context, 'src/client/site.js')
     ]
   },
 

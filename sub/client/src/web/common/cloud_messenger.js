@@ -107,32 +107,41 @@ export class FirebaseCloudMessenger extends CloudMessenger {
   // https://developers.google.com/instance-id/reference/server#get_information_about_app_instances
 
   connect() {
-
     // TODO(burdon): Remove unnecessary keys from server config?
     // https://console.firebase.google.com/project/alien-dev/overview
     firebase.initializeApp(_.get(this._config, 'firebase'));
 
-    // https://firebase.google.caom/docs/cloud-messaging/js/receive#handle_messages_when_your_web_app_is_in_the_foreground
-    firebase.messaging().onMessage(data => {
-      this.fireMessage(data);
-    });
-
-    // The token is updated when the user clears browser data.
-    // https://firebase.google.com/docs/cloud-messaging/js/client#monitor-token-refresh
-    firebase.messaging().onTokenRefresh(() => {
-      firebase.messaging().getToken().then(messageToken => {
-        logger.log('Token updated.');
-        this._onTokenUpdate && this._onTokenUpdate(messageToken);
-      });
-    });
-
     // TODO(burdon): Ask for permissions before app is loaded.
     // NOTE: Timesout if user is presented with permissions prompt (requires reload anyway).
     return Async.abortAfter(() => {
+      console.log('Loading Service Worker...');
 
-      // https://firebase.google.com/docs/cloud-messaging/js/client#request_permission_to_receive_notifications
-      return firebase.messaging().requestPermission()
-        .then(() => {
+      // To debug.
+      // chrome://inspect/#service-workers
+
+      // https://developers.google.com/web/fundamentals/getting-started/primers/service-workers
+      // https://firebase.google.com/docs/reference/js/firebase.messaging.Messaging#useServiceWorker
+      // http://stackoverflow.com/questions/41659970/firebase-change-the-location-of-the-service-worker
+      // return navigator.serviceWorker.register('/firebase-messaging-sw.js').then(registration => {
+      //   firebase.messaging().useServiceWorker(registration);
+      //   console.log('!!!!!!!!', registration);
+
+        // https://firebase.google.caom/docs/cloud-messaging/js/receive#handle_messages_when_your_web_app_is_in_the_foreground
+        firebase.messaging().onMessage(data => {
+          this.fireMessage(data);
+        });
+
+        // The token is updated when the user clears browser data.
+        // https://firebase.google.com/docs/cloud-messaging/js/client#monitor-token-refresh
+        firebase.messaging().onTokenRefresh(() => {
+          firebase.messaging().getToken().then(messageToken => {
+            logger.log('Token updated.');
+            this._onTokenUpdate && this._onTokenUpdate(messageToken);
+          });
+        });
+
+        // https://firebase.google.com/docs/cloud-messaging/js/client#request_permission_to_receive_notifications
+        return firebase.messaging().requestPermission().then(() => {
 
           // NOTE: Requires HTTPS (for Service workers); localhost supported for development.
           // https://developers.google.com/web/fundamentals/getting-started/primers/service-workers#you_need_https
@@ -150,17 +159,18 @@ export class FirebaseCloudMessenger extends CloudMessenger {
         .catch(error => {
 
           // Errors: error.code
-          // - Failed to update a ServiceWorker
+          // - Failed to update a ServiceWorker: The script has an unsupported MIME type ('text/html').
           //   mainfest.json not loaded (LINK in HTML head).
           // - messaging/permission-blocked
           //   TODO(burdon): Show UX warning.
           //   Permission not set (set in Chrome (i) button to the left of the URL bar).
           // - messaging/failed-serviceworker-registration
           //   Invalid Firebase console registration.
-          //   TODO(burdon): Ticket submitted 5/1/17 [3-9319000017148] messaging/incorrect-gcm-sender-id
           // - messaging/incorrect-gcm-sender-id
+          //   manifest.json gcm_sender_id is not project specific.
           throw new Error('FCM registration failed: ' + ErrorUtil.message(error.code));
         });
+      // });
 
     }, FirebaseCloudMessenger.TIMEOUT);
   }

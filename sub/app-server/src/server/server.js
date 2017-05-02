@@ -302,6 +302,7 @@ export class WebServer {
 
   /**
    * Handlebars pages.
+   * https://github.com/ericf/express-handlebars#metadata
    */
   initPages() {
     logger.log('initPages');
@@ -400,7 +401,7 @@ export class WebServer {
 
     // Handle missing resource.
     this._app.use((req, res, next) => {
-      throw new HttpError(404);
+      throw new HttpError(404, req.url);
     });
 
     // Handle errors.

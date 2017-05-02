@@ -358,7 +358,7 @@ export class Resolvers {
     }
 
     if (!context.clientId) {
-      throw new HttpError('Invalid client.', 400);
+      throw new HttpError(400, 'Invalid client.');
     }
   }
 }

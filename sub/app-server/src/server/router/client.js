@@ -31,7 +31,7 @@ export const clientRouter = (userManager, clientManager, systemStore, options={}
     let clientId = req.headers[AppDefs.HEADER.CLIENT_ID];
     clientManager.register(user.id, platform, clientId, messageToken).then(client => {
       if (!client) {
-        throw new HttpError('Invalid client: ' + clientId, 400);
+        throw new HttpError(400, 'Invalid client: ' + clientId);
       } else {
         res.send({
           client: _.pick(client, ['id', 'messageToken'])
@@ -142,7 +142,7 @@ export class ClientManager {
     this._idGenerator = idGenerator;
     this._clientStore = new ClientStore();
     this._pushManager = new PushManager({
-      messagingSenderId: _.get(config, 'firebase.messagingSenderId')
+      serverKey: _.get(config, 'firebase-admin.serverKey')
     });
   }
 
