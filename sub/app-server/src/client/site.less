@@ -13,16 +13,24 @@ body {
 
 a {
   color: #333;
-  padding: 4px;
-  margin-right: 2px;
   text-decoration: none;
-  line-height: 1.5;
   cursor: pointer;
 }
-a.site-button {
+a:hover {
+  color: #666;
 }
-a.site-button:hover {
-  background-color: orange;
+
+ul.site-inline {
+  list-style-type: none;
+
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+
+  li {
+    display: inline;
+    padding: 0 6px;
+  }
 }
 
 table {
@@ -119,7 +127,25 @@ div.site-header .site-admin {
 div.site-toolbar {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
+}
+div.site-header div.site-toolbar {
   background-color: #DDD;
+  line-height: 1.5;
+}
+div.site-toolbar > div {
+  display: flex;
+}
+div.site-toolbar a.site-button {
+  margin-right: 2px;
+  padding: 4px;
+}
+div.site-toolbar a.site-button:hover {
+  background-color: orange;
+  color: #000;
+}
+div.site-toolbar label {
+  padding: 4px;
 }
 
 /**
@@ -160,7 +186,7 @@ div.site-footer {
   display: flex;
   flex-direction: row;
   flex-shrink: 0;
-  justify-content: center;
+  justify-content: space-between;
   padding: 8px;
   background-color: #DDD;
   font-size: 14px;

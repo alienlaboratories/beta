@@ -1,0 +1,28 @@
+{{#section 'head'}}
+  <style>
+    body {
+      height: 100%;
+      margin: 0;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    #root {
+      height: 100vh;
+    }
+  </style>
+
+  <link rel="stylesheet" href="/app/assets/graphiql.css"/>
+{{/section}}
+
+{{#section 'body'}}
+  <div id="root">Loading...</div>
+{{/section}}
+
+{{#section 'script'}}
+  <script>
+    window.config = {{{ json config }}};
+  </script>
+
+  <script src="/app/assets/graphiql.bundle.js"></script>
+{{/section}}

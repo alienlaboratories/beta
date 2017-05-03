@@ -13,6 +13,11 @@ export const AppDefs = {
   // Root router path.
   APP_PATH: '/app',
 
+  // API path.
+  API_ROOT: '/api',
+  GRAPHQL_PATH: '/graphql',
+  GRAPHIQL_PATH: '/graphiql',
+
   // Root DOM element.
   DOM_ROOT: 'app-root',
 

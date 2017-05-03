@@ -35,6 +35,7 @@ const baseConfig = {
       // http://stackoverflow.com/questions/40053344/npm-multiple-entry-points
       'alien-client/web-app'            : path.resolve('./node_modules/alien-client/src/web/app'),
       'alien-client/web-testing-apollo' : path.resolve('./node_modules/alien-client/src/web/app/testing/apollo/apollo.js'),
+      'alien-client/graphiql'           : path.resolve('./node_modules/alien-client/src/graphiql/graphiql'),
     }
   },
 
@@ -219,6 +220,14 @@ const webConfig = webpackMerge(baseConfig, {
     //   'webpack-hot-middleware/client'
     // ],
 
+    graphiql: [
+      path.resolve(baseConfig.context, 'src/client/graphiql.js')
+    ],
+
+    site: [
+      path.resolve(baseConfig.context, 'src/client/site.js')
+    ],
+
     test_hot: [
       path.resolve(baseConfig.context, 'src/client/test_hot.js'),
 
@@ -230,10 +239,6 @@ const webConfig = webpackMerge(baseConfig, {
     test_apollo: [
       path.resolve(baseConfig.context, 'src/client/test_apollo.js')
     ],
-
-    site: [
-      path.resolve(baseConfig.context, 'src/client/site.js')
-    ]
   },
 
   output: {

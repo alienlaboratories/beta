@@ -35,8 +35,7 @@ export const apiRouter = (database, options) => {
   console.assert(database);
 
   options = _.defaults(options, {
-    graphql: '/graphql',
-    graphiql: '/graphiql'
+    graphql: '/graphql'
   });
 
   // http://dev.apollodata.com/tools/graphql-tools/generate-schema.html#makeExecutableSchema

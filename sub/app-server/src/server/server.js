@@ -14,11 +14,8 @@ import session from 'express-session';
 import uuid from 'node-uuid';
 
 import { ExpressUtil, HttpError, Logger } from 'alien-util';
-import { Database, IdGenerator, Matcher, MemoryItemStore, SystemStore, TestItemStore } from 'alien-core';
+import { AuthUtil, Database, IdGenerator, Matcher, MemoryItemStore, SystemStore, TestItemStore } from 'alien-core';
 import { AppDefs } from 'alien-client';
-
-// TODO(burdon): faye-websockets? referenced by bundle directly.
-// webpack-node-externals
 
 import {
   apiRouter,
@@ -86,8 +83,14 @@ export class WebServer {
     await this.initAuth();
     await this.initServices();
 
-    await this.initHandlebars();
     await this.initApp();
+    await this.initApi();
+
+    if (__TESTING__) {
+      await this.initDebugging();
+    }
+
+    await this.initHandlebars();
     await this.initPages();
     await this.initAdmin();
 
@@ -301,6 +304,73 @@ export class WebServer {
   }
 
   /**
+   * GraphQL API.
+   */
+  initApi() {
+
+    // Register the API router.
+    this._app.use(AppDefs.API_ROOT, apiRouter(this._database, {
+
+      // API request.
+      graphql: AppDefs.GRAPHQL_PATH,
+
+      // Log each request.
+      logging: true,
+
+      //
+      pretty: false,
+
+      // Use custom UX provided below.
+      graphiql: false,
+
+      // Asynchronously provides the request context.
+      contextProvider: (req) => {
+        let user = req.user;
+        console.assert(user);
+
+        // If authenticated.
+        let userId = user.active && user.id;
+
+        // The database context (different from the Apollo context).
+        // NOTE: The client must pass the same context shape to the matcher.
+        let context = {
+          userId,
+          credentials: user.credentials,
+
+          // TODO(burdon): Why is this needed?
+          clientId: req.headers[AppDefs.HEADER.CLIENT_ID]
+        };
+
+        if (!userId) {
+          return Promise.resolve(context);
+        } else {
+          // Get buckets.
+          return this._systemStore.getGroups(userId).then(groups => {
+            return _.assign(context, {
+              buckets: _.map(groups, group => group.id)
+            })
+          });
+        }
+      }
+    }));
+
+    // Register the GraphiQL test console.
+    if (__TESTING__) {
+      this._app.get(AppDefs.GRAPHIQL_PATH, isAuthenticated(), (req, res) => {
+        let headers = {};
+        AuthUtil.setAuthHeader(headers, getIdToken(req.user));
+        headers[AppDefs.HEADER.CLIENT_ID] = req.query.clientId;
+        res.render('testing/graphiql', {
+          config: {
+            graphql: AppDefs.API_ROOT + AppDefs.GRAPHQL_PATH,
+            headers
+          }
+        });
+      });
+    }
+  }
+
+  /**
    * Handlebars pages.
    * https://github.com/ericf/express-handlebars#metadata
    */
@@ -378,6 +448,13 @@ export class WebServer {
         return this.reset();
       } : null)
     }));
+  }
+
+  initDebugging() {
+    // TODO(burdon): Why is this needed?
+    // this._app.get('/node_modules', express.static(ENV.MINDER_NODE_MODULES));
+
+    // this._app.use('/testing', testingRouter({}));
   }
 
   /**

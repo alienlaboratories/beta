@@ -4,27 +4,23 @@
   </div>
 
   <div class="site-toolbar">
-    <a class="site-button"
-       href="/admin">Admin</a>
-    <a class="site-button"
-       href="/admin/config">Config</a>
-    <a class="site-button" target="ALIEN_KUBE"
-       href="https://api.beta.kube.robotik.io/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard">Kubernetes</a>
-    <a class="site-button" target="ALIEN_FIREBASE"
-       href="https://console.firebase.google.com/project/alienlabs-dev/database/data">Firebase</a>
+    <div>
+      <a class="site-button"
+         href="/admin">Admin</a>
+      <a class="site-button"
+         href="/admin/config">Config</a>
+      <a class="site-button"
+         href="/admin/ops">Ops</a>
+    </div>
   </div>
 {{/section}}
 
 <!-- TODO(burdon): Dashboard links -->
+<!-- TODO(burdon): Get from JSON cheatsheet: comment, commands, links -->
 
 {{#section 'body'}}
   <div class="site-panel">
     <h2>Kubernetes</h2>
-    <!-- TODO(burdon): Get from JSON cheatsheet: comment, commands, links -->
-    <pre>
-    kubectl config get-contexts
-    kubectl config use-context beta.kube.robotik.io
-    </pre>
   </div>
 
   <div class="site-panel">
