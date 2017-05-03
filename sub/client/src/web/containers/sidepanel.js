@@ -9,10 +9,12 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
 import { TypeUtil } from 'alien-util';
-import { ID, SubscriptionWrapper } from 'alien-core';
-import { List, ListItem, ReactUtil } from 'minder-ux';
+import { ID } from 'alien-core';
 
-import { Path } from '../../common/path';
+import { SubscriptionWrapper } from '../util/subscriptions';
+import { ReactUtil } from '../util/react';
+import { List, ListItem } from '../components/list';
+import { Path } from '../common/path';
 
 import './sidepanel.less';
 

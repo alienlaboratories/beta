@@ -8,15 +8,18 @@ import { connect } from 'react-redux';
 import { compose, graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { Fragments, IdGenerator, ListReducer, QueryParser, SubscriptionWrapper } from 'alien-core';
-import { ReactUtil } from 'minder-ux';
+import { Fragments, IdGenerator, ListReducer, QueryParser } from 'alien-core';
 
-import { AppAction, ContextAction } from '../../common/reducers';
-import { ContextManager } from '../../common/context';
+import { ReactUtil } from '../util/react';
+import { SubscriptionWrapper } from '../util/subscriptions';
 
-import { BasicSearchList, CardSearchList, BasicListItemRenderer } from '../framework/lists';
-import { connectReducer } from '../framework/connector';
+import { AppAction, ContextAction } from '../common/reducers';
+import { ContextManager } from '../common/context';
+
 import { Card } from '../components/card';
+
+import { BasicSearchList, CardSearchList, BasicListItemRenderer } from './lists';
+import { connectReducer } from './connector';
 
 import './finder.less';
 

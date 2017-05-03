@@ -9,10 +9,10 @@ import PropTypes from 'prop-types';
 
 import { Path } from '../common/path';
 
-// import AdminActivity from './activity/admin';
-// import CanvasActivity from './activity/canvas';
-// import FinderActivity from './activity/finder';
-// import TestingActivity from './activity/testing';
+// import AdminActivity from '../containers/activities/admin';
+// import CanvasActivity from '../containers/activities/canvas';
+// import FinderActivity from '../containers/activities/finder';
+// import TestingActivity from '../containers/activities/testing';
 
 /**
  * The Application must be a pure React component since HOCs may cause the component to be re-rendered,

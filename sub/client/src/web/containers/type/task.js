@@ -10,15 +10,18 @@ import { Link } from 'react-router';
 import gql from 'graphql-tag';
 
 import { ID, Fragments, ItemReducer, MutationUtil } from 'alien-core';
-import { List, ListItem, ListItemEditor, Picker, ReactUtil } from 'minder-ux';
 
-import { TASK_LEVELS } from '../../../common/const';
+import { Enum } from '../../../common/defs';
+
+import { ReactUtil } from '../../util/react';
 
 import { Path } from '../../common/path';
+import { Canvas } from '../../components/canvas';
+import { Card } from '../../components/card';
+import { List, ListItem, ListItemEditor } from '../../components/list';
+import { Picker } from '../../components/picker';
 
-import { connectReducer } from '../framework/connector';
-import { Canvas } from '../components/canvas';
-import { Card } from '../components/card';
+import { connectReducer } from '../connector';
 
 import './task.less';
 
@@ -39,7 +42,7 @@ const CreateTask = (mutator, user, parent, mutations) => {
     .createItem('Task', _.concat(mutations, [
       MutationUtil.createFieldMutation('project', 'id',   parent.project.id),
       MutationUtil.createFieldMutation('owner',   'id',   user.id),
-      MutationUtil.createFieldMutation('status',  'int',  TASK_LEVELS.UNSTARTED),
+      MutationUtil.createFieldMutation('status',  'int',  Enum.Task_LEVEL.UNSTARTED),
     ]), 'new_task')
     .updateItem(parent, [
       MutationUtil.createSetMutation('tasks', 'id', '${new_task}')
@@ -57,9 +60,9 @@ const TaskStatus = ListItem.createInlineComponent((props, context) => {
   let { item } = context;
 
   // TODO(burdon): Generalize status (mapping to board column model).
-  let icon = (item.status === TASK_LEVELS.COMPLETE) ? 'done' : 'check_box_outline_blank';
+  let icon = (item.status === Enum.TASK_LEVEL.COMPLETE) ? 'done' : 'check_box_outline_blank';
   const toggleStatus = () => {
-    let status = (item.status === TASK_LEVELS.UNSTARTED) ? TASK_LEVELS.COMPLETE : TASK_LEVELS.UNSTARTED;
+    let status = (item.status === Enum.TASK_LEVEL.UNSTARTED) ? Enum.TASK_LEVEL.COMPLETE : Enum.TASK_LEVEL.UNSTARTED;
     context.onItemUpdate(item, [
       MutationUtil.createFieldMutation('status', 'int', status)
     ]);
@@ -271,8 +274,8 @@ class TaskCanvasComponent extends React.Component {
         return <div/>;
       }
 
-      const levels = _.keys(TASK_LEVELS.properties).sort().map(level =>
-        <option key={ level } value={ level }>{ TASK_LEVELS.properties[level].title }</option>);
+      const levels = _.keys(Enum.TASK_LEVEL.properties).sort().map(level =>
+        <option key={ level } value={ level }>{ Enum.TASK_LEVEL.properties[level].title }</option>);
 
       return (
         <Canvas ref="canvas"

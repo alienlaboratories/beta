@@ -6,7 +6,9 @@ import React from 'react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
-import { Fragments, ListReducer, SubscriptionWrapper } from 'alien-core';
+import { Fragments, ListReducer } from 'alien-core';
+
+import { SubscriptionWrapper } from '../util/subscriptions';
 
 import { List, ListItem } from '../components/list';
 

@@ -12,14 +12,14 @@ import { DomUtil } from 'alien-util';
 import { Fragments, ID, MutationUtil } from 'alien-core';
 import { Board, DragOrderModel, List, ReactUtil, connectWithRef } from 'minder-ux';
 
-import { TASK_LEVELS } from '../../../common/const';
+import { Enum } from '../../../common/defs';
 
-import { Path } from '../../common/path';
 import { AppAction } from '../../common/reducers';
+import { Canvas } from '../../components/canvas';
+import { Card } from '../../components/card';
+import { Path } from '../../common/path';
 
-import { connectReducer } from '../framework/connector';
-import { Canvas } from '../components/canvas';
-import { Card } from '../components/card';
+import { connectReducer } from '../connector';
 
 import { TaskItemEditor, TaskItemRenderer } from './task';
 
@@ -100,7 +100,7 @@ class ProjectBoardCanvasComponent extends React.Component {
      */
     status: {
 
-      COLUMNS: _.map(TASK_LEVELS.properties, (def, value) => ({
+      COLUMNS: _.map(Enum.TASK_LEVEL.properties, (def, value) => ({
         id: 'C-' + value,
         title: def.title,
         value: parseInt(value)

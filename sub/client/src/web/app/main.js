@@ -5,17 +5,16 @@
 import React from 'react';
 import { browserHistory } from 'react-router';
 
-// import { Injector } from 'alien-util';
-
-import { BaseApp } from '../common/base_app';
-import { AppAction, AppReducer, GlobalAppReducer } from '../common/reducers';
+import { Injector } from 'alien-util';
 
 import { AuthManager } from '../common/auth';
+import { BaseApp } from '../common/base_app';
 import { ConnectionManager } from '../common/client';
-import { NetworkManager } from '../common/network';
 import { FirebaseCloudMessenger } from '../common/cloud_messenger';
+import { NetworkManager } from '../common/network';
+import { AppAction, AppReducer, GlobalAppReducer } from '../common/reducers';
 
-//import { TypeRegistryFactory } from './framework/type_factory';
+import { TypeRegistryFactory } from '../containers/type_factory';
 
 /**
  * Base class for Web apps.
@@ -79,11 +78,11 @@ export class WebApp extends BaseApp {
     return this._itemStore;
   }
 
-  // get providers() {
-  //   return [
-  //     Injector.provide(TypeRegistryFactory())
-  //   ];
-  // }
+  get providers() {
+    return [
+      Injector.provide(TypeRegistryFactory())
+    ];
+  }
 
   get globalReducer() {
     return GlobalAppReducer;

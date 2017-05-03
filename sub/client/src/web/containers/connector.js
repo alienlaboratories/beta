@@ -8,7 +8,7 @@ import { compose } from 'react-apollo';
 
 import { Fragments, Matcher } from 'alien-core';
 
-import { AppAction } from '../../common/reducers';
+import { AppAction } from '../common/reducers';
 
 //-------------------------------------------------------------------------------------------------
 // Connector required by reducers.

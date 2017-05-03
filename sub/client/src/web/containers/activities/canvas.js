@@ -7,13 +7,13 @@ import PropTypes from 'prop-types';
 
 import { ProtoDefs } from 'alien-core';
 
-import { ReactUtil } from 'minder-ux';
+import { ReactUtil } from '../../util';
+import { Activity } from '../../common/activity';
 
-import Finder from '../view/finder';
+import { CanvasContainer, CanvasNavbar } from '../../components/canvas';
 
-import { CanvasContainer, CanvasNavbar } from '../components/canvas';
+import Finder from '../finder';
 
-import { Activity } from './activity';
 import { Layout } from './layout';
 
 /**

@@ -6,10 +6,11 @@ import React from 'react';
 import { compose } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { ItemReducer, Fragments } from 'alien-util';
+import { ItemReducer, Fragments } from 'alien-core';
 
-import { connectReducer } from '../framework/connector';
 import { ItemCanvasComponent, ItemCanvasHeaderComponent } from '../components/item';
+
+import { connectReducer } from './connector';
 
 /**
  * Type-specific query.

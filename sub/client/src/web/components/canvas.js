@@ -12,9 +12,9 @@ import { TextArea } from './textarea';
 import { getWrappedInstance } from './react';
 import { Navbar } from './navbar';
 
-import { ItemCanvasHeader } from './item';    // TODO(burdon): !!!
+import { ItemCanvasHeader } from './item';    // TODO(burdon): Container !!!
 
-/**
+/**i
  * Canvas navbar,
  */
 export class CanvasNavbar extends React.Component {

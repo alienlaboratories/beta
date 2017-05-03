@@ -8,10 +8,14 @@ import { compose } from 'react-apollo';
 import gql from 'graphql-tag';
 
 import { Fragments, ItemReducer } from 'alien-core';
-import { List, ReactUtil } from 'minder-ux';
 
-import { connectReducer } from '../framework/connector';
-import { Canvas } from '../components/canvas';
+import { ReactUtil } from '../../util/react';
+
+import { Canvas } from '../../components/canvas';
+import { List } from '../../components/list';
+
+import { connectReducer } from '../connector';
+
 import { TaskItemEditor, TaskItemRenderer } from './task';
 
 //-------------------------------------------------------------------------------------------------

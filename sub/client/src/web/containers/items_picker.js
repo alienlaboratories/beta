@@ -4,7 +4,7 @@
 
 import { Picker } from 'minder-ux';
 
-import { ItemsQueryWrapper } from '../framework/lists';
+import { ItemsQueryWrapper } from './lists';
 
 /**
  * Subclass picker to create items query fitler.

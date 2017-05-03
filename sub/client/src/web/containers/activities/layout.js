@@ -7,16 +7,19 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import PropTypes from 'prop-types';
 
-import { DomUtil, ID, TypeUtil } from 'alien-core';
-import { NetUtil, ReactUtil, Sidebar, SidebarToggle } from 'minder-ux';
+import { DomUtil, NetUtil, TypeUtil } from 'alien-util';
+import { ID } from 'alien-core';
 
 import { AppAction } from '../../common/reducers';
 import { Path } from '../../common/path';
 
-import SidePanel from '../view/sidepanel';
+import { ReactUtil } from '../../util/react';
 
-import { StatusBar } from '../components/statusbar';
-import { DebugPanel } from '../components/debug';
+import { DebugPanel } from '../../components/debug';
+import { Sidebar, SidebarToggle } from '../../components/sidebar';
+import { StatusBar } from '../../components/statusbar';
+
+import SidePanel from '../sidepanel';
 
 import './layout.less';
 

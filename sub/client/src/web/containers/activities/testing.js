@@ -7,12 +7,14 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
 import { Fragments } from 'alien-core';
-import { List, ReactUtil } from 'minder-ux';
 
-import { Navbar } from '../components/navbar';
-import { Card } from '../components/card';
+import { ReactUtil } from '../../util/react';
 
-import { Activity } from './activity';
+import { Activity } from '../../common/activity';
+import { Card } from '../../components/card';
+import { List } from '../../components/list';
+import { Navbar } from '../../components/navbar';
+
 import { Layout } from './layout';
 
 /**

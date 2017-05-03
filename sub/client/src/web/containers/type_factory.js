@@ -4,14 +4,14 @@
 
 import React from 'react';
 
-import { TypeRegistry } from '../framework/type_registry';
+import { TypeRegistry } from '../common/type_registry';
 
-import { ContactCard, ContactCanvas } from '../type/contact';
-import { DocumentColumn } from '../type/document';
-import { GroupCanvas } from '../type/group';
-import { ProjectCard, ProjectBoardCanvas, ProjectCanvasToolbar } from '../type/project';
-import { TaskCard, TaskCanvas } from '../type/task';
-import { UserCanvas } from '../type/user';
+import { ContactCard, ContactCanvas } from './type/contact';
+import { DocumentColumn } from './type/document';
+import { GroupCanvas } from './type/group';
+import { ProjectCard, ProjectBoardCanvas, ProjectCanvasToolbar } from './type/project';
+import { TaskCard, TaskCanvas } from './type/task';
+import { UserCanvas } from './type/user';
 
 /**
  * Class utility to create the TypeRegistry singleton.
