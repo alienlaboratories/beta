@@ -73,7 +73,7 @@ export class ItemUtil {
    */
   static mergeItems(item, source, omitFields=[]) {
     return _.merge(item, _.omit(_.omitBy(source, _.isNil), omitFields));
-  };
+  }
 
   /**
    * Groups search results by common parents.

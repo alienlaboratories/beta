@@ -33,10 +33,11 @@ export class LayoutComponent extends React.Component {
 
   static contextTypes = {
     config: PropTypes.object.isRequired,
-    viewer: PropTypes.object.isRequired,
     typeRegistry: PropTypes.object.isRequired,
     queryRegistry: PropTypes.object.isRequired,
-    eventHandler: PropTypes.object.isRequired
+    eventHandler: PropTypes.object.isRequired,
+
+    viewer: PropTypes.object
   };
 
   static propTypes = {
@@ -93,7 +94,7 @@ export class LayoutComponent extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { config, viewer, typeRegistry } = this.context;
+      let { config, typeRegistry, viewer={} } = this.context;
       let { debug, navbar, finder, search, children, className } = this.props;
       let platform = _.get(config, 'app.platform');
 
@@ -148,7 +149,7 @@ export class LayoutComponent extends React.Component {
                   { links }
 
                   <li>
-                    <a target="MINDER_PROFILE" href="/user/profile">{ viewer.user.title }</a>
+                    <a target="MINDER_PROFILE" href="/user/profile">{ _.get(viewer, 'user.title') }</a>
                   </li>
                   <li>
                     <a href="/user/logout">Logout</a>

@@ -62,7 +62,7 @@ export const loginRouter = (userManager, oauthRegistry, systemStore, options) =>
   // Login.
   //
   router.get('/login', function(req, res) {
-    res.redirect('/oauth/login/' + loginAuthProvider.providerId);
+    res.redirect(HttpUtil.toUrl('/oauth/login/' + loginAuthProvider.providerId, req.query));
   });
 
   //

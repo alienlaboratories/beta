@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 import { Async } from 'alien-util';
 
-import { ItemStore, QueryProcessor } from '../item_store';
+import { ItemStore } from '../item_store';
 
 /**
  * Dispatching item store with delayed dispatching.

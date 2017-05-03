@@ -21,7 +21,7 @@ export const GlobalAppReducer = (state, action) => {
 
       // Find the query matching Navbar updates.
       let query = state.apollo.queries[queryId];
-      query && console.log(query);
+      console.assert(query, 'Invalid query: ' + queryId);
       return state;
     }
 

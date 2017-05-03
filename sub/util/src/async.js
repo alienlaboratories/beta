@@ -43,11 +43,11 @@ export class Async {
       if (callback) {
         timeout = setTimeout(() => {
           timeout = null;
-          callback()
+          callback();
         }, now ? 0 : t);
       }
-    }
-  };
+    };
+  }
 
   /**
    * Aborts promise if times out.
@@ -93,7 +93,7 @@ export class Async {
 
           // OK.
           .then(value => {
-            resolve(value)
+            resolve(value);
           })
 
           // Retry.
@@ -168,6 +168,6 @@ export class Listeners {
     let args = arguments;
     this._listeners.forEach(listener => {
       listener.apply(null, args);
-    })
+    });
   }
 }

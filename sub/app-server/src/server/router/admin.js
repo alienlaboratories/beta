@@ -2,9 +2,9 @@
 // Copyright 2017 Alien  Labs.
 //
 
-import _ from 'lodash';
 import express from 'express';
-//import kue from 'kue';
+
+import { ExpressUtil } from 'alien-util';
 
 import { isAuthenticated } from 'alien-services';
 
@@ -45,37 +45,11 @@ export const adminRouter = (config, clientManager, options) => {
   });
 
   router.get('/config', isAuthenticated('/home', true), (req, res) => {
-
-    // TODO(burdon): ExpressUtil.
-    // http://thejackalofjavascript.com/list-all-rest-endpoints
-    let routes = _.compact(_.map(options.app._router.stack, item => {
-      let { route, path, regexp } = item;
-      if (route) {
-        return {
-          path: route.path || route.regexp
-        };
-      } else {
-        let stack = _.get(item, 'handle.stack');
-        if (!_.isEmpty(stack)) {
-          return {
-            path: path || regexp,
-            sub: _.map(stack, item => {
-//            console.log('==', item);
-              let { route, path } = item;
-              if (route || path) {
-                return path || route.path || route.regexp;
-              }
-            })
-          };
-        }
-      }
-    }));
-
     return clientManager.getClients().then(clients => {
       res.render('admin/config', {
         env: options.env,
         config,
-        routes
+        routes: ExpressUtil.stack(options.app)
       });
     });
   });
@@ -132,13 +106,13 @@ export const adminRouter = (config, clientManager, options) => {
   //
   // https://github.com/Automattic/kue#user-interface
   //
-  if (options.scheduler) {
-    router.use('/kue', kue.app);
-  } else {
-    router.use('/kue', (req, res) => {
-      res.redirect('/admin');
-    });
-  }
+  // if (options.scheduler) {
+  //   router.use('/kue', kue.app);
+  // } else {
+  //   router.use('/kue', (req, res) => {
+  //     res.redirect('/admin');
+  //   });
+  // }
 
   return router;
 };

@@ -263,17 +263,21 @@ export class Matcher {
 
       case 'GTE':
         eq = true;
+        // falls through.
       case 'GT':
         return Matcher.isGreaterThan(fieldValue, inputValue, eq);
 
       case 'LTE':
         eq = true;
+        // falls through.
       case 'LT':
         return Matcher.isLessThan(fieldValue, inputValue, eq);
 
       case 'NE':
         not = true;
+        // falls through.
       case 'EQ':
+        // falls through.
       default:
         return Matcher.isEqualTo(fieldValue, inputValue, not);
     }

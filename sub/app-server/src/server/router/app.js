@@ -87,8 +87,8 @@ export const appRouter = (config, clientManager, options) => {
         root: AppDefs.DOM_ROOT,
 
         // Apollo.
-        graphql: '/graphql',
-        graphiql: '/graphiql',
+        graphql: AppDefs.GRAPHQL_PATH,
+        graphiql: AppDefs.GRAPHIQL_PATH,
 
         // Client registration.
         client: _.pick(client, ['id', 'messageToken']),

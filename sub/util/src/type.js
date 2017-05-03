@@ -15,7 +15,7 @@ export class TypeUtil {
    * @return {Object}
    */
   static mapToObject(map) {
-    return _.zipObject(_.toArray(map.keys()), _.toArray(map.values()))
+    return _.zipObject(_.toArray(map.keys()), _.toArray(map.values()));
   }
 
   /**
@@ -216,7 +216,7 @@ export class TypeUtil {
     };
 
     return t(obj, f);
-  };
+  }
 }
 
 /**

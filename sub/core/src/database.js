@@ -7,7 +7,6 @@ import _ from 'lodash';
 import { ErrorUtil, Logger, TypeUtil } from 'alien-util';
 
 import { ID } from './id';
-import { ItemStore, QueryProcessor } from './item_store';
 import { ItemUtil } from './item_util';
 
 const logger = Logger.get('db');

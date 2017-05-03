@@ -178,7 +178,7 @@ export default Activity.compose(
     }),
 
     props: ({ ownProps, data }) => {
-      let { errors, loading, search } = data;
+      let { errors, loading, search={} } = data;
       let { items } = search;
 
       return {

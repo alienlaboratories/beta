@@ -184,7 +184,7 @@ export class Transforms {
     // TODO(burdon): Handle non scalar types?
     let value = Matcher.scalarValue(mutation.value);
     if (value === undefined) {
-      array.splice(idx, 1)
+      array.splice(idx, 1);
     } else {
       if (idx === -1) {
         array.push(value);

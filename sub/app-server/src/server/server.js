@@ -157,7 +157,7 @@ export class WebServer {
     //
 
     // this._database
-    //   .registerQueryProcessor(new GoogleDriveQueryProcessor(this._idGenerator, _.get(this._config, 'google')));
+    //   .registerQueryProcessor(new GoogleDriveQueryProcessor(new IdGenerator(), _.get(this._config, 'google')));
   }
 
   /**
@@ -201,7 +201,7 @@ export class WebServer {
 //    .registerProvider(new SlackServiceProvider());
 
     // Client manager.
-    this._clientManager = new ClientManager(this._config, this._idGenerator);
+    this._clientManager = new ClientManager(this._config, new IdGenerator());
 
     // Client registration.
     this._app.use('/client', clientRouter(this._userManager, this._clientManager, this._systemStore));
@@ -310,10 +310,10 @@ export class WebServer {
   initApi() {
 
     // Register the API router.
-    this._app.use(AppDefs.API_ROOT, apiRouter(this._database, {
+    this._app.use('/api', apiRouter(this._database, {
 
       // API request.
-      graphql: AppDefs.GRAPHQL_PATH,
+      graphql: '/graphql',
 
       // Log each request.
       logging: true,
@@ -363,7 +363,7 @@ export class WebServer {
         headers[AppDefs.HEADER.CLIENT_ID] = req.query.clientId;
         res.render('testing/graphiql', {
           config: {
-            graphql: AppDefs.API_ROOT + AppDefs.GRAPHQL_PATH,
+            graphql: AppDefs.GRAPHQL_PATH,
             headers
           }
         });

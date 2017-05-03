@@ -55,6 +55,7 @@
   },
   "scripts": {
     "//": "TODO(burdon): Add mocha testing for server.",
+    "lint": "eslint -c ../../.eslintrc.yml ./src",
     "test": "karma start --single-run"
   }
 }

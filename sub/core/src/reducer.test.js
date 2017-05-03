@@ -2,12 +2,13 @@
 // Copyright 2017 Alien Labs.
 //
 
-import gql from 'graphql-tag';
+// import gql from 'graphql-tag';
 
+import { Matcher } from './matcher';
 import { UpsertItemsMutationName } from './mutations';
 import { Reducer, ListReducer } from './reducer';
-import { Matcher } from './matcher';
 
+/*
 const TestListQuery = gql`
   query TestListQuery($filter: FilterInput!) {
     search(filter: $filter) {
@@ -34,6 +35,7 @@ const TestItemQuery = gql`
     }
   }
 `;
+*/
 
 const Items = [
   {

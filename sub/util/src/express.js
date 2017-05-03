@@ -2,6 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
+import _ from 'lodash';
 import moment from 'moment';
 
 import { TypeUtil } from './type';
@@ -76,5 +77,44 @@ export class ExpressUtil {
     time: function(value) {
       return value && moment.unix(value).fromNow();
     }
+  };
+
+  /**
+   * Return object representing routes.
+   * @return [{ root, path }]
+   */
+  static stack(app) {
+    function comp(a, b) {
+      if (a.root && b.root) {
+        return a.root > b.root;
+      }
+
+      if (a.path && b.path) {
+        return a.path > b.path;
+      }
+
+      return (a.path && !b.path) ? -1 : 1;
+    }
+
+    function getStack(item) {
+      let { path, route, regexp, handle } = item;
+      if (handle.stack) {
+        let paths = Array.sort(_.compact(_.map(handle.stack, stack => getStack(stack))), comp);
+        if (!_.isEmpty(paths)) {
+          return {
+            root: regexp.source,
+            paths
+          };
+        }
+      } else if (!_.isEmpty(path)) {
+        return { path: path.source || path };
+      } else if (route) {
+        return { path: route.path.source || route.path };
+      }
+    }
+
+    let items =  Array.sort(_.compact(_.map(app._router.stack, item => getStack(item))), comp);
+    console.log(JSON.stringify(items, 0, 2));
+    return items;
   }
 }

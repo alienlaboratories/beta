@@ -12,7 +12,9 @@ import { Path } from '../common/path';
 // import AdminActivity from '../containers/activities/admin';
 // import CanvasActivity from '../containers/activities/canvas';
 // import FinderActivity from '../containers/activities/finder';
-// import TestingActivity from '../containers/activities/testing';
+import TestingActivity from '../containers/activities/testing';
+
+import '../resources/css/core.less';
 
 /**
  * The Application must be a pure React component since HOCs may cause the component to be re-rendered,
@@ -35,12 +37,6 @@ class Application extends React.Component {
     // https://github.com/ReactTraining/react-router
     // TODO(burdon): onEnter/onLeave.
 
-    const Test = () => {
-      return (
-        <div>Test</div>
-      );
-    };
-
     return (
       <ApolloProvider client={ client } store={ store }>
 
@@ -54,7 +50,7 @@ class Application extends React.Component {
             <Route path={ Path.TESTING } component={ TestingActivity }/>
             */}
 
-            <Route path={ Path.HOME } component={ Test }/>
+            <Route path={ Path.HOME } component={ TestingActivity }/>
 
             {/*
               * /inbox

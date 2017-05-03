@@ -2,8 +2,6 @@
 // Copyright 2017 Alien Labs.
 //
 
-import React from 'react';
-
 import { Logger } from 'alien-util';
 
 const logger = Logger.get('sub');

@@ -153,7 +153,7 @@ export class ItemStore extends QueryProcessor {
       //
       .then(results => {
         let items = TypeUtil.flattenArrays(results);
-        return itemStore.upsertItems(context, items)
+        return itemStore.upsertItems(context, items);
       });
   }
 }

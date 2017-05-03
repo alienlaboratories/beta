@@ -149,9 +149,9 @@ describe('Matcher:', () => {
     };
     let root = {};
 
-    expect(matcher.matchItem(context, root, { type: "Task", labels: ['foo'] }, items.f)).to.be.true;
-    expect(matcher.matchItem(context, root, { type: "Task", labels: ['!foo'] }, items.f)).to.be.false;
-    expect(matcher.matchItem(context, root, { type: "Task", labels: ['!foo'] }, items.e)).to.be.true;
+    expect(matcher.matchItem(context, root, { type: 'Task', labels: ['foo'] }, items.f)).to.be.true;
+    expect(matcher.matchItem(context, root, { type: 'Task', labels: ['!foo'] }, items.f)).to.be.false;
+    expect(matcher.matchItem(context, root, { type: 'Task', labels: ['!foo'] }, items.e)).to.be.true;
   });
 
   /**

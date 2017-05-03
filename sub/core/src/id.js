@@ -58,7 +58,7 @@ export class ID {
     return {
       type: parts[1],
       id: parts[2]
-    }
+    };
   }
 
   /**

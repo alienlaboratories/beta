@@ -28,6 +28,24 @@
 
   <div class="site-panel">
     <h2>Routes</h2>
-    <pre>{{{ json routes 2 }}}</pre>
+    <table>
+      <tbody>
+      {{#each routes}}
+      <tr>
+        {{#if path}}
+        <td>{{ path }}</td>
+        <td></td>
+        {{else}}
+        <td>{{ root }}</td>
+        <td>
+        {{#each paths}}
+          <div>{{ path }}</div>
+        {{/each}}
+        </td>
+        {{/if}}
+      </tr>
+      {{/each}}
+      </tbody>
+    </table>
   </div>
 {{/section}}

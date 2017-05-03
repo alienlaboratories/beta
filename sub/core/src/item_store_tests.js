@@ -2,8 +2,6 @@
 // Copyright 2017 Alien Labs.
 //
 
-import _ from 'lodash';
-
 /**
  * Standard tests for all ItemStore implementations
  *
@@ -58,7 +56,7 @@ export const ItemStoreTests = (expect, storeFactory, buckets=true) => {
             // expect(matchedItems).to.have.lengthOf(upsertedItems.length);
             // return upsertedItems;
           });
-        })
+        });
 
         //
         // Look-up by ID.

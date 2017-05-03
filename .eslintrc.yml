@@ -19,6 +19,12 @@ globals:
   _: true
   chrome: true
 
+  __ENV__: true
+  __PRODUCTION__: true
+  __DEVELOPMENT__: true
+  __HOT__: true
+  __TESTING__: true
+
 parser: 'babel-eslint'
 
 parserOptions:
