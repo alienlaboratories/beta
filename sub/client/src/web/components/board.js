@@ -48,7 +48,7 @@ export class Board extends React.Component {
     this.setState({
       items: nextProps.items,
       columns: nextProps.columns
-    })
+    });
   }
 
   handleItemSelect(item) {

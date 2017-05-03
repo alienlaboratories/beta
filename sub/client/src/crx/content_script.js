@@ -2,10 +2,11 @@
 // Copyright 2017 Alien Labs.
 //
 
-import { HttpUtil, KeyListener, Logger, WindowMessenger } from 'alien-util';
+import { HttpUtil, Logger, WindowMessenger } from 'alien-util';
+
+//import { InspectorRegistry, GmailInspector, GoogleInboxInspector, SlackInspector, TestInspector } from './util/inspector';
 
 import { SidebarCommand, KeyCodes } from './common';
-import { InspectorRegistry, GmailInspector, GoogleInboxInspector, SlackInspector, TestInspector } from './util/inspector';
 
 import './content_script.less';
 
@@ -69,7 +70,7 @@ class ContentScript {
     this.button = $('<button>').appendTo(container)
       .append($('<img>')
         .attr('src', chrome.extension.getURL('img/icon_128.png')))
-        .css('cursor', 'pointer')
+      .css('cursor', 'pointer')
       .click(() => {
         this.hint.css('display', 'none');
         this.sidebar.toggle();
@@ -87,7 +88,9 @@ class ContentScript {
       'page/sidebar.html',
       'sidebar/' + scriptId,
       $('<div>').addClass('crx-sidebar').appendTo(container),
-      () => { this.button.addClass('crx-bounce') });
+      () => {
+        this.button.addClass('crx-bounce');
+      });
 
     //
     // Notify sidebar of visibility.
@@ -99,7 +102,7 @@ class ContentScript {
       this.sidebar.messenger.postMessage({
         command: SidebarCommand.UPDATE_VISIBILITY,
         visible
-      })
+      });
     };
 
     //
@@ -155,6 +158,7 @@ class ContentScript {
     });
 
     // Listen for window events injected into this page (e.g. from the browser action bar).
+    /*
     window.addEventListener('message', event => {
 
       let origin = event.origin || event.originalEvent.origin;
@@ -168,7 +172,7 @@ class ContentScript {
 
       // TODO(madadam): Support all SidebarCommands?
       let { data } = event;
-      if (data.command === SidebarCommand.SET_VISIBILITY ) {
+      if (data.command === SidebarCommand.SET_VISIBILITY) {
         let promise;
         if (data.open === true) {
           promise = this.sidebar.open();
@@ -218,6 +222,7 @@ class ContentScript {
         this.sidebar.toggle().then(visible => updateVisibility(visible));
         this.button.focus();
       });
+    */
   }
 }
 

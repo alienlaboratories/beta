@@ -10,16 +10,22 @@ import gql from 'graphql-tag';
 
 import { DomUtil } from 'alien-util';
 import { Fragments, ID, MutationUtil } from 'alien-core';
-import { Board, DragOrderModel, List, ReactUtil, connectWithRef } from 'minder-ux';
 
 import { Enum } from '../../../common/defs';
 
+import { ReactUtil } from '../../util/react';
+import { connectWithRef } from '../../util/redux';
+
 import { AppAction } from '../../common/reducers';
 import { Canvas } from '../../components/canvas';
-import { Card } from '../../components/card';
 import { Path } from '../../common/path';
 
-import { connectReducer } from '../connector';
+import { Board } from '../../components/board';
+import { Card } from '../../components/card';
+import { DragOrderModel } from '../../components/dnd';
+import { List } from '../../components/list';
+
+import { Connector } from '../connector';
 
 import { TaskItemEditor, TaskItemRenderer } from './task';
 
@@ -280,7 +286,7 @@ class ProjectBoardCanvasComponent extends React.Component {
 
           _.each(item.labels, label => {
             if (_.find(columns, column => column.value === label)) {
-              mutations.push(MutationUtil.createSetMutation('labels', 'string', column.value, false))
+              mutations.push(MutationUtil.createSetMutation('labels', 'string', column.value, false));
             }
           });
 
@@ -526,7 +532,7 @@ const ProjectBoardQuery = gql`
 
 export const ProjectBoardCanvas = compose(
 
-  connectReducer(ItemReducer.graphql(ProjectBoardQuery)),
+  Connector.connect(Connector.itemQuery(ProjectBoardQuery)),
 
   connectWithRef((state, ownProps) => {
     let { canvas: { boardAlias='status' } } = AppAction.getState(state);

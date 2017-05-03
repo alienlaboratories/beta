@@ -105,7 +105,7 @@ class Inspector {
     return {
       context: this.getInitialContext(),
       rootNode: this.getRootNode()
-    }
+    };
   }
 
   getInitialContext() {
@@ -284,7 +284,7 @@ export class GoogleInboxInspector extends Inspector {
                 title,
                 email,
                 thumbnailUrl
-              }
+              };
             }
           }))
         };
@@ -326,8 +326,9 @@ export class SlackInspector extends Inspector {
             string: this._matches[2]
           }
         }
-      ]
+      ];
     }
+
     // TODO(madadam): Unify other uses (email) and return context (array of KeyValues) not dict { context: [..] }.
     return {
       context

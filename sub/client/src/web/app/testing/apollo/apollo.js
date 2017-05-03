@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { createMemoryHistory, Route, Router } from 'react-router';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
-import { routerMiddleware, routerReducer } from 'react-router-redux'
+import { routerMiddleware, routerReducer } from 'react-router-redux';
 import { graphql, ApolloProvider } from 'react-apollo';
 import ApolloClient from 'apollo-client';
 import gql from 'graphql-tag';
@@ -36,7 +36,7 @@ class ListComponent extends React.Component {
     this.state = {
       text: '',
       items: _.map(this.props.items, item => _.clone(item))
-    }
+    };
   }
 
   // TODO(burdon): Dispatch redux action.
@@ -283,7 +283,7 @@ const ListReducer = (query, path, active=true) => (previousResult, action, varia
     return update(previousResult, tranform);
   }
 
-  return previousResult
+  return previousResult;
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -443,7 +443,7 @@ const SimpleListComponentWithApollo = compose(
     options: (props) => {
       return {
         reducer: ListReducer(TestQuery, 'search.items')
-      }
+      };
     },
 
     props: ({ ownProps, data }) => {
@@ -454,7 +454,7 @@ const SimpleListComponentWithApollo = compose(
         errors,
         loading,
         items
-      }
+      };
     }
   })
 
@@ -558,7 +558,7 @@ class TestingNetworkInterface {
                 }))
               }
             }
-          }
+          };
         });
       }
 
@@ -598,7 +598,7 @@ class TestingNetworkInterface {
               data: {
                 upsertItems: items
               }
-            }
+            };
           });
         });
       }
@@ -647,7 +647,7 @@ export const AppTestAction = (title) => (dispatch, getState) => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve({ status: 'OK' });
-    })
+    });
   }, 100);
 };
 

@@ -259,19 +259,6 @@ export class List extends React.Component {
           _.each(group.ids, id => ids.add(id));
         });
       });
-
-      // Create ordered items.
-      let items2 = _.filter(items, item => {
-        if (ids.has(item.id)) {
-          // TODO(burdon): Add grandchildren?
-          return _.findIndex(groupedItems, groupedItem => groupedItem.id === item.id) !== -1;
-        } else {
-          return true;
-        }
-      });
-
-      // TODO(burdon): ???
-//    console.log('===', _.map(items2, item => item.title));
     }
 
 //  console.log('########', _.map(items, item => item.title));
@@ -354,7 +341,7 @@ export class List extends React.Component {
     if (itemOrderModel) {
       lastDropTarget = <ListItemDropTarget data={ data }
                                            order={ previousOrder + .5 }
-                                           onDrop={ this.handleItemDrop.bind(this) }/>
+                                           onDrop={ this.handleItemDrop.bind(this) }/>;
     }
 
     //
@@ -447,7 +434,7 @@ export class ListItem extends React.Component {
 
     let attrs = {};
     if (props.onClick) {
-      attrs.onClick = () => { props.onClick(item); }
+      attrs.onClick = () => { props.onClick(item); };
     }
 
     let icon = props.icon || item.icon || '';
@@ -496,7 +483,7 @@ export class ListItem extends React.Component {
       // NOTE: Use onMouseDown instead of onClick (happens before onBlur for focusable components).
       attrs = {
         onMouseDown: onItemSelect.bind(null, item)
-      }
+      };
     }
 
     return (
@@ -561,7 +548,7 @@ export class ListItem extends React.Component {
         <i className="ux-icon ux-icon-action ux-icon-save" onClick={ handleSave }/>
         <i className="ux-icon ux-icon-action ux-icon-cancel" onClick={ handleCancel }/>
       </div>
-    )
+    );
   });
 
   /**
@@ -578,7 +565,7 @@ export class ListItem extends React.Component {
       <div>
         <i className="ux-icon ux-icon-action ux-icon-hover ux-icon-edit" onClick={ handleEdit }/>
       </div>
-    )
+    );
   });
 
   /**
@@ -639,7 +626,7 @@ export class ListItem extends React.Component {
     return {
       item: this.props.item,
       listItem: this
-    }
+    };
   }
 
   render() {

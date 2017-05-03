@@ -79,7 +79,7 @@ export default class TestList extends React.Component {
   handleItemSelect(item) {
     this.setState({
       item: item
-    })
+    });
   }
 
   render() {

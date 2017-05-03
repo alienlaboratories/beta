@@ -5,8 +5,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import SearchPanel from '../view/search';
-
 /**
  * App navigation
  */
@@ -16,25 +14,15 @@ export class Navbar extends React.Component {
   // TODO(burdon): Show hide < > arrows (on mobile).
   // TODO(burdon): Current heading/breadcrumbs (in redux store).
 
-  static propTypes = {
-    search: PropTypes.bool
-  };
-
-  static defaultProps = {
-    search: true
-  };
-
   static contextTypes = {
     typeRegistry: PropTypes.object.isRequired,
   };
 
   render() {
-    let { children, search } = this.props;
+    let { children } = this.props;
 
     return (
       <nav className="ux-navbar">
-        { search && <SearchPanel/> || <div/> }
-
         <div className="ux-header ux-expand">
           { children }
         </div>

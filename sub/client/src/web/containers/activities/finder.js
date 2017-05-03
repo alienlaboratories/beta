@@ -12,6 +12,7 @@ import { Navbar } from '../../components/navbar';
 import { Activity } from '../../common/activity';
 
 import Finder from '../finder';
+import SearchPanel from '../search';
 
 import { Layout } from './layout';
 
@@ -39,7 +40,7 @@ class FinderActivity extends React.Component {
     return ReactUtil.render(this, () => {
       let { config, viewer, contextManager, params: { folder='inbox' } } = this.props;
 
-      let navbar = <Navbar/>;
+      let navbar = <Navbar><SearchPanel/></Navbar>;
 
       let finder = <Finder viewer={ viewer } folder={ folder } contextManager={ contextManager }/>;
 

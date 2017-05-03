@@ -10,7 +10,7 @@ import { DomUtil } from 'alien-util';
 /**
  * Textarea.
  */
-export class Textarea extends React.Component {
+export class TextArea extends React.Component {
 
   static propTypes = {
     className:    PropTypes.string,

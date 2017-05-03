@@ -5,16 +5,56 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { ID } from 'alien-core';
+
 import { AppDefs } from '../../../common/defs';
 
 import { ReactUtil } from '../../util';
 import { Activity } from '../../common/activity';
 
-import { CanvasContainer, CanvasNavbar } from '../../components/canvas';
+import { CanvasContainer } from '../../components/canvas';
+import { Navbar } from '../../components/navbar';
 
+import { ItemCanvasHeader } from '../item';
 import Finder from '../finder';
+import SearchPanel from '../search';
 
 import { Layout } from './layout';
+
+
+/**
+ * Canvas navbar,
+ */
+class CanvasNavbar extends React.Component {
+
+  static propTypes = {
+    onSave: PropTypes.func.isRequired,
+    type:   PropTypes.string.isRequired,
+    itemId: PropTypes.string.isRequired,
+    canvas: PropTypes.string,
+  };
+
+  static contextTypes = {
+    typeRegistry: PropTypes.object.isRequired,
+  };
+
+  render() {
+    let { typeRegistry } = this.context;
+    let { onSave, itemId } = this.props;
+
+    let { type } = ID.fromGlobalId(itemId);
+    let Toolbar = typeRegistry.toolbar(type);
+    let toolbar = Toolbar && <Toolbar/>;
+
+    // TODO(burdon): Save button.
+    return (
+      <Navbar>
+        <SearchPanel/>
+        <ItemCanvasHeader onSave={ onSave } itemId={ itemId } toolbar={ toolbar }/>
+      </Navbar>
+    );
+  }
+}
 
 /**
  * Canvas Activity.

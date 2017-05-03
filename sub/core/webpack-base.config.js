@@ -81,7 +81,7 @@ const test = webpackMerge(baseConfig, {
 
   entry: {
     main: [
-      path.resolve(baseConfig.context, 'src/index.js')
+      path.resolve(baseConfig.context, 'index.js')
     ]
   },
 

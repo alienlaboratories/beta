@@ -6,7 +6,7 @@ import React from 'react';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { Fragments } from 'alien-core';
+//import { Fragments } from 'alien-core';
 
 import { ReactUtil } from '../../util/react';
 
@@ -40,7 +40,7 @@ class TestingActivity extends React.Component {
   onChangeView(listType) {
     this.setState({
       listType
-    })
+    });
   }
 
   onItemUpdate(item) {
@@ -66,7 +66,7 @@ class TestingActivity extends React.Component {
       }
 
       let navbar = (
-        <Navbar search={ false }>
+        <Navbar>
           <div className="ux-toolbar">
             <div>
               <i className="ux-icon ux-icon-action"
@@ -97,6 +97,7 @@ class TestingActivity extends React.Component {
 // HOC.
 //-------------------------------------------------------------------------------------------------
 
+/*
 const TestQuery = gql`
   query TestQuery($filter: FilterInput) {
     search(filter: $filter) {
@@ -118,6 +119,7 @@ const TestQuery = gql`
   ${Fragments.ContactFragment}
   ${Fragments.TaskFragment}
 `;
+*/
 
 //
 // Tasks are merged (i.e., status + assigee); sub Tasks of Project are isolated with separate/munged "project/task" IDs.

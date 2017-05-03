@@ -2,7 +2,6 @@
 // Copyright 2017 Alien Labs.
 //
 
-import React from 'react';
 import { browserHistory } from 'react-router';
 
 import { Injector } from 'alien-util';
@@ -93,7 +92,7 @@ export class WebApp extends BaseApp {
       // Main app reducer.
       // TODO(burdon): Push to BaseApp.
       [AppAction.namespace]: AppReducer(this.injector, this.config, this.client)
-    }
+    };
   }
 
   get networkInterface() {

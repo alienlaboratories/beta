@@ -8,6 +8,8 @@ import { graphql } from 'react-apollo';
 
 import { Fragments } from 'alien-core';
 
+import { List, ListItem } from '../components/list';
+
 import { SubscriptionWrapper } from '../util/subscriptions';
 
 import { Connector } from './connector';
@@ -22,7 +24,7 @@ const CustomIcon = ListItem.createInlineComponent((props, context) => {
 
   return (
     <ListItem.Icon icon={ item.iconUrl || typeRegistry.icon(item.type) }/>
-  )
+  );
 });
 
 const CustomColumn = ListItem.createInlineComponent((props, context) => {
@@ -186,7 +188,7 @@ export const ItemsQueryWrapper = graphql(SimpleSearchQuery, {
       variables: {
         filter
       }
-    }
+    };
   },
 
   // http://dev.apollodata.com/react/queries.html#graphql-props-option
@@ -225,6 +227,6 @@ export const ItemsQueryWrapper = graphql(SimpleSearchQuery, {
           }
         });
       }
-    }
+    };
   }
 });

@@ -126,50 +126,50 @@ export class FirebaseCloudMessenger extends CloudMessenger {
       //   firebase.messaging().useServiceWorker(registration);
       //   console.log('!!!!!!!!', registration);
 
-        // https://firebase.google.caom/docs/cloud-messaging/js/receive#handle_messages_when_your_web_app_is_in_the_foreground
-        firebase.messaging().onMessage(data => {
-          this.fireMessage(data);
+      // https://firebase.google.caom/docs/cloud-messaging/js/receive#handle_messages_when_your_web_app_is_in_the_foreground
+      firebase.messaging().onMessage(data => {
+        this.fireMessage(data);
+      });
+
+      // The token is updated when the user clears browser data.
+      // https://firebase.google.com/docs/cloud-messaging/js/client#monitor-token-refresh
+      firebase.messaging().onTokenRefresh(() => {
+        firebase.messaging().getToken().then(messageToken => {
+          logger.log('Token updated.');
+          this._onTokenUpdate && this._onTokenUpdate(messageToken);
         });
+      });
 
-        // The token is updated when the user clears browser data.
-        // https://firebase.google.com/docs/cloud-messaging/js/client#monitor-token-refresh
-        firebase.messaging().onTokenRefresh(() => {
-          firebase.messaging().getToken().then(messageToken => {
-            logger.log('Token updated.');
-            this._onTokenUpdate && this._onTokenUpdate(messageToken);
-          });
+      // https://firebase.google.com/docs/cloud-messaging/js/client#request_permission_to_receive_notifications
+      return firebase.messaging().requestPermission().then(() => {
+
+        // NOTE: Requires HTTPS (for Service workers); localhost supported for development.
+        // https://developers.google.com/web/fundamentals/getting-started/primers/service-workers#you_need_https
+        logger.log('Permission OK. Requesting message token...');
+        return firebase.messaging().getToken().then(messageToken => {
+          if (!messageToken) {
+            throw new Error('FCM Token expired.');
+          }
+
+          logger.log('Connected.');
+          return messageToken;
         });
+      })
 
-        // https://firebase.google.com/docs/cloud-messaging/js/client#request_permission_to_receive_notifications
-        return firebase.messaging().requestPermission().then(() => {
+      .catch(error => {
 
-          // NOTE: Requires HTTPS (for Service workers); localhost supported for development.
-          // https://developers.google.com/web/fundamentals/getting-started/primers/service-workers#you_need_https
-          logger.log('Permission OK. Requesting message token...');
-          return firebase.messaging().getToken().then(messageToken => {
-            if (!messageToken) {
-              throw new Error('FCM Token expired.');
-            }
-
-            logger.log('Connected.');
-            return messageToken;
-          });
-        })
-
-        .catch(error => {
-
-          // Errors: error.code
-          // - Failed to update a ServiceWorker: The script has an unsupported MIME type ('text/html').
-          //   mainfest.json not loaded (LINK in HTML head).
-          // - messaging/permission-blocked
-          //   TODO(burdon): Show UX warning.
-          //   Permission not set (set in Chrome (i) button to the left of the URL bar).
-          // - messaging/failed-serviceworker-registration
-          //   Invalid Firebase console registration.
-          // - messaging/incorrect-gcm-sender-id
-          //   manifest.json gcm_sender_id is not project specific.
-          throw new Error('FCM registration failed: ' + ErrorUtil.message(error.code));
-        });
+        // Errors: error.code
+        // - Failed to update a ServiceWorker: The script has an unsupported MIME type ('text/html').
+        //   mainfest.json not loaded (LINK in HTML head).
+        // - messaging/permission-blocked
+        //   TODO(burdon): Show UX warning.
+        //   Permission not set (set in Chrome (i) button to the left of the URL bar).
+        // - messaging/failed-serviceworker-registration
+        //   Invalid Firebase console registration.
+        // - messaging/incorrect-gcm-sender-id
+        //   manifest.json gcm_sender_id is not project specific.
+        throw new Error('FCM registration failed: ' + ErrorUtil.message(error.code));
+      });
       // });
 
     }, FirebaseCloudMessenger.TIMEOUT);
@@ -193,7 +193,7 @@ export class GoogleCloudMessenger extends CloudMessenger {
 
     // https://developer.chrome.com/apps/gcm#event-onMessage
     chrome.gcm.onMessage.addListener(message => {
-      let { data, from, collapseKey } = message;
+      let { data/*, from, collapseKey*/ } = message;
 
       // Use collapseKey to prevent chatty pings.
       // https://developers.google.com/cloud-messaging/chrome/client#collapsible_messages
@@ -225,7 +225,7 @@ export class GoogleCloudMessenger extends CloudMessenger {
 
   disconnect() {
     return chrome.gcm.unregister(() => {
-      console.assert(!runtime.lastError);
+      console.assert(!chrome.runtime.lastError);
       logger.log('Disconnected.');
     });
   }

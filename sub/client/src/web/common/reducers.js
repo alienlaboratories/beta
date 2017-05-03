@@ -2,7 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
-//import { Analytics } from './analytics'
+import { Analytics } from './analytics';
 
 //-------------------------------------------------------------------------------------------------
 // Global.
@@ -21,6 +21,7 @@ export const GlobalAppReducer = (state, action) => {
 
       // Find the query matching Navbar updates.
       let query = state.apollo.queries[queryId];
+      query && console.log(query);
       return state;
     }
 
@@ -107,7 +108,7 @@ export class AppAction {
     return {
       type: AppAction.ACTION.CANVAS_STATE,
       value: canvas
-    }
+    };
   }
 }
 
@@ -172,8 +173,8 @@ export const AppReducer = (injector, config, apolloClient) => {
       // TODO(burdon): Get search query (not just text).
       case AppAction.ACTION.SEARCH: {
         // TODO(madadam): Sanitize logs for privacy; Remove user query from analytics events.
-//      let analytics = state.injector.get(Analytics.INJECTOR_KEY);
-//      analytics && analytics.track('search', { text: action.value });
+        let analytics = state.injector.get(Analytics.INJECTOR_KEY);
+        analytics.track('search', { text: action.value });
 
         return _.assign({}, state, {
           search: {
@@ -189,7 +190,7 @@ export const AppReducer = (injector, config, apolloClient) => {
       }
 
       default:
-        return state
+        return state;
     }
   };
 };
@@ -229,7 +230,7 @@ export class ContextAction {
     return {
       type: ContextAction.ACTION.UPDATE_CONTEXT,
       context
-    }
+    };
   }
 }
 

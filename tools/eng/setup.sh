@@ -27,6 +27,10 @@ brew cask install minikube
 brew cask install virtualbox
 
 npm install -g babel-cli
+npm install -g babel-eslint
+npm install -g eslint
+npm install -g eslint-plugin-import
+npm install -g eslint-plugin-react
 npm install -g firebase-tools
 npm install -g grunt
 npm install -g jest

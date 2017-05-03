@@ -24,7 +24,7 @@ export class TextBox extends React.Component {
       if (event.keyCode === keyCode) {
         callback(event.target.value);
       }
-    }
+    };
   }
 
   static propTypes = {

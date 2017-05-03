@@ -6,9 +6,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'react-apollo';
 
-import { SearchBar } from 'minder-ux';
+import { AppAction } from '../common/reducers';
 
-import { AppAction } from '../../common/reducers';
+import { SearchBar } from '../components/search';
 
 import './search.less';
 
@@ -37,7 +37,7 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     search
-  }
+  };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
@@ -46,7 +46,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     onSearch: (text) => {
       dispatch(AppAction.search(text));
     }
-  }
+  };
 };
 
 export default compose(

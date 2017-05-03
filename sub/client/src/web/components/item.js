@@ -7,6 +7,8 @@ import PropTypes from 'prop-types';
 
 import { MutationUtil } from 'alien-core';
 
+import { ReactUtil } from '../util/react';
+
 import { Canvas } from './canvas';
 import { Card } from './card';
 import { TextBox } from './textbox';

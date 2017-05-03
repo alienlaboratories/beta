@@ -11,6 +11,7 @@
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-core": "^6.24.1",
+    "babel-eslint": "^7.2.3",
     "babel-jest": "^19.0.0",
     "babel-loader": "^7.0.0",
     "babel-plugin-inline-import": "^2.0.4",
@@ -22,6 +23,9 @@
     "chai": "^3.5.0",
     "css-loader": "^0.28.1",
     "enzyme": "^2.8.0",
+    "eslint": "^3.19.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-react": "^6.10.3",
     "extract-text-webpack-plugin": "^2.1.0",
     "grunt": "^1.0.1",
     "grunt-contrib-clean": "^1.1.0",
@@ -60,12 +64,14 @@
   "dependencies": {
     "alien-core": "0.0.1",
     "alien-util": "0.0.1",
-    "apollo-client": "^1.1.1",
+    "apollo-client": "^1.1.2",
     "body-parser": "^1.17.1",
     "chance": "^1.0.8",
     "fbemitter": "^2.1.1",
     "firebase": "^3.9.0",
     "graphiql": "^0.10.1",
+    "graphql": "^0.9.6",
+    "graphql-tag": "^2.0.0",
     "immutability-helper": "^2.2.0",
     "jquery": "^3.2.1",
     "lodash": "^4.17.2",
@@ -98,6 +104,7 @@
   },
   "scripts": {
     "//": "https://webpack.github.io/docs/webpack-dev-server.html#content-base",
+    "lint": "eslint -c ../../.eslintrc.yml ./src",
     "test": "jest",
     "start": "webpack-dev-server --content-base=src/web/"
   }

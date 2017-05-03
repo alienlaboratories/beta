@@ -61,7 +61,7 @@ export class SidebarAction {
             type: SidebarAction.ACTION.PING,
             timestamp: response.timestamp
           });
-      });
+        });
     };
   }
 

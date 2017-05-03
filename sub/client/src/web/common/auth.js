@@ -2,8 +2,6 @@
 // Copyright 2017 Alien Labs.
 //
 
-import _ from 'lodash';
-
 import { HttpUtil, Logger } from 'alien-util';
 import { AuthDefs } from 'alien-core';
 
@@ -27,7 +25,7 @@ export class AuthManager {
     console.assert(_.isString(idToken), 'Invalid token: ' + idToken);
     return {
       'Authorization': 'JWT ' + idToken
-    }
+    };
   }
 
   /**

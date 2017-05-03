@@ -9,43 +9,7 @@ import { TypeUtil } from 'alien-util';
 import { ID, MutationUtil, QueryRegistry } from 'alien-core';
 
 import { TextArea } from './textarea';
-import { getWrappedInstance } from './react';
-import { Navbar } from './navbar';
-
-import { ItemCanvasHeader } from './item';    // TODO(burdon): Container !!!
-
-/**i
- * Canvas navbar,
- */
-export class CanvasNavbar extends React.Component {
-
-  static propTypes = {
-    onSave: PropTypes.func.isRequired,
-    type:   PropTypes.string.isRequired,
-    itemId: PropTypes.string.isRequired,
-    canvas: PropTypes.string,
-  };
-
-  static contextTypes = {
-    typeRegistry: PropTypes.object.isRequired,
-  };
-
-  render() {
-    let { typeRegistry } = this.context;
-    let { onSave, itemId } = this.props;
-
-    let { type } = ID.fromGlobalId(itemId);
-    let Toolbar = typeRegistry.toolbar(type);
-    let toolbar = Toolbar && <Toolbar/>;
-
-    // TODO(burdon): Save button.
-    return (
-      <Navbar>
-        <ItemCanvasHeader onSave={ onSave } itemId={ itemId } toolbar={ toolbar }/>
-      </Navbar>
-    );
-  }
-}
+import { getWrappedInstance } from '../util/react';
 
 /**
  * Canvas container.
@@ -82,11 +46,11 @@ export class CanvasContainer extends React.Component {
     let { itemId, canvas } = this.props;
 
     let { type } = ID.fromGlobalId(itemId);
-    let Canvas = typeRegistry.canvas(type, canvas);
+    let TypeCanvas = typeRegistry.canvas(type, canvas);
 
     return (
       <div className="ux-canvas-container">
-        <Canvas ref="canvas" itemId={ itemId }/>
+        <TypeCanvas ref="canvas" itemId={ itemId }/>
       </div>
     );
   }
@@ -194,7 +158,7 @@ export class Canvas extends React.Component {
         <div className="ux-section">
           <div className="ux-section-body">
             <div className="ux-row">
-              <Textarea className="ux-expand ux-noborder ux-font-xsmall" rows="4"
+              <TextArea className="ux-expand ux-noborder ux-font-xsmall" rows="4"
                         placeholder="Notes"
                         value={ _.get(this.state, 'description') }
                         onChange={ this.handlePropertyChange.bind(this, 'description') }/>
@@ -215,6 +179,6 @@ export class Canvas extends React.Component {
           { children }
         </div>
       </div>
-    )
+    );
   }
 }

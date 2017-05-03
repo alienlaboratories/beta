@@ -5,6 +5,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { QueryRegistry } from 'alien-core';
+
 /**
  * Wraps Component adding subscriptions.
  * The component must expose a graphql options.props.refetch() method.
@@ -41,7 +43,7 @@ export const SubscriptionWrapper = (Component) => {
     }
 
     render() {
-      return <Component { ...this.props }/>
+      return <Component { ...this.props }/>;
     }
-  }
+  };
 };

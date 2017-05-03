@@ -1,0 +1,67 @@
+# http://eslint.org/docs/rules
+# > eslint file/dir
+
+# http://eslint.org/docs/user-guide/configuring#specifying-environments
+env:
+  browser: true
+  es6: true
+  jasmine: true
+  jest: true
+  jquery: true
+  mocha: true
+  node: true
+  serviceworker: true
+  worker: true
+
+extends: 'eslint:recommended'
+
+globals:
+  _: true
+  chrome: true
+
+parser: 'babel-eslint'
+
+parserOptions:
+  ecmaFeatures:
+    classes: true
+    experimentalObjectRestSpread: true
+    jsx: true
+
+  sourceType: module
+
+plugins:
+  - react
+
+rules:
+  args: 0
+
+  indent:
+    - error
+    - 2
+    - SwitchCase: 1
+
+  linebreak-style:
+    - error
+    - unix
+
+  no-console:
+    - off
+
+  # Allow function args to be unused (i.e., to complete signature).
+  # http://eslint.org/docs/rules/no-unused-vars
+  no-unused-vars:
+    - error
+    - vars: all
+      args: none
+
+  quotes:
+    - error
+    - single
+
+  # https://github.com/eslint/eslint/issues/6303
+  react/jsx-uses-react: error
+  react/jsx-uses-vars: error
+
+  semi:
+    - error
+    - always

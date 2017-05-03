@@ -2,7 +2,6 @@
 // Copyright 2017 Alien Labs.
 //
 
-import _ from 'lodash';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'react-apollo';
@@ -10,9 +9,13 @@ import gql from 'graphql-tag';
 
 import { Fragments, MutationUtil } from 'alien-core';
 
-import { Connector } from '../framework/connector';
-import { Canvas } from '../component/canvas';
-import { Card } from '../component/card';
+import { ReactUtil } from '../../util/react';
+
+import { Canvas } from '../../components/canvas';
+import { Card } from '../../components/card';
+import { List } from '../../components/list';
+
+import { Connector } from '../connector';
 
 import { TaskItemEditor, TaskItemRenderer } from './task';
 
@@ -152,7 +155,8 @@ export class ContactCard extends React.Component {
 
     // TODO(burdon): Needs a spec: Doesn't make sense to merge different projects (viewer and contact).
     // TODO(burdon): Problematic for buckets: default Project for which team?
-    if (false) {
+    const showTasks = false;
+    if (showTasks) {
       // Default project for User associated with the contact card.
       // Sort all tasks for this project into groups based on assignee.
       // TODO(madadam): Refactor ItemUtil.groupBy?
@@ -192,7 +196,7 @@ export class ContactCard extends React.Component {
     }
 
     const handleTaskUpdate = (item, mutations) => {
-      this.handleTaskUpdate(item, mutations, defaultProject)
+      this.handleTaskUpdate(item, mutations, defaultProject);
     };
 
     // TODO(burdon): Styles.

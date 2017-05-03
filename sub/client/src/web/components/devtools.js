@@ -6,7 +6,7 @@ import React from 'react';
 import { createDevTools } from 'redux-devtools';
 import 'redux-devtools-themes';
 
-import ChartMonitor from 'redux-devtools-chart-monitor';
+//import ChartMonitor from 'redux-devtools-chart-monitor';
 import DockMonitor from 'redux-devtools-dock-monitor';
 import LogMonitor from 'redux-devtools-log-monitor';
 

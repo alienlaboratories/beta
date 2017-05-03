@@ -2,8 +2,6 @@
 // Copyright 2017 Alien Labs.
 //
 
-import React from 'react';
-
 import { TypeRegistry } from '../common/type_registry';
 
 import { ContactCard, ContactCanvas } from './type/contact';

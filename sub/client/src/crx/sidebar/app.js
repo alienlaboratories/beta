@@ -3,7 +3,7 @@
 //
 
 import React from 'react';
-import { createMemoryHistory, IndexRedirect, Redirect, Route, Router } from 'react-router'
+import { createMemoryHistory, IndexRedirect, Redirect, Route, Router } from 'react-router';
 import { ApolloProvider } from 'react-apollo';
 import PropTypes from 'prop-types';
 
@@ -161,7 +161,7 @@ export class SidebarApp extends BaseApp {
       Injector.provide(TypeRegistryFactory()),
       Injector.provide(this._messenger),
       Injector.provide(this._systemChannel, SystemChannel.CHANNEL)
-    ]
+    ];
   }
 
   get reducers() {
@@ -175,7 +175,7 @@ export class SidebarApp extends BaseApp {
 
       // Sidebar-specific.
       [SidebarAction.namespace]: SidebarReducer
-    }
+    };
   }
 }
 

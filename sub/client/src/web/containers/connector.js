@@ -2,7 +2,6 @@
 // Copyright 2016 Minder Labs.
 //
 
-import React from 'react';
 import { connect } from 'react-redux';
 import { compose, graphql } from 'react-apollo';
 
@@ -38,7 +37,7 @@ const mapStateToProps = (state, ownProps) => {
       userId,
       buckets
     }
-  }
+  };
 };
 
 /**
@@ -138,7 +137,7 @@ export class Connector {
           },
 
           reducer: Reducer.callback(reducer, { matcher, context })
-        }
+        };
       },
 
       // Configure props passed to component.
@@ -184,7 +183,7 @@ export class Connector {
               }
             });
           }
-        }
+        };
       }
     });
   }

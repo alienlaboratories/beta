@@ -96,7 +96,7 @@ export class ContextManager {
       if (this._context.context) {
         return {
           context: this._context.context
-        }
+        };
       }
     }
   }

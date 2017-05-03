@@ -122,7 +122,7 @@ class Column extends React.Component {
          <CardDrop emitter={ emitter } previous={ lastId } label={ label } pos={ lastPos + 0.5 }/>
         </div>
       </div>
-    )
+    );
   }
 }
 
@@ -161,7 +161,7 @@ class TestDragBoard extends React.Component {
       <div className="board">
         { columns }
       </div>
-    )
+    );
   }
 }
 

@@ -2,8 +2,6 @@
 // Copyright 2017 Alien Labs.
 //
 
-import _ from 'lodash';
-import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, graphql } from 'react-apollo';
@@ -68,7 +66,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     navigator: new Navigator(dispatch)
-  }
+  };
 };
 
 /**
@@ -106,7 +104,7 @@ export class Activity {
       // Apollo viewer query.
       graphql(Fragments.ViewerQuery, {
         props: ({ ownProps, data }) => {
-          return _.pick(data, ['errors', 'loading', 'viewer'])
+          return _.pick(data, ['errors', 'loading', 'viewer']);
         }
       })
     ];
@@ -116,7 +114,7 @@ export class Activity {
     }
 
     return compose(...connectors);
-  };
+  }
 
   static childContextTypes = {
     config:           PropTypes.object,

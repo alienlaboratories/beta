@@ -47,7 +47,7 @@ class AdminActivity extends React.Component {
   handleSelectGroup(group) {
     this.setState({
       groupId: group && group.id
-    })
+    });
   }
 
   render() {
@@ -70,7 +70,7 @@ class AdminActivity extends React.Component {
       }
 
       let navbar = (
-        <Navbar search={ false }>
+        <Navbar>
           <h2>Groups</h2>
         </Navbar>
       );

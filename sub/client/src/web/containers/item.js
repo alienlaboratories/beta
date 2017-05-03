@@ -2,15 +2,14 @@
 // Copyright 2017 Alien Labs.
 //
 
-import React from 'react';
 import { compose } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { ItemReducer, Fragments } from 'alien-core';
+import { Fragments } from 'alien-core';
 
 import { ItemCanvasComponent, ItemCanvasHeaderComponent } from '../components/item';
 
-import { connectReducer } from './connector';
+import { Connector } from './connector';
 
 /**
  * Type-specific query.
@@ -25,10 +24,11 @@ const ItemQuery = gql`
   ${Fragments.ItemFragment}  
 `;
 
+// TODO(burdon): Note used.
 export const ItemCanvas = compose(
-  connectReducer(ItemReducer.graphql(ItemQuery))
+  Connector.connect(Connector.itemQuery(ItemQuery))
 )(ItemCanvasComponent);
 
 export const ItemCanvasHeader = compose(
-  connectReducer(ItemReducer.graphql(ItemQuery))
+  Connector.connect(Connector.itemQuery(ItemQuery))
 )(ItemCanvasHeaderComponent);

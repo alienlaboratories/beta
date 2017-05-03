@@ -2,7 +2,6 @@
 // Copyright 2017 Alien Labs.
 //
 
-import _ from 'lodash';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, graphql } from 'react-apollo';
@@ -213,7 +212,7 @@ class TaskCanvasComponent extends React.Component {
   handleSetText(property, value) {
     this.setState({
       [property]: value
-    })
+    });
   }
 
   handleSetStatus(event) {
@@ -412,5 +411,5 @@ const TaskQuery = gql`
 `;
 
 export const TaskCanvas = compose(
-  Connect.connect(Connector.itemQuery(TaskQuery))
+  Connector.connect(Connector.itemQuery(TaskQuery))
 )(TaskCanvasComponent);

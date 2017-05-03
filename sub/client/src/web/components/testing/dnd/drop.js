@@ -26,7 +26,7 @@ class CardDrop extends React.Component {
 
     this.state = {
       pos: this.props.pos
-    }
+    };
   }
 
   componentWillReceiveProps(nextProps) {
@@ -39,7 +39,6 @@ class CardDrop extends React.Component {
 
   render() {
     let { children, connectDropTarget, isOver } = this.props;
-    let { pos } = this.state;
 
     let className = 'drop-target' + (isOver ? ' active' : '') + (children ? '' : ' last');
     return connectDropTarget(

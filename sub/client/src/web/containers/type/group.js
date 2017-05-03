@@ -7,13 +7,14 @@ import PropTypes from 'prop-types';
 import { compose } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { Fragments, ItemReducer, MutationUtil } from 'alien-core';
+import { Fragments, MutationUtil } from 'alien-core';
 
 import { ReactUtil } from '../../util/react';
+
 import { Canvas } from '../../components/canvas';
 import { List } from '../../components/list';
 
-import { connectReducer } from '../connector';
+import { Connector } from '../connector';
 
 //-------------------------------------------------------------------------------------------------
 // Components.
@@ -101,7 +102,8 @@ class GroupCanvasComponent extends React.Component {
 // HOC.
 //-------------------------------------------------------------------------------------------------
 
-const GraphReducer = (matcher, context, previousResult, updatedItem) => {
+/*
+const GroupReducer = (matcher, context, previousResult, updatedItem) => {
   let { item:group } = previousResult;
 
   if (updatedItem.type === 'Project' && updatedItem.group === previousResult.id) {
@@ -113,10 +115,11 @@ const GraphReducer = (matcher, context, previousResult, updatedItem) => {
             $push: [updatedItem]
           }
         }
-      }
+      };
     }
   }
 };
+*/
 
 const GroupQuery = gql`  
   query GroupQuery($itemId: ID!) {
@@ -131,5 +134,5 @@ const GroupQuery = gql`
 `;
 
 export const GroupCanvas = compose(
-  connectReducer(ItemReducer.graphql(GroupQuery, GraphReducer))
+  Connector.connect(Connector.itemQuery(GroupQuery))
 )(GroupCanvasComponent);

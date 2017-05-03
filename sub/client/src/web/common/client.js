@@ -2,14 +2,11 @@
 // Copyright 2017 Alien Labs.
 //
 
-import _ from 'lodash';
-
 import { Logger } from 'alien-util';
 import { AuthUtil } from 'alien-core';
 
 import { AppDefs } from '../../common/defs';
 import { NetUtil } from '../util/net';
-import { AuthManager } from './auth';
 
 const logger = Logger.get('client');
 
@@ -137,8 +134,9 @@ export class ConnectionManager {
     let requestUrl = NetUtil.getUrl('/client/unregister', this._config.server);
 
     let headers = {};
+    let clientId = _.get(this._config, 'client.id');
     AuthUtil.setAuthHeader(headers, this._authManager.idToken);
-    ConnectionManager.setClientHeader(headers, _.get(this._config, 'client.id'));
+    ConnectionManager.setClientHeader(headers, clientId);
 
     return NetUtil.postJson(requestUrl, {}, headers, { async }).then(() => {
       logger.log('Unregistered: ' + clientId);

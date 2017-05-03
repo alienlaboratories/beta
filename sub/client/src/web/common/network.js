@@ -2,15 +2,13 @@
 // Copyright 2017 Alien Labs.
 //
 
-import _ from 'lodash';
 import { print } from 'graphql/language/printer';
 import { createNetworkInterface } from 'apollo-client';
 
-import { HttpUtil, TypeUtil, Logger, Wrapper } from 'alien-util';
+import { HttpUtil, TypeUtil, Logger } from 'alien-util';
 import { AuthUtil, ItemStore, UpsertItemsMutationName } from 'alien-core';
 
 import { AppDefs } from '../../common/defs';
-import { AuthManager } from './auth';
 import { ConnectionManager } from './client';
 
 const logger = Logger.get('net');
@@ -43,7 +41,7 @@ export class NetworkManager {
     this._logger = null;
     this._networkInterface = null;
 
-    this._debug = this._config.debug
+    this._debug = this._config.debug;
   }
 
   /**
@@ -281,7 +279,7 @@ class NetworkLogger {
     //
     // Show GraphiQL link.
     //
-    if (_.get(this._options, 'debug', true) || true) {  // TODO(burdon): Config detail.
+    if (_.get(this._options, 'debug', true)) {
       let url = HttpUtil.absoluteUrl(_.get(this._options, 'graphiql', '/graphiql'));
       logger.info('[' + TypeUtil.pad(requestId, 24) + ']: ' + url + '?' + HttpUtil.toUrlArgs({
         clientId:   headers[AppDefs.HEADER.CLIENT_ID],
@@ -363,7 +361,7 @@ export class CachingNetworkInterface { // extends NetworkInterface {
     // ExecutionResult { data, errors }
     // https://github.com/graphql/graphql-js/blob/master/src/execution/execute.js
     networkInterface.query = (request) => {
-      let { operationName, query, variables={} } = request;
+      let { operationName, variables={} } = request;
 
       switch (operationName) {
 

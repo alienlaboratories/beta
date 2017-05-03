@@ -2,7 +2,6 @@
 // Copyright 2017 Alien Labs.
 //
 
-import React from 'react';
 import ReactDOM from 'react-dom';
 
 import { MutationUtil } from 'alien-core';

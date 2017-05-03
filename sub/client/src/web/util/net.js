@@ -49,11 +49,11 @@ export class NetUtil {
         contentType: 'application/json; charset=utf-8',
 
         success: response => {
-          resolve(response)
+          resolve(response);
         },
 
         error: (xhr, textStatus, error) => {
-          reject(error)
+          reject(error);
         }
       }, options));
     });
@@ -78,11 +78,11 @@ export class NetUtil {
         contentType: 'application/json; charset=utf-8',
 
         success: response => {
-          resolve(response)
+          resolve(response);
         },
 
         error: (xhr, textStatus, error) => {
-          reject(error)
+          reject(error);
         }
       };
 

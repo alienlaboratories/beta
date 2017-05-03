@@ -30,7 +30,7 @@ class TestSidebarApp extends WebApp {
 
       // Sidebar-specific.
       [SidebarAction.namespace]: SidebarReducer
-    }
+    };
   }
 }
 

@@ -2,7 +2,6 @@
 // Copyright 2017 Alien Labs.
 //
 
-import _ from 'lodash';
 import ReactGA from 'react-ga';
 
 import { Logger } from 'alien-util';
@@ -96,12 +95,14 @@ export class SegmentAnalytics extends Analytics {
     this.analytics = function() {
       // Loads script.
       // https://segment.com/docs/sources/website/analytics.js/quickstart
+      /* eslint-disable indent, quotes, semi */
       let analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on"];analytics.factory=function(t){return function(){var e=Array.prototype.slice.call(arguments);e.unshift(t);analytics.push(e);return analytics}};for(var t=0;t<analytics.methods.length;t++){var e=analytics.methods[t];analytics[e]=analytics.factory(e)}analytics.load=function(t){var e=document.createElement("script");e.type="text/javascript";e.async=!0;e.src="https://cdn.segment.com/analytics.js/v1/"+t+"/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(e,n)};analytics.SNIPPET_VERSION="4.0.0";
       analytics.load(key);
       analytics.page();}
+      /* eslint-enable indent, quotes, semi */
       return analytics;
     }();
-  }
+  }n
 
   /**
    * @param userId
@@ -125,7 +126,7 @@ export class SegmentAnalytics extends Analytics {
   track(name, params) {
     // TODO(madadam): This doesn't work when called on this.analytics, but it works on the global window.analytics:
     // this.analytics.track(name, params);
-    analytics.track(name, params);
+    this.analytics.track(name, params);
   }
 }
 

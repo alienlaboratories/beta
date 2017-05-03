@@ -5,8 +5,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
-import { syncHistoryWithStore, routerMiddleware, routerReducer } from 'react-router-redux'
-import ReduxThunk from 'redux-thunk'
+import { syncHistoryWithStore, routerMiddleware, routerReducer } from 'react-router-redux';
+import ReduxThunk from 'redux-thunk';
 import reduceReducers from 'reduce-reducers';
 import ApolloClient from 'apollo-client';
 import moment from 'moment';

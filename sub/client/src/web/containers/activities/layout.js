@@ -202,7 +202,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     toggleDebugPanel: () => { dispatch(AppAction.toggleDebugPanel()); }
-  }
+  };
 };
 
 export const Layout = connect(mapStateToProps, mapDispatchToProps)(LayoutComponent);

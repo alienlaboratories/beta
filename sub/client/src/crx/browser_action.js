@@ -68,7 +68,7 @@ class BrowserAction extends React.Component {
   }
 
   render() {
-    let { url } = this.state;
+//  let { url } = this.state;
 
     // TODO(burdon): Page dependent (e.g., on Gmail clip contact).
 
