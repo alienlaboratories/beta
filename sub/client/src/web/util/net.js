@@ -6,6 +6,7 @@ import { HttpUtil } from 'alien-util';
 
 /**
  * Web network utils.
+ * NOTE: jquery defs so not part of util.
  */
 export class NetUtil {
 

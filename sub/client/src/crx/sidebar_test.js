@@ -3,12 +3,11 @@
 //
 
 import { Logger } from 'alien-util';
-import { ProtoDefs } from 'alien-core';
+
+import { AppDefs } from '../common/defs';
 
 import { AppAction, AppReducer, ContextAction, ContextReducer } from '../web/common/reducers';
 import { WebApp } from '../web/app/main';
-
-import { AppDefs } from '../common/defs';
 
 import { SidebarAction, SidebarReducer } from './sidebar/reducers';
 import { Application } from './sidebar/app';
