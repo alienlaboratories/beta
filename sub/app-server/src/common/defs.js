@@ -8,5 +8,5 @@
 export const Const = {
 
   // Changed via grunt:version
-  APP_VERSION: "0.0.2",
+  APP_VERSION: "0.0.3",
 };

@@ -172,9 +172,8 @@ if [ ${MINIKUBE} -eq 1 ]; then
   TAG="test"
 
   docker tag ${DOCKER_IMAGE}:latest ${DOCKER_IMAGE}:${TAG}
-
 else
-  TAG="prod"
+  TAG="latest"
 
   # Create via console.
   # https://console.aws.amazon.com/ecs/home
@@ -185,7 +184,6 @@ else
   set -x
 
   docker tag ${DOCKER_IMAGE}:latest ${DOCKER_IMAGE_URI}:${TAG}
-
   docker push ${DOCKER_IMAGE_URI}:${TAG}
 fi
 

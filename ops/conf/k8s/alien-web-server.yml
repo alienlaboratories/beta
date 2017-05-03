@@ -17,8 +17,9 @@ spec:
       - name: alien-web-server
         # NOTE: Don't use the :latest tag in production.
         # https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories
+        # http://kubernetes.io/docs/concepts/containers/images/#updating-images
         # http://kubernetes.io/docs/user-guide/config-best-practices/#container-images
-        image: 861694698401.dkr.ecr.us-east-1.amazonaws.com/alien-web-server:prod
+        image: 861694698401.dkr.ecr.us-east-1.amazonaws.com/alien-web-server:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
