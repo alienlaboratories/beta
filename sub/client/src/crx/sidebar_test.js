@@ -5,8 +5,10 @@
 import { Logger } from 'alien-util';
 import { ProtoDefs } from 'alien-core';
 
-import { AppAction, AppReducer, ContextAction, ContextReducer } from '../common/reducers';
-import { WebApp } from '../web/app';
+import { AppAction, AppReducer, ContextAction, ContextReducer } from '../web/common/reducers';
+import { WebApp } from '../web/app/main';
+
+import { AppDefs } from '../common/defs';
 
 import { SidebarAction, SidebarReducer } from './sidebar/reducers';
 import { Application } from './sidebar/app';
@@ -40,7 +42,7 @@ class TestSidebarApp extends WebApp {
 const config = _.assign(window.config, {
   debug: true,
   app: {
-    platform: ProtoDefs.PLATFORM.CRX
+    platform: AppDefs.PLATFORM.CRX
   }
 });
 

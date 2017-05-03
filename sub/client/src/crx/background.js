@@ -8,7 +8,7 @@ Logger.setLevel({
 
 import moment from 'moment';
 
-import { Async, ChromeMessageChannelDispatcher, ErrorUtil, EventHandler, Listeners, TypeUtil } from 'alien-util';
+import { Async, ChromeMessageChannelDispatcher, ErrorUtil, EventHandler, Listeners, Logger, TypeUtil } from 'alien-util';
 
 import { AuthManager } from '../web/common/auth';
 import { ConnectionManager } from '../web/common/client';
@@ -17,6 +17,8 @@ import { GoogleCloudMessenger } from '../web/common/cloud_messenger';
 
 import { Notification } from './util/notification';
 import { Settings } from './util/settings';
+
+import { AppDefs } from '../common/defs';
 
 import { SystemChannel, DefaultSettings } from './common';
 
@@ -46,7 +48,7 @@ class BackgroundApp {
   static Config = {
     env: 'development',
     app: {
-      platform: ProtoDefs.PLATFORM.CRX
+      platform: AppDefs.PLATFORM.CRX
     }
   };
 

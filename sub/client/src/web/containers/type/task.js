@@ -9,7 +9,7 @@ import { compose, graphql } from 'react-apollo';
 import { Link } from 'react-router';
 import gql from 'graphql-tag';
 
-import { ID, Fragments, ItemReducer, MutationUtil } from 'alien-core';
+import { ID, Fragments, MutationUtil } from 'alien-core';
 
 import { Enum } from '../../../common/defs';
 
@@ -21,7 +21,7 @@ import { Card } from '../../components/card';
 import { List, ListItem, ListItemEditor } from '../../components/list';
 import { Picker } from '../../components/picker';
 
-import { connectReducer } from '../connector';
+import { Connector } from '../connector';
 
 import './task.less';
 
@@ -412,5 +412,5 @@ const TaskQuery = gql`
 `;
 
 export const TaskCanvas = compose(
-  connectReducer(ItemReducer.graphql(TaskQuery))
+  Connect.connect(Connector.itemQuery(TaskQuery))
 )(TaskCanvasComponent);
