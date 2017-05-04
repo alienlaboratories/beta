@@ -24,15 +24,15 @@ export class Firebase {
   /**
    * Creates the Firebase singleton app and wraps utils.
    *
-   * @param {{ databaseURL, credentialPath }} config
+   * @param {{ app, serviceAccount }} config Firebase config.
    */
   constructor(config) {
 
     // https://firebase.google.com/docs/admin/setup
     // https://firebase.google.com/docs/reference/admin/node/admin
     this._app = admin.initializeApp({
-      credential: admin.credential.cert(config.credentialPath),
-      databaseURL: config.databaseURL
+      databaseURL: config.app.databaseURL,
+      credential: admin.credential.cert((config.serviceAccount))
     });
 
     // NOTE: Clock-skew will cause API calls to hang (without errors).

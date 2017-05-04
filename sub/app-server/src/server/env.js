@@ -23,6 +23,9 @@ export default {
 
   HOST, PORT,
 
+  FIREBASE_CONFIG:        'firebase/alienlabs-dev',
+  GOOGLE_CONFIG:          'google/alienlabs-dev',
+
   ALIEN_JWT_SECRET:       _.get(process.env, 'ALIEN_JWT_SECRET',        'alien-jwt-secret'),
   ALIEN_JWT_AUDIENCE:     _.get(process.env, 'ALIEN_JWT_AUDIENCE',      'alienlabs.com'),
   ALIEN_SESSION_SECRET:   _.get(process.env, 'ALIEN_SESSION_SECRET',    'alien-session-secret'),

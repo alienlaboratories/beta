@@ -27,8 +27,8 @@ config(CONF_DIR).then(config => {
   console.log('Config = ' + JSON.stringify(config, null, 2));
 
   const db = admin.initializeApp({
-    databaseURL: _.get(config, 'firebase.databaseURL'),
-    credential: admin.credential.cert(path.join(CONF_DIR, _.get(config, 'firebase-admin.credentialPath')))
+    databaseURL: _.get(config, 'firebase.app.databaseURL'),
+    credential: admin.credential.cert(_.get(config, 'firebase.serviceAccount'))
   }).database();
 
   const idGenerator = new IdGenerator(1000);

@@ -109,7 +109,7 @@ export class FirebaseCloudMessenger extends CloudMessenger {
   connect() {
     // TODO(burdon): Remove unnecessary keys from server config?
     // https://console.firebase.google.com/project/alien-dev/overview
-    firebase.initializeApp(_.get(this._config, 'firebase'));
+    firebase.initializeApp(_.get(this._config, 'firebase.app'));
 
     // TODO(burdon): Ask for permissions before app is loaded.
     // NOTE: Timesout if user is presented with permissions prompt (requires reload anyway).

@@ -11,11 +11,10 @@ import admin from 'firebase-admin';
 
 const CONF_DIR = path.join(__dirname, '../../../../../conf');
 
-// TODO(burdon): Make configurable.
+// TODO(burdon): Config via ENV.
 async function config(baseDir) {
   return await {
-    'firebase':       await yaml.read(path.join(baseDir, 'firebase/alienlabs-dev.yml')),
-    'firebase-admin': await yaml.read(path.join(baseDir, 'firebase/alienlabs-dev-admin.yml')),
+    'firebase': await yaml.read(path.join(baseDir, 'firebase/alienlabs-dev.yml')),
   };
 }
 
@@ -23,8 +22,8 @@ config(CONF_DIR).then(config => {
   console.log('Config = ' + JSON.stringify(config, null, 2));
 
   const db = admin.initializeApp({
-    databaseURL: _.get(config, 'firebase.databaseURL'),
-    credential: admin.credential.cert(path.join(CONF_DIR, _.get(config, 'firebase-admin.credentialPath')))
+    databaseURL: _.get(config, 'firebase.app.databaseURL'),
+    credential: admin.credential.cert(_.get(config, 'firebase.serviceAccount'))
   }).database();
 
   //

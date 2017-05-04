@@ -16,13 +16,10 @@ const logger = Logger.get('main');
 /**
  * Asynchronously load the configuration.
  */
-// TODO(burdon): ENV to determine conf files (-dev, -testing).
-// TODO(burdon): Separate file with loggiong.
 async function config(baseDir) {
   return await {
-    'firebase':         await yaml.read(path.join(baseDir, 'firebase/alienlabs-dev.yml')),
-    'firebase-admin':   await yaml.read(path.join(baseDir, 'firebase/alienlabs-dev-admin.yml')),
-    'google':           await yaml.read(path.join(baseDir, 'google/alienlabs-dev.yml')),
+    'firebase':   await yaml.read(path.join(baseDir, ENV.FIREBASE_CONFIG)),
+    'google':     await yaml.read(path.join(baseDir, ENV.GOOGLE_CONFIG)),
   };
 }
 

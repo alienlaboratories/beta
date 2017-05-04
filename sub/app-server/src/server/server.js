@@ -115,10 +115,7 @@ export class WebServer {
 
     // Firebase
     // https://firebase.google.com/docs/database/admin/start
-    this._firebase = new Firebase({
-      databaseURL: _.get(this._config, 'firebase.databaseURL'),
-      credentialPath: path.join(ENV.APP_SERVER_CONF_DIR, _.get(this._config, 'firebase-admin.credentialPath'))
-    });
+    this._firebase = new Firebase(_.get(this._config, 'firebase'));
 
     //
     // Database.

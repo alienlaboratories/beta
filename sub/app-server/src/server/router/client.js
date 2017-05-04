@@ -20,10 +20,12 @@ export const clientRouter = (userManager, clientManager, systemStore, options={}
   console.assert(userManager && clientManager);
   let router = express.Router();
 
+  // TODO(burdon): Error handling.
+
   //
   // Registers the client.
   //
-  router.post('/register', hasJwtHeader(), function(req, res) {
+  router.post('/register', hasJwtHeader(), (req, res, next) => {
     let { platform, messageToken } = req.body;
     let user = req.user;
 
@@ -37,18 +39,18 @@ export const clientRouter = (userManager, clientManager, systemStore, options={}
           client: _.pick(client, ['id', 'messageToken'])
         });
       }
-    })
+    }).catch(next);
   });
 
   //
   // Unregisters the client.
   //
-  router.post('/unregister', hasJwtHeader(), function(req, res, next) {
+  router.post('/unregister', hasJwtHeader(), (req, res, next) => {
     let clientId = req.headers[AppDefs.HEADER.CLIENT_ID];
     let user = req.user;
-    clientManager.unregister(user.id, clientId);
-
-    res.end();
+    clientManager.unregister(user.id, clientId).then(() => {
+      res.end();
+    }).catch(next);
   });
 
   return router;
@@ -142,7 +144,7 @@ export class ClientManager {
     this._idGenerator = idGenerator;
     this._clientStore = new ClientStore();
     this._pushManager = new PushManager({
-      serverKey: _.get(config, 'firebase-admin.serverKey')
+      serverKey: _.get(config, 'firebase.cloudMessaging.serverKey')
     });
   }
 
@@ -237,7 +239,7 @@ export class ClientManager {
     console.assert(userId && clientId, JSON.stringify({ userId, clientId }));
 
     logger.log('UnRegistered: ' + clientId);
-    this._clientStore.deleteClient(clientId);
+    return this._clientStore.deleteClient(clientId);
   }
 
   /**

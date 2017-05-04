@@ -113,8 +113,6 @@ export class ExpressUtil {
       }
     }
 
-    let items =  Array.sort(_.compact(_.map(app._router.stack, item => getStack(item))), comp);
-    console.log(JSON.stringify(items, 0, 2));
-    return items;
+    return Array.sort(_.compact(_.map(app._router.stack, item => getStack(item))), comp);
   }
 }

@@ -18,9 +18,13 @@ const logger = Logger.get('oauth');
  * Checks if the OAuth cookie has been set by passport.
  * NOTE: Browser prefetch may call methods twice.
  */
-// TODO(burdon): Check is admin.
 export const isAuthenticated = (redirect=undefined, admin=false) => (req, res, next) => {
   if (req.isAuthenticated()) {
+    // TODO(burdon): Check is admin.
+    if (admin && req.user.email !== 'rich.burdon@gmail.com') {
+      throw new HttpError(401);
+    }
+
     logger.log('Authenticated user: ' + req.user.id);
     next();
   } else {
