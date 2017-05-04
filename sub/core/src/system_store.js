@@ -201,6 +201,7 @@ export class SystemStore extends DelegateItemStore {
         //
         // New user.
         // Check whitelisted in existing group (i.e., invited).
+        // TODO(burdon): Multiple groups.
         //
         return this.getGroupByWhitelist(email).then(group => {
           if (!group) {
@@ -208,6 +209,7 @@ export class SystemStore extends DelegateItemStore {
             logger.log('User not whitelisted: ' + JSON.stringify({ id, email }));
           } else {
             user.active = true;
+            user.admin = group.admin;
           }
 
           // Create new user record.

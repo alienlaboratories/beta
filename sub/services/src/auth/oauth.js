@@ -20,8 +20,8 @@ const logger = Logger.get('oauth');
  */
 export const isAuthenticated = (redirect=undefined, admin=false) => (req, res, next) => {
   if (req.isAuthenticated()) {
-    // TODO(burdon): Check is admin.
-    if (admin && req.user.email !== 'rich.burdon@gmail.com') {
+    if (admin && !req.user.admin) {
+      logger.log('Attempted admin access: ' + req.user.id);
       throw new HttpError(401);
     }
 
@@ -107,7 +107,7 @@ export const oauthRouter = (userManager, systemStore, oauthRegistry, config={}) 
     let { id, session } = userInfo;
     userManager.getUserFromId(id).then(user => {
       if (!user) {
-        logger.warn('Invalid User ID: ' + id);
+        throw new Error('Invalid User ID: ' + id);
       }
 
       user.session = session;

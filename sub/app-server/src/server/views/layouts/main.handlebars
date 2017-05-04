@@ -34,9 +34,14 @@
         </ul>
 
         <ul class="site-inline">
+          <li>{{ user.email }}</li>
+
           <li><a href="/">home</a></li>
           <li><a href="/profile">profile</a></li>
+
+          {{#if user.admin}}
           <li><a href="/admin">admin</a></li>
+          {{/if}}
         </ul>
       </div>
     </div>

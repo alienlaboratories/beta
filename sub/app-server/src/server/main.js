@@ -18,8 +18,8 @@ const logger = Logger.get('main');
  */
 async function config(baseDir) {
   return await {
-    'firebase':   await yaml.read(path.join(baseDir, ENV.FIREBASE_CONFIG)),
-    'google':     await yaml.read(path.join(baseDir, ENV.GOOGLE_CONFIG)),
+    'firebase':   await yaml.read(path.join(baseDir, ENV.ALIEN_CONFIG_FIREBASE)),
+    'google':     await yaml.read(path.join(baseDir, ENV.ALIEN_CONFIG_GOOGLE)),
   };
 }
 

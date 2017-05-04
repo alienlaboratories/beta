@@ -251,6 +251,15 @@ export class WebServer {
   initHandlebars() {
     logger.log('initHandlebars');
 
+    // Set local variables for Handlebars.
+    this._app.use((req, res, next) => {
+      res.locals = {
+        user: req.user
+      };
+
+      next();
+    });
+
     const helpers = _.assign(ExpressUtil.Helpers, {
       global: (key) => {
         return _.get({

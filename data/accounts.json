@@ -21,6 +21,7 @@
 
     "testers": {
       "rich_burdon_gmail_com": {
+        "admin": true,
         "title": "Rich (Private)",
         "whitelist": [
           "rich.burdon@gmail.com"
