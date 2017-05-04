@@ -51,10 +51,10 @@ export const appRouter = (config, clientManager, options) => {
   //
   // Service worker config.
   //
-  router.get('/sw_config', (req, res) => {
+  router.get('/service_worker_config', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({
-      messagingSenderId: _.get(config, 'firebase.messagingSenderId')
+      messagingSenderId: _.get(config, 'firebase.app.messagingSenderId')
     }));
   });
 
@@ -100,11 +100,10 @@ export const appRouter = (config, clientManager, options) => {
         userProfile: _.pick(user, ['id', 'email', 'displayName', 'photoUrl']),
 
         // Firebase config.
-        firebase: _.get(config, 'firebase'),
+        // TODO(burdon): Remove unnecessary keys?
+        firebase: _.get(config, 'firebase.app'),
 
       }, options.appConfig);
-
-      logger.log('Client config = ' + TypeUtil.stringify(config));
 
       //
       // Render the app page.

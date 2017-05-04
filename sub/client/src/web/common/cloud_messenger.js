@@ -107,70 +107,76 @@ export class FirebaseCloudMessenger extends CloudMessenger {
   // https://developers.google.com/instance-id/reference/server#get_information_about_app_instances
 
   connect() {
-    // TODO(burdon): Remove unnecessary keys from server config?
-    // https://console.firebase.google.com/project/alien-dev/overview
-    firebase.initializeApp(_.get(this._config, 'firebase.app'));
-
-    // TODO(burdon): Ask for permissions before app is loaded.
+    // TODO(burdon): Ask for permissions before app is loaded (otherwise timesout).
     // NOTE: Timesout if user is presented with permissions prompt (requires reload anyway).
     return Async.abortAfter(() => {
-      console.log('Loading Service Worker...');
 
-      // To debug.
-      // chrome://inspect/#service-workers
-
+      //
+      // To debug: DevTools > Application > Service Workers.
+      //
       // https://developers.google.com/web/fundamentals/getting-started/primers/service-workers
-      // https://firebase.google.com/docs/reference/js/firebase.messaging.Messaging#useServiceWorker
       // http://stackoverflow.com/questions/41659970/firebase-change-the-location-of-the-service-worker
-      // return navigator.serviceWorker.register('/firebase-messaging-sw.js').then(registration => {
-      //   firebase.messaging().useServiceWorker(registration);
-      //   console.log('!!!!!!!!', registration);
+      //
+      // NOTE: Must be served from root path.
+      // NOTE: SW is only loaded on first load by the page that references it (unless unregistered).
+      // NOTE: Currently warnings (5/4/17): FB service ticket.
+      // firebase-messaging.js:26 Event handler of 'push' event must be added on the initial evaluation of worker script.
+      //
+      console.log('Loading Service Worker...');
+      return navigator.serviceWorker.register('/service_worker.js').then(registration => {
 
-      // https://firebase.google.caom/docs/cloud-messaging/js/receive#handle_messages_when_your_web_app_is_in_the_foreground
-      firebase.messaging().onMessage(data => {
-        this.fireMessage(data);
-      });
+        // https://console.firebase.google.com/project/alien-dev/overview
+        firebase.initializeApp(_.get(this._config, 'firebase'));
 
-      // The token is updated when the user clears browser data.
-      // https://firebase.google.com/docs/cloud-messaging/js/client#monitor-token-refresh
-      firebase.messaging().onTokenRefresh(() => {
-        firebase.messaging().getToken().then(messageToken => {
-          logger.log('Token updated.');
-          this._onTokenUpdate && this._onTokenUpdate(messageToken);
+        // https://firebase.google.com/docs/reference/js/firebase.messaging.Messaging#useServiceWorker
+        firebase.messaging().useServiceWorker(registration);
+
+        // https://firebase.google.caom/docs/cloud-messaging/js/receive#handle_messages_when_your_web_app_is_in_the_foreground
+        firebase.messaging().onMessage(data => {
+          this.fireMessage(data);
+        });
+
+        // The token is updated when the user clears browser data.
+        // https://firebase.google.com/docs/cloud-messaging/js/client#monitor-token-refresh
+        firebase.messaging().onTokenRefresh(() => {
+          firebase.messaging().getToken().then(messageToken => {
+            logger.log('Token updated.');
+            this._onTokenUpdate && this._onTokenUpdate(messageToken);
+          });
+        });
+
+        // https://firebase.google.com/docs/cloud-messaging/js/client#request_permission_to_receive_notifications
+        logger.log('Requesting permissions...');
+        return firebase.messaging().requestPermission().then(() => {
+
+          // NOTE: Requires HTTPS (for Service workers); localhost supported for development.
+          // https://developers.google.com/web/fundamentals/getting-started/primers/service-workers#you_need_https
+          logger.log('Requesting message token...');
+          return firebase.messaging().getToken().then(messageToken => {
+            if (!messageToken) {
+              throw new Error('FCM Token expired.');
+            }
+
+            logger.log('Connected.');
+            return messageToken;
+          });
+        })
+
+        .catch(error => {
+
+          // Errors: error.code
+          // - Failed to update a ServiceWorker: The script has an unsupported MIME type ('text/html').
+          //   mainfest.json not loaded (LINK in HTML head).
+          // - messaging/permission-blocked
+          //   TODO(burdon): Show UX warning.
+          //   Permission not set (set in Chrome (i) button to the left of the URL bar).
+          // - messaging/failed-serviceworker-registration
+          //   Invalid Firebase console registration.
+          // - messaging/incorrect-gcm-sender-id
+          //   manifest.json gcm_sender_id is not project specific.
+          throw new Error('FCM registration failed: ' + ErrorUtil.message(error.code));
         });
       });
-
-      // https://firebase.google.com/docs/cloud-messaging/js/client#request_permission_to_receive_notifications
-      return firebase.messaging().requestPermission().then(() => {
-
-        // NOTE: Requires HTTPS (for Service workers); localhost supported for development.
-        // https://developers.google.com/web/fundamentals/getting-started/primers/service-workers#you_need_https
-        logger.log('Permission OK. Requesting message token...');
-        return firebase.messaging().getToken().then(messageToken => {
-          if (!messageToken) {
-            throw new Error('FCM Token expired.');
-          }
-
-          logger.log('Connected.');
-          return messageToken;
-        });
-      })
-
-      .catch(error => {
-
-        // Errors: error.code
-        // - Failed to update a ServiceWorker: The script has an unsupported MIME type ('text/html').
-        //   mainfest.json not loaded (LINK in HTML head).
-        // - messaging/permission-blocked
-        //   TODO(burdon): Show UX warning.
-        //   Permission not set (set in Chrome (i) button to the left of the URL bar).
-        // - messaging/failed-serviceworker-registration
-        //   Invalid Firebase console registration.
-        // - messaging/incorrect-gcm-sender-id
-        //   manifest.json gcm_sender_id is not project specific.
-        throw new Error('FCM registration failed: ' + ErrorUtil.message(error.code));
-      });
-      // });
 
     }, FirebaseCloudMessenger.TIMEOUT);
   }

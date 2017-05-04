@@ -75,6 +75,9 @@ export class PushManager {
         })
       };
 
+      // TODO(burdon): Replace with sendToDevice (see fbdemo). FB only?
+      // admin.messaging().sendToDevice(messageToken, { data })
+
       // Post authenticated request to GCM/FCM endpoint.
       // https://firebase.google.com/docs/cloud-messaging/server
       logger.log('Sending message: ' + messageToken, JSON.stringify(data));
