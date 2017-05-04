@@ -20,8 +20,8 @@ import { ContextManager } from '../common/context';
 
 import { Card } from '../components/card';
 
+import { Connector } from './connector';
 import { BasicSearchList, CardSearchList, BasicListItemRenderer } from './lists';
-import { connectReducer } from './connector';
 
 import './finder.less';
 
@@ -158,7 +158,7 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const ContextListReducer = new ListReducer(ContextQuery, null, 'items');
+const ContextListReducer = new ListReducer(ContextQuery, 'contextSearch.items');
 
 export default compose(
 
@@ -191,7 +191,7 @@ export default compose(
   }),
 
   // Query.
-  connectReducer(graphql(ContextQuery, {
+  Connector.connect(graphql(ContextQuery, {
 
     options: (props) => {
       let { context, matcher, contextManager } = props;
@@ -207,9 +207,7 @@ export default compose(
           filter
         },
 
-        reducer: (previousResult, action) => {
-          return ContextListReducer.reduceItems(matcher, context, filter, previousResult, action);
-        }
+        reducer: ListReducer.callback(ContextListReducer, { matcher, context, filter })
       };
     },
 

@@ -73,6 +73,8 @@ export class Board extends React.Component {
       this.props.onItemUpdate && this.props.onItemUpdate(null, [
         MutationUtil.createFieldMutation('title', 'string', text)
       ], column);
+
+      return true; // Clear text.
     }
   }
 

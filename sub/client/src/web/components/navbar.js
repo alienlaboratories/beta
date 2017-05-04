@@ -23,7 +23,7 @@ export class Navbar extends React.Component {
 
     return (
       <nav className="ux-navbar">
-        <div className="ux-header ux-expand">
+        <div className="ux-expand">
           { children }
         </div>
 

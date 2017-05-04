@@ -9,9 +9,9 @@ import PropTypes from 'prop-types';
 
 import { Path } from '../common/path';
 
-// import AdminActivity from '../containers/activities/admin';
-// import CanvasActivity from '../containers/activities/canvas';
-// import FinderActivity from '../containers/activities/finder';
+import AdminActivity from '../containers/activities/admin';
+import CanvasActivity from '../containers/activities/canvas';
+import FinderActivity from '../containers/activities/finder';
 import TestingActivity from '../containers/activities/testing';
 
 import '../resources/css/core.less';
@@ -46,28 +46,23 @@ class Application extends React.Component {
             <IndexRedirect to={ Path.HOME }/>
 
             {/*
+              * Must come first.
+              */}
             <Route path={ Path.ADMIN } component={ AdminActivity }/>
             <Route path={ Path.TESTING } component={ TestingActivity }/>
-            */}
-
-            <Route path={ Path.HOME } component={ TestingActivity }/>
 
             {/*
               * /inbox
               * /favorites
               */}
-            {/*
             <Route path={ Path.route(['folder']) } component={ FinderActivity }/>
-            */}
 
             {/*
               * /project/xxx
               * /project/board/xxx
               */}
-            {/*
             <Route path={ Path.route(['type', 'itemId']) } component={ CanvasActivity }/>
             <Route path={ Path.route(['type', 'canvas', 'itemId']) } component={ CanvasActivity }/>
-            */}
 
             <Redirect from='*' to={ Path.HOME }/>
           </Route>

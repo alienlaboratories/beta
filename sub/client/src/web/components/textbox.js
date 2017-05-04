@@ -125,10 +125,11 @@ export class TextBox extends React.Component {
           break;
         }
 
+        let reset = this.props.onEnter && this.props.onEnter(this.value, this, event);
+        this._currentValue = reset ? '' : this.value;
         this.setState({
-          readOnly: this.props.clickToEdit
-        }, () => {
-          this.props.onEnter && this.props.onEnter(this.value, this, event);
+          readOnly: this.props.clickToEdit,
+          value: this._currentValue
         });
         break;
       }
@@ -136,8 +137,8 @@ export class TextBox extends React.Component {
       // ESCAPE
       case 27: {
         this.setState({
-          value: this.props.value,
           readOnly: true,
+          value: this.props.value
         }, () => {
           this.props.onCancel && this.props.onCancel(this.props.value, event);
         });

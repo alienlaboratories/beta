@@ -41,7 +41,7 @@ const CreateTask = (mutator, user, parent, mutations) => {
     .createItem('Task', _.concat(mutations, [
       MutationUtil.createFieldMutation('project', 'id',   parent.project.id),
       MutationUtil.createFieldMutation('owner',   'id',   user.id),
-      MutationUtil.createFieldMutation('status',  'int',  Enum.Task_LEVEL.UNSTARTED),
+      MutationUtil.createFieldMutation('status',  'int',  Enum.TASK_LEVEL.UNSTARTED),
     ]), 'new_task')
     .updateItem(parent, [
       MutationUtil.createSetMutation('tasks', 'id', '${new_task}')
