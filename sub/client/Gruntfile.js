@@ -34,7 +34,7 @@ module.exports = (grunt) => {
         src: [
           'package.json',
           'src/common/defs.js',
-          'src/client/crx/manifest.yml'
+          'src/crx/manifest.yml'
         ]
       }
     },
@@ -47,8 +47,8 @@ module.exports = (grunt) => {
       yml2json: {
         // CRX manifest.
         files: [{
-          src: ['src/client/crx/manifest.yml'],
-          dest: 'dist/crx/alien/manifest.json'
+          src: ['src/crx/manifest.yml'],
+          dest: 'dist/crx/robotik/manifest.json'
         }]
       }
     },
@@ -58,18 +58,12 @@ module.exports = (grunt) => {
         files: [
           {
             expand: true,
-            cwd: 'src/client/crx',
+            cwd: 'src/crx',
             src: [
               'img/*',
               'page/*'
             ],
-            dest: 'dist/crx/alien/'
-          },
-          {
-            src: [
-              'dist/crx/alien/alien.crx'
-            ],
-            dest: 'src/server/public/'
+            dest: 'dist/crx/robotik/'
           }
         ]
       }
@@ -82,12 +76,12 @@ module.exports = (grunt) => {
     // NOTE: pem (private key) is created by manually packing the extension from chrome (first time only).
     // TODO(burdon): set baseURL (for auto-updates).
     crx: {
-      alien: {
+      robotik: {
         options: {
-          privateKey: 'src/client/crx/alien.pem'
+          privateKey: 'src/crx/cert/robotik.pem'
         },
-        src: ['dist/crx/alien/**/*'],
-        dest: 'dist/crx/alien.crx'
+        src: ['dist/crx/robotik/**/*'],
+        dest: 'dist/crx/robotik.crx'
       }
     },
 
@@ -99,12 +93,12 @@ module.exports = (grunt) => {
     compress: {
       crx: {
         options: {
-          archive: 'dist/crx/alien.zip'
+          archive: 'dist/crx/robotik.zip'
         },
         files: [
           {
             expand: true,
-            cwd: 'dist/crx/alien/',
+            cwd: 'dist/crx/robotik/',
             src: ['**']
           }
         ]
@@ -119,8 +113,9 @@ module.exports = (grunt) => {
         files: [
           'Gruntfile.js',
           'webpack*',
-          'src/client/**',
-          '../core/src/**'
+          'src/**',
+          '../core/src/**',
+          '../util/src/**'
         ],
         tasks: [ 'build-crx' ]
       }
@@ -132,8 +127,6 @@ module.exports = (grunt) => {
     // https://github.com/webpack/webpack-with-common-libs/blob/master/Gruntfile.js
     // webpack -d --config webpack-crx.config.js --display-modules --progress
     webpack: {
-      srv: require('./webpack-srv.config.js'),
-      web: require('./webpack-web.config.js'),
       crx: require('./webpack-crx.config.js'),
     },
   }));
@@ -163,14 +156,14 @@ module.exports = (grunt) => {
   grunt.loadNpmTasks('grunt-version');
 
   // https://webpack.github.io/docs/usage-with-grunt.html
-  grunt.loadNpmTasks("grunt-webpack");
+  grunt.loadNpmTasks('grunt-webpack');
 
   //
   // Tasks
   //
 
-  grunt.registerTask('default', ['build']);
-  grunt.registerTask('build', ['clean', 'webpack']);
-  grunt.registerTask('pack-crx', ['build-crx', 'crx:alien', 'compress:crx']);
+  grunt.registerTask('default',   ['build']);
+  grunt.registerTask('build',     ['clean', 'webpack']);
+  grunt.registerTask('pack-crx',  ['build-crx', 'crx:robotik', 'compress:crx']);
   grunt.registerTask('build-crx', ['webpack:crx', 'convert:yml2json', 'copy:crx']);
 };

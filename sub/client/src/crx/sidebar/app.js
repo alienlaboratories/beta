@@ -11,16 +11,16 @@ import {
   Async, Injector, ChromeMessageChannel, ChromeMessageChannelRouter, Logger, WindowMessenger 
 } from 'alien-util';
 
-import { Path } from '../../common/path';
-import { BaseApp } from '../../common/base_app';
-import { ChromeNetworkInterface } from '../../common/network';
-import { AppAction, AppReducer, ContextAction, ContextReducer } from '../../common/reducers';
-import { TypeRegistryFactory } from '../../web/framework/type_factory';
+import { Path } from '../../web/common/path';
+import { BaseApp } from '../../web/common/base_app';
+import { ChromeNetworkInterface } from '../../web/common/network';
+import { AppAction, AppReducer, ContextAction, ContextReducer } from '../../web/common/reducers';
 
 import { SystemChannel, SidebarCommand } from '../common';
 import { SidebarAction, SidebarReducer } from '../sidebar/reducers';
 
-import FinderActivity from '../../web/activity/finder';
+import FinderActivity from '../../web/containers/activities/finder';
+import { TypeRegistryFactory } from '../../web/containers/type_factory';
 
 const logger = Logger.get('sidebar');
 

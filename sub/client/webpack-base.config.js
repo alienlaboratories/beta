@@ -132,6 +132,47 @@ const web = webpackMerge(baseConfig, {
   }
 });
 
+//
+// CRX config.
+//
+
+const crx = webpackMerge(baseConfig, {
+
+  target: 'web',
+
+  // Cuts build time to 50%.
+  devtool: 'eval',
+
+  entry: {
+
+    background: [
+      path.resolve(baseConfig.context, 'src/crx/background.js')
+    ],
+
+    content_script: [
+      path.resolve(baseConfig.context, 'src/crx/content_script.js')
+    ],
+
+    browser_action: [
+      path.resolve(baseConfig.context, 'src/crx/browser_action.js')
+    ],
+
+    sidebar: [
+      path.resolve(baseConfig.context, 'src/crx/sidebar.js')
+    ],
+
+    options: [
+      path.resolve(baseConfig.context, 'src/crx/options.js')
+    ]
+  },
+
+  output: {
+    path: path.resolve(baseConfig.context, 'dist/crx/robotik/assets'),
+    filename: '[name].bundle.js'
+  }
+});
+
 module.exports = {
-  web
+  web,
+  crx
 };
