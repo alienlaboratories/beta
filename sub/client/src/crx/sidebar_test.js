@@ -67,10 +67,9 @@ app.init().then(() => {
       t5: { type: 'Contact', title: 'Emiko',          email: 'emiko@example.com'          },
 
       t6: { type: 'Contact', title: 'Rich',           email: 'rich.burdon@gmail.com'      },
-      t7: { type: 'Contact', title: 'Rich (Minder)',  email: 'rich@minderlabs.com'        },
-      t8: { type: 'Contact', title: 'Adam (Minder)',  email: 'adam@minderlabs.com'        },
+      t7: { type: 'Contact', title: 'Rich (Alien)',   email: 'rich@alienlabs.io'          },
 
-      t9: { title: 'slack_channel 1', context: [{ key: 'slack_channel', value: { string: 'C4BPPS9RC' }}] },
+      t9: { title: 'slack_channel 1', context: [{ key: 'slack_channel', value: { string: 'XXX' }}] },
     };
 
     let select = $('<select>').appendTo(root)
@@ -86,12 +85,12 @@ app.init().then(() => {
           context = { items: [item] };
         }
         let action = {
-          type: 'MINDER_CONTEXT/UPDATE',
+          type: 'ALIEN_CONTEXT/UPDATE',
           context: context
         };
 
-        window.minder.store.dispatch(action);
-        logger.log(`window.minder.store.dispatch(${JSON.stringify(action)})`);
+        window.alien.store.dispatch(action);
+        logger.log(`window.alien.store.dispatch(${JSON.stringify(action)})`);
       });
 
     _.each(window.ITEMS, (value, key) => {

@@ -34,10 +34,10 @@
 
 manifest_version:   2
 
-name:               "Minder"
-short_name:         "Minder"
-version:            "0.1.13"                         # grunt version:crx:patch (uses version.json)
-author:             "Minder Labs"
+name:               "Alien"
+short_name:         "Alien"
+version:            "0.0.1"                       # grunt version:crx:patch (uses version.json)
+author:             "Alien Labs"
 description:        "Automated intelligence."
 
 icons:
@@ -70,11 +70,11 @@ permissions:
 
   - "http://127.0.0.1/*"
   - "http://localhost/*"
-  - "http://dockermachine.net/*"
+  - "http://minikube.robotik.io/*"
 
   - "https://accounts.google.com/o/oauth2/auth/*"
 
-  - "*://minderlabs.com/*"
+  - "*://alienlabs.com/*"
 
   - "<all_urls>"
 
@@ -108,7 +108,7 @@ background:
 
 browser_action:
   default_icon: "img/icon_128.png",
-  default_title: "Minder",
+  default_title: "Alien",
   default_popup: "page/browser_action.html"
 
 
@@ -139,14 +139,14 @@ content_scripts:
 
 
 #
-# https://console.developers.google.com/apis/credentials?project=minder-beta
+# https://console.developers.google.com/apis/credentials?project=alienlabs-dev
 # https://developer.chrome.com/apps/app_identity#update_manifest
 # https://developers.google.com/identity/protocols/googlescopes
 # https://github.com/firebase/quickstart-js/tree/master/auth/chromextension
 # TODO(burdon): Inject from defs.GoogleApiConfig
 #
-# 1). In the Google dashboard (for minder-beta) we create an OAuth Chrome App Client, which has a Client ID (no secret):
-#     https://console.developers.google.com/apis/credentials/oauthclient/189079594739-p1shfct6nh1rcf84edupn05fl4qmtmgk.apps.googleusercontent.com?project=minder-beta
+# 1). In the Google dashboard (for alienlabs-dev) we create an OAuth Chrome App Client, which has a Client ID (no secret):
+#     https://console.developers.google.com/apis/credentials/oauthclient/189079594739-p1shfct6nh1rcf84edupn05fl4qmtmgk.apps.googleusercontent.com?project=alienlabs-dev
 #     Client ID: 189079594739-p1shfct6nh1rcf84edupn05fl4qmtmgk.apps.googleusercontent.com
 # 2). The Client ID must be set in the manifest's "oauth2.client_id" key.
 # 3). When the CRX is published, the Chrome Web Store assigned a CRX ID:
@@ -156,7 +156,7 @@ content_scripts:
 #     This manifest contains a key property.
 # 5). The key must be copied to the development manifest.yml file; this ensures that the locally built CRX and prod CRX have the same CRX ID; otherwise, each developer's CRX would have a different ID, which would need to be registered below.
 # 6). In the Firebase Google Authentication Sign-In method, we register the CRX's Client ID; this is used by the CRX to enable the Firebase auth Login (i.e., firebase.auth().signInWithCredential, which uses the Google OAuth credential)
-#     https://console.firebase.google.com/project/minder-beta/authentication/providers
+#     https://console.firebase.google.com/project/alienlabs-dev/authentication/providers
 
 oauth2:
 
@@ -164,7 +164,7 @@ oauth2:
   # NOTE: Requires consistent CRX ID (see key property above).
   # NOTE: This is different from the "Web Client" Client ID.
   # NOTE: This is legacy (required for Firebase Authentication).
-  # https://console.developers.google.com/apis/credentials?project=minder-beta
+  # https://console.developers.google.com/apis/credentials?project=alienlabs-dev
   client_id: "189079594739-p1shfct6nh1rcf84edupn05fl4qmtmgk.apps.googleusercontent.com"
 
   # Default scopes (can be overridden in getAuthToken call (network.js)
@@ -186,7 +186,7 @@ oauth2:
 # Segment analytics pulls in other scripts depending on which integrations are enabled.
 # https://segment.com/minderlabs/sources/jsweb/integrations
 
-content_security_policy: "script-src 'self' 'unsafe-eval' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com https://apis.google.com https://cdn.segment.com https://www.google-analytics.com https://www.googleadservices.com https://*.intercom.io https://js.intercomcdn.com https://minderlabs.com; object-src 'self'"
+content_security_policy: "script-src 'self' 'unsafe-eval' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com https://apis.google.com https://cdn.segment.com https://www.google-analytics.com https://www.googleadservices.com https://*.intercom.io https://js.intercomcdn.com https://alienlabs.com https://robotik.io; object-src 'self'"
 
 #
 # https://developer.chrome.com/extensions/manifest/externally_connectable

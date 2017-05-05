@@ -25,7 +25,7 @@ import { ContextManager } from './context';
 const logger = Logger.get('app');
 
 /**
- * Base class for all Minder (Apollo) apps.
+ * Base class for all Alien (Apollo) apps.
  *
  * This is the App's top-level class hat configures the Injector, Apollo, Redux reducers, Router, etc.
  * It also renders the App's top-level React component, which defines the react-router Routes.
@@ -52,7 +52,7 @@ export class BaseApp {
     ErrorUtil.handleErrors(window, error => this.onError(error));
 
     // Debugging.
-    _.set(window, 'minder', this);
+    _.set(window, 'alien', this);
   }
 
   get initialized() {

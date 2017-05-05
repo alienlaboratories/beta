@@ -2,7 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
-import { Picker } from 'minder-ux';
+import { Picker } from '../components/picker';
 
 import { ItemsQueryWrapper } from './lists';
 

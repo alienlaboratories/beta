@@ -1,6 +1,6 @@
 # Apollo
 
-![Apollo](https://github.com/minderlabs/demo/blob/master/docs/kbase/apollo.png "Apollo")
+![Apollo](https://github.com/alienlabs/beta/blob/master/docs/kbase/apollo.png "Apollo")
 
 
 ## Ref
@@ -47,7 +47,7 @@ Ths top-level component is naive (doesn't know about Redux or Apollo).
 
 The Higher Order Component (HOC) add properties, dispatchers and configures queryies:
 
-https://github.com/minderlabs/demo/docs/kbase/apollo_sequence.png
+https://github.com/alienlabs/beta/kbase/apollo_sequence.png
 
 1). Redux.connect(mapStateToProps(state)) => component.props
 2). => graphql.options(props) => query {variables}

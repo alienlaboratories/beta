@@ -149,7 +149,7 @@ export class LayoutComponent extends React.Component {
                   { links }
 
                   <li>
-                    <a target="MINDER_PROFILE" href="/user/profile">{ _.get(viewer, 'user.title') }</a>
+                    <a target="ALIEN_PROFILE" href="/user/profile">{ _.get(viewer, 'user.title') }</a>
                   </li>
                   <li>
                     <a href="/user/logout">Logout</a>

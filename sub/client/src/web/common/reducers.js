@@ -34,7 +34,7 @@ export const GlobalAppReducer = (state, action) => {
 // App.
 //-------------------------------------------------------------------------------------------------
 
-const APP_NAMESPACE = 'MINDER_APP';
+const APP_NAMESPACE = 'ALIEN_APP';
 
 /**
  * Main App actions.
@@ -199,7 +199,7 @@ export const AppReducer = (injector, config, apolloClient) => {
 // Context.
 //-------------------------------------------------------------------------------------------------
 
-const CONTEXT_NAMESPACE = 'MINDER_CONTEXT';
+const CONTEXT_NAMESPACE = 'ALIEN_CONTEXT';
 
 /**
  * Application context (e.g., current page for CRX, location, time, etc.)

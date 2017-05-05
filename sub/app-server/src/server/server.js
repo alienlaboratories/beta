@@ -153,8 +153,8 @@ export class WebServer {
     // External query processors.
     //
 
-    // this._database
-    //   .registerQueryProcessor(new GoogleDriveQueryProcessor(new IdGenerator(), _.get(this._config, 'google')));
+    this._database
+      .registerQueryProcessor(new GoogleDriveQueryProcessor(new IdGenerator(), _.get(this._config, 'google')));
   }
 
   /**
@@ -193,8 +193,8 @@ export class WebServer {
 
     // Service registry.
     this._serviceRegistry = new ServiceRegistry()
-      // .registerProvider(new GoogleDriveServiceProvider(this._googleAuthProvider))
-      // .registerProvider(new GoogleMailServiceProvider(this._googleAuthProvider));
+      .registerProvider(new GoogleDriveServiceProvider(this._googleAuthProvider))
+      .registerProvider(new GoogleMailServiceProvider(this._googleAuthProvider));
 //    .registerProvider(new SlackServiceProvider());
 
     // Client manager.
@@ -391,6 +391,7 @@ export class WebServer {
     this._app.get('/home', (req, res) => {
       res.render('home', {
         layout: 'home',
+        title: AppDefs.APP_NAME,
         redirectUrl: '/profile'
       });
     });
@@ -459,8 +460,7 @@ export class WebServer {
 
   initDebugging() {
     // TODO(burdon): Why is this needed?
-    // this._app.get('/node_modules', express.static(ENV.MINDER_NODE_MODULES));
-
+    // this._app.get('/node_modules', express.static(ENV.ALIEN_NODE_MODULES));
     // this._app.use('/testing', testingRouter({}));
   }
 

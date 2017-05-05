@@ -90,11 +90,6 @@ export class StatusBar extends React.Component {
     // TODO(burdon): Get all links from config.
     const links = [
       {
-        href: 'https://github.com/minderlabs/demo/issues?q=is%3Aissue+is%3Aopen+label%3Abug',
-        title: 'Github issues',
-        icon: 'report_problem'
-      },
-      {
         href: 'https://console.firebase.google.com/project/alien-dev/database/data',
         title: 'Firebase',
         icon: 'cloud_circle'
@@ -124,7 +119,7 @@ export class StatusBar extends React.Component {
 
           {
             _.map(links, link => (
-            <a key={ link.href } href={ link.href } target="MINDER_CONSOLE">
+            <a key={ link.href } href={ link.href } target="ALIEN_CONSOLE">
               <i className="ux-icon ux-icon-action" title={ link.title }>{ link.icon }</i>
             </a>
             ))

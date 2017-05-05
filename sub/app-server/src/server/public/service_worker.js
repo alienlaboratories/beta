@@ -15,7 +15,7 @@ function initialize() {
   // Get App config.
   // https://developers.google.com/web/updates/2015/03/introduction-to-fetch
   console.log('Loading config...');
-  return fetch('/app/service_worker_config').then(response => {
+  return fetch('/app/service_worker_config.json').then(response => {
     return response.json().then(config => {
       console.log('Config = ' + JSON.stringify(config));
       let { messagingSenderId } = config;

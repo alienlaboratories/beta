@@ -6,9 +6,8 @@
 export const Defs = {
 
   SERVER: {
-    // TODO(burdon): dockerhost.net config.
-    DEV:  { value: 'http://localhost:3000',             title: 'localhost' },
-    PROD: { value: 'https://demo-dev.minderlabs.com',   title: 'https://demo-dev.minderlabs.com' }
+    DEV:  { value: 'http://localhost:3000',        title: 'localhost' },
+    PROD: { value: 'https://beta.alienlabs.com',   title: 'https://beta.alienlabs.com' }
   }
 };
 

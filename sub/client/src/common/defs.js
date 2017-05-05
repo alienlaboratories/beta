@@ -7,6 +7,9 @@
  */
 export const AppDefs = {
 
+  // Changed via grunt:version
+  APP_VERSION: '0.0.1',
+
   // Name for static components (e.g., CRX).
   APP_NAME: 'robotik',
 

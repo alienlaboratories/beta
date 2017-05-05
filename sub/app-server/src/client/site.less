@@ -68,13 +68,6 @@ div.site-container {
   top: 0;
   bottom: 0;
 }
-div.site-container h1 {
-  margin: 16px;
-  font-family: monospace;
-  font-size: 60px;
-  color: #000;
-  opacity: .5;
-}
 
 /**
  * Home
@@ -88,8 +81,15 @@ div.site-home {
   flex-grow: 1;
   background-color: #148ad6;
 }
+div.site-home h1 {
+  margin: 32px;
+  font-family: monospace;
+  font-size: 60px;
+  color: #000;
+  opacity: .4;
+}
 div.site-home img.site-logo {
-  margin: 20px 0 100px;
+  margin: 20px 0;
   opacity: .3;
 }
 
@@ -136,6 +136,7 @@ div.site-header div.site-toolbar {
 }
 div.site-toolbar > div {
   display: flex;
+  white-space: nowrap;
 }
 div.site-toolbar a.site-button {
   margin-right: 2px;

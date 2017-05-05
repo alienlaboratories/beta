@@ -204,7 +204,7 @@ class BackgroundApp {
     return this._connectionManager.register().then(client => {
       logger.log('Registered: ' + TypeUtil.stringify(client));
       if (_.get(this._config, 'settings.notifications')) {
-        this._notification.show('Minder', 'Registered App.');
+        this._notification.show('Robotik', 'Registered App.');
       }
 
       // Save registration.

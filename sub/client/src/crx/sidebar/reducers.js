@@ -2,7 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
-const SIDEBAR_NAMESPACE = 'MINDER_SIDEBAR';
+const SIDEBAR_NAMESPACE = 'ALIEN_SIDEBAR';
 
 import { WindowMessenger } from 'alien-util';
 

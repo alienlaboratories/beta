@@ -14,9 +14,9 @@ See `//sub/app/scripts/crx_push.sh`
 
 ## Production Data
 
-* Firebase admin console: https://console.firebase.google.com/project/minder-beta/database/data
+* Firebase admin console: https://console.firebase.google.com/project/alienlabs-dev/database/data
     * Daily backups, administered there in the
-      [Backups](https://console.firebase.google.com/project/minder-beta/database/backups) tab.
+      [Backups](https://console.firebase.google.com/project/alienlabs-dev/database/backups) tab.
 
 ## User provisioning
 

@@ -27,14 +27,12 @@ export const appRouter = (config, clientManager, options) => {
 
   const router = express.Router();
 
+  // TODO(burdon): Different path for non app.
+
   //
   // Webpack assets (either from dist or HMR).
   //
   router.use('/assets', express.static(options.assets));
-
-  // Browser sender ID (common among all FCM JS clients -- i.e., not project specific).
-  // https://firebase.google.com/docs/cloud-messaging/js/client#configure_the_browser_to_receive_messages
-  const GCM_SENDER_ID = '103953800507';
 
   //
   // Manifest for web worker (e.g., push permissions).
@@ -42,6 +40,11 @@ export const appRouter = (config, clientManager, options) => {
   // NOTE: Also server /firebase-messaging-sw.js
   //
   router.get('/manifest.json', (req, res) => {
+
+    // Browser sender ID (common among all FCM JS clients -- i.e., not project specific).
+    // https://firebase.google.com/docs/cloud-messaging/js/client#configure_the_browser_to_receive_messages
+    const GCM_SENDER_ID = '103953800507';
+
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({
       gcm_sender_id: GCM_SENDER_ID
@@ -51,7 +54,7 @@ export const appRouter = (config, clientManager, options) => {
   //
   // Service worker config.
   //
-  router.get('/service_worker_config', (req, res) => {
+  router.get('/service_worker_config.json', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({
       messagingSenderId: _.get(config, 'firebase.app.messagingSenderId')

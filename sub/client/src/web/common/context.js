@@ -45,8 +45,8 @@ export class ContextManager {
 
   // To test from console:
   // let TEST_CONTEXT = { items: [{ type: 'Contact', title: 'Alice Braintree' }] };
-  // minder.store.dispatch({ type: 'MINDER_CONTEXT/UPDATE', context: TEST_CONTEXT });
-  // minder.store.dispatch({ type: 'MINDER_CONTEXT/UPDATE', context: { items: undefined }});
+  // alien.store.dispatch({ type: 'ALIEN_CONTEXT/UPDATE', context: TEST_CONTEXT });
+  // alien.store.dispatch({ type: 'ALIEN_CONTEXT/UPDATE', context: { items: undefined }});
 
   constructor(idGenerator) {
     console.assert(idGenerator);

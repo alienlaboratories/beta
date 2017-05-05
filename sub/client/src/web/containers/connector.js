@@ -1,5 +1,5 @@
 //
-// Copyright 2016 Minder Labs.
+// Copyright 2017 Alien Labs.
 //
 
 import { connect } from 'react-redux';
@@ -47,7 +47,7 @@ export class Connector {
 
   /**
    * HOC wrapper for reducers.
-   * Adapts Redux state from the App to the minder-core reducers.
+   * Adapts Redux state from the App to the alien-core reducers.
    */
   static connect(containers) {
     containers = _.concat([

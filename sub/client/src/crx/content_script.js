@@ -19,7 +19,7 @@ const scriptId = Date.now();
  * Content Script is loaaded on all pages declared in the manifest.
  *
  * NOTE: The OAuth spec in the manifest must match the console credentials.
- * NOTE: The content script is self-contained (does not reference minder-ux, to keep small etc.)
+ * NOTE: The content script is self-contained (does not reference the rest of the client to keep small etc.)
  *
  * Lifecycle:
  * 0). On install, the background page attempts to authenticate and connect with the server,

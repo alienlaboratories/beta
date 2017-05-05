@@ -47,7 +47,7 @@ class SidebarApp extends React.Component {
     return (
       <div className="crx-panel crx-sidebar crx-expand">
         <div className="crx-panel crx-header">
-          <h1>Minder</h1>
+          <h1>Alien</h1>
         </div>
 
         <div className="crx-panel crx-content">
