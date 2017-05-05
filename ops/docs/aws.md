@@ -38,7 +38,7 @@ NOTE: The credentials file is stored here: `/keybase/private/richburdon,madadam/
 Set your default profile:
 
 ```
-export AWS_DEFAULT_PROFILE=minder
+export AWS_DEFAULT_PROFILE=robotik
 ```
 
 To test the credentials:

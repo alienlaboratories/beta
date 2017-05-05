@@ -1,55 +1,111 @@
 # Kubernetes
 
-- https://kubernetes.io/docs/concepts
-- https://kubernetes.io/docs/user-guide/kubectl-cheatsheet
-- https://kubernetes.io/docs/user-guide/docker-cli-to-kubectl
-- https://github.com/kubernetes/community/blob/master/contributors/design-proposals/architecture.md
 
-## Cluster
-- Physical group of Nodes.
-- Firewalled from the internet.
-- Contains Master and multiple Nodes.
-
-## Node
-- VM in cluster.
-
-## Pod
-- Unit of Deployment.
-- Set of running Containers (processes), Volumes, etc. on a Node.
-- Unique network IP.
-- Automatically created by a Deployment.
-
-## Namespace
-- TODO: kube-system
-
-## Controllers
-
-### Deployment
-
-  [Deployment] => ReplicaSet => Pods
-
-- A type of ReplicationController to control the life-cycle of Pods (ReplaceSet).
-- Manage scaling and rolling updates.
-- Automatically replace failed Pod.
-
-## Service
-
-  [Service] => Pods
-
-- Logical set of Pods (identified via a label selector).
-- Network abstraction of Pod (Pods have a unique IP but are short-lived); common access policy.
-- Each node runs kube-proxy (configure iptables).
-- Virtual IP. 
-- External Endpoint accessed via DNS. (kops create cluster --dns-zone)
-  - TODO(burdon): AWS Hosted Zone.
-- ELB with SSL support (add SSL Cert via annotations).
-
-## Ingress
-- Rules that allow inbound connections to Services (within a Cluster).
-- External DNS, load balancing, SSL termination.
-- Ingress Controller (e.g., Traefk, nginx) process.
+## Docker Images (ECR via ECS)
+  
+- https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories
+- https://docs.aws.amazon.com/AmazonECR/latest/userguide/Repositories.html
+- http://kubernetes.io/docs/user-guide/docker-cli-to-kubectl
+- http://kubernetes.io/docs/user-guide/images
+- http://kubernetes.io/docs/concepts/containers/images/#using-aws-ec2-container-registry (Permissions)
+  
+~~~~
+  docker login
+  aws ecr get-login --region us-east-1
+~~~~
 
 
+### Building and Pushing Docker Images
+
+- Create ECS Repo and use to tag images:
+  - https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories (View Push Commands)
+
+~~~~
+  export IMAGE_NAME=alien-web-server
+  export ECR_REPO=861694698401.dkr.ecr.us-east-1.amazonaws.com/alien-web-server
+
+  aws ecr get-login
+
+  docker build -t ${IMAGE_NAME} .
+  docker tag ${IMAGE_NAME}:latest ${ECR_REPO}:latest
+  docker push ${ECR_REPO}:latest
+~~~~
+
+
+## Deploying services
+
+- https://kubernetes.io/docs/tasks/debug-application-cluster/debug-service
+- http://kubernetes.io/docs/user-guide/config-best-practices/#container-images
+
+~~~~
+  # Create Pod.
+  kubectl create -f ../../ops/conf/k8s/alien_web_server.yml
+  
+  # Delete/Restart Pod.
+  kubectl delete $(kubectl get pods -l run=${RUN_LABEL} -o name)
+  
+  kubectl describe services
+~~~~
+
+- Use docker tags in production for rolling updates.
+   https://github.com/kubernetes/kubernetes/issues/9043
+   https://github.com/kubernetes/kubernetes/issues/13488
+
+~~~~
+  kubectl rolling-update
+~~~~
+
+
+### Logging
+
+~~~~
+  kubectl get pods -o name
+  kubectl logs ${POD} -f  
+~~~~
+
+
+### SSH
+
+~~~~
+  kubectl exec ${POD} -i -t -- bash -il
+~~~~
+
+
+### Dashboard
+
+- Each cluster has it's own dashboard (add-on to master node).
+- https://github.com/kubernetes/kops/blob/master/docs/addons.md
+- https://github.com/kubernetes/dashboard
+
+Auth:
+- https://kubernetes.io/docs/admin/authorization/
+
+~~~~
+  # Install.
+  kubectl create -f https://raw.githubusercontent.com/kubernetes/kops/master/addons/kubernetes-dashboard/v1.5.0.yaml
+
+  # Access via proxy.
+  kubectl proxy
+  open http://localhost:8001/ui
+
+  # Other info pages:
+  open http://localhost:8001
+
+  # Get admin password for public API.
+  kops get secrets kube --type secret -oplaintext  
+  open https://api.${CLUSTER}/ui
+~~~~
+
+NOTE: The UI shows the HTTPS Not Secure Warning (proceed via the Advanced option).
+
+
+### Troubleshooting
+
+- https://kubernetes.io/docs/tasks/debug-application-cluster/debug-service/
+
+* ELB doesn't have an external endpoint.
+  - `kubectl describe services alien-web-server` to see error (e.g., invalid certificate)
+  - Check exposed port matches container port.
 
 
 
@@ -57,23 +113,92 @@
 
 
 
-## AWS
+## SSL Certificates
 
-- https://console.aws.amazon.com/ec2/v2/home
+- https://console.aws.amazon.com/acm/home
 
-CloudFormation              Manage AWS resources (abstracted by Kubernetes kops).
-Elastic Beanstalk           Orchestration (hidden by Kubernetes.)
-EC2                         Hosted virtual machines.
-S3                          File storage.
-Route53                     Manages DNS for Hosted Zones.
-CloudFront                  CDN.
-Elastic Load Balancing      Distribute traffic across EC2 instances.
+- Request and validate subdomains via parent domain admin@ email address.
+- NOTE: www validation uses the parent domain:
+  - https://console.aws.amazon.com/support/home?region=us-east-1#/case/?displayId=2163077101&language=en
 
-AutoScaling Group           Impl. of Kubernetes Instance Group.
+~~~~
+  aws acm request-certificate \
+    --domain-name robotik.io \
+    --subject-alternative-names www.robotik.io beta.robotik.io admin.robotik.io \
+    --domain-validation-options \
+  DomainName=www.robotik.io,ValidationDomain=robotik.io,\
+  DomainName=beta.robotik.io,ValidationDomain=robotik.io,\
+  DomainName=admin.robotik.io,ValidationDomain=robotik.io
+~~~~
 
-EC2 Key Pairs               http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html
-KMS (Key Management)        http://docs.aws.amazon.com/kms/latest/developerguide/overview.html
 
-aws-cli                     AWS CLI.
+## Ingress Controller
 
-- https://aws.amazon.com/getting-started/projects/deploy-nodejs-web-app
+### Traefic
+
+- https://medium.com/@alex__richards/getting-started-with-traefik-43fb7302b224
+- https://docs.traefik.io/user-guide/kubernetes/
+
+- Dashboard
+
+~~~~
+  kubectl port-forward $(kubectl get pods | grep traefik-proxy | awk -F' ' '{print $1}') 8080:8080
+~~~~
+
+- Config http=>https
+  - https://medium.com/@patrickeasters/using-traefik-with-tls-on-kubernetes-cb67fb43a948 (Traefik conf)
+
+
+## Troubleshooting
+
+* Help
+  - kubernetes.slack.com
+
+* Waiting: ErrImagePull
+* Waiting: ImagePullBackOff
+  - Check image in Repo:
+    - https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories
+
+~~~~
+  # Check add-on is enabled (and configured).
+  minikube addons enable registry-creds
+  
+  # Test if image can be downloaded (i.e., registry is accessible, and network OK).
+  eval $(minikube docker-env)
+  docker pull 861694698401.dkr.ecr.us-east-1.amazonaws.com/alien-app-server:latest
+~~~~
+
+* Re-authenticate: `aws ecr get-login`
+
+~~~~
+  kubectl get nodes
+  Unable to connect to the server: dial tcp 203.0.113.123:443: i/o timeout
+~~~~
+  
+- 203.0.113.123 is the placeholder IP that kops starts all records as just because you can't create a blank DNS record, and kops doesn't yet know the actual values since they are dynamically generated by AWS/DHCP      
+- 15m for DNS to propagate.
+  - Check Route 53 DNS configuration.
+  - Check availability zone (NOTE: "us-east-1a" DOES NOT WORK)
+  - https://github.com/kubernetes/kops/issues/1386 (Issue)
+  - https://github.com/kubernetes/kops/issues/2384 (Issue)
+  - https://github.com/kubernetes/kops/issues/1599 (Issue)
+  - https://github.com/kubernetes/kops/issues/2189 (Issue)
+  - https://github.com/kubernetes/kops/issues/1915
+  - https://github.com/kubernetes/kops/issues/2263
+  - https://console.aws.amazon.com/support/home?region=us-east-1#/case/?displayId=2161442131&language=en
+
+  
+## TODO
+
+- ELB Security Group (Inbound): https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#SecurityGroups:sort=groupId
+- https://console.aws.amazon.com/support/home?region=us-east-1#/case/?displayId=2164614881&language=en
+- nodes.beta.kube.robotik.io
+- https://github.com/kubernetes/community/blob/master/contributors/design-proposals/aws_under_the_hood.md#nodeport-and-loadbalancer-services  
+- https://kubernetes.io/docs/concepts/services-networking/ingress
+- https://kubernetes.io/docs/concepts/services-networking/service/#external-ips  
+- https://github.com/nginxinc/kubernetes-ingress
+- https://daemonza.github.io/2017/02/13/kubernetes-nginx-ingress-controller
+- https://github.com/kubernetes/ingress/tree/master/controllers/nginx
+- https://kubernetes.io/docs/concepts/configuration/overview
+- https://kubernetes.io/docs/tutorials/stateless-application/expose-external-ip-address-service
+
