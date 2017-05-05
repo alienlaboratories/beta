@@ -38,7 +38,10 @@ import {
   GoogleOAuthProvider,
   GoogleDriveQueryProcessor,
   GoogleDriveServiceProvider,
-  GoogleMailServiceProvider
+  GoogleMailServiceProvider,
+  GooglePlusServiceProvider,
+
+  SlackServiceProvider
 } from 'alien-services';
 
 import { Loader } from './data/loader';
@@ -194,8 +197,9 @@ export class WebServer {
     // Service registry.
     this._serviceRegistry = new ServiceRegistry()
       .registerProvider(new GoogleDriveServiceProvider(this._googleAuthProvider))
-      .registerProvider(new GoogleMailServiceProvider(this._googleAuthProvider));
-//    .registerProvider(new SlackServiceProvider());
+      .registerProvider(new GoogleMailServiceProvider(this._googleAuthProvider))
+      .registerProvider(new GooglePlusServiceProvider(this._googleAuthProvider))
+      .registerProvider(new SlackServiceProvider());
 
     // Client manager.
     this._clientManager = new ClientManager(this._config, new IdGenerator());

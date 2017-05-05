@@ -19,11 +19,11 @@ export class GoogleMailServiceProvider extends OAuthServiceProvider {
     super(authProvider, NAMESPACE, GoogleMailServiceProvider.SCOPES);
   }
 
-  get title() {
-    return 'Gmail';
-  }
-
-  get icon() {
-    return '/img/service/google_mail.png';
+  get meta() {
+    return {
+      title: 'Gmail',
+      class: 'service-google-mail',
+      icon: '/img/service/google_mail.png'
+    };
   }
 }

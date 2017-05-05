@@ -109,16 +109,24 @@ div.site-home img.site-logo {
  * Header
  */
 
-div.site-header {
+div.site-container div.site-header {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
 }
-div.site-header .site-user {
+div.site-container div.site-header .site-user {
   background-color: #1da1f2;
 }
-div.site-header .site-admin {
+div.site-container div.site-header .site-admin {
   background-color: green;
+}
+
+div.site-container div.site-header h1 {
+  margin: 24px;
+  font-family: monospace;
+  font-size: 64px;
+  color: #000;
+  opacity: .4;
 }
 
 /**
@@ -140,7 +148,7 @@ div.site-toolbar > div {
 }
 div.site-toolbar a.site-button {
   margin-right: 2px;
-  padding: 4px;
+  padding: 4px 8px;
 }
 div.site-toolbar a.site-button:hover {
   background-color: orange;
@@ -154,25 +162,24 @@ div.site-toolbar label {
  * Body
  */
 
-div.site-body {
+div.site-container div.site-body {
   overflow-y: scroll;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
 }
-div.site-body::-webkit-scrollbar {
+div.site-container div.site-body::-webkit-scrollbar {
   width: 2px;
 }
-div.site-body::-webkit-scrollbar-thumb {
+div.site-container div.site-body::-webkit-scrollbar-thumb {
   background-color: #333;
 }
 
-div.site-body h2 {
-  margin: 0 0 8px;
+div.site-container div.site-body h2 {
   font-weight: 100;
 }
 
-div.site-body div.site-panel {
+div.site-container div.site-body div.site-panel {
   padding: 8px;
   background-color: white;
   box-shadow: 0 2px 2px #DDD;
@@ -184,7 +191,7 @@ div.site-body div.site-panel {
  * Footer
  */
 
-div.site-footer {
+div.site-container div.site-footer {
   display: flex;
   flex-direction: row;
   flex-shrink: 0;
@@ -192,4 +199,54 @@ div.site-footer {
   padding: 8px;
   background-color: #DDD;
   font-size: 14px;
+}
+
+/**
+ * Services
+ * See: https://console.firebase.google.com/project/alienlabs-dev/overview
+ */
+
+div.site-services {
+  display: flex;
+  flex-direction: row;
+  flex-flow: wrap;
+  margin: 16px;
+}
+
+div.site-services .site-service {
+  display: flex;
+  flex-direction: column;
+  margin: 8px;
+  width: 200px;
+  height: 200px;
+  background-color: white;
+  box-shadow: 2px 2px 8px #CCC;
+}
+div.site-services .site-service > div.site-header {
+  display: flex;
+  flex-direction: column;
+}
+div.site-services .site-service > div.site-header img {
+  width: 100%;
+}
+div.site-services .site-service > div.site-body {
+  display: flex;
+  padding: 12px;
+}
+div.site-services .site-service > div.site-body h2 {
+  margin: 0;
+}
+
+div.site-services .site-service img.service-google-drive {
+  content: url("https://www.gstatic.com/mobilesdk/160921_mobilesdk/discoverycards/2x/awrds.png");
+}
+div.site-services .site-service img.service-google-mail {
+  content: url("https://www.gstatic.com/mobilesdk/160921_mobilesdk/discoverycards/2x/cloudmessaging.png");
+}
+div.site-services .site-service img.service-google-plus {
+  content: url("https://www.gstatic.com/mobilesdk/160505_mobilesdk/discoverycards/2x/auth.png");
+}
+
+div.site-services .site-service img.service-slack {
+  content: url("https://www.gstatic.com/mobilesdk/160505_mobilesdk/discoverycards/2x/notifications.png");
 }

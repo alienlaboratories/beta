@@ -179,11 +179,11 @@ export class GoogleDriveServiceProvider extends OAuthServiceProvider {
     super(authProvider, NAMESPACE, GoogleDriveServiceProvider.SCOPES);
   }
 
-  get title() {
-    return 'Google Drive';
-  }
-
-  get icon() {
-    return '/img/service/google_drive.png';
+  get meta() {
+    return {
+      title: 'Google Drive',
+      class: 'service-google-drive',
+      icon: '/img/service/google_drive.png'
+    };
   }
 }

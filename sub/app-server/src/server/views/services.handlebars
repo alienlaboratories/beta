@@ -19,11 +19,13 @@
   <div class="site-services">
     {{#each providers}}
     <div class="site-service">
-      <div>
-        <span>{{ title }}</span>
+      <div class="site-header">
+        <img class="{{ meta.class }}"/>
       </div>
-      <div>
-        <a href="{{ link }}"><img src="{{ icon }}"/></a>
+      <div class="site-body">
+        <a href="{{ link }}">
+          <h2>{{ meta.title }}</h2>
+        </a>
       </div>
     </div>
     {{/each}}

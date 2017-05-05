@@ -25,12 +25,7 @@ export class ServiceProvider {
     return this._id;
   }
 
-  get title() {
-    throw new Error('Not implemented');
-  }
-
-  // TODO(burdon): How to package resources across modules?
-  get icon() {
+  get meta() {
     throw new Error('Not implemented');
   }
 
@@ -79,6 +74,6 @@ export class ServiceRegistry {
   }
 
   get providers() {
-    return Array.from(this._providers.values()).sort((a, b) => a.title.localeCompare(b.title));
+    return Array.from(this._providers.values()).sort((a, b) => a.meta.title.localeCompare(b.meta.title));
   }
 }

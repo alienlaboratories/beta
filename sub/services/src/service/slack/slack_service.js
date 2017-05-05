@@ -13,15 +13,15 @@ export class SlackServiceProvider extends ServiceProvider {
     super('slack');
   }
 
-  get title() {
-    return 'Slack';
-  }
-
-  get icon() {
-    return '/img/service/slack.png';
+  get meta() {
+    return {
+      title: 'Slack',
+      class: 'service-slack',
+      icon: '/img/service/slack.png'
+    };
   }
 
   get link() {
-    return '/botkit/login'
+    return '/botkit/login';
   }
 }
