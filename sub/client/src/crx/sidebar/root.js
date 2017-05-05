@@ -7,14 +7,11 @@ import { IndexRedirect, Redirect, Route, Router } from 'react-router';
 import { ApolloProvider } from 'react-apollo';
 import PropTypes from 'prop-types';
 
-import { Path } from '../common/path';
+import { Path } from '../../web/common/path';
 
-import AdminActivity from '../containers/activities/admin';
-import CanvasActivity from '../containers/activities/canvas';
-import FinderActivity from '../containers/activities/finder';
-import TestingActivity from '../containers/activities/testing';
+import FinderActivity from '../../web/containers/activities/finder';
 
-import '../resources/css/core.less';
+import '../../web/resources/css/core.less';
 
 /**
  * The Application must be a pure React component since HOCs may cause the component to be re-rendered,
@@ -34,9 +31,6 @@ export class Application extends React.Component {
   render() {
     let { client, store, history } = this.props;
 
-    // https://github.com/ReactTraining/react-router
-    // TODO(burdon): onEnter/onLeave.
-
     return (
       <ApolloProvider client={ client } store={ store }>
 
@@ -45,24 +39,7 @@ export class Application extends React.Component {
           <Route path={ Path.ROOT }>
             <IndexRedirect to={ Path.HOME }/>
 
-            {/*
-              * Must come first.
-              */}
-            <Route path={ Path.ADMIN } component={ AdminActivity }/>
-            <Route path={ Path.TESTING } component={ TestingActivity }/>
-
-            {/*
-              * /inbox
-              * /favorites
-              */}
             <Route path={ Path.route(['folder']) } component={ FinderActivity }/>
-
-            {/*
-              * /project/xxx
-              * /project/board/xxx
-              */}
-            <Route path={ Path.route(['type', 'itemId']) } component={ CanvasActivity }/>
-            <Route path={ Path.route(['type', 'canvas', 'itemId']) } component={ CanvasActivity }/>
 
             <Redirect from='*' to={ Path.HOME }/>
           </Route>

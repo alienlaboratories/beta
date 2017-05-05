@@ -2,10 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
-import React from 'react';
-import { createMemoryHistory, IndexRedirect, Redirect, Route, Router } from 'react-router';
-import { ApolloProvider } from 'react-apollo';
-import PropTypes from 'prop-types';
+import { createMemoryHistory } from 'react-router';
 
 import { 
   Async, Injector, ChromeMessageChannel, ChromeMessageChannelRouter, Logger, WindowMessenger 
@@ -19,7 +16,6 @@ import { AppAction, AppReducer, ContextAction, ContextReducer } from '../../web/
 import { SystemChannel, SidebarCommand } from '../common';
 import { SidebarAction, SidebarReducer } from '../sidebar/reducers';
 
-import FinderActivity from '../../web/containers/activities/finder';
 import { TypeRegistryFactory } from '../../web/containers/type_factory';
 
 const logger = Logger.get('sidebar');
@@ -176,43 +172,5 @@ export class SidebarApp extends BaseApp {
       // Sidebar-specific.
       [SidebarAction.namespace]: SidebarReducer
     };
-  }
-}
-
-/**
- * The Application must be a pure React component since HOCs may cause the component to be re-rendered,
- * which would trigger a Router warning.
- *
- * Activities are top-level components that set-up the context.
- */
-export class Application extends React.Component {
-
-  static propTypes = {
-    injector: PropTypes.object.isRequired,
-    client: PropTypes.object.isRequired,
-    history: PropTypes.object.isRequired,
-    store: PropTypes.object.isRequired
-  };
-
-  render() {
-    let { client, store, history } = this.props;
-
-    return (
-      <ApolloProvider client={ client } store={ store }>
-
-        <Router history={ history }>
-
-          <Route path={ Path.ROOT }>
-            <IndexRedirect to={ Path.HOME }/>
-
-            <Route path={ Path.route(['folder']) } component={ FinderActivity }/>
-
-            <Redirect from='*' to={ Path.HOME }/>
-          </Route>
-
-        </Router>
-
-      </ApolloProvider>
-    );
   }
 }

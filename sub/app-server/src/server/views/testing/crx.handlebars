@@ -1,0 +1,63 @@
+{{#section 'header'}}
+  <div class="site-testing">
+    <h1>CRX Testing</h1>
+  </div>
+
+  <div class="site-toolbar">
+    <div>
+      <a class="site-button"
+         href="/testing/crx">CRX</a>
+      <a class="site-button"
+         href="/app?bundle=test_sidebar">Sidebar</a>
+      <a class="site-button"
+         href="/app?bundle=test_apollo">Apollo</a>
+    </div>
+  </div>
+{{/section}}
+
+{{#section 'body'}}
+  <div class="site-panel">
+    <label>
+      <select id="content-select">
+        <option>Empty</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="site-panel">
+    <div id="content" class="test-content"></div>
+  </div>
+
+  <!-- Triggers CRX to open automatically. -->
+  <div id="crx-testing"></div>
+{{/section}}
+
+{{#section 'script'}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+
+<script>
+  const ITEMS = {
+    t1: { type: 'Contact', title: 'Alice',      email: 'alice.braintree@gmail.com'  },
+    t2: { type: 'Contact', title: 'Bob',        email: 'bob@example.com'            },
+    t3: { type: 'Contact', title: 'Catherine',  email: 'catherine@example.com'      },
+    t4: { type: 'Contact', title: 'David',      email: 'david@example.com'          },
+    t5: { type: 'Contact', title: 'Emiko',      email: 'emiko@example.com'          },
+  };
+
+  $(document).ready(() => {
+    _.each(ITEMS, (value, key) => {
+      $('#content-select').append($('<option>').attr('value', key).text(value.title));
+    });
+
+    $('#content-select').change(event => {
+      let item = ITEMS[$(event.target).val()];
+      let content = $('#content').empty();
+      if (item) {
+        // Triggers DOM change for TestInspector.
+        content.append($('<div>').text(item.title).attr('email', item.email));
+      }
+    });
+  });
+</script>
+{{/section}}

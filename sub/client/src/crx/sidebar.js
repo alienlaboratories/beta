@@ -8,8 +8,10 @@ import { KeyCodes } from './common';
 
 import { AppDefs } from '../common/defs';
 
+import { SidebarApp } from './sidebar/main';
 import { SidebarAction } from './sidebar/reducers';
-import { Application, SidebarApp } from './sidebar/app';
+
+import Application from './sidebar/root';
 
 //
 // Config passed via args from content script container.
@@ -27,17 +29,14 @@ const config = _.merge({
   }
 }, HttpUtil.parseUrlParams());
 
+//
+// App.
+//
+
 const app = new SidebarApp(config);
 
 app.init().then(() => {
   app.render(Application);
-
-  // TODO(burdon): Dynamically set on scroll container (on mouseover?)
-  // https://www.npmjs.com/package/prevent-parent-scroll
-  /*
-  let preventParentScroll = new PreventParentScoll(root);
-  preventParentScroll.start();
-  */
 
   new KeyListener()
     .listen(KeyCodes.TOGGLE, () => app.store.dispatch(SidebarAction.toggleVisibility()));

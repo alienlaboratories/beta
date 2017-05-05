@@ -35,6 +35,9 @@ import {
   ServiceRegistry,
   UserManager,
 
+  AlienAnalyzerServiceProvider,
+  AlienExtractorServiceProvider,
+
   GoogleOAuthProvider,
   GoogleDriveQueryProcessor,
   GoogleDriveServiceProvider,
@@ -90,7 +93,7 @@ export class WebServer {
     await this.initApi();
 
     if (__TESTING__) {
-      await this.initDebugging();
+      await this.initTesting();
     }
 
     await this.initHandlebars();
@@ -199,7 +202,9 @@ export class WebServer {
       .registerProvider(new GoogleDriveServiceProvider(this._googleAuthProvider))
       .registerProvider(new GoogleMailServiceProvider(this._googleAuthProvider))
       .registerProvider(new GooglePlusServiceProvider(this._googleAuthProvider))
-      .registerProvider(new SlackServiceProvider());
+      .registerProvider(new SlackServiceProvider())
+      .registerProvider(new AlienAnalyzerServiceProvider())
+      .registerProvider(new AlienExtractorServiceProvider());
 
     // Client manager.
     this._clientManager = new ClientManager(this._config, new IdGenerator());
@@ -265,11 +270,18 @@ export class WebServer {
     });
 
     const helpers = _.assign(ExpressUtil.Helpers, {
+
+      // {{ global "env" }}
       global: (key) => {
         return _.get({
           env: __ENV__,
           version: Const.APP_VERSION
         }, key);
+      },
+
+      // {{#if (env "production")}} ... {{/if}}
+      env: (key) => {
+        return key === __ENV__;
       }
     });
 
@@ -448,8 +460,6 @@ export class WebServer {
 
       app: this._app,
 
-      scheduler: false, // TODO(burdon): ???
-
       handleDatabaseDump: (__PRODUCTION__ ? () => {
         return this._userDataStore.dump().then(debug => {
           logger.log('Database:\n', JSON.stringify(debug, null, 2));
@@ -462,10 +472,17 @@ export class WebServer {
     }));
   }
 
-  initDebugging() {
+  initTesting() {
     // TODO(burdon): Why is this needed?
     // this._app.get('/node_modules', express.static(ENV.ALIEN_NODE_MODULES));
-    // this._app.use('/testing', testingRouter({}));
+
+    this._app.get('/testing', (req, res) => {
+      res.render('testing/home');
+    });
+
+    this._app.get('/testing/crx', (req, res) => {
+      res.render('testing/crx');
+    });
   }
 
   /**

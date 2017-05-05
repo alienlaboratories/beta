@@ -7,6 +7,9 @@ export * from './auth/user';
 
 export * from './service/service';
 
+export * from './service/alien/analyzer';
+export * from './service/alien/extractor';
+
 export * from './service/google/google_oauth';
 export * from './service/google/google_drive';
 export * from './service/google/google_mail';

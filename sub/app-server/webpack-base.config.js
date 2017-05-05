@@ -34,7 +34,8 @@ const baseConfig = {
 
       // http://stackoverflow.com/questions/40053344/npm-multiple-entry-points
       'alien-client/web-app'            : path.resolve('./node_modules/alien-client/src/web/app'),
-      'alien-client/web-testing-apollo' : path.resolve('./node_modules/alien-client/src/web/app/testing/apollo/apollo.js'),
+      'alien-client/web-test-apollo'    : path.resolve('./node_modules/alien-client/src/web/app/testing/apollo/apollo.js'),
+      'alien-client/crx'                : path.resolve('./node_modules/alien-client/src/crx'),
       'alien-client/graphiql'           : path.resolve('./node_modules/alien-client/src/graphiql/graphiql'),
     }
   },
@@ -205,29 +206,34 @@ const webConfig = webpackMerge(baseConfig, {
   // https://webpack.js.org/configuration/devtool/#components/sidebar/sidebar.jsx
   devtool: '#eval-source-map',
 
-  // NOTE: entries cannot be compiled individually.
+  // NOTE: entries cannot be compiled individually (requires separate config).
   entry: {
+
+    // Main app.
     web: [
-      path.resolve(baseConfig.context, 'src/client/web_bootstrap.js')
+      path.resolve(baseConfig.context, 'src/client/web_app.js')
     ],
 
-    // TODO(burdon): Runtime server switch.
+    // Main app with HMR.
     // web_hot: [
-    //   path.resolve(baseConfig.context, 'src/client/web_bootstrap.js'),
+    //   path.resolve(baseConfig.context, 'src/client/web_app.js'),
     //
     //   // BABEL_NODE=hot NODE_ENV=hot
     //   'webpack/hot/dev-server',
     //   'webpack-hot-middleware/client'
     // ],
 
+    // GraphiQL test console.
     graphiql: [
       path.resolve(baseConfig.context, 'src/client/graphiql.js')
     ],
 
+    // Web site (incl. CSS)
     site: [
       path.resolve(baseConfig.context, 'src/client/site.js')
     ],
 
+    // Test HMR.
     test_hot: [
       path.resolve(baseConfig.context, 'src/client/test_hot.js'),
 
@@ -236,8 +242,14 @@ const webConfig = webpackMerge(baseConfig, {
       'webpack-hot-middleware/client'
     ],
 
+    // Test end-to-end Apollo stack.
     test_apollo: [
       path.resolve(baseConfig.context, 'src/client/test_apollo.js')
+    ],
+
+    // Test CRX sidebar.
+    test_sidebar: [
+      path.resolve(baseConfig.context, 'src/client/test_sidebar.js')
     ],
   },
 

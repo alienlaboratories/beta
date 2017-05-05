@@ -6,7 +6,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import { AppDefs } from 'alien-client';
-import { App } from 'alien-client/web-testing-apollo';
+import { App } from 'alien-client/web-test-apollo';
 
 /**
  * Complete minimal React-Redux-Apollo client app.

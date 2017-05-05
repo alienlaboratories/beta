@@ -46,6 +46,7 @@ const config = _.defaultsDeep(window.config, {
 const app = new WebApp(config);
 
 const render = () => {
+  // Load the root component.
   const App = require('alien-client/web-app/root');
   app.render(App);
 };
@@ -66,9 +67,8 @@ if (module.hot && _.get(config, 'env') === 'hot') {
 //
 
 window.addEventListener('beforeunload', event => {
-  // TODO(burdon): Check for unsaved data.
-  if (false) {
-    // NOTE: On Chrome the system message cannot be overridden.
+  // NOTE: On Chrome the system message cannot be overridden.
+  if (config.env === 'production') {
     event.returnValue = 'Exit?';
   }
 });

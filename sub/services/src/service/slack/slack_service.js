@@ -22,6 +22,7 @@ export class SlackServiceProvider extends ServiceProvider {
   }
 
   get link() {
-    return '/botkit/login';
+    return '/services';
+//  return '/botkit/login';
   }
 }
