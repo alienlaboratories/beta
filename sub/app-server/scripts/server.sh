@@ -20,9 +20,6 @@ done
 
 ROOT=`pwd`
 
-# TODO(burdon): Why is this needed?
-export APP_SERVER_NODE_MODULES="${ROOT}/node_modules"
-
 export APP_SERVER_ASSETS_DIR="${ROOT}/dist"
 export APP_SERVER_CONF_DIR="${ROOT}/../../conf"
 export APP_SERVER_DATA_DIR="${ROOT}/../../data"

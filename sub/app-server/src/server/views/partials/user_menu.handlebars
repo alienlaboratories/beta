@@ -1,0 +1,16 @@
+<div>
+  <a class="site-button" href="/home">Home</a>
+  <a class="site-button" href="/profile">Profile</a>
+  <a class="site-button" href="/services">Services</a>
+</div>
+
+<div>
+  <a class="site-button" href="/app">App</a>
+  <a class="site-button" onclick="return installCrx()">Chrome Extension</a>
+  <a class="site-button" target="_blank" href="https://myaccount.google.com/permissions">Google App Permissions</a>
+  <!--
+  <a class="site-button" target="_blank" onclick="return testToken('{{ idToken }}')">Test ID Token</a>
+  -->
+  <a class="site-button" href="/user/login?redirectUrl={{ encodeURI '/profile' }}">Login</a>
+  <a class="site-button" href="/user/logout">Logout</a>
+</div>

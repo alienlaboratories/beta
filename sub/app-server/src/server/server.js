@@ -92,13 +92,13 @@ export class WebServer {
     await this.initApp();
     await this.initApi();
 
-    if (__TESTING__) {
-      await this.initTesting();
-    }
-
     await this.initHandlebars();
     await this.initPages();
     await this.initAdmin();
+
+    if (__TESTING__) {
+      await this.initTesting();
+    }
 
     await this.initErrorHandling();
 
@@ -287,6 +287,7 @@ export class WebServer {
 
     this._app.engine('handlebars', handlebars({
       layoutsDir: path.join(ENV.APP_SERVER_VIEWS_DIR, '/layouts'),
+      partialsDir: path.join(ENV.APP_SERVER_VIEWS_DIR, '/partials'),
       defaultLayout: 'main',
       helpers,
       partials: {
@@ -473,9 +474,6 @@ export class WebServer {
   }
 
   initTesting() {
-    // TODO(burdon): Why is this needed?
-    // this._app.get('/node_modules', express.static(ENV.ALIEN_NODE_MODULES));
-
     this._app.get('/testing', (req, res) => {
       res.render('testing/home');
     });

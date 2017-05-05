@@ -27,27 +27,7 @@
         </div>
       </div>
 
-      <div class="site-footer">
-        <ul class="site-inline">
-          <li>{{ global "version" }}</li>
-          <li>{{ global "env" }}</li>
-        </ul>
-
-        <ul class="site-inline">
-          <li>{{ user.email }}</li>
-
-          <li><a href="/">home</a></li>
-          <li><a href="/profile">profile</a></li>
-
-          {{#unless (env "production")}}
-          <li><a href="/testing">testing</a></li>
-          {{/unless}}
-
-          {{#if user.admin}}
-          <li><a href="/admin">admin</a></li>
-          {{/if}}
-        </ul>
-      </div>
+      {{> footer }}
     </div>
 
     <script src="/app/assets/site.bundle.js"></script>
