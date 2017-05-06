@@ -2,9 +2,15 @@
 // Copyright 2017 Alien Labs.
 //
 
-import { HttpUtil, Logger, WindowMessenger } from 'alien-util';
+import { HttpUtil, KeyListener, Logger, WindowMessenger } from 'alien-util';
 
-//import { InspectorRegistry, GmailInspector, GoogleInboxInspector, SlackInspector, TestInspector } from './util/inspector';
+import {
+  InspectorRegistry,
+  GmailInspector,
+  GoogleInboxInspector,
+  SlackInspector,
+  TestInspector
+} from './util/inspector';
 
 import { SidebarCommand, KeyCodes } from './common';
 
@@ -157,11 +163,12 @@ class ContentScript {
       }
     });
 
+    //
     // Listen for window events injected into this page (e.g. from the browser action bar).
-    /*
+    //
     window.addEventListener('message', event => {
 
-      let origin = event.origin || event.originalEvent.origin;
+      // let origin = event.origin || event.originalEvent.origin;
       // TODO(madadam): Should we also check origin for security? But the origin can be any page where the content
       // script runs, so it's not useful for filtering.
 
@@ -189,7 +196,7 @@ class ContentScript {
     //
     // Listen for context updates from the Inspectors.
     //
-    let inspectors = new InspectorRegistry()
+    new InspectorRegistry()
       .add(new TestInspector())
       .add(new GmailInspector())
       .add(new GoogleInboxInspector())
@@ -216,13 +223,14 @@ class ContentScript {
         }
       });
 
-    // Shortcuts.
-    const keyBindings = new KeyListener()
+    //
+    // Keys.
+    //
+    new KeyListener()
       .listen(KeyCodes.TOGGLE, () => {
         this.sidebar.toggle().then(visible => updateVisibility(visible));
         this.button.focus();
       });
-    */
   }
 }
 

@@ -31,6 +31,7 @@ export class InspectorRegistry {
 
     // TODO(burdon): Wait for load. Match URL and dynamically find root each time.
     setTimeout(() => {
+      logger.log('Finding inspector...');
       _.each(this._inspectors, inspector => {
         if (inspector.shouldObservePage()) {
           logger.log('Inspector: ' + inspector.constructor.name);
@@ -156,12 +157,14 @@ export class TestInspector extends Inspector {
       if (root[0]) {
         let name = root.text();
         let email = root.attr('email');
+        let thumbnailUrl = root.find('img').attr('src');
         if (name && email) {
           context = {
             items: [{
               type: 'Contact',
               title: name,
-              email: email
+              email,
+              thumbnailUrl
             }]
           };
 

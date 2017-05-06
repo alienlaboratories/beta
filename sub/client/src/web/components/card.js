@@ -47,8 +47,8 @@ export class Card extends React.Component {
     className = DomUtil.className(
       'ux-card', 'ux-card-rounded', 'ux-card-type-' + item.type.toLowerCase(), className);
 
-    let debugStr = config.debug &&
-      TypeUtil.stringify(_.pick(item, ['type', 'id']), false) +
+    let debugStr = _.get(config, 'options.debug') &&
+      TypeUtil.stringify(_.pick(item, ['bucket', 'type', 'id']), false) +
         (item.namespace ? ` [${item.namespace[0].toUpperCase()}]` : '') +
         (item.labels ? ` ${JSON.stringify(item.labels)}` : '');
 

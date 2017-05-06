@@ -28,7 +28,7 @@ const config = _.defaultsDeep(window.config, {
 
   // Framework debug options.
   options: {
-    debug: true,
+    debug: (window.config.env !== 'production'),
     reducer: false,
     optimistic: false,
     invalidations: false,

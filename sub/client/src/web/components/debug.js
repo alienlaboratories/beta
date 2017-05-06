@@ -39,7 +39,6 @@ export class DebugPanel extends React.Component {
 
     // console.warn('DEBUG\n' + JSON.stringify(config, null, 2));
 
-    // TODO(burdon): D3 graph popup.
     // TODO(burdon): Move reconnect button here. Fire Redux action.
     // TODO(burdon): Batch Queries, Batch Mutations.
 
@@ -51,7 +50,7 @@ export class DebugPanel extends React.Component {
             <label>
               <input type="checkbox"
                      onChange={ this.handleOptionChanged.bind(this, 'debug') }
-                     checked={ debug } disabled={ true }/> Debug Info</label>
+                     checked={ debug }/> Debug Info</label>
           </div>
           <div>
             <label>

@@ -217,12 +217,6 @@ export class ContactCard extends React.Component {
             </div>
             }
           </div>
-
-          { config.debug &&
-          <div className="ux-data-row">
-            <div className="ux-debug">{ JSON.stringify(_.pick(defaultProject, ['bucket', 'type', 'id', 'title'])) }</div>
-          </div>
-          }
         </div>
 
         {/* Private tasks for Contact. */}
