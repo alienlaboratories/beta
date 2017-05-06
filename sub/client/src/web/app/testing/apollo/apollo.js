@@ -98,7 +98,7 @@ class ListComponent extends React.Component {
   }
 
   render() {
-    return ReactUtil.render(this, (props) => {
+    return ReactUtil.render(this, () => {
       let { items, text } = this.state;
 
       console.log('RootComponent.render', _.size(items));
@@ -136,8 +136,8 @@ class ListComponent extends React.Component {
 class SimpleListComponent extends React.Component {
 
   render() {
-    return ReactUtil.render(this, (props) => {
-      let { items } = props;
+    return ReactUtil.render(this, () => {
+      let { items } = this.props;
 
       return (
         <div className="test-component">
@@ -158,14 +158,14 @@ class OptionsComponent extends React.Component {
 
   render() {
     let { options={} } = this.props;
-    let { listReducer, optimisticResponse, networkDelay } = options;
+    let { reducer, optimisticResponse, networkDelay } = options;
 
     return (
       <div className="test-component">
         <div>
           <label>
-            <input type="checkbox" onChange={ this.handleOptionsUpdate.bind(this, 'listReducer') }
-                   checked={ listReducer }/> List Reducer.
+            <input type="checkbox" onChange={ this.handleOptionsUpdate.bind(this, 'reducer') }
+                   checked={ reducer }/> Reducer.
           </label>
         </div>
         <div>
@@ -338,7 +338,7 @@ const ListComponentWithApollo = compose(
 //      fetchPolicy: 'network-only',
 
         // http://dev.apollodata.com/react/cache-updates.html#resultReducers
-        reducer: ListReducer(TestQuery, 'search.items', options.listReducer)
+        reducer: ListReducer(TestQuery, 'search.items', options.reducer)
       };
     },
 
@@ -705,7 +705,7 @@ export class App {
     // Initial options.
     let initialState = {
       options: {
-        listReducer: true,
+        reducer: true,
         optimisticResponse: true,
         networkDelay: false
       }

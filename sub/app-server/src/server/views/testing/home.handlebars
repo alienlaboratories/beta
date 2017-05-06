@@ -5,6 +5,7 @@
 
   <div class="site-toolbar">
     <div>
+      <a class="site-button" href="/testing/graphiql" target="ALIEN_GRAPHIQL">GraphiQL</a>
       <a class="site-button" href="/testing/crx">CRX</a>
       <a class="site-button" href="/app?bundle=test_sidebar">Sidebar</a>
       <a class="site-button" href="/app?bundle=test_apollo">Apollo</a>
@@ -18,4 +19,20 @@
 {{/section}}
 
 {{#section 'body'}}
+  <div class="site-panel">
+    <table>
+      <tbody>
+      {{#each queries}}
+      <tr>
+        <td>
+          <pre><a href="{{ url }}">{{ title }}</a></pre>
+        </td>
+        <td>
+          <pre>{{ query }}</pre>
+        </td>
+      </tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
 {{/section}}

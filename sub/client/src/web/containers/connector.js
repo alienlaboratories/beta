@@ -81,6 +81,8 @@ export class Connector {
       options: (props) => {
         let { matcher, context, itemId } = props;
 
+        console.log('========', itemId);
+
         return {
           variables: {
             itemId
@@ -95,6 +97,9 @@ export class Connector {
       props: ({ ownProps, data }) => {
         let { errors, loading, refetch } = data;
         let item = reducer.getResult(data);
+
+        // TODO(burdon): Item returned as null even when: a) not loading; b) item exists (e.g., after create).
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>', loading, errors, item);
 
         return {
           errors,

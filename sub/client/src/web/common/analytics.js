@@ -43,7 +43,9 @@ export class Analytics {
    * @param attributes dict of user attributes, e.g. email.
    */
   identify(userId, attributes) {
-    console.assert(userId);
+    // TODO(burdon): CRX Background page doesn't currently get userProfile.id
+    if (!userId) { console.warn('Invalid userId'); return; }
+//  console.assert(userId);
     logger.log(`identify(${userId})`);
   }
 

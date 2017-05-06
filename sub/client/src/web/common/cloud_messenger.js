@@ -217,10 +217,11 @@ export class GoogleCloudMessenger extends CloudMessenger {
       logger.log('Requesting message token...');
 
       // https://developers.google.com/cloud-messaging/chrome/client
-      const projectNumber = String(_.get(this._config, 'firebase.messagingSenderId'));
+      const projectNumber = _.get(this._config, 'google.projectNumber');
+      console.assert(projectNumber, 'Invalid project number.');
       chrome.gcm.register([ projectNumber ], messageToken => {
         if (chrome.runtime.lastError) {
-          throw new Error(chrome.runtime.lastError);
+          throw new Error(chrome.runtime.lastError.message);
         }
 
         logger.log('Connected.');

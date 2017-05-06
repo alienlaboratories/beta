@@ -5,6 +5,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
+import { IntrospectionFragmentMatcher } from 'react-apollo';
 import { syncHistoryWithStore, routerMiddleware, routerReducer } from 'react-router-redux';
 import ReduxThunk from 'redux-thunk';
 import reduceReducers from 'reduce-reducers';
@@ -131,6 +132,24 @@ export class BaseApp {
   initApollo() {
     console.assert(this.networkInterface);
 
+    // NOTE: List Item types from schema.
+    const ITEM_TYPES = [ 'User', 'Group', 'Contact', 'Document', 'Event', 'Folder', 'Place', 'Project', 'Task' ];
+
+    // http://dev.apollodata.com/react/initialization.html#fragment-matcher
+    const fragmentMatcher = new IntrospectionFragmentMatcher({
+      introspectionQueryResultData: {
+        __schema: {
+          types: [
+            {
+              kind: 'INTERFACE',
+              name: 'Item',
+              possibleTypes: _.map(ITEM_TYPES, type => ({ name: type }))
+            }
+          ],
+        },
+      }
+    });
+
     //
     // http://dev.apollodata.com/react/initialization.html
     // http://dev.apollodata.com/core/apollo-client-api.html#apollo-client
@@ -143,6 +162,9 @@ export class BaseApp {
       // http://dev.apollodata.com/react/cache-updates.html
       dataIdFromObject: ID.dataIdFromObject,
       addTypename: true,
+
+      // Support validation for fragments of interfaces.
+      fragmentMatcher,
 
       // TODO(burdon): Need to update reducers to accept multiple results.
       // https://dev-blog.apollodata.com/query-batching-in-apollo-63acfd859862

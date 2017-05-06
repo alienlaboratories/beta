@@ -13,7 +13,7 @@ import path from 'path';
 import session from 'express-session';
 import uuid from 'node-uuid';
 
-import { ExpressUtil, HttpError, Logger } from 'alien-util';
+import { ExpressUtil, HttpError, HttpUtil, Logger } from 'alien-util';
 import { AuthUtil, Database, IdGenerator, Matcher, MemoryItemStore, SystemStore, TestItemStore } from 'alien-core';
 import { AppDefs } from 'alien-client';
 
@@ -377,21 +377,6 @@ export class WebServer {
         }
       }
     }));
-
-    // Register the GraphiQL test console.
-    if (__TESTING__) {
-      this._app.get(AppDefs.GRAPHIQL_PATH, isAuthenticated(), (req, res) => {
-        let headers = {};
-        AuthUtil.setAuthHeader(headers, getIdToken(req.user));
-        headers[AppDefs.HEADER.CLIENT_ID] = req.query.clientId;
-        res.render('testing/graphiql', {
-          config: {
-            graphql: AppDefs.GRAPHQL_PATH,
-            headers
-          }
-        });
-      });
-    }
   }
 
   /**
@@ -473,13 +458,43 @@ export class WebServer {
     }));
   }
 
+  /**
+   * Testing pages.
+   */
   initTesting() {
-    this._app.get('/testing', (req, res) => {
-      res.render('testing/home');
+
+    // TODO(burdon): Create router.
+
+    // Canned GraphQL queries.
+    const queries = [
+      { title: 'TYPES', query: '{ __schema { types { kind name possibleTypes { name } } } }' }
+    ];
+
+    _.each(queries, spec => {
+      spec.url = HttpUtil.toUrl(AppDefs.GRAPHIQL_PATH, { query: spec.query });
     });
 
-    this._app.get('/testing/crx', (req, res) => {
+    // Testing home.
+    this._app.get('/testing', isAuthenticated(), (req, res) => {
+      res.render('testing/home', { queries });
+    });
+
+    // Test CRX.
+    this._app.get('/testing/crx', isAuthenticated(), (req, res) => {
       res.render('testing/crx');
+    });
+
+    // Register the GraphiQL test console.
+    this._app.get(AppDefs.GRAPHIQL_PATH, isAuthenticated(), (req, res) => {
+      let headers = {};
+      AuthUtil.setAuthHeader(headers, getIdToken(req.user));
+      headers[AppDefs.HEADER.CLIENT_ID] = req.query.clientId;
+      res.render('testing/graphiql', {
+        config: {
+          graphql: AppDefs.GRAPHQL_PATH,
+          headers
+        }
+      });
     });
   }
 

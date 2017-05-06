@@ -49,6 +49,10 @@ class BackgroundApp {
     env: 'development',
     app: {
       platform: AppDefs.PLATFORM.CRX
+    },
+    google: {
+      // TODO(burdon): Compile in config file.
+      projectNumber: '933786919888'
     }
   };
 
@@ -61,8 +65,8 @@ class BackgroundApp {
     let restart = config.server !== settings.server;
 
     _.assign(config, settings, {
-      graphql: settings.server + '/graphql',
-      graphiql: settings.server + '/graphiql'
+      graphql: settings.server + AppDefs.GRAPHQL_PATH,
+      graphiql: settings.server + AppDefs.GRAPHIQL_PATH
     });
 
     return restart;

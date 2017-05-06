@@ -274,7 +274,7 @@ class NetworkLogger {
   }
 
   logRequest(requestId, request, headers) {
-    logger.log(`[_TS_] ===>>> [${requestId}] ${JSON.stringify(request.variables || {})}`);
+    logger.log(`[_TS_] ===>>> [${requestId}] ${TypeUtil.stringify(request.variables || {})}`);
 
     //
     // Show GraphiQL link.
@@ -290,7 +290,7 @@ class NetworkLogger {
   }
 
   logResponse(requestId, response) {
-    logger.log(`[_TS_] <<<=== [${requestId}] ${JSON.stringify(response.data)}`);
+    logger.log(`[_TS_] <<<=== [${requestId}] ${TypeUtil.stringify(response.data)}`);
   }
 
   logErrors(requestId, errors) {
@@ -304,8 +304,6 @@ class NetworkLogger {
  * http://dev.apollodata.com/core/network.html#custom-network-interface
  */
 export class ChromeNetworkInterface { // extends NetworkInterface {
-
-  // TODO(burdon): Move to alien-core.
 
   static CHANNEL = 'apollo';
 

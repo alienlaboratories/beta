@@ -12,7 +12,7 @@
 
     "alienlabs_com": {
       "eng" : {
-        "title": "Alien Labs Eng",
+        "title": "Alien Labs",
         "whitelist": [
           "rich@alienlabs.io"
         ]
@@ -20,16 +20,12 @@
     },
 
     "testers": {
-      "rich_burdon_gmail_com": {
+      "blackops": {
         "admin": true,
-        "title": "Rich (Private)",
+        "title": "Blackops",
         "whitelist": [
-          "rich.burdon@gmail.com"
-        ]
-      },
-      "lucas_geiger_gmail_com": {
-        "title": "Lucas (Private)",
-        "whitelist": [
+          "alice.braintree@gmail.com",
+          "rich.burdon@gmail.com",
           "lucas.geiger@gmail.com"
         ]
       }

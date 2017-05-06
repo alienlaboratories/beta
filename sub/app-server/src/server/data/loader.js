@@ -114,7 +114,7 @@ export class Loader {
 
       // Create default project for each Group.
       let promises = _.map(groups, group => {
-        return this.initProjects(group)
+        return this.initProjects(group);
       });
 
       // TODO(burdon): Create default project for each User.
@@ -142,7 +142,7 @@ export class Loader {
       if (project) {
         return project;
       } else {
-        logger.log('Creating Project for: ' + group.id);
+        logger.log('Creating Project for: ' + JSON.stringify(_.pick(group, 'id', 'title')));
 
         // Create it.
         return itemStore.upsertItem(context, {

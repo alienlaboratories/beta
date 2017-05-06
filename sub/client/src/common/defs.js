@@ -18,7 +18,7 @@ export const AppDefs = {
 
   // API path.
   GRAPHQL_PATH: '/api/graphql',
-  GRAPHIQL_PATH: '/debug/graphiql',
+  GRAPHIQL_PATH: '/testing/graphiql',
 
   // Root DOM element.
   DOM_ROOT: 'app-root',
