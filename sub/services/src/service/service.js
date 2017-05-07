@@ -6,8 +6,6 @@ import _ from 'lodash';
 
 import { AuthDefs } from 'alien-core';
 
-import { OAuthProvider } from '../auth/oauth';
-
 /**
  * Service providers retrieve, sync and index external data items.
  */

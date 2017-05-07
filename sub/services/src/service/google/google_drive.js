@@ -5,33 +5,75 @@
 import _ from 'lodash';
 import google from 'googleapis';
 
-import { ErrorUtil } from 'alien-util';
+import { ErrorUtil, Logger } from 'alien-util';
 import { ItemStore, QueryProcessor } from 'alien-core';
 
 import { OAuthServiceProvider } from '../service';
+import { GoogleApiUtil } from './google_api';
 
 const NAMESPACE = 'google.com/drive';
 
+const logger = Logger.get('google.drive');
+
 /**
- * Google API client.
+ * Google Drive API wrapper.
  */
 export class GoogleDriveClient {
 
-  // TODO(burdon): Generalize client.
+  constructor() {
+    this._drive = google.drive('v3');
+  }
+
+  /**
+   * Get list of documents matching the query.
+   *
+   * @param {google.auth.OAuth2} authClient
+   * @param query
+   * @param maxResults
+   * @returns {Promise.<{Item}>}
+   */
+  list(authClient, query, maxResults) {
+    logger.log(`Query(${maxResults}): "${query}"`);
+    return GoogleApiUtil.request(this._list.bind(this, authClient, query), maxResults).then(items => {
+      logger.log('Results: ' + items.length);
+      return _.map(items, item => GoogleDriveClient.toItem(item));
+    });
+  }
+
+  /**
+   * Fetches a single page of results.
+   */
+  _list(authClient, query, pageSize, pageToken, num) {
+    logger.log(`Page(${num}): ${pageSize}`);
+
+    return new Promise((resolve, reject) => {
+      let params = {
+        auth: authClient,
+        q: query,
+        fields: 'nextPageToken, files(id, name, webViewLink, iconLink)',
+        spaces: 'drive',
+        pageSize,
+        pageToken
+      };
+
+      // https://developers.google.com/drive/v3/reference/files/list
+      this._drive.files.list(params, (err, response) => {
+        if (err) {
+          reject(err.message);
+        } else {
+          resolve({
+            items: response.files,
+            nextPageToken: response.nextPageToken
+          });
+        }
+      });
+    });
+  }
 
   /**
    * Convert Drive result to a schema object Item.
-   *
-   * @param idGenerator
-   * @param file Google Drive file result.
-   * @returns Item
-   * @private
    */
-  // TODO(burdon): Generalize converter.
-  static resultToItem(idGenerator, file) {
-    // TODO(madadam): This makes a transient Item that isn't written into the item store;
-    // it's an Item wrapper around external data.
-
+  static toItem(file) {
     let item = {
       namespace: NAMESPACE,
       type: 'Document',
@@ -48,97 +90,6 @@ export class GoogleDriveClient {
 
     return item;
   }
-
-  constructor(idGenerator, config) {
-    console.assert(idGenerator && config);
-    this._idGenerator = idGenerator;
-    this._config = config;
-    this._drive = google.drive('v3');
-  }
-
-  // TODO(burdon): Factor out (see oauth.js).
-  _getOAuthClient(context) {
-    // TODO(madadam): Avoid creating a new OAuth2 client every request. Just pass access token?
-    // If not, then cache the clients by context.userId.
-    let oauth2Client = new google.auth.OAuth2(
-      this._config.clientId,
-      this._config.clientSecret
-    );
-
-    let credentials = _.get(context, 'credentials.google');
-    oauth2Client.setCredentials(_.pick(credentials, ['access_token', 'refresh_token']));
-    return oauth2Client;
-  }
-
-  /**
-   * Fetches a single page of results.
-   * https://developers.google.com/drive/v3/reference
-   * https://developers.google.com/drive/v3/reference/files/list
-   */
-  _fetchPage(client, driveQuery, pageSize, pageToken=undefined) {
-    return new Promise((resolve, reject) => {
-      let query = {
-        auth: client,
-        q: driveQuery,
-        fields: 'nextPageToken, files(id, name, webViewLink, iconLink)',
-        spaces: 'drive',
-        pageSize,
-        pageToken
-      };
-
-      // TODO(burdon): Wrapper.
-      this._drive.files.list(query, (err, response) => {
-        if (err) {
-          reject(err.message);
-        } else {
-          resolve(response);
-        }
-      });
-    });
-  }
-
-  /**
-   * Recursively fetches pages for the specified number of results.
-   */
-  _fetchAll(client, driveQuery, maxResults) {
-    if (maxResults === 0) {
-      return Promise.resolve([]);
-    }
-
-    // Collect the results.
-    // TODO(burdon): Generalize fetcher.
-    let results = [];
-
-    // Get the next page.
-    const fetch = (pageToken = undefined) => {
-      let pageSize = Math.min(100, maxResults - results.length);
-      return this._fetchPage(client, driveQuery, pageSize, pageToken).then(response => {
-        _.each(response.files, file => results.push(GoogleDriveClient.resultToItem(this._idGenerator, file)));
-
-        // Fetch more.
-        if (response.nextPageToken && results.length < maxResults) {
-          return fetch(response.nextPageToken);
-        }
-
-        return results;
-      });
-    };
-
-    return fetch();
-  }
-
-  /**
-   * Returns items for each document that matches the query.
-   *
-   * @param context
-   * @param driveQuery
-   * @param maxResults
-   * @return {*}
-   */
-  search(context, driveQuery, maxResults) {
-    let oauth2Client = this._getOAuthClient(context);
-    return this._fetchAll(oauth2Client, driveQuery, maxResults);
-  }
 }
 
 /**
@@ -149,35 +100,41 @@ export class GoogleDriveQueryProcessor extends QueryProcessor {
   /**
    * https://developers.google.com/drive/v3/web/search-parameters
    */
-  static makeDriveQuery(queryString) {
+  static createQuery(queryString) {
     return _.isEmpty(queryString) ? null : `fullText contains \'${queryString}\'`;
   }
 
-  constructor(idGenerator, config) {
+  /**
+   * @param {GoogleOAuthProvider} authProvider
+   */
+  constructor(authProvider) {
     super(NAMESPACE);
+    console.assert(authProvider);
 
-    this._driveClient = new GoogleDriveClient(idGenerator, config);
+    this._authProvider = authProvider;
+    this._client = new GoogleDriveClient();
   }
 
-  //
-  // QueryProcessor API.
-  //
-
   queryItems(context, root={}, filter={}) {
-    let driveQuery = GoogleDriveQueryProcessor.makeDriveQuery(filter.text);
-    if (!driveQuery) {
+    let query = GoogleDriveQueryProcessor.createQuery(filter.text);
+    if (!query) {
       return Promise.resolve([]);
     }
 
-    let count = filter.count || ItemStore.DEFAULT_COUNT;
-    return this._driveClient.search(context, driveQuery, count).catch(error => {
-      throw ErrorUtil.error('Google Drive', error);
+    let maxResults = filter.count || ItemStore.DEFAULT_COUNT;
+
+    // TODO(burdon): Cache client?
+    let authClient = this._authProvider.createAuthClient(_.get(context, 'credentials.google'));
+    return this._client.list(authClient, query, maxResults).then(items => {
+      return items;
+    }).catch(err => {
+      throw ErrorUtil.error('Google Drive', err);
     });
   }
 }
 
 /**
- * Google Drive Service provider.
+ * Google Drive service provider.
  */
 export class GoogleDriveServiceProvider extends OAuthServiceProvider {
 

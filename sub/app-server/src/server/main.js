@@ -5,7 +5,7 @@
 import path from 'path';
 import yaml from 'node-yaml';
 
-import { ErrorUtil, Logger } from 'alien-util';
+import { ErrorUtil, Logger, TypeUtil } from 'alien-util';
 
 import { WebServer } from './server';
 
@@ -44,6 +44,6 @@ ErrorUtil.handleErrors(process, error => {
 
 config(ENV.APP_SERVER_CONF_DIR).then(config => {
   global.server = new WebServer(config);
-  logger.info(WebServer.name, JSON.stringify(global.server.info, null, 2));
+  logger.info(WebServer.name, TypeUtil.stringify(global.server.info, 2));
   global.server.init().then(server => server.start());
 });

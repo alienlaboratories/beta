@@ -40,13 +40,36 @@ const logger = Logger.get('oauth.google');
  */
 export class GoogleOAuthProvider extends OAuthProvider {
 
-  // TODO(burdon): Update credentials when access_token updated by refresh_token.
-
   // TODO(burdon): Implement revoke.
   // https://developers.google.com/identity/protocols/OAuth2UserAgent#tokenrevoke
 
   // TODO(burdon): See "prompt" argument.
   // https://developers.google.com/identity/protocols/OAuth2WebServer#redirecting
+
+  /**
+   * Creates a Google APIs Auth Client.
+   *
+   * @param config
+   * @param credentials
+   * @param callback Provide callback if part of login flow.
+   * @returns {google.auth.OAuth2}
+   */
+  static createAuthClient(config, credentials=undefined, callback=undefined) {
+    console.assert(config);
+
+    // https://github.com/google/google-api-nodejs-client/#oauth2-client
+    let authClient = new google.auth.OAuth2(
+      config.clientId,
+      config.clientSecret,
+      callback
+    );
+
+    if (credentials) {
+      authClient.setCredentials(_.pick(credentials, ['access_token', 'refresh_token']));
+    }
+
+    return authClient;
+  }
 
   constructor(config, callbackUrl) {
     super('google', callbackUrl);
@@ -55,36 +78,21 @@ export class GoogleOAuthProvider extends OAuthProvider {
     this._config = config;
   }
 
-  /**
-   * @param credentials
-   * @param callback
-   * @return {google.auth.OAuth2}
-   */
-  // TODO(burdon): Use in services.
-  createClient(credentials=undefined, callback=undefined) {
-
-    // TODO(burdon): Get Const from config.
-    // https://github.com/google/google-api-nodejs-client/#oauth2-client
-    // https://github.com/google/google-api-nodejs-client/blob/master/apis/oauth2/v2.js
-    let oauthClient = new google.auth.OAuth2(
-      this._config.clientId,
-      this._config.clientSecret,
-      callback
-    );
-
-    if (credentials) {
-      oauthClient.setCredentials(_.pick(credentials, ['access_token', 'refresh_token']));
-    }
-
-    return oauthClient;
-  }
-
   //
   // OAuthProvider interface.
   //
 
   get scopes() {
     return AuthDefs.GOOGLE_LOGIN_SCOPES;
+  }
+
+  /**
+   * @param credentials
+   * @param callback Provide callback if part of login flow.
+   * @return {google.auth.OAuth2}
+   */
+  createAuthClient(credentials=undefined, callback=undefined) {
+    return GoogleOAuthProvider.createAuthClient(this._config, credentials, callback);
   }
 
   /**
@@ -97,7 +105,7 @@ export class GoogleOAuthProvider extends OAuthProvider {
    * @return {string}
    */
   createAuthUrl(scopes) {
-    return this.createClient(null, this._callbackUrl).generateAuthUrl({
+    return this.createAuthClient(null, this._callbackUrl).generateAuthUrl({
 
       // NOTE: By default, the refresh_token is only returned when it is FIRST REQUESTED.
       // http://googlecode.blogspot.com/2011/10/upcoming-changes-to-oauth-20-endpoint.html (Change #3)
@@ -115,6 +123,7 @@ export class GoogleOAuthProvider extends OAuthProvider {
   }
 
   createStrategy(loginCallback) {
+
     // http://passportjs.org/docs/google
     // https://github.com/jaredhanson/passport-google-oauth
     // https://github.com/jaredhanson/passport-google-oauth2
@@ -122,7 +131,7 @@ export class GoogleOAuthProvider extends OAuthProvider {
       clientID:       this._config.clientId,
       clientSecret:   this._config.clientSecret,
       callbackURL:    this._callbackUrl
-    }, loginCallback)
+    }, loginCallback);
   }
 
   /**
@@ -133,12 +142,11 @@ export class GoogleOAuthProvider extends OAuthProvider {
     console.assert(idToken, 'Invalid token.');
 
     return new Promise((resolve, reject) => {
-      let oauthClient = this.createClient();
 
       // https://developers.google.com/identity/sign-in/web/backend-auth
       // https://developers.google.com/identity/protocols/OpenIDConnect#obtaininguserprofileinformation
-      oauthClient.verifyIdToken(idToken, this._config.clientId, (error, response) => {
-        if (error) {
+      this.createAuthClient().verifyIdToken(idToken, this._config.clientId, (err, response) => {
+        if (err) {
           console.error('Invalid id_token: ' + idToken);
           throw new HttpError(401);
         }
@@ -159,14 +167,14 @@ export class GoogleOAuthProvider extends OAuthProvider {
     console.assert(credentials);
 
     return new Promise((resolve, reject) => {
-      let oauthClient = this.createClient(credentials);
+      let authClient = this.createAuthClient(credentials);
 
       // TODO(burdon): Factor out.
       // https://developers.google.com/+/web/api/rest
       let plus = google.plus('v1');
       plus.people.get({
         userId: 'me',
-        auth: oauthClient
+        auth: authClient
       }, (error, profile) => {
         if (error) {
           throw new Error(error);
@@ -178,11 +186,13 @@ export class GoogleOAuthProvider extends OAuthProvider {
   }
 
   revokeCredentials(credentials) {
+    console.assert(credentials);
+
     return new Promise((resolve, reject) => {
-      let oauthClient = this.createClient(credentials);
+      let authClient = this.createAuthClient(credentials);
 
       // TODO(burdon): Not testing. Document.
-      oauthClient.revokeCredentials((error, result) => {
+      authClient.revokeCredentials((error, result) => {
         if (error) {
           throw new Error(error);
         }

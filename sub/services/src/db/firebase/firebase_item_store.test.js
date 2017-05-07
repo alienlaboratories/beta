@@ -26,10 +26,12 @@ async function config(baseDir) {
 config(CONF_DIR).then(config => {
   console.log('Config = ' + JSON.stringify(config, null, 2));
 
-  const db = admin.initializeApp({
+  const app = admin.initializeApp({
     databaseURL: _.get(config, 'firebase.app.databaseURL'),
     credential: admin.credential.cert(_.get(config, 'firebase.serviceAccount'))
-  }).database();
+  });
+
+  const db = app.database();
 
   const idGenerator = new IdGenerator(1000);
   const matcher = new Matcher();

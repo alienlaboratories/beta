@@ -156,8 +156,11 @@ export class WebServer {
     // External query processors.
     //
 
+    // Default login.
+    this._googleAuthProvider = new GoogleOAuthProvider(_.get(this._config, 'google'), ENV.APP_SERVER_URL);
+
     this._database
-      .registerQueryProcessor(new GoogleDriveQueryProcessor(new IdGenerator(), _.get(this._config, 'google')));
+      .registerQueryProcessor(new GoogleDriveQueryProcessor(this._googleAuthProvider));
   }
 
   /**
@@ -165,9 +168,6 @@ export class WebServer {
    */
   initAuth() {
     logger.log('initAuth');
-
-    // Default login.
-    this._googleAuthProvider = new GoogleOAuthProvider(_.get(this._config, 'google'), ENV.APP_SERVER_URL);
 
     // OUath providers.
     this._oauthRegistry = new OAuthRegistry()

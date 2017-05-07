@@ -9,13 +9,16 @@ import yaml from 'node-yaml';
 import { Logger } from 'alien-util';
 import { Database, IdGenerator, Matcher, SystemStore } from 'alien-core';
 
-import { GoogleDriveClient } from './google_drive';
 import { Firebase } from '../../db/firebase/firebase';
 import { FirebaseItemStore } from '../../db/firebase/firebase_item_store';
+
+import { GoogleOAuthProvider } from './google_oauth';
+import { GoogleDriveClient } from './google_drive';
 
 const logger = Logger.get('test');
 
 // TODO(burdon): Set-up as large test.
+const CONF_DIR = path.join(__dirname, '../../../../../conf');
 
 /**
  * Asynchronously load the configuration.
@@ -27,7 +30,7 @@ async function config(baseDir) {
   };
 }
 
-config('../../../../../conf').then(config => {
+config(CONF_DIR).then(config => {
 
   // System store (to look-up credentials).
   let firebase = new Firebase(_.get(config, 'firebase'));
@@ -47,7 +50,7 @@ config('../../../../../conf').then(config => {
   // - https://console.cloud.google.com/apis/library?project=alienlabs-dev [933786919888]
   //
 
-  // TODO(burdon): Replace with alice.
+  // TODO(burdon): Replace with alice. Encrypt.
   const text = 'entube';
   const email = 'rich.burdon@gmail.com';
 
@@ -59,9 +62,11 @@ config('../../../../../conf').then(config => {
       credentials: _.get(user, 'credentials')
     };
 
-    // Test query.
-    let client = new GoogleDriveClient(new IdGenerator(), _.get(config, 'google'));
-    client.search(context, `fullText contains "${text}"`, 10).then(results => {
+    let authClient = GoogleOAuthProvider.createAuthClient(
+      _.get(config, 'google'), _.get(context, 'credentials.google'));
+
+    let client = new GoogleDriveClient();
+    client.list(authClient, `fullText contains "${text}"`, 10).then(results => {
       logger.log(`Results for ${email}:\n`, _.map(results, result => _.pick(result, 'title')));
       firebase.close();
     });
