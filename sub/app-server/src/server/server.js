@@ -16,19 +16,16 @@ import uuid from 'node-uuid';
 import { ExpressUtil, HttpError, HttpUtil, Logger } from 'alien-util';
 import { AuthUtil, Database, IdGenerator, Matcher, MemoryItemStore, SystemStore, TestItemStore } from 'alien-core';
 import { AppDefs } from 'alien-client';
-
-import {
-  apiRouter,
-
-  Firebase,
-  FirebaseItemStore
-} from 'alien-api';
+import { apiRouter } from 'alien-api';
 
 import {
   getIdToken,
   isAuthenticated,
   loginRouter,
   oauthRouter,
+
+  Firebase,
+  FirebaseItemStore,
 
   OAuthProvider,
   OAuthRegistry,

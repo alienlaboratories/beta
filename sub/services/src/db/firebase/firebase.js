@@ -46,10 +46,18 @@ export class Firebase {
 
     this._db = this._app.database();
 
-    logger.info('Initialized: ' + config.databaseURL);
+    logger.info('Initialized: ' + config.app.databaseURL);
   }
 
   get db() {
     return this._db;
+  }
+
+  /**
+   * Release connections (allow node to exit).
+   * https://firebase.google.com/docs/reference/js/firebase.app.App#delete
+   */
+  close() {
+    return this._app.delete();
   }
 }

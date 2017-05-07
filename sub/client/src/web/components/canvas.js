@@ -167,7 +167,7 @@ export class Canvas extends React.Component {
         </div>
         }
 
-        { config.debug &&
+        { _.get(config, 'options.debug') &&
         <div className="ux-section ux-debug">
           <div className="ux-section-body">
             { JSON.stringify(_.pick(item, 'bucket', 'type', 'id')) }

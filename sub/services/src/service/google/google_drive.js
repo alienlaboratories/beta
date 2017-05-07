@@ -27,6 +27,7 @@ export class GoogleDriveClient {
    * @returns Item
    * @private
    */
+  // TODO(burdon): Generalize converter.
   static resultToItem(idGenerator, file) {
     // TODO(madadam): This makes a transient Item that isn't written into the item store;
     // it's an Item wrapper around external data.
@@ -71,17 +72,21 @@ export class GoogleDriveClient {
 
   /**
    * Fetches a single page of results.
+   * https://developers.google.com/drive/v3/reference
+   * https://developers.google.com/drive/v3/reference/files/list
    */
-  _fetchPage(client, driveQuery, numResults, pageToken=undefined) {
+  _fetchPage(client, driveQuery, pageSize, pageToken=undefined) {
     return new Promise((resolve, reject) => {
       let query = {
         auth: client,
         q: driveQuery,
         fields: 'nextPageToken, files(id, name, webViewLink, iconLink)',
         spaces: 'drive',
-        pageToken: pageToken
+        pageSize,
+        pageToken
       };
 
+      // TODO(burdon): Wrapper.
       this._drive.files.list(query, (err, response) => {
         if (err) {
           reject(err.message);
@@ -95,26 +100,31 @@ export class GoogleDriveClient {
   /**
    * Recursively fetches pages for the specified number of results.
    */
-  _fetchAll(client, driveQuery, maxResults, pageToken=undefined) {
+  _fetchAll(client, driveQuery, maxResults) {
     if (maxResults === 0) {
       return Promise.resolve([]);
     }
 
     // Collect the results.
+    // TODO(burdon): Generalize fetcher.
     let results = [];
 
     // Get the next page.
-    return this._fetchPage(client, driveQuery, maxResults, pageToken).then(response => {
-      // Add results.
-      _.each(response.files, file => results.push(GoogleDriveClient.resultToItem(this._idGenerator, file)));
+    const fetch = (pageToken = undefined) => {
+      let pageSize = Math.min(100, maxResults - results.length);
+      return this._fetchPage(client, driveQuery, pageSize, pageToken).then(response => {
+        _.each(response.files, file => results.push(GoogleDriveClient.resultToItem(this._idGenerator, file)));
 
-      // Maybe get more (recursively).
-      if (response.nextPageToken) {
-        return this._fetchAll(client, driveQuery, maxResults - response.files.length, response.nextPageToken);
-      }
+        // Fetch more.
+        if (response.nextPageToken && results.length < maxResults) {
+          return fetch(response.nextPageToken);
+        }
 
-      return results;
-    });
+        return results;
+      });
+    };
+
+    return fetch();
   }
 
   /**

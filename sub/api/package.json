@@ -18,18 +18,14 @@
     "babel-preset-stage-0": "^6.24.1",
     "babel-register": "^6.24.1",
     "chai": "^3.5.0",
-    "fakeredis": "^2.0.0",
-    "firebase-server": "^0.9.1",
     "grunt": "^1.0.1",
     "grunt-contrib-clean": "^1.1.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-dev-update": "^2.2.0",
     "grunt-run": "^0.6.0",
     "json-loader": "^0.5.4",
-    "memcached-mock": "^0.1.0",
     "mocha": "^3.1.2",
     "mocha-webpack": "^0.7.0",
-    "mockfirebase": "^0.12.0",
     "simon": "^0.2.3",
     "sinon": "^2.2.0",
     "sinon-chai": "^2.10.0"
@@ -43,9 +39,6 @@
     "cheerio": "^0.22.0",
     "cookie-parser": "^1.4.3",
     "express": "^4.15.2",
-    "firebase": "^3.9.0",
-    "firebase-admin": "^4.2.1",
-    "googleapis": "^19.0.0",
     "graphql": "^0.9.6",
     "graphql-server-express": "^0.7.1",
     "graphql-subscriptions": "^0.3.1",
@@ -54,8 +47,7 @@
     "immutability-helper": "^2.2.0",
     "lodash": "^4.17.2",
     "moment": "^2.18.1",
-    "node-yaml": "^3.0.3",
-    "redis": "^2.7.1"
+    "node-yaml": "^3.0.3"
   },
   "scripts": {
     "//": "NOTE: Restart after updates to dependent libs (e.g., alien-util, alient-core)",

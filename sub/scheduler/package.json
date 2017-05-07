@@ -34,7 +34,6 @@
   "scripts": {
     "redis": "BABEL_DISABLE_CACHE=1 babel-node src/testing/redis_server.js",
     "nodemon": "hilite nodemon --config nodemon.json --exec npm start",
-    "test": "babel-node ./src/test_sync.js",
     "start": "BABEL_DISABLE_CACHE=1 babel-node src/server.js"
   }
 }

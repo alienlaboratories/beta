@@ -8,12 +8,14 @@ import yaml from 'node-yaml';
 
 import { Logger } from 'alien-util';
 import { Database, IdGenerator, Matcher, SystemStore } from 'alien-core';
-import { GoogleDriveClient } from 'alien-services';
-import { Firebase, FirebaseItemStore } from 'alien-api';
+
+import { GoogleDriveClient } from './google_drive';
+import { Firebase } from '../../db/firebase/firebase';
+import { FirebaseItemStore } from '../../db/firebase/firebase_item_store';
 
 const logger = Logger.get('test');
 
-// TODO(burdon): Move to alien-services.
+// TODO(burdon): Set-up as large test.
 
 /**
  * Asynchronously load the configuration.
@@ -25,9 +27,9 @@ async function config(baseDir) {
   };
 }
 
-config('../../../conf').then(config => {
+config('../../../../../conf').then(config => {
 
-  // TODO(burdon): Circular dep? Move SystemStore to services.
+  // System store (to look-up credentials).
   let firebase = new Firebase(_.get(config, 'firebase'));
   let systemStore = new SystemStore(
     new FirebaseItemStore(new IdGenerator(), new Matcher(), firebase.db, Database.NAMESPACE.SYSTEM, false));
@@ -45,21 +47,23 @@ config('../../../conf').then(config => {
   // - https://console.cloud.google.com/apis/library?project=alienlabs-dev [933786919888]
   //
 
-  // TODO(burdon): Get token.
-  let context = {
-    credentials: {
-      google: {
-        access_token: 'ya29.GltDBFqZLZaHT6mHbPDUlJFh4qsDP_wK3XvMglNqiaeDNU3kWUm9Bwqi8tigJVS-WcHYmZhqgPZPdTwbfj4WixF1m5VaGb4tNk33roArTzded-0o1EqP49wS4JHa',
-        refresh_token: '1/1O2vVGQXM9NpK55ijBAPyasH0pXxQIVoCFnp9tyj9cM'
-      }
-    }
-  };
-
-  let client = new GoogleDriveClient(new IdGenerator(), _.get(config, 'google'));
-
-  // Test query.
+  // TODO(burdon): Replace with alice.
   const text = 'entube';
-  client.search(context, `fullText contains "${text}"`, 10).then(results => {
-    logger.log('Results:\n', _.map(results, result => _.pick(result, 'title')));
+  const email = 'rich.burdon@gmail.com';
+
+  // Get token for user and make request.
+  systemStore.queryItems({}, {}, { type: 'User' }).then(items => {
+    let user = _.find(items, item => item.email === email);
+    console.assert(user);
+    let context = {
+      credentials: _.get(user, 'credentials')
+    };
+
+    // Test query.
+    let client = new GoogleDriveClient(new IdGenerator(), _.get(config, 'google'));
+    client.search(context, `fullText contains "${text}"`, 10).then(results => {
+      logger.log(`Results for ${email}:\n`, _.map(results, result => _.pick(result, 'title')));
+      firebase.close();
+    });
   });
 });
