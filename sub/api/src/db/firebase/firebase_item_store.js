@@ -4,10 +4,10 @@
 
 import _ from 'lodash';
 
-import { Logger } from 'alien-util';
+// import { Logger } from 'alien-util';
 import { BaseItemStore } from 'alien-core';
 
-const logger = Logger.get('store.firebase');
+// const logger = Logger.get('store.firebase');
 
 /**
  * Item store.

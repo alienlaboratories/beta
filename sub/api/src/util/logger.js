@@ -28,7 +28,7 @@ export const graphqlLogger = (options={ pretty: false }) => {
       (json) => JSON.stringify(json, 0, 2) :
       (json) => TypeUtil.stringify(json, 0);
 
-    let { operationName, query, variables } = req.body;
+    let { /*operationName,*/ query, variables } = req.body;
 
     if (options.pretty) {
       logger.log(Logger.format(PRETTY_REQ, moment().format(TS), query, stringify(variables)));
@@ -73,5 +73,5 @@ export const graphqlLogger = (options={ pretty: false }) => {
     };
 
     next();
-  }
+  };
 };

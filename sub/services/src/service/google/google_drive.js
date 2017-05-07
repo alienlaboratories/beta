@@ -15,7 +15,7 @@ const NAMESPACE = 'google.com/drive';
 /**
  * Google API client.
  */
-class GoogleDriveClient {
+export class GoogleDriveClient {
 
   // TODO(burdon): Generalize client.
 

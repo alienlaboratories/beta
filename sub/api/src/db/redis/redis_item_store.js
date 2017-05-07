@@ -6,7 +6,7 @@ import _ from 'lodash';
 import bluebird from 'bluebird';
 import redis from 'redis';
 
-import { BaseItemStore, Key, QueryProcessor } from 'alien-core';
+import { BaseItemStore, Key } from 'alien-core';
 
 // https://github.com/NodeRedis/node_redis#promises
 bluebird.promisifyAll(redis.RedisClient.prototype);
@@ -68,7 +68,7 @@ export class RedisItemStore extends BaseItemStore {
       return this._client.mgetAsync(keys)
         .then(values => {
           let items = _.map(values, value => JSON.parse(value));
-          return this.filterItems(items, context, root, filter)
+          return this.filterItems(items, context, root, filter);
         });
     });
   }

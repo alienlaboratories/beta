@@ -2,6 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
+/*
 import { expect } from 'chai';
 
 import bluebird from 'bluebird';
@@ -20,7 +21,6 @@ const matcher = new Matcher();
 
 const client = fakeredis.createClient('test');
 
-/*
 describe('RedisItemStore:', () => {
   ItemStoreTests(expect, () => {
     return Promise.resolve(new RedisItemStore(idGenerator, matcher, client, 'testing'));

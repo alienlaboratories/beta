@@ -36,7 +36,7 @@ export class Resolvers {
   }
 
   static get typeDefs() {
-    return concatenateTypeDefs([Framework, Schema])
+    return concatenateTypeDefs([Framework, Schema]);
   }
 
   //
@@ -126,8 +126,8 @@ export class Resolvers {
           let filter = {
             type: 'Project',
             expr: {
-              field: "group",
-              ref: "id"
+              field: 'group',
+              ref: 'id'
             }
           };
 
@@ -192,7 +192,7 @@ export class Resolvers {
       Task: {
 
         status: (obj, args, context) => {
-          return obj.status || 0
+          return obj.status || 0;
         },
 
         project: (obj, args, context) => {

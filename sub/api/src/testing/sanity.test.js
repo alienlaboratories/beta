@@ -44,5 +44,5 @@ describe('Sanity:', () => {
       expect(value).to.equal(100);
       done();
     });
-  })
+  });
 });

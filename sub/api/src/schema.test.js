@@ -91,7 +91,7 @@ describe('GraphQL Mock Server:', () => {
             type: 'User',
             title: 'Alien'
           }
-        }
+        };
       }
     })
   };
@@ -196,7 +196,7 @@ describe('GraphQL JS API:', () => {
             return database.getItemStore(Database.NAMESPACE.SYSTEM).getItem(context, 'User', userId).then(user => {
               return {
                 user
-              }
+              };
             });
           }
         }
@@ -208,7 +208,7 @@ describe('GraphQL JS API:', () => {
     graphql(schema, introspectionQuery).then(result => {
 //    console.log('SCHEMA:\n', JSON.stringify(result, 0, 2));
       done();
-    })
+    });
   });
 
   database.getItemStore(Database.NAMESPACE.SYSTEM)
