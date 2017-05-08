@@ -74,8 +74,8 @@ export const adminRouter = (config, clientManager, options) => {
         return clientManager.invalidateClient(clientId).then(ok);
       }
 
-      case 'task.ping': {
-        return queue && queue.add({ value: Date.now() }).then(ok);
+      case 'task.sync': {
+        return queue && queue.add({ task: 'sync' }).then(ok);
       }
     }
 

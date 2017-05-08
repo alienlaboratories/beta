@@ -27,6 +27,7 @@ export class Firebase {
    * @param {{ app, serviceAccount }} config Firebase config.
    */
   constructor(config) {
+    console.assert(config);
 
     // https://firebase.google.com/docs/admin/setup
     // https://firebase.google.com/docs/reference/admin/node/admin

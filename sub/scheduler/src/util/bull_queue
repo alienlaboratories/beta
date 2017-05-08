@@ -5,7 +5,7 @@
 import _ from 'lodash';
 import BullQueue from 'bull';
 
-import { ErrorUtil, Logger } from 'alien-util';
+import { ErrorUtil, Logger, TypeUtil } from 'alien-util';
 
 const logger = Logger.get('queue');
 
@@ -48,11 +48,11 @@ export class Queue {
       logger.error('Error', ErrorUtil.message(err));
     });
     this._queue.on('failed', (job, err) => {
-      logger.error(`Failed[${job.id}]`, ErrorUtil.message(err), JSON.stringify(job.data));
+      logger.error(`Failed[${job.id}]`, ErrorUtil.message(err), TypeUtil.stringify(job.data));
       logger.error(err);
     });
     this._queue.on('completed', (job, result) => {
-      logger.log(`Complete[${job.id}]`, JSON.stringify(result));
+      logger.log(`Complete[${job.id}]`, TypeUtil.stringify(result));
     });
   }
 
@@ -64,7 +64,7 @@ export class Queue {
    */
   add(value) {
     return this._queue.add(value).then(job => {
-      logger.log(`Added[${job.id}]`, JSON.stringify(value));
+      logger.log(`Added[${job.id}]`, TypeUtil.stringify(value));
       return job;
     });
   }
@@ -77,7 +77,7 @@ export class Queue {
    */
   process(f) {
     this._queue.process(job => {
-      logger.log(`Processing[${job.id}]`, JSON.stringify(job.data));
+      logger.log(`Processing[${job.id}]`, TypeUtil.stringify(job.data));
       return Promise.resolve(f(job.data, job)).then(data => {
         return data;
       });

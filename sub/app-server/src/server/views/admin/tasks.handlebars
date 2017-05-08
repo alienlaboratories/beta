@@ -10,14 +10,14 @@
 
 {{#section 'body'}}
   <div class="site-panel">
-    <button onclick="ping()">Ping</button>
+    <button onclick="sync()">Sync</button>
   </div>
 {{/section}}
 
 {{#section 'script'}}
   <script>
-    function ping() {
-      Site.postJson('/admin/api', { action: 'task.ping' }).then(() => {
+    function sync() {
+      Site.postJson('/admin/api', { action: 'task.sync' }).then(() => {
         console.log('OK');
       });
     }

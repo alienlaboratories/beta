@@ -61,20 +61,15 @@ config(CONF_DIR).then(config => {
 
     let user = _.find(items, item => item.email === email);
     console.assert(user);
-    let context = {
-      credentials: _.get(user, 'credentials')
-    };
 
-    let authClient = GoogleOAuthProvider.createAuthClient(
-      _.get(config, 'google'), _.get(context, 'credentials.google'));
+    let authClient = GoogleOAuthProvider.createAuthClient(_.get(config, 'google'), _.get(user, 'credentials.google'));
 
     authClient.refreshAccessToken((err, tokens) => {
       console.assert(!err);
       let { access_token } = tokens;
 
       // https://github.com/google/google-api-nodejs-client/#manually-refreshing-access-token
-      // TODO(burdon): Save updated access_token in service calls.
-      _.set(context, 'credentials.google.access_token', access_token);
+      _.set(user, 'credentials.google.access_token', access_token);
 
       if (false) {
         const text = 'entube';
