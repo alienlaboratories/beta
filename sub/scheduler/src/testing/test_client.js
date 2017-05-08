@@ -9,8 +9,8 @@ import { Queue } from '../util/bull_queue';
 // babel-node ./src/testing/test_client.js
 //
 
-let q = new Queue('test');
+let queue = new Queue('test');
 
-q.add({ value: Date.now() }).then(job => {
-  q.close();
+queue.add({ value: Date.now() }).then(job => {
+  queue.close();
 });

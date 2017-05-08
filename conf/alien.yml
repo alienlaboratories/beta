@@ -1,0 +1,10 @@
+#
+# Global defs.
+#
+
+tasks:
+  active: true
+  name: 'test'
+  options:
+    host: "127.0.0.1"
+    post: 6379

@@ -2,11 +2,15 @@
 // Copyright 2017 Alien  Labs.
 //
 
+import _ from 'lodash';
 import express from 'express';
 
-import { ExpressUtil } from 'alien-util';
+import { ExpressUtil, Logger } from 'alien-util';
+import { Queue } from 'alien-scheduler';
 
 import { isAuthenticated } from 'alien-services';
+
+const logger = Logger.get('admin');
 
 /**
  * Admin endpoints.
@@ -15,21 +19,11 @@ export const adminRouter = (config, clientManager, options) => {
   console.assert(config && clientManager && options);
   let router = express.Router();
 
-  // Kue.
-  // TODO(burdon): Factor out config.
-  // Environment variables set by kubernetes deployment config.
-  let queue = null;
-  // if (options.scheduler) {
-  //   queue = kue.createQueue({
-  //     redis: {
-  //       host: _.get(process.env, 'REDIS_KUE_SERVICE_HOST', '127.0.0.1'),
-  //       port: _.get(process.env, 'REDIS_KUE_SERVICE_PORT', 6379),
-  //       db: 0
-  //     }
-  //   }).on('error', err => {
-  //     console.warn('Kue Error:', err.code);
-  //   });
-  // }
+  let queue;
+  let queueConfig = _.get(config, 'alien.tasks', {});
+  if (queueConfig.active) {
+    queue = new Queue(queueConfig.name, queueConfig.options);
+  }
 
   //
   // Admin pages.
@@ -54,13 +48,12 @@ export const adminRouter = (config, clientManager, options) => {
     });
   });
 
-  router.get('/ops', isAuthenticated('/home', true), (req, res) => {
-    res.render('admin/ops');
+  router.get('/tasks', isAuthenticated('/home', true), (req, res) => {
+    res.render('admin/tasks');
   });
 
   //
   // Admin API.
-  // TODO(burdon): Authenticate.
   //
 
   router.post('/api', isAuthenticated(undefined, true), (req, res) => {
@@ -70,7 +63,7 @@ export const adminRouter = (config, clientManager, options) => {
       res.send({});
     };
 
-    console.log('Admin command: %s', action);
+    logger.log('Admin command: %s', action);
     switch (action) {
 
       case 'client.flush': {
@@ -81,9 +74,8 @@ export const adminRouter = (config, clientManager, options) => {
         return clientManager.invalidateClient(clientId).then(ok);
       }
 
-      case 'schedule.test': {
-        queue && queue.create('test', {}).save();
-        break;
+      case 'task.ping': {
+        return queue && queue.add({ value: Date.now() }).then(ok);
       }
     }
 

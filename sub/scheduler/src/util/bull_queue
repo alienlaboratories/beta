@@ -2,6 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
+import _ from 'lodash';
 import BullQueue from 'bull';
 
 import { ErrorUtil, Logger } from 'alien-util';
@@ -32,12 +33,12 @@ export class Queue {
     }
   };
 
-  constructor(name, worker=false) {
+  constructor(name, options) {
 
     // NOTE: ioredis (not redis).
     // https://github.com/luin/ioredis/blob/master/API.md
     // https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue
-    this._queue = new BullQueue(name, Queue.DEF_OPTS);
+    this._queue = new BullQueue(name, _.defaults(options, Queue.DEF_OPTS));
 
     // https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#events
     this._queue.on('ready', () => {
@@ -51,7 +52,7 @@ export class Queue {
       logger.error(err);
     });
     this._queue.on('completed', (job, result) => {
-      logger.error(`Complete[${job.id}]`, JSON.stringify(result));
+      logger.log(`Complete[${job.id}]`, JSON.stringify(result));
     });
   }
 

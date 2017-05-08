@@ -1,0 +1,25 @@
+{{#section 'header'}}
+  <div class="site-admin">
+    <h1>Tasks</h1>
+  </div>
+
+  <div class="site-toolbar">
+    {{> admin_menu }}
+  </div>
+{{/section}}
+
+{{#section 'body'}}
+  <div class="site-panel">
+    <button onclick="ping()">Ping</button>
+  </div>
+{{/section}}
+
+{{#section 'script'}}
+  <script>
+    function ping() {
+      Site.postJson('/admin/api', { action: 'task.ping' }).then(() => {
+        console.log('OK');
+      });
+    }
+  </script>
+{{/section}}

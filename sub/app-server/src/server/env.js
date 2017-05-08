@@ -23,6 +23,7 @@ export default {
 
   HOST, PORT,
 
+  ALIEN_CONFIG:           _.get(process.env, 'ALIEN_CONFIG',            'alien'),
   ALIEN_CONFIG_FIREBASE:  _.get(process.env, 'ALIEN_CONFIG_FIREBASE',   'firebase/alienlabs-dev'),
   ALIEN_CONFIG_GOOGLE:    _.get(process.env, 'ALIEN_CONFIG_GOOGLE',     'google/alienlabs-dev'),
 

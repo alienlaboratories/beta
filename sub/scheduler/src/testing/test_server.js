@@ -9,9 +9,9 @@ import { Queue } from '../util/bull_queue';
 // babel-node ./src/testing/test_server.js
 //
 
-let q = new Queue('test', true);
+let queue = new Queue('test', true);
 
-q.process(data => {
+queue.process(data => {
   if (!data.value) {
     throw new Error('Bad value');
   }
