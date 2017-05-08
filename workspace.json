@@ -5,6 +5,7 @@
     "alien-api":        "sub/api",
     "alien-client":     "sub/client",
     "alien-core":       "sub/core",
+    "alien-scheduler":  "sub/scheduler",
     "alien-services":   "sub/services",
     "alien-util":       "sub/util"
   }
