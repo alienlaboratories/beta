@@ -5,6 +5,10 @@
 import express from 'express';
 //import morgan from 'morgan';
 
+import { Logger } from 'alien-util';
+
+const logger = Logger.get('http');
+
 /**
  * Production logging.
  *
@@ -19,6 +23,15 @@ import express from 'express';
  */
 export const loggingRouter = (options) => {
   let router = express.Router();
+
+  router.use((req, res, next) => {
+    if (req.method === 'POST') {
+      logger.log(req.method, req.url);
+    }
+
+    // Continue to actual route.
+    next();
+  });
 
   /*
   router.use(morgan(':status :method :url'));

@@ -6,10 +6,10 @@ import _ from 'lodash';
 import path from 'path';
 
 global.__ENV__            = _.get(process.env, 'NODE_ENV', 'development');
-global.__DEVELOPMENT__    = __ENV__ === 'development';
 global.__PRODUCTION__     = __ENV__ === 'production';
+global.__DEVELOPMENT__    = __ENV__ === 'development';
+global.__TESTING__        = __ENV__ === 'testing';
 global.__HOT__            = __ENV__ === 'hot';
-global.__TESTING__        = !__PRODUCTION__;
 
 const HOST = _.get(process.env, 'HOST', __PRODUCTION__ ? '0.0.0.0' : '127.0.0.1');
 const PORT = _.get(process.env, 'PORT', 3000);
@@ -23,12 +23,12 @@ export default {
 
   HOST, PORT,
 
-  ALIEN_CONFIG:           _.get(process.env, 'ALIEN_CONFIG',            'alien'),
+  ALIEN_CONFIG:           _.get(process.env, 'ALIEN_CONFIG',            'alienlabs-dev'),
   ALIEN_CONFIG_FIREBASE:  _.get(process.env, 'ALIEN_CONFIG_FIREBASE',   'firebase/alienlabs-dev'),
   ALIEN_CONFIG_GOOGLE:    _.get(process.env, 'ALIEN_CONFIG_GOOGLE',     'google/alienlabs-dev'),
 
   ALIEN_JWT_SECRET:       _.get(process.env, 'ALIEN_JWT_SECRET',        'alien-jwt-secret'),
-  ALIEN_JWT_AUDIENCE:     _.get(process.env, 'ALIEN_JWT_AUDIENCE',      'alienlabs.com'),
+  ALIEN_JWT_AUDIENCE:     _.get(process.env, 'ALIEN_JWT_AUDIENCE',      'alienlabs.io'),
   ALIEN_SESSION_SECRET:   _.get(process.env, 'ALIEN_SESSION_SECRET',    'alien-session-secret'),
 
   APP_SERVER_URL:         _.get(process.env, 'APP_SERVER_URL',          'http://localhost:' + PORT),

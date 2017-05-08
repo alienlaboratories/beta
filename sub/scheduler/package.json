@@ -36,6 +36,6 @@
   },
   "scripts": {
     "nodemon": "hilite nodemon --config nodemon.json --exec npm start",
-    "start": "BABEL_DISABLE_CACHE=1 hilite babel-node src/server.js"
+    "start": "BABEL_DISABLE_CACHE=1 hilite babel-node src/scheduler.js"
   }
 }

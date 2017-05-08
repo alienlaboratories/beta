@@ -84,7 +84,7 @@
     
     git submodule -q foreach 'echo $name'
     git submodule add REPO DIR                      # Files: .gitmodules .git/config .git/modules
-    git submodule deinit DIR && git rm DIR		    # Remove
+    git submodule deinit DIR && git rm DIR		      # Remove
     git submodule foreach 'git commit -a || : && git push' && git commit -a && git push && git status
     git submodule foreach --recursive git pull
     git submodule foreach --recursive git status

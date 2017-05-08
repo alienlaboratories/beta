@@ -1,0 +1,51 @@
+#
+# Client:
+# https://console.firebase.google.com/project/alienlabs-beta/authentication/providers (Web Setup)
+#
+# https://firebase.google.com/docs/web/setup
+# import firebase from 'firebase';
+# firebase.initializeApp({ config.firebase.app });
+#
+
+app:
+  apiKey: "AIzaSyCjgw6d-JOEFJW7Fj5FKPrqnOvYR93VXqI",
+  authDomain: "alienlabs-beta.firebaseapp.com",
+  databaseURL: "https://alienlabs-beta.firebaseio.com",
+  projectId: "alienlabs-beta",
+  storageBucket: "alienlabs-beta.appspot.com",
+  messagingSenderId: "1046955137783"
+
+#
+# Cloud Messaging:
+# https://firebase.google.com/docs/cloud-messaging/server#auth
+# https://console.firebase.google.com/project/alienlabs-beta/settings/cloudmessaging
+#
+
+cloudMessaging:
+  serverKey: "AAAA88Njmvc:APA91bFT57WA27mIvBr5D3Nx-6x-7myF3hbkY_KbS2xv3Ls12HMGnnfWGWZx2rW_Pr6dT2sZR2zWiEymXmjOy9QaO-arzVd8WS8mLdZWahwND5ySyBZ7phD7xMqBk_dpLetH0ubUZkNr"
+
+#
+# Admin:
+# NOTE: Secret Credentials.
+# Generated 05/08/17 (Generate Private Key)
+# https://console.firebase.google.com/project/alienlabs-beta/settings/serviceaccounts/adminsdk
+#
+# https://firebase.google.com/docs/admin/setup
+# import admin from 'firebase-admin';
+# admin.initializeApp({
+#   credential: admin.credential.cert({ config.firebase.serviceAccount }),
+#   databaseURL: config.firebase.app.databaseURL
+# });
+#
+
+serviceAccount:
+  type: "service_account"
+  project_id: "alienlabs-beta"
+  private_key_id: "c2cb64ff2659516b9b06ef2d7e0799742deb34ac"
+  private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDhD616ZFDvyeNi\nNEaAejKYwz6WSG6VRutRwO8RJvWYJqPD84bTQXXbkuQFyFEjrI4QYl5JdvYxV7E1\njBTIGNgqyuVhe8YhD5dLZvcixhEGyxxGJPQwMg1JFJOM0OOs/tti4BBthlBgLM90\ntL8MfnvHt0TEAjl/AVtkb4tnFv4NB50yIJj/WKdtPGA52pR+WHxlmDQVLmlcBwCz\n8keTOAI67Ve9j6Nq62FhFA6T4gVRzzb4lr3naBZMcUIXexwHZT+1t0LFig+nGSAJ\n10onRe0smRubSHlFrsN/FMNdB02tUVHj+V7Z0I2ieoXGak39Sj/E7nUCnugbqyvB\nS3qL6dNxAgMBAAECggEAYWCrKr2k11t+6sq7hnNY2QgBWHzWe/hHcQQNbFpzAPYW\n/X2s5FL6b5rK1kWp9cl/Xk9xhE/Yjdjnb8fAZiN5xGotfVRUkZFxYMqYO49/ZnUT\nMrZigUfmv6wLe24WVI+g1NMlyH3I4RQCXvilgP5pCCyfsD9WKUGpDXfF1UD5gyDs\ngVXcBxRC0PpEzM/CBTYbDqujAwuA+SX7niP9LCx3D940yfG1NXTlNkJE+tJSdrA+\nP+31Avs138JeGtj8pvPtOQTCcPVW3cyU6XH6Fss3x07xDkIKMoMg/u++aMKYmHgg\np7EAMZV2w6EVgAfreDtlK2rJqRErsomtr2nBSHnzwQKBgQDz7h5K6nT1gZp8MiIo\ncS4HXd5iRWiZ9PsfAu+/6ChmZSDWlirv9KIIs3oXQEVdmFzG3qafGk2r39ckpwut\n07xJaAonT0DONBdZGMZO3XABJbmdAd6JRj8sqyrCs5JD2dHVRjiY8PPC8nnkpsgA\nzED0y8ujc3MhyxXFUEy3+PywxQKBgQDsMougsrKQr5qdulOkqq++w7O8zmCyEs5N\noUS637voSCeuni4knAE9/7B4kAi6RukYKpV4UKiChTp5C4u1/lphVOq4PwAOwWAm\ncLu5hV98j8AJlaqTCi91TARQ+JsyY4HcK8SHoPKsMukurHWG3Is2U+L2W+bwEC7W\n2V1eMp8qvQKBgEZEnwdXuO+MMTN7walCyU6n9Mr8UaCgGMMbNnNi7lho42fNhHrx\nTsgQ46fVBOZsYLWNKBSHID7V0YUmdc/SQdgnl10xkGqWSO+Kmn3Xfk9mTazz/+Yt\njT9R45SI5CaVlcPJYb51EtNixEhg3xaTwFaEapogRNdESHY5ppAMssY9AoGAYIfH\nyMU/dSJPbmbYCFQ5vxz8OA2gNya4acGe9UC66xOSJCtBcHTRjSUSWjODXZ3dZaMB\ns0pDlBQe8ZlmX9qz1VN/Gg2lWGJviUZJcmivvZiCQ2iHbdCb1LRcjzsLMmy4heLd\nTxDYHMgxxIF3BsbbnjhqaYTlvPbgLa5oGjdWFYECgYAjmBQtsuRdSQ0cx7fqZWk+\nChtJy1yXw+eFb8sZZfkz4StKnc7wd4pJoH4C8I9AxCAnCctBFrpuLGyeMHFlPYG7\n19lBPu8+J+Dmk9ur89jA+ZWKczoHyQmS5P2BF+DOs3rp+04m+T74l3kg/ZblATPH\nKQPAO278vr7vQ5gYF5LN1Q==\n-----END PRIVATE KEY-----\n"
+  client_email: "firebase-adminsdk-tus8u@alienlabs-beta.iam.gserviceaccount.com"
+  client_id: "114631438071694931018"
+  auth_uri: "https://accounts.google.com/o/oauth2/auth"
+  token_uri: "https://accounts.google.com/o/oauth2/token"
+  auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs"
+  client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-tus8u%40alienlabs-beta.iam.gserviceaccount.com"

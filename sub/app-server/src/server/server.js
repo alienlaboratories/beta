@@ -17,6 +17,7 @@ import { ExpressUtil, HttpError, HttpUtil, Logger } from 'alien-util';
 import { AuthUtil, Database, IdGenerator, Matcher, MemoryItemStore, SystemStore, TestItemStore } from 'alien-core';
 import { AppDefs } from 'alien-client';
 import { apiRouter } from 'alien-api';
+import { Loader, TestGenerator } from 'alien-services';
 
 import {
   getIdToken,
@@ -43,9 +44,6 @@ import {
 
   SlackServiceProvider
 } from 'alien-services';
-
-import { Loader } from './data/loader';
-import { TestGenerator } from './data/testing';
 
 import { adminRouter } from './router/admin';
 import { appRouter } from './router/app';
@@ -234,20 +232,7 @@ export class WebServer {
       genid: req => uuid.v4()
     }));
 
-    // Logging.
-    // TODO(burdon): Prod logging.
-    if (__PRODUCTION__ && false) {
-      this._app.use('/', loggingRouter({}));
-    } else {
-      this._app.use((req, res, next) => {
-        if (req.method === 'POST') {
-          logger.log(req.method, req.url);
-        }
-
-        // Continue to actual route.
-        next();
-      });
-    }
+    this._app.use('/', loggingRouter({}));
   }
 
   /**
@@ -369,7 +354,7 @@ export class WebServer {
           return this._systemStore.getGroups(userId).then(groups => {
             return _.assign(context, {
               buckets: _.map(groups, group => group.id)
-            })
+            });
           });
         }
       }

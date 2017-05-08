@@ -22,9 +22,10 @@ const logger = Logger.get('scheduler');
 /**
  * Asynchronously load the configuration.
  */
+// TODO(burdon): Dockerfile (see app-server).
 async function config(baseDir) {
   return await {
-    'alien':    await yaml.read(path.join(baseDir, 'alien.yml')),
+    'alien':    await yaml.read(path.join(baseDir, 'alienlabs-dev.yml')),
     'firebase': await yaml.read(path.join(baseDir, 'firebase/alienlabs-dev.yml')),
     'google':   await yaml.read(path.join(baseDir, 'google/alienlabs-dev.yml')),
   };
