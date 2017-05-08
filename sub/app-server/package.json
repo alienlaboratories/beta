@@ -80,7 +80,6 @@
     "history": "^4.4.0",
     "lodash": "^4.17.2",
     "moment": "^2.18.1",
-    "node-uuid": "^1.4.8",
     "node-yaml": "^3.0.3",
     "random-seed": "^0.3.0",
     "react": "^15.5.4",

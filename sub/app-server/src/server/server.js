@@ -11,7 +11,7 @@ import handlebars from 'express-handlebars';
 import http from 'http';
 import path from 'path';
 import session from 'express-session';
-import uuid from 'node-uuid';
+import uuid from 'uuid';
 
 import { ExpressUtil, HttpError, HttpUtil, Logger } from 'alien-util';
 import { AuthUtil, Database, IdGenerator, Matcher, MemoryItemStore, SystemStore, TestItemStore } from 'alien-core';

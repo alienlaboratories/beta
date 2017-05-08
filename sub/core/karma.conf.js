@@ -2,8 +2,6 @@
 // Copyright 2017 Alien Labs.
 //
 
-const webpack = require('webpack');
-
 const webpacConfig = require('./webpack-base.config.js')['karma'];
 
 //

@@ -41,7 +41,7 @@ config(CONF_DIR).then(config => {
   // https://firebase.googleblog.com/2015/04/end-to-end-testing-with-firebase-server_16.html
   //
 
-  describe('FirebaseItemStore (buckets):', function() {
+  describe('FirebaseItemStore (buckets):', () => {
     this.timeout(5000);
 
     ItemStoreTests(expect, () => {
@@ -49,7 +49,7 @@ config(CONF_DIR).then(config => {
     });
   });
 
-  describe('FirebaseItemStore (no buckets):', function() {
+  describe('FirebaseItemStore (no buckets):', () => {
     this.timeout(5000);
 
     ItemStoreTests(expect, () => {

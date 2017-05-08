@@ -17,10 +17,13 @@ const logger = Logger.get('google.drive');
 
 /**
  * Google Drive API wrapper.
+ *
+ * https://developers.google.com/drive/v3/reference
  */
 export class GoogleDriveClient {
 
   constructor() {
+    // https://developers.google.com/drive/v3/web/quickstart/nodejs
     this._drive = google.drive('v3');
   }
 
@@ -33,7 +36,7 @@ export class GoogleDriveClient {
    * @returns {Promise.<{Item}>}
    */
   list(authClient, query, maxResults) {
-    logger.log(`Query(${maxResults}): "${query}"`);
+    logger.log(`Query(${maxResults}): <${query}>`);
     return GoogleApiUtil.request(this._list.bind(this, authClient, query), maxResults).then(items => {
       logger.log('Results: ' + items.length);
       return _.map(items, item => GoogleDriveClient.toItem(item));
@@ -47,6 +50,8 @@ export class GoogleDriveClient {
     logger.log(`Page(${num}): ${pageSize}`);
 
     return new Promise((resolve, reject) => {
+
+      // https://developers.google.com/drive/v3/reference/files/list
       let params = {
         auth: authClient,
         q: query,
@@ -56,7 +61,6 @@ export class GoogleDriveClient {
         pageToken
       };
 
-      // https://developers.google.com/drive/v3/reference/files/list
       this._drive.files.list(params, (err, response) => {
         if (err) {
           reject(err.message);
@@ -149,8 +153,7 @@ export class GoogleDriveServiceProvider extends OAuthServiceProvider {
   get meta() {
     return {
       title: 'Google Drive',
-      class: 'service-google-drive',
-      icon: '/img/service/google_drive.png'
+      class: 'service-google-drive'
     };
   }
 }

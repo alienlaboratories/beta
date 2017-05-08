@@ -16,8 +16,7 @@ export class SlackServiceProvider extends ServiceProvider {
   get meta() {
     return {
       title: 'Slack',
-      class: 'service-slack',
-      icon: '/img/service/slack.png'
+      class: 'service-slack'
     };
   }
 

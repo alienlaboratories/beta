@@ -35,6 +35,7 @@ npm install -g firebase-tools
 npm install -g grunt
 npm install -g jest
 npm install -g karma-cli
+npm install -g mocha
 npm install -g nodemon
 npm install -g npm-workspace
 npm install -g webpack

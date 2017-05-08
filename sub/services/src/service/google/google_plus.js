@@ -22,8 +22,7 @@ export class GooglePlusServiceProvider extends OAuthServiceProvider {
   get meta() {
     return {
       title: 'Google Plus',
-      class: 'service-google-plus',
-      icon: '/img/service/google_plus.png'
+      class: 'service-google-plus'
     };
   }
 }

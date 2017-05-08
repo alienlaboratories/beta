@@ -47,3 +47,12 @@ export class GoogleApiUtil {
     return fetch();
   }
 }
+
+/**
+ *
+ */
+export class GoogleApiBatch {
+
+  // https://github.com/pradeep-mishra/google-batch/blob/master/index.js
+
+}

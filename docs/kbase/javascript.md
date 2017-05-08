@@ -92,7 +92,7 @@ Examples:
       return new Promise.all(values).then(function() { console.log('X'); });
     }
 
-    doAsyn(values).then(function() { console.log('Y'); });
+    doAsync(values).then(function() { console.log('Y'); });
 ~~~~
 
     - throw for exceptions; reject with values.
