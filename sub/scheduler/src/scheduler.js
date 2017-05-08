@@ -34,10 +34,23 @@ async function config(baseDir) {
 config(CONF_DIR).then(config => {
   logger.info('Scheduler =', TypeUtil.stringify(config, 2));
 
+  let idGenerator = new IdGenerator();
+  let matcher = new Matcher();
+
   // System store (to look-up credentials).
   let firebase = new Firebase(_.get(config, 'firebase'));
+
   let systemStore = new SystemStore(
-    new FirebaseItemStore(new IdGenerator(), new Matcher(), firebase.db, Database.NAMESPACE.SYSTEM, false));
+    new FirebaseItemStore(idGenerator, matcher, firebase.db, Database.NAMESPACE.SYSTEM, false));
+
+  let userDataStore =
+    new FirebaseItemStore(idGenerator, matcher, firebase.db, Database.NAMESPACE.USER, true);
+
+  let database = new Database()
+    .registerItemStore(systemStore)
+    .registerItemStore(userDataStore)
+    .registerQueryProcessor(systemStore)
+    .registerQueryProcessor(userDataStore);
 
   // Notifications.
   let pushManager = new PushManager({
@@ -46,7 +59,7 @@ config(CONF_DIR).then(config => {
 
   // Task registry.
   let tasks = {
-    'sync': new GmailSyncTask(config, pushManager, systemStore)
+    'sync': new GmailSyncTask(config, database, pushManager)
   };
 
   // Queue.
