@@ -73,7 +73,7 @@ export class ClientStore {
    */
   getClients() {
     return new Promise((resolve, reject) => {
-      resolve(Array.from(this._clientMap.values()).sort((a, b) => { return b.registered - a.registered }));
+      resolve(Array.from(this._clientMap.values()).sort((a, b) => { return b.registered - a.registered; }));
     });
   }
 
@@ -104,6 +104,7 @@ export class ClientStore {
 
   flush() {
     logger.log('Flushing stale clients...');
+
     // TODO(burdon): Flush clients with no activity in 30 days.
     return new Promise((resolve, reject) => {
       this._clientMap.forEach((client, clientId) => {

@@ -80,9 +80,6 @@ export class Connector {
       // http://dev.apollodata.com/react/queries.html#graphql-options
       options: (props) => {
         let { matcher, context, itemId } = props;
-
-        console.log('========', itemId);
-
         return {
           variables: {
             itemId
@@ -99,7 +96,7 @@ export class Connector {
         let item = reducer.getResult(data);
 
         // TODO(burdon): Item returned as null even when: a) not loading; b) item exists (e.g., after create).
-        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>', loading, errors, item);
+//      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>', loading, errors, item);
 
         return {
           errors,

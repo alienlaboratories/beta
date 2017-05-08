@@ -5,7 +5,7 @@
 import _ from 'lodash';
 import request from 'request';
 
-import { Logger } from 'alien-util';
+import { Logger, TypeUtil } from 'alien-util';
 import { AppDefs } from 'alien-client';
 
 const logger = Logger.get('push');
@@ -32,8 +32,9 @@ export class PushManager {
    * @param force
    * @return {Promise}
    */
-  sendMessage(platform, messageToken, senderId, force=false) {
+  sendMessage(platform, messageToken, senderId=undefined, force=false) {
     return new Promise((resolve, reject) => {
+      console.assert(platform && messageToken);
 
       // TODO(burdon): Query invalidation message (see CloudMessenger).
       // NOTE: key x value pairs only.
@@ -80,7 +81,7 @@ export class PushManager {
 
       // Post authenticated request to GCM/FCM endpoint.
       // https://firebase.google.com/docs/cloud-messaging/server
-      logger.log('Sending message: ' + messageToken, JSON.stringify(data));
+      logger.log('Sending message: ' + messageToken, TypeUtil.stringify(data));
       request.post(options, (error, response, body) => {
         if (error || response.statusCode !== 200) {
           throw new Error(`Messaging Error [${response.statusCode}]: ${error || response.statusMessage}`);

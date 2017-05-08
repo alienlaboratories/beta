@@ -113,7 +113,6 @@ export class ConnectionManager {
     // TODO(burdon): Configure Retry (perpetual with backoff for CRX?)
     logger.log(`Registering client [${clientId}]: (${JSON.stringify(request)})`);
     return NetUtil.postJson(requestUrl, request, headers).then(result => {
-      logger.info('Registered: ' + JSON.stringify(result));
       let { client } = result;
       _.assign(this._config, { client });
       return client;
@@ -127,17 +126,16 @@ export class ConnectionManager {
    * @returns {Promise}
    */
   unregister(async=false) {
-    if (!this.registration) {
-      return Promise.resolve();
+    let clientId = _.get(this._config, 'client.id');
+    if (!clientId) {
+      return Promise.reject('Not registered.');
     }
 
-    let requestUrl = NetUtil.getUrl('/client/unregister', this._config.server);
-
     let headers = {};
-    let clientId = _.get(this._config, 'client.id');
     AuthUtil.setAuthHeader(headers, this._authManager.idToken);
     ConnectionManager.setClientHeader(headers, clientId);
 
+    let requestUrl = NetUtil.getUrl('/client/unregister', this._config.server);
     return NetUtil.postJson(requestUrl, {}, headers, { async }).then(() => {
       logger.log('Unregistered: ' + clientId);
     });

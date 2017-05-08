@@ -75,7 +75,14 @@ export const adminRouter = (config, clientManager, options) => {
       }
 
       case 'task.sync': {
-        return queue && queue.add({ task: 'sync' }).then(ok);
+        return clientManager.getClients().then(clients => {
+          return queue && queue.add({
+            task: 'sync',
+
+            // TODO(burdon): Temp send client map (until persistent and can be accessed by scheduler.
+            clients: _.map(clients, client => _.pick(client, 'userId', 'platform', 'messageToken'))
+          }).then(ok);
+        });
       }
     }
 

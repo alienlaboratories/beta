@@ -16,9 +16,10 @@ export class GmailSyncTask {
 
   // TODO(burdon): Factor out base class.
 
-  constructor(config, systemStore) {
-    console.assert(config && systemStore);
+  constructor(config, pushManager, systemStore) {
+    console.assert(config && pushManager && systemStore);
     this._config = config;
+    this._pushManager = pushManager;
     this._systemStore = systemStore;
 
     // Gmail client.
@@ -52,8 +53,15 @@ export class GmailSyncTask {
               logger.log(`Results[${user.email}/${query}]:`,
                 TypeUtil.stringify(_.map(results, result => _.pick(result, 'from', 'title')), 2));
 
-              // TODO(burdon): Link Message to Contact.
-              // TODO(burdon): Push notify.
+              // TODO(burdon): Link Messages to Contact.
+
+              // Notify clients.
+              // TODO(burdon): Need client store (Hack send in job).
+              let client = _.find(_.get(data, 'clients'), client => client.userId === user.id);
+              if (client) {
+                let { platform, messageToken } = client;
+                this._pushManager.sendMessage(platform, messageToken);
+              }
             });
           });
         }

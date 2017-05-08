@@ -8,7 +8,7 @@ import yaml from 'node-yaml';
 
 import { Logger, TypeUtil } from 'alien-util';
 import { Database, IdGenerator, Matcher, SystemStore } from 'alien-core';
-import { Firebase, FirebaseItemStore } from 'alien-services';
+import { Firebase, FirebaseItemStore, PushManager } from 'alien-services';
 
 import { Queue } from './util/bull_queue';
 
@@ -38,13 +38,19 @@ config(CONF_DIR).then(config => {
   let systemStore = new SystemStore(
     new FirebaseItemStore(new IdGenerator(), new Matcher(), firebase.db, Database.NAMESPACE.SYSTEM, false));
 
+  // Notifications.
+  let pushManager = new PushManager({
+    serverKey: _.get(config, 'firebase.cloudMessaging.serverKey')
+  });
+
+  // Task registry.
   let tasks = {
-    'sync': new GmailSyncTask(config, systemStore)
+    'sync': new GmailSyncTask(config, pushManager, systemStore)
   };
 
+  // Queue.
   let queueConfig = _.get(config, 'alien.tasks', {});
   let queue = new Queue(queueConfig.name, queueConfig.options);
-
   queue.process(data => {
     let task = tasks[data.task];
     if (!task) {
