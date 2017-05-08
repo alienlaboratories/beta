@@ -30,12 +30,11 @@
     "alien-services": "0.0.1",
     "alien-util": "0.0.1",
     "bee-queue": "^0.3.0",
+    "bull": "^3.0.0-alpha.3",
     "lodash": "^4.17.4",
     "node-yaml": "^3.0.3"
   },
   "scripts": {
-    "redis": "BABEL_DISABLE_CACHE=1 babel-node src/testing/redis_server.js",
-    "test": "mocha --compilers js:babel-core/register src/**",
     "nodemon": "hilite nodemon --config nodemon.json --exec npm start",
     "start": "BABEL_DISABLE_CACHE=1 babel-node src/server.js"
   }

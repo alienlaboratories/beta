@@ -8,15 +8,19 @@
 
 - https://unix.stackexchange.com/questions/99023/redirect-the-default-http-port-to-an-application
 
-/etc/hosts
-
-netstat -l
+brew install tinyproxy --with-reverse
 
 https://github.com/primalmotion/sshtunnel
 
 ipconfig getifaddr en0  # ethernet
 ipconfig getifaddr en1  # wifi
 
-ifconfig
+/etc/hosts
 
-brew install tinyproxy --with-reverse
+~~~~
+  ifconfig
+
+  netstat -l
+
+  lsof -i:${PORT}
+~~~~

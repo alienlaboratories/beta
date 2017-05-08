@@ -2,7 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
-import { Queue } from '../util/queue';
+import { Queue } from '../util/bull_queue';
 
 //
 // Start Redis then:
@@ -12,6 +12,5 @@ import { Queue } from '../util/queue';
 let q = new Queue('test');
 
 q.add({ value: Date.now() }).then(job => {
-  console.log('Submitted: ' + job.id);
   q.close();
 });
