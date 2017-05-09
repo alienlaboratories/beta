@@ -3,7 +3,9 @@
 
   "watch": [
     "src/*",
+    "../api/src",
     "../core/src",
+    "../services/src",
     "../util/src"
   ],
 

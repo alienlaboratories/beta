@@ -63,7 +63,7 @@ export const adminRouter = (config, clientManager, options) => {
       res.send({});
     };
 
-    logger.log('Admin command: %s', action);
+    logger.log('Admin command:', action);
     switch (action) {
 
       case 'client.flush': {

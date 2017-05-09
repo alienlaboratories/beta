@@ -7,7 +7,7 @@ import google from 'googleapis';
 
 import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth';
 
-import { HttpError, Logger } from 'alien-util';
+import { ErrorUtil, HttpError, Logger } from 'alien-util';
 import { AuthDefs } from 'alien-core';
 
 import { OAuthProvider } from '../../auth/oauth';
@@ -69,6 +69,23 @@ export class GoogleOAuthProvider extends OAuthProvider {
     }
 
     return authClient;
+  }
+
+  /**
+   * Refreshes the access_token if the refresh_token is set.
+   * @param {google.auth.OAuth2} authClient
+   * @returns {Promise.<{tokens}>}
+   */
+  static refreshAccessToken(authClient) {
+    return new Promise((resolve, reject) => {
+      authClient.refreshAccessToken((err, tokens) => {
+        if (err) {
+          reject(ErrorUtil.error(logger.name, err));
+        } else {
+          resolve(tokens);
+        }
+      });
+    });
   }
 
   constructor(config, callbackUrl) {

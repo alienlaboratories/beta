@@ -12,7 +12,7 @@ import { Firebase, FirebaseItemStore, PushManager } from 'alien-services';
 
 import { Queue } from './util/bull_queue';
 
-import { GmailSyncTask } from './task/sync';
+import { GmailSyncTask } from './tasks/sync';
 
 // TODO(burdon): Set-up as large test.
 const CONF_DIR = path.join(__dirname, '../../../conf');
@@ -68,7 +68,7 @@ config(CONF_DIR).then(config => {
     if (!task) {
       logger.warn('Invalid task:', TypeUtil.stringify(data));
     } else {
-      task.run(data);
+      return task.execTask(data);
     }
   });
 

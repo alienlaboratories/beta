@@ -126,6 +126,10 @@ export class Logger {
     this._error = bind(console.error);
   }
 
+  get name() {
+    return this._name;
+  }
+
   get level() {
     return _.get(singleton(), this._name, _.get(singleton(), '*', Logger.debug));
   }
