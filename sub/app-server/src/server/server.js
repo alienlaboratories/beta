@@ -91,7 +91,7 @@ export class WebServer {
     await this.initPages();
     await this.initAdmin();
 
-    if (__TESTING__) {
+    if (!__PRODUCTION__) {
       await this.initTesting();
     }
 
@@ -536,9 +536,11 @@ export class WebServer {
   reset() {
     logger.log('reset');
 
-    _.each([ Database.NAMESPACE.USER, Database.NAMESPACE.SETTINGS ], namespace => {
-      this._database.getItemStore(namespace).clear();
-    });
+    if (__TESTING__) {
+      _.each([Database.NAMESPACE.USER, Database.NAMESPACE.SETTINGS], namespace => {
+        this._database.getItemStore(namespace).clear();
+      });
+    }
 
     const fs = require('fs');
     let loader = new Loader(this._database);

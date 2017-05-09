@@ -133,7 +133,9 @@ export class BaseApp {
     console.assert(this.networkInterface);
 
     // NOTE: List Item types from schema.
-    const ITEM_TYPES = [ 'User', 'Group', 'Contact', 'Document', 'Event', 'Folder', 'Place', 'Project', 'Task' ];
+    const ITEM_TYPES = [
+      'User', 'Group', 'Contact', 'Document', 'Event', 'Folder', 'Message', 'Place', 'Project', 'Task'
+    ];
 
     // http://dev.apollodata.com/react/initialization.html#fragment-matcher
     const fragmentMatcher = new IntrospectionFragmentMatcher({

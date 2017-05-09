@@ -1,0 +1,6 @@
+#
+# Global defs.
+#
+
+tasks:
+  active: false

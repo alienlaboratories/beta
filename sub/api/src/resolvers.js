@@ -230,6 +230,15 @@ export class Resolvers {
           }
         },
 
+        messages: (obj, args, context) => {
+          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', context.buckets, JSON.stringify(obj, null, 2));
+          if (obj.messages) {
+            return database.getItemStore(Database.NAMESPACE.USER).getItems(context, 'Message', obj.messages);
+          } else {
+            return [];
+          }
+        },
+
         // TODO(burdon): Assign User Contact on Login.
         user: (obj, args, context) => {
           if (obj.email) {

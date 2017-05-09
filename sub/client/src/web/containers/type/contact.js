@@ -19,6 +19,8 @@ import { Connector } from '../connector';
 
 import { TaskItemEditor, TaskItemRenderer } from './task';
 
+import './contact.less';
+
 //-------------------------------------------------------------------------------------------------
 // Components.
 //-------------------------------------------------------------------------------------------------
@@ -142,9 +144,9 @@ export class ContactCard extends React.Component {
   }
 
   render() {
-    let { config, viewer } = this.context;
+    let { viewer } = this.context;
     let { item:contact } = this.props;
-    let { user, email, thumbnailUrl, tasks } = contact;
+    let { user, email, thumbnailUrl, tasks, messages } = contact;
 
     // Default project for Viewer.
     let defaultProject = ContactCard.getProjectFromGroupsByLabel(viewer.groups, '_default');
@@ -218,6 +220,23 @@ export class ContactCard extends React.Component {
             }
           </div>
         </div>
+
+        {/* Messages. */}
+        { messages &&
+        <div className="ux-section-header">
+          <h3 className="ux-expand">Messages</h3>
+        </div>
+        }
+        { messages &&
+        <div className="ux-list ux-list-messages">
+        {_.map(messages, message => (
+          <div className="ux-list-item ux-row ux-data-row">
+            <i className="ux-icon">email</i>
+            <div key={ message.id } className="ux-text">{ message.title }</div>
+          </div>
+        ))}
+        </div>
+        }
 
         {/* Private tasks for Contact. */}
         <div className="ux-section-header">

@@ -32,8 +32,6 @@ async function config(baseDir) {
 }
 
 config(CONF_DIR).then(config => {
-  logger.info('Scheduler =', TypeUtil.stringify(config, 2));
-
   let idGenerator = new IdGenerator();
   let matcher = new Matcher();
 
@@ -73,4 +71,6 @@ config(CONF_DIR).then(config => {
       task.run(data);
     }
   });
+
+  logger.info('Scheduler =', TypeUtil.stringify(config, 2));
 });

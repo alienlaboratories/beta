@@ -8,8 +8,8 @@ import path from 'path';
 global.__ENV__            = _.get(process.env, 'NODE_ENV', 'development');
 global.__PRODUCTION__     = __ENV__ === 'production';
 global.__DEVELOPMENT__    = __ENV__ === 'development';
-global.__TESTING__        = __ENV__ === 'testing';
 global.__HOT__            = __ENV__ === 'hot';
+global.__TESTING__        = __ENV__ === 'testing' || __HOT__;
 
 const HOST = _.get(process.env, 'HOST', __PRODUCTION__ ? '0.0.0.0' : '127.0.0.1');
 const PORT = _.get(process.env, 'PORT', 3000);

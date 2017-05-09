@@ -61,8 +61,9 @@ export class GoogleMailClient {
         let subject = _.find(payload.headers, header => header.name === 'Subject').value;
 
         let item = {
-          id: 'google.com/mail/' + id,
+          namespace: NAMESPACE,
           type: 'Message',
+          id: id,
           title: subject,
           gmail_labels: labelIds,
           snippet,

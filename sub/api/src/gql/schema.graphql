@@ -108,6 +108,7 @@ type Contact implements Item {
 
   # TODO(burdon): Implement as links.
   tasks: [Task]!
+  messages: [Message]!
 }
 
 type Document implements Item {
@@ -163,6 +164,24 @@ type Folder implements Item {
 
   # JSON serialized FilterInput.
   filter: String!
+}
+
+type Message implements Item {
+  namespace: String
+  bucket: ID
+  type: String!
+  id: ID!
+  fkey: String
+  alias: String
+  created: Timestamp!
+  modified: Timestamp!
+  title: String!
+  description: String
+  labels: [String]
+
+  snippet: String
+  from: String!
+  to: [String]!
 }
 
 type Place implements Item {

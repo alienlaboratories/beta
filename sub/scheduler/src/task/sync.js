@@ -58,42 +58,61 @@ export class GmailSyncTask {
                 // Build map of senders.
                 let messagesBySender = new Map();
                 _.each(messages, message => {
-                  TypeUtil.defaultMap(messagesBySender, message.from, Array).push(message);
+                  TypeUtil.defaultMap(messagesBySender, message.from.address, Array).push(message);
                 });
 
-                // TODO(burdon): Use aync rather than nesting promises.
+                logger.log('Senders: ' + Array.from(messagesBySender.keys()));
 
-                // TODO(burdon): Get Contacts that match From.
-                let filter = { type: 'Contact' };
-                return this._database.getQueryProcessor(Database.NAMESPACE.USER)
-                  .queryItems({}, {}, filter).then(contacts => {
+                // TODO(burdon): Use async rather than nesting promises.
 
-                    let items = [];
-                    _.each(contacts, contact => {
-                      let messages = messagesBySender.get(contact.email);
-                      console.log(contact.email, '======>', messages);
-                      if (messages) {
-                        // Add messages to contact.
-                        contact.messages = _.map(messages, message => {
-                          items.push(message);
-                          return message.id;
+                // Get default group.
+                return this._database.getQueryProcessor(Database.NAMESPACE.SYSTEM).getGroups(user.id).then(groups => {
+                  let group = groups[0];
+
+                  let context = { buckets: [group.id] };
+                  logger.log('Context:', JSON.stringify(context));
+
+                  // TODO(burdon): Get Contacts that match From.
+                  let filter = { type: 'Contact' };
+                  return this._database.getQueryProcessor(Database.NAMESPACE.USER)
+                    .queryItems(context, {}, filter).then(contacts => {
+                      logger.log('Contacts:', TypeUtil.stringify(contacts));
+
+                      let items = [];
+                      _.each(contacts, contact => {
+                        let messages = messagesBySender.get(contact.email);
+                        logger.log('Messages:', contact.email, TypeUtil.stringify(messages.length));
+                        if (!_.isEmpty(messages)) {
+                          // Add messages to contact.
+                          contact.messages = _.map(messages, message => {
+                            // TODO(burdon): Which bucket should this belong to?
+                            message.bucket = group.id;
+                            items.push(message);
+                            return message.id;
+                          });
+
+                          // TODO(burdon): Add to schema.
+                          items.push(contact);
+                        }
+                      });
+
+                      logger.log('Items:', TypeUtil.stringify(items));
+                      if (_.isEmpty(items)) {
+                        return Promise.resolve();
+                      }
+
+                      return this._database.getItemStore(Database.NAMESPACE.USER)
+                        .upsertItems(context, items).then(items => {
+                          // Notify clients.
+                          // TODO(burdon): Currently ClientStore is in-memory (Hack send in job).
+                          let client = _.find(_.get(data, 'clients'), client => client.userId === user.id);
+                          if (client) {
+                            let { platform, messageToken } = client;
+                            this._pushManager.sendMessage(platform, messageToken);
+                          }
                         });
-
-                        // TODO(burdon): Add to schema.
-                        items.push(contact);
-                      }
                     });
-
-                    return this._database.getItemStore(Database.NAMESPACE.USER).upsertItems({}, items).then(items => {
-                      // Notify clients.
-                      // TODO(burdon): Currently ClientStore is in-memory (Hack send in job).
-                      let client = _.find(_.get(data, 'clients'), client => client.userId === user.id);
-                      if (client) {
-                        let { platform, messageToken } = client;
-                        this._pushManager.sendMessage(platform, messageToken);
-                      }
-                    });
-                  });
+                });
               });
             });
           }

@@ -35,7 +35,7 @@
     "node-yaml": "^3.0.3"
   },
   "scripts": {
-    "nodemon": "hilite nodemon --config nodemon.json --exec npm start",
-    "start": "BABEL_DISABLE_CACHE=1 hilite babel-node src/scheduler.js"
+    "server": "BABEL_DISABLE_CACHE=1 hilite babel-node src/scheduler.js",
+    "start": "hilite nodemon --exec npm run server"
   }
 }

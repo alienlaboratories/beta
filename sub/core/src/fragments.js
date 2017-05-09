@@ -126,6 +126,10 @@ export const Fragments = {
       email
       thumbnailUrl
 
+      messages {
+        ...ItemMetaFragment
+      }
+      
       tasks {
         ...ItemMetaFragment
         status
