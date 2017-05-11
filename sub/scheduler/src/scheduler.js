@@ -12,7 +12,8 @@ import { Firebase, FirebaseItemStore, PushManager } from 'alien-services';
 
 import { Queue } from './util/bull_queue';
 
-import { GmailSyncTask } from './tasks/sync';
+import { GoogleCalendarSyncTask } from './tasks/sync/google_calendar';
+import { GoogleMailSyncTask } from './tasks/sync/google_mail';
 
 // TODO(burdon): Set-up as large test.
 const CONF_DIR = path.join(__dirname, '../../../conf');
@@ -57,19 +58,26 @@ config(CONF_DIR).then(config => {
 
   // Task registry.
   let tasks = {
-    'sync': new GmailSyncTask(config, database, pushManager)
+    sync: {
+      google: {
+        calendar:   new GoogleCalendarSyncTask(config, database, pushManager),
+        mail:       new GoogleMailSyncTask(config, database, pushManager),
+      }
+    }
   };
 
   // Queue.
   let queueConfig = _.get(config, 'alien.tasks', {});
   let queue = new Queue(queueConfig.name, queueConfig.options);
+
   queue.process(data => {
-    let task = tasks[data.task];
-    if (!task) {
-      logger.warn('Invalid task:', TypeUtil.stringify(data));
-    } else {
-      return task.execTask(data);
+    let { task } = data;
+    let taskHandler = _.get(tasks, task);
+    if (!taskHandler) {
+      throw new Error('Invalid task:', TypeUtil.stringify(data));
     }
+
+    return taskHandler.execTask(data);
   });
 
   logger.info('Scheduler =', TypeUtil.stringify(config, 2));

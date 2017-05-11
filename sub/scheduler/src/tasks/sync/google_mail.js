@@ -8,14 +8,14 @@ import { Logger, TypeUtil } from 'alien-util';
 import { Database } from 'alien-core';
 import { GoogleMailClient, GoogleOAuthProvider } from 'alien-services';
 
-import { Task } from '../task';
+import { Task } from '../../task';
 
 const logger = Logger.get('sync');
 
 /**
  * Sync email.
  */
-export class GmailSyncTask extends Task {
+export class GoogleMailSyncTask extends Task {
 
   constructor(config, database, pushManager) {
     super();
@@ -29,11 +29,6 @@ export class GmailSyncTask extends Task {
     this._client = new GoogleMailClient();
   }
 
-  /**
-   *
-   * @param data
-   * @returns {Promise.<Array|Object>}
-   */
   async execTask(data) {
 
     /**
@@ -134,6 +129,7 @@ export class GmailSyncTask extends Task {
       }
     };
 
+    // TODO(burdon): Pass user ids in task.
     // TODO(burdon): Don't Sync all users.
     let users = await this._database.getQueryProcessor(Database.NAMESPACE.SYSTEM).queryItems({}, {}, { type: 'User' });
 

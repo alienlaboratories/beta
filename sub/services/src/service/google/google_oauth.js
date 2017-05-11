@@ -97,6 +97,7 @@ export class GoogleOAuthProvider extends OAuthProvider {
 
   //
   // OAuthProvider interface.
+  // https://developers.google.com/identity/protocols/googlescopes
   //
 
   get scopes() {

@@ -15,7 +15,7 @@ const logger = Logger.get('admin');
 /**
  * Admin endpoints.
  */
-export const adminRouter = (config, clientManager, options) => {
+export const adminRouter = (config, systemStore, clientManager, options) => {
   console.assert(config && clientManager && options);
   let router = express.Router();
 
@@ -31,15 +31,6 @@ export const adminRouter = (config, clientManager, options) => {
 
   router.get('/', isAuthenticated('/home', true), (req, res) => {
     return clientManager.getClients().then(clients => {
-      res.render('admin/admin', {
-        testing: __TESTING__,
-        clients
-      });
-    });
-  });
-
-  router.get('/config', isAuthenticated('/home', true), (req, res) => {
-    return clientManager.getClients().then(clients => {
       res.render('admin/config', {
         env: options.env,
         config,
@@ -48,8 +39,19 @@ export const adminRouter = (config, clientManager, options) => {
     });
   });
 
-  router.get('/tasks', isAuthenticated('/home', true), (req, res) => {
-    res.render('admin/tasks');
+  router.get('/clients', isAuthenticated('/home', true), (req, res) => {
+    return clientManager.getClients().then(clients => {
+      res.render('admin/clients', {
+        testing: __TESTING__,
+        clients
+      });
+    });
+  });
+
+  router.get('/users', isAuthenticated('/home', true), (req, res, next) => {
+    return systemStore.queryItems({}, {}, { type: 'User' }).then(users => {
+      res.render('admin/users', { users });
+    }).catch(next);
   });
 
   //
@@ -74,10 +76,16 @@ export const adminRouter = (config, clientManager, options) => {
         return clientManager.invalidateClient(clientId).then(ok);
       }
 
-      case 'task.sync': {
+      case 'task': {
+        let { task } = req.body;
+
+        // TODO(burdon): List users.
+        // TODO(burdon): Send userIds and client maps with task.
+        // let users = await this._database.getQueryProcessor(Database.NAMESPACE.SYSTEM).queryItems({}, {}, { type: 'User' });
+
         return clientManager.getClients().then(clients => {
           return queue && queue.add({
-            task: 'sync',
+            task,
 
             // TODO(burdon): Temp send client map (until persistent and can be accessed by scheduler.
             clients: _.map(clients, client => _.pick(client, 'userId', 'platform', 'messageToken'))

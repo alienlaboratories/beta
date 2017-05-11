@@ -37,6 +37,7 @@ import {
   AlienExtractorServiceProvider,
 
   GoogleOAuthProvider,
+  GoogleCalendarServiceProvider,
   GoogleDriveQueryProcessor,
   GoogleDriveServiceProvider,
   GoogleMailServiceProvider,
@@ -194,6 +195,7 @@ export class WebServer {
 
     // Service registry.
     this._serviceRegistry = new ServiceRegistry()
+      .registerProvider(new GoogleCalendarServiceProvider(this._googleAuthProvider))
       .registerProvider(new GoogleDriveServiceProvider(this._googleAuthProvider))
       .registerProvider(new GoogleMailServiceProvider(this._googleAuthProvider))
       .registerProvider(new GooglePlusServiceProvider(this._googleAuthProvider))
@@ -422,7 +424,7 @@ export class WebServer {
 
     // TODO(burdon): Permissions.
     // Admin pages and services.
-    this._app.use('/admin', adminRouter(this._config, this._clientManager, {
+    this._app.use('/admin', adminRouter(this._config, this._systemStore, this._clientManager, {
 
       env: ENV,
 

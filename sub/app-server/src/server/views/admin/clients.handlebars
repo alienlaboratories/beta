@@ -1,6 +1,6 @@
 {{#section 'header'}}
   <div class="site-admin">
-    <h1>Admin</h1>
+    <h1>Clients</h1>
   </div>
 
   <div class="site-toolbar">
@@ -23,23 +23,6 @@
 {{/section}}
 
 {{#section 'body'}}
-  <div class="site-panel">
-    <div class="site-toolbar">
-      <div>
-        <a class="site-button" onclick="flush()">Flush Clients</a>
-        <a class="site-button" onclick="schedule()">Test Scheduler</a>
-
-        {{#if testing }}
-        <a class="site-button" onclick="dumpDatabase()">Dump Database</a>
-        <a class="site-button" onclick="resetDatabase()">Reset Database</a>
-        {{/if}}
-      </div>
-
-      <div>
-        <label>Auto-update <input id="auto-update" type="checkbox" checked/></label>
-      </div>
-    </div>
-  </div>
 
   <div class="site-panel">
     <h2>Clients</h2>
@@ -71,6 +54,24 @@
       </table>
     </div>
   </div>
+
+  <div class="site-panel">
+    <div class="site-toolbar">
+      <div>
+        <a class="site-button" onclick="flush()">Flush Clients</a>
+
+        {{#if testing }}
+        <a class="site-button" onclick="dumpDatabase()">Dump Database</a>
+        <a class="site-button" onclick="resetDatabase()">Reset Database</a>
+        {{/if}}
+      </div>
+
+      <div>
+        <label>Auto-update <input id="auto-update" type="checkbox" checked/></label>
+      </div>
+    </div>
+  </div>
+
 {{/section}}
 
 {{#section 'script'}}
@@ -104,10 +105,6 @@
 
     function invalidate(clientId) {
       Site.postJson('/admin/api', { action: 'client.invalidate', clientId: clientId });
-    }
-
-    function schedule() {
-      Site.postJson('/admin/api', { action: 'schedule.test' });
     }
 
     {{#if testing }}

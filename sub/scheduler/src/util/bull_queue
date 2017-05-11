@@ -45,14 +45,14 @@ export class Queue {
       logger.info('Ready'); // TODO(burdon): Not called.
     });
     this._queue.on('error', (err) => {
-      logger.error('Error', ErrorUtil.message(err));
+      logger.error('Error:', ErrorUtil.message(err));
     });
     this._queue.on('failed', (job, err) => {
-      logger.error(`Failed[${job.id}]`, ErrorUtil.message(err), TypeUtil.stringify(job.data));
+      logger.error(`Failed[${job.id}]:`, ErrorUtil.message(err), TypeUtil.stringify(job.data));
       logger.error(err);
     });
     this._queue.on('completed', (job, result) => {
-      logger.log(`Complete[${job.id}]`, TypeUtil.stringify(result));
+      logger.log(`Complete[${job.id}]:`, TypeUtil.stringify(result));
     });
   }
 
@@ -72,15 +72,13 @@ export class Queue {
   /**
    * Sets the job processor.
    *
-   * @param f
+   * @param {Function.<{Data}, {Job}>} handler
    * @returns {Queue}
    */
-  process(f) {
+  process(handler) {
     this._queue.process(job => {
-      logger.log(`Processing[${job.id}]`, TypeUtil.stringify(job.data));
-      return Promise.resolve(f(job.data, job)).then(data => {
-        return data;
-      });
+      logger.log(`Processing[${job.id}]:`, TypeUtil.stringify(job.data));
+      return Promise.resolve(handler(job.data, job));
     });
 
     return this;

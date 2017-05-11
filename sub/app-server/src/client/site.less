@@ -42,6 +42,9 @@ table td {
   font-family: Monaco, monospace;
   vertical-align: top;
 }
+table td i.site-icon {
+  font-size: 16px;
+}
 table th {
   padding-right: 8px;
   text-align: left;
@@ -53,6 +56,14 @@ div.site-center {
   display: flex;
   flex-direction: row;
   justify-content: center;
+}
+
+i.site-icon {
+  color: #333;
+}
+i.site-icon:hover {
+  cursor: pointer;
+  color: #999;
 }
 
 /**
@@ -222,8 +233,8 @@ div.site-services .site-service {
   display: flex;
   flex-direction: column;
   margin: 8px;
-  width: 200px;
-  height: 200px;
+  width: 220px;
+  height: 220px;
   background-color: white;
   box-shadow: 2px 2px 8px #CCC;
 }
@@ -246,23 +257,26 @@ div.site-services .site-service > div.site-body a {
   color: cornflowerblue;
 }
 
+div.site-services .site-service img.service-google-calendar {
+  content: url("https://www.gstatic.com/mobilesdk/160505_mobilesdk/discoverycards/1x/analytics.png");
+}
 div.site-services .site-service img.service-google-drive {
-  content: url("https://www.gstatic.com/mobilesdk/160921_mobilesdk/discoverycards/2x/awrds.png");
+  content: url("https://www.gstatic.com/mobilesdk/160921_mobilesdk/discoverycards/1x/awrds.png");
 }
 div.site-services .site-service img.service-google-mail {
-  content: url("https://www.gstatic.com/mobilesdk/160921_mobilesdk/discoverycards/2x/cloudmessaging.png");
+  content: url("https://www.gstatic.com/mobilesdk/160921_mobilesdk/discoverycards/1x/cloudmessaging.png");
 }
 div.site-services .site-service img.service-google-plus {
-  content: url("https://www.gstatic.com/mobilesdk/160505_mobilesdk/discoverycards/2x/auth.png");
+  content: url("https://www.gstatic.com/mobilesdk/160505_mobilesdk/discoverycards/1x/auth.png");
 }
 
 div.site-services .site-service img.service-slack {
-  content: url("https://www.gstatic.com/mobilesdk/160505_mobilesdk/discoverycards/2x/notifications.png");
+  content: url("https://www.gstatic.com/mobilesdk/160505_mobilesdk/discoverycards/1x/notifications.png");
 }
 
 div.site-services .site-service img.service-analyzer {
-  content: url("https://www.gstatic.com/mobilesdk/170215_mobilesdk/discoveryCards/2x/functions.png");
+  content: url("https://www.gstatic.com/mobilesdk/170215_mobilesdk/discoveryCards/1x/functions.png");
 }
 div.site-services .site-service img.service-extractor {
-  content: url("https://www.gstatic.com/mobilesdk/160921_mobilesdk/discoverycards/2x/appindexing.png");
+  content: url("https://www.gstatic.com/mobilesdk/160921_mobilesdk/discoverycards/1x/appindexing.png");
 }

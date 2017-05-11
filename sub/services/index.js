@@ -20,6 +20,8 @@ export * from './src/service/alien/analyzer';
 export * from './src/service/alien/extractor';
 
 export * from './src/service/google/google_oauth';
+
+export * from './src/service/google/google_calendar';
 export * from './src/service/google/google_drive';
 export * from './src/service/google/google_mail';
 export * from './src/service/google/google_plus';
