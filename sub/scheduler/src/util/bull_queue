@@ -22,8 +22,8 @@ export class Queue {
     redis: {
       db: 0,
 
-      // NOTE Called twice (multiple connections?)
-      // https://github.com/OptimalBits/bull/issues/529 [burdon]
+      // NOTE Called for each connection.
+      // https://github.com/luin/ioredis#auto-reconnect
       retryStrategy: (attempt) => {
         logger.warn('Redis connection retry:', attempt);
 
@@ -33,12 +33,18 @@ export class Queue {
     }
   };
 
+  static TEST_OPS = {
+    redis: {
+      retryStrategy: (attempt) => false
+    }
+  };
+
   constructor(name, options) {
 
     // NOTE: ioredis (not redis).
     // https://github.com/luin/ioredis/blob/master/API.md
     // https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue
-    this._queue = new BullQueue(name, _.defaults(options, Queue.DEF_OPTS));
+    this._queue = new BullQueue(name, _.defaultsDeep(options, Queue.DEF_OPTS));
 
     // https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#events
     this._queue.on('ready', () => {

@@ -253,10 +253,10 @@ const OptionsComponentWithRedux = connect(mapStateToProps, mapDispatchToProps)(O
 //
 //-------------------------------------------------------------------------------------------------
 
-const ListReducer = (query, path, active=true) => (previousResult, action, variables) => {
+const ListReducer = (query, path, options={}) => (previousResult, action, variables) => {
 
   // Isolate mutations.
-  if (action.type === 'APOLLO_MUTATION_RESULT' && action.operationName === TestMutationName && active) {
+  if (action.type === 'APOLLO_MUTATION_RESULT' && action.operationName === TestMutationName && options.reducer) {
     let { upsertItems } = action.result.data;
     let currentItems = _.get(previousResult, path);
 
@@ -359,7 +359,7 @@ const ListComponentWithApollo = compose(
 //      fetchPolicy: 'network-only',
 
         // http://dev.apollodata.com/react/cache-updates.html#resultReducers
-        reducer: ListReducer(TestQuery, 'search.items', options.reducer)
+        reducer: ListReducer(TestQuery, 'search.items', options)
       };
     },
 

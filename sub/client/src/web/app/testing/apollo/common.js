@@ -42,8 +42,6 @@ export const TestQuery = gql`
   }
 `;
 
-export const TestQueryName = _.get(TestQuery, 'definitions[0].name.value');
-
 export const TestMutation = gql`
   mutation UpsertItemsMutation($mutations: [ItemMutationInput]!) {
     upsertItems(mutations: $mutations) {
@@ -55,4 +53,6 @@ export const TestMutation = gql`
   }
 `;
 
-export const TestMutationName = _.get(TestMutation, 'definitions[0].name.value');
+export const ProjectsQueryName  = _.get(ProjectsQuery,  'definitions[0].name.value');
+export const TestQueryName      = _.get(TestQuery,      'definitions[0].name.value');
+export const TestMutationName   = _.get(TestMutation,   'definitions[0].name.value');

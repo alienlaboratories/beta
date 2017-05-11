@@ -3,20 +3,21 @@
 //
 
 import { TypeUtil } from 'alien-util';
-import { ItemUtil, Transforms } from 'alien-core';
+import { ID, IdGenerator, ItemUtil, Transforms } from 'alien-core';
 
-import { TestMutationName, TestQueryName } from './common';
+import { TestMutationName, TestQueryName, ProjectsQueryName } from './common';
 
-export const ID = type => type + '/' + _.uniqueId('I-');
+const idGenerator = new IdGenerator();
 
 //-------------------------------------------------------------------------------------------------
 // Test Server.
 //-------------------------------------------------------------------------------------------------
 
 const ITEMS = _.times(5, i => ({
-  type: 'Task',
-  id: ID('Task'),
-  title: 'Task ' + (i + 1)
+  bucket:   'Group-0',
+  type:     'Task',
+  id:       idGenerator.createId(),
+  title:    'Task ' + (i + 1)
 }));
 
 class Database {
@@ -76,7 +77,7 @@ export class TestingNetworkInterface {
     console.info(`REQ[${operationName}:${count}]`, TypeUtil.stringify(variables));
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        this.processQuery(operationName, query, variables)
+        Promise.resolve(this.processQuery(operationName, query, variables))
 
           .then(response => {
             console.info(`RES[${operationName}:${count}]`, TypeUtil.stringify(response));
@@ -96,7 +97,37 @@ export class TestingNetworkInterface {
     switch (operationName) {
 
       //
-      // Query
+      // ProjectsQuer
+      //
+      case ProjectsQueryName: {
+        return {
+          data: {
+            search: {
+              __typename: 'SeachResult',
+              items: [
+                {
+                  __typename: 'Project',
+
+                  bucket: 'Group-0',
+                  id: 'P-0',
+                  type: 'Project',
+                  title: 'Default Project',
+                  labels: ['_default'],
+                  group: {
+                    __typename: 'Group',
+
+                    id: 'Group-0',
+                    title: 'Default Group'
+                  }
+                }
+              ]
+            }
+          }
+        };
+      }
+
+      //
+      // TestQuery
       //
       case TestQueryName: {
         return this.database.queryItems().then(items => {
@@ -116,7 +147,7 @@ export class TestingNetworkInterface {
       }
 
       //
-      // Mutation
+      // TestMutation
       //
       case TestMutationName: {
         return this.database.queryItems().then(items => {
@@ -126,15 +157,20 @@ export class TestingNetworkInterface {
 
           let itemMap = ItemUtil.createItemMap(items);
           _.each(mutations, mutation => {
-            let { itemId } = mutation;
-            let item = itemMap.get(itemId);
+            let { bucket, itemId } = mutation;
+            let { id:localId } = ID.fromGlobalId(itemId);
+            let item = itemMap.get(localId);
             if (!item) {
               item = {
+                bucket,
                 type: itemId.substring(0, itemId.indexOf('/')),
-                id: itemId
+                id: localId
               };
+
+              itemMap.set(localId, item);
             }
 
+            // Apply transforms.
             let upsertItem = Transforms.applyObjectMutations(item, mutation.mutations);
 
             // Important for client-side cache-normalization.
