@@ -5,7 +5,7 @@
 import { TypeUtil } from 'alien-util';
 import { ID, IdGenerator, ItemUtil, Transforms } from 'alien-core';
 
-import { TestMutationName, TestQueryName, ProjectsQueryName } from './common';
+import { UpsertItemsMutationName, ProjectsQueryName } from './common';
 
 const idGenerator = new IdGenerator();
 
@@ -97,49 +97,35 @@ export class TestingNetworkInterface {
     switch (operationName) {
 
       //
-      // ProjectsQuer
-      //
-      case ProjectsQueryName: {
-        return {
-          data: {
-            search: {
-              __typename: 'SeachResult',
-              items: [
-                {
-                  __typename: 'Project',
-
-                  bucket: 'Group-0',
-                  id: 'P-0',
-                  type: 'Project',
-                  title: 'Default Project',
-                  labels: ['_default'],
-                  group: {
-                    __typename: 'Group',
-
-                    id: 'Group-0',
-                    title: 'Default Group'
-                  }
-                }
-              ]
-            }
-          }
-        };
-      }
-
-      //
       // TestQuery
       //
-      case TestQueryName: {
+      case ProjectsQueryName: {
         return this.database.queryItems().then(items => {
           return {
             data: {
               search: {
-                __typename: 'SearchResult', // NOTE: Must be present in result.
+                __typename: 'SeachResult',
+                items: [
+                  {
+                    __typename: 'Project',
 
-                items: _.map(items, item => ({
-                  __typename: item.type,
-                  ...item
-                }))
+                    bucket: 'Group-0',
+                    id: 'P-0',
+                    type: 'Project',
+                    title: 'Default Project',
+                    labels: ['_default'],
+                    group: {
+                      __typename: 'Group',
+
+                      id: 'Group-0',
+                      title: 'Default Group'
+                    },
+                    tasks: _.map(items, item => ({
+                      __typename: item.type,
+                      ...item
+                    }))
+                  }
+                ]
               }
             }
           };
@@ -149,7 +135,7 @@ export class TestingNetworkInterface {
       //
       // TestMutation
       //
-      case TestMutationName: {
+      case UpsertItemsMutationName: {
         return this.database.queryItems().then(items => {
           let { mutations } = variables;
 

@@ -19,17 +19,27 @@ import { AuthDefs, ID, IdGenerator, ItemUtil, MutationUtil, Transforms } from 'a
 
 import { ReactUtil } from '../../../util/index';
 
-import { ProjectsQuery, TestMutation, TestMutationName, TestQuery, TestQueryName } from './common';
+import { ProjectsQuery, ProjectsQueryName, UpsertItemsMutation, UpsertItemsMutationName } from './common';
 import { TestingNetworkInterface } from './testing';
 
 import './apollo.less';
 
 const idGenerator = new IdGenerator();
 
-const filter = { type: 'Task', count: 100 };
+const ProjectFilter = {
+  type: 'Project',
+  expr: {
+    comp: 'IN',
+    field: 'labels',
+    value: {
+      string: '_default'
+    }
+  }
+};
+
+// TODO(burdon): Link mutations (batch 2 items). Query Tasks for Project (add to Project).
 
 // TODO(burdon): Network delay for server network interface.
-// TODO(burdon): Link mutations (batch 2 items).
 // TODO(burdon): Subscriptions.
 
 //-------------------------------------------------------------------------------------------------
@@ -81,7 +91,7 @@ class ListComponent extends React.Component {
     let text = $(input).val();
     if (text) {
       updateItem(item, bucket, [
-        MutationUtil.createFieldMutation('type', 'string', filter.type),
+        MutationUtil.createFieldMutation('type', 'string', 'Task'),
         MutationUtil.createFieldMutation('title', 'string', text)
       ]);
     }
@@ -253,25 +263,45 @@ const OptionsComponentWithRedux = connect(mapStateToProps, mapDispatchToProps)(O
 //
 //-------------------------------------------------------------------------------------------------
 
-const ListReducer = (query, path, options={}) => (previousResult, action, variables) => {
+const ProjectReducer = (path, options={}) => (previousResult, action, variables) => {
+  const tasksReducer = ListReducer(path + '[0].tasks', options);
 
   // Isolate mutations.
-  if (action.type === 'APOLLO_MUTATION_RESULT' && action.operationName === TestMutationName && options.reducer) {
+  if (action.type === 'APOLLO_MUTATION_RESULT' &&
+    action.operationName === UpsertItemsMutationName && options.reducer) {
+
+    // Compound reducer.
+    return tasksReducer(previousResult, action, variables);
+  }
+
+  return previousResult;
+};
+
+const ListReducer = (path, options={}) => (previousResult, action, variables) => {
+
+  // Isolate mutations.
+  if (action.type === 'APOLLO_MUTATION_RESULT' &&
+    action.operationName === UpsertItemsMutationName && options.reducer) {
     let { upsertItems } = action.result.data;
     let currentItems = _.get(previousResult, path);
 
+    // TODO(burdon): Test belongs to this list (project mutation should happen first)? Batch?
+
     // Append.
-    // TODO(burdon): Sort order.
     // TODO(burdon): Test for removal (matcher).
+    // TODO(burdon): Sort order.
     let appendItems =
       _.filter(upsertItems, item => !_.find(currentItems, currentItem => currentItem.id === item.id));
 
-    // https://github.com/kolodny/immutability-helper
-    let tranform = _.set({}, path, {
-      $push: appendItems
-    });
+    if (!_.isEmpty(appendItems)) {
 
-    return update(previousResult, tranform);
+      // https://github.com/kolodny/immutability-helper
+      let tranform = _.set({}, path, {
+        $push: appendItems
+      });
+
+      return update(previousResult, tranform);
+    }
   }
 
   return previousResult;
@@ -312,54 +342,25 @@ const ListComponentWithApollo = compose(
     };
   }),
 
+
   // http://dev.apollodata.com/react/queries.html
   graphql(ProjectsQuery, {
-    options: (props) => {
-      const ProjectFilter = {
-        type: 'Project',
-        expr: {
-          comp: 'IN',
-          field: 'labels',
-          value: {
-            string: '_default'
-          }
-        }
-      };
-
-      return {
-        variables: {
-          filter: ProjectFilter
-        }
-      };
-    },
-
-    props: ({ ownProps, data }) => {
-      let { search } = data;
-
-      return {
-        project: _.get(search, 'items[0]')
-      };
-    }
-  }),
-
-  // http://dev.apollodata.com/react/queries.html
-  graphql(TestQuery, {
 
     // http://dev.apollodata.com/react/queries.html#graphql-options
     options: (props) => {
       let { options } = props;
-      console.log('graphql.options:', TestQueryName);
+      console.log('graphql.options:', ProjectsQueryName);
 
       return {
         variables: {
-          filter
+          filter: ProjectFilter
         },
 
         // http://dev.apollodata.com/react/api-queries.html#graphql-config-options-fetchPolicy
 //      fetchPolicy: 'network-only',
 
         // http://dev.apollodata.com/react/cache-updates.html#resultReducers
-        reducer: ListReducer(TestQuery, 'search.items', options)
+        reducer: ProjectReducer('search.items', options)
       };
     },
 
@@ -369,15 +370,17 @@ const ListComponentWithApollo = compose(
     // http://dev.apollodata.com/react/queries.html#graphql-props-option
     props: ({ ownProps, data }) => {
       let { errors, loading, search } = data;
-      let items = _.get(search, 'items');
-      console.log('graphql.props:', TestQueryName, loading ? 'loading...' : TypeUtil.stringify(search));
+      console.log('graphql.props:', ProjectsQueryName, loading ? 'loading...' : TypeUtil.stringify(search));
 
-      // TODO(burdon): updateQuery.
+      let project = _.get(search, 'items[0]');
+      let items = _.get(project, 'tasks');
+
       // Decouple Apollo query/result from component.
       return {
         errors,
         loading,
 
+        project,
         items,
 
         refetch: () => {
@@ -389,7 +392,7 @@ const ListComponentWithApollo = compose(
   }),
 
   // http://dev.apollodata.com/react/mutations.html
-  graphql(TestMutation, {
+  graphql(UpsertItemsMutation, {
 
     options: {
 
@@ -463,26 +466,23 @@ const ListComponentWithApollo = compose(
 const SimpleListComponentWithApollo = compose(
 
   // http://dev.apollodata.com/react/queries.html
-  graphql(TestQuery, {
+  graphql(ProjectsQuery, {
 
     options: (props) => {
       return {
         variables: {
-          filter
-        },
-
-        reducer: ListReducer(TestQuery, 'search.items')
+          filter: ProjectFilter
+        }
       };
     },
 
     props: ({ ownProps, data }) => {
       let { errors, loading, search } = data;
-      let items = _.get(search, 'items');
 
       return {
         errors,
         loading,
-        items
+        items: _.get(search, 'items[0].tasks', [])
       };
     }
   })

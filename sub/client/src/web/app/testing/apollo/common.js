@@ -23,26 +23,20 @@ export const ProjectsQuery = gql`
             id
             title
           }
+
+          tasks {
+            bucket
+            type
+            id
+            title
+          }
         }
       }
     }
   }
 `;
 
-export const TestQuery = gql`
-  query TestQuery($filter: FilterInput) {
-    search(filter: $filter) {
-      items {
-        bucket
-        type
-        id
-        title
-      }
-    }
-  }
-`;
-
-export const TestMutation = gql`
+export const UpsertItemsMutation = gql`
   mutation UpsertItemsMutation($mutations: [ItemMutationInput]!) {
     upsertItems(mutations: $mutations) {
       bucket
@@ -53,6 +47,5 @@ export const TestMutation = gql`
   }
 `;
 
-export const ProjectsQueryName  = _.get(ProjectsQuery,  'definitions[0].name.value');
-export const TestQueryName      = _.get(TestQuery,      'definitions[0].name.value');
-export const TestMutationName   = _.get(TestMutation,   'definitions[0].name.value');
+export const ProjectsQueryName        = _.get(ProjectsQuery,        'definitions[0].name.value');
+export const UpsertItemsMutationName  = _.get(UpsertItemsMutation,  'definitions[0].name.value');
