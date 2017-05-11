@@ -2,6 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
+import * as fs from 'fs';
 import _ from 'lodash';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
@@ -544,7 +545,6 @@ export class WebServer {
       });
     }
 
-    const fs = require('fs');
     let loader = new Loader(this._database);
     return Promise.all([
       // TODO(burdon): Testing only?

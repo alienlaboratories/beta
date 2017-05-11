@@ -1,0 +1,25 @@
+{
+  "name": "alien-experimental-aws",
+  "version": "0.0.1",
+  "description": "AWS tests.",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com:alienlabs/beta.git"
+  },
+  "main": "index.js",
+  "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "dynamodb-local": "0.0.18"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.49.0",
+    "lodash": "^4.17.4"
+  },
+  "jest": {
+    "verbose": true
+  },
+  "scripts": {}
+}

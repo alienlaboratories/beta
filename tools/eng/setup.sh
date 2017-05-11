@@ -38,6 +38,7 @@ npm install -g karma-cli
 npm install -g mocha
 npm install -g nodemon
 npm install -g npm-workspace
+npm install -g serverless
 npm install -g webpack
 
 pip install --upgrade virtualenv

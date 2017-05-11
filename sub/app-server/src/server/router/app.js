@@ -82,6 +82,8 @@ export const appRouter = (config, clientManager, options) => {
 
         env: __ENV__,
 
+        query: req.query,
+
         app: {
           version: Const.APP_VERSION
         },

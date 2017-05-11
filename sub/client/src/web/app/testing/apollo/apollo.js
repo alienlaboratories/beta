@@ -2,6 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
+import _ from 'lodash';
 import React from 'react';
 import { connect } from 'react-redux';
 import { createMemoryHistory, Route, Router } from 'react-router';
@@ -10,17 +11,26 @@ import thunk from 'redux-thunk';
 import { routerMiddleware, routerReducer } from 'react-router-redux';
 import { graphql, ApolloProvider } from 'react-apollo';
 import ApolloClient from 'apollo-client';
-import gql from 'graphql-tag';
+import { createNetworkInterface } from 'apollo-client';
 import update from 'immutability-helper';
 
 import { TypeUtil } from 'alien-util';
-import { ItemUtil, MutationUtil, Transforms } from 'alien-core';
+import { AuthDefs, ID, IdGenerator, ItemUtil, MutationUtil, Transforms } from 'alien-core';
 
 import { ReactUtil } from '../../../util/index';
 
+import { ProjectsQuery, TestMutation, TestMutationName, TestQuery, TestQueryName } from './common';
+import { TestingNetworkInterface } from './testing';
+
 import './apollo.less';
 
-export const ID = type => type + '/' + _.uniqueId('I-');
+const idGenerator = new IdGenerator();
+
+const filter = { type: 'Task', count: 100 };
+
+// TODO(burdon): Network delay for server network interface.
+// TODO(burdon): Link mutations (batch 2 items).
+// TODO(burdon): Subscriptions.
 
 //-------------------------------------------------------------------------------------------------
 // React Components.
@@ -65,11 +75,13 @@ class ListComponent extends React.Component {
   }
 
   handleUpdate(item, event) {
-    let { updateItem } = this.props;
+    let { project, updateItem } = this.props;
+    let bucket = _.get(project, 'group.id');
     let input = this.refs['INPUT/' + item.id];
     let text = $(input).val();
     if (text) {
-      updateItem(item, [
+      updateItem(item, bucket, [
+        MutationUtil.createFieldMutation('type', 'string', filter.type),
         MutationUtil.createFieldMutation('title', 'string', text)
       ]);
     }
@@ -78,10 +90,12 @@ class ListComponent extends React.Component {
   }
 
   handleInsert(event) {
-    let { insertItem } = this.props;
+    let { project, insertItem } = this.props;
     let { text } = this.state;
+    let bucket = _.get(project, 'group.id');
     if (text) {
-      insertItem('Task', [
+      insertItem('Task', bucket, [
+        MutationUtil.createFieldMutation('bucket', 'string', bucket),
         MutationUtil.createFieldMutation('title', 'string', text)
       ]);
 
@@ -100,33 +114,38 @@ class ListComponent extends React.Component {
   render() {
     return ReactUtil.render(this, () => {
       let { items, text } = this.state;
-
       console.log('RootComponent.render', _.size(items));
+
       return (
         <div className="test-component">
-          <div>Result[{ ++this.count }]</div>
 
-          <div className="test-list">
-            {_.map(items, item => (
-              <div key={ item.id }>
-                <input ref={ 'INPUT/' + item.id } type="text" data={ item.id } value={ item.title } spellCheck={ false }
-                       onChange={ this.handleTextChange.bind(this) }/>
+          <div className="test-header">
+            <input ref="INPUT_NEW" type="text" value={ text } autoFocus={ true } spellCheck={ false }
+                   onChange={ this.handleTextChange.bind(this) }/>
 
-                <i className="material-icons" onClick={ this.handleUpdate.bind(this, item) }>save</i>
-              </div>
-            ))}
+            <i className="material-icons" onClick={ this.handleInsert.bind(this) }>add</i>
+          </div>
 
-            <div>
-              <input ref="INPUT_NEW" type="text" value={ text } autoFocus={ true } spellCheck={ false }
-                     onChange={ this.handleTextChange.bind(this) }/>
+          <div className="test-body">
+            <div className="test-list">
 
-              <i className="material-icons" onClick={ this.handleInsert.bind(this) }>add</i>
+              {_.map(items, item => (
+                <div className="test-list-item" key={ item.id }>
+                  <input ref={ 'INPUT/' + item.id } type="text" data={ item.id } value={ item.title } spellCheck={ false }
+                         onChange={ this.handleTextChange.bind(this) }/>
+
+                  <i className="material-icons" onClick={ this.handleUpdate.bind(this, item) }>save</i>
+                </div>
+              ))}
+
             </div>
           </div>
 
-          <div>
+          <div className="test-footer">
+            <div className="test-expand">Render: { ++this.count }</div>
             <button onClick={ this.handleRefetch.bind(this) }>Refetch</button>
           </div>
+
         </div>
       );
     });
@@ -141,9 +160,11 @@ class SimpleListComponent extends React.Component {
 
       return (
         <div className="test-component">
-          {_.map(items, item => (
-            <div key={ item.id }>{ item.title }</div>
-          ))}
+          <div className="test-body">
+            {_.map(items, item => (
+              <div key={ item.id }>{ item.title }</div>
+            ))}
+          </div>
         </div>
       );
     });
@@ -211,36 +232,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 };
 
 const OptionsComponentWithRedux = connect(mapStateToProps, mapDispatchToProps)(OptionsComponent);
-
-//-------------------------------------------------------------------------------------------------
-// GQL Queries and Mutations.
-//-------------------------------------------------------------------------------------------------
-
-export const TestQuery = gql`
-  query TestQuery($filter: FilterInput) {
-    search(filter: $filter) {
-      items {
-        type
-        id
-        title
-      }
-    }
-  }
-`;
-
-const TestQueryName = _.get(TestQuery, 'definitions[0].name.value');
-
-export const TestMutation = gql`
-  mutation UpsertItemsMutation($mutations: [ItemMutationInput]!) {
-    upsertItems(mutations: $mutations) {
-      type
-      id
-      title
-    }
-  }
-`;
-
-const TestMutationName = _.get(TestMutation, 'definitions[0].name.value');
 
 //-------------------------------------------------------------------------------------------------
 // Updating the Cache.
@@ -322,6 +313,36 @@ const ListComponentWithApollo = compose(
   }),
 
   // http://dev.apollodata.com/react/queries.html
+  graphql(ProjectsQuery, {
+    options: (props) => {
+      const ProjectFilter = {
+        type: 'Project',
+        expr: {
+          comp: 'IN',
+          field: 'labels',
+          value: {
+            string: '_default'
+          }
+        }
+      };
+
+      return {
+        variables: {
+          filter: ProjectFilter
+        }
+      };
+    },
+
+    props: ({ ownProps, data }) => {
+      let { search } = data;
+
+      return {
+        project: _.get(search, 'items[0]')
+      };
+    }
+  }),
+
+  // http://dev.apollodata.com/react/queries.html
   graphql(TestQuery, {
 
     // http://dev.apollodata.com/react/queries.html#graphql-options
@@ -331,7 +352,7 @@ const ListComponentWithApollo = compose(
 
       return {
         variables: {
-          filter: { Type: 'Task' }
+          filter
         },
 
         // http://dev.apollodata.com/react/api-queries.html#graphql-config-options-fetchPolicy
@@ -349,7 +370,7 @@ const ListComponentWithApollo = compose(
     props: ({ ownProps, data }) => {
       let { errors, loading, search } = data;
       let items = _.get(search, 'items');
-      console.log('graphql.props:', TestQueryName, loading ? 'loading...' : JSON.stringify(search));
+      console.log('graphql.props:', TestQueryName, loading ? 'loading...' : TypeUtil.stringify(search));
 
       // TODO(burdon): updateQuery.
       // Decouple Apollo query/result from component.
@@ -388,8 +409,8 @@ const ListComponentWithApollo = compose(
       //
       // Insert item.
       //
-      updateItem: (item, mutations) => {
-        let itemId = item.id;
+      updateItem: (item, bucket, mutations) => {
+        console.assert(item && bucket && mutations);
 
         let optimisticResponse =
           ownProps.options.optimisticResponse && OptimisticResponse(item, mutations);
@@ -398,7 +419,8 @@ const ListComponentWithApollo = compose(
           variables: {
             mutations: [
               {
-                itemId,
+                itemId: ID.toGlobalId(item.type, item.id),
+                bucket,
                 mutations
               }
             ]
@@ -411,8 +433,10 @@ const ListComponentWithApollo = compose(
       //
       // Insert item.
       //
-      insertItem: (type, mutations) => {
-        let itemId = ID(type);
+      insertItem: (type, bucket, mutations) => {
+        console.assert(type && bucket && mutations);
+
+        let itemId = idGenerator.createId();
 
         let optimisticResponse =
           ownProps.options.optimisticResponse && OptimisticResponse({ type, id: itemId }, mutations);
@@ -421,7 +445,8 @@ const ListComponentWithApollo = compose(
           variables: {
             mutations: [
               {
-                itemId,
+                itemId: ID.toGlobalId(type, itemId),
+                bucket,
                 mutations
               }
             ]
@@ -442,6 +467,10 @@ const SimpleListComponentWithApollo = compose(
 
     options: (props) => {
       return {
+        variables: {
+          filter
+        },
+
         reducer: ListReducer(TestQuery, 'search.items')
       };
     },
@@ -459,156 +488,6 @@ const SimpleListComponentWithApollo = compose(
   })
 
 )(SimpleListComponent);
-
-//-------------------------------------------------------------------------------------------------
-// Test Server.
-//-------------------------------------------------------------------------------------------------
-
-const ITEMS = _.times(5, i => ({
-  type: 'Task',
-  id: ID('Task'),
-  title: 'Task ' + (i + 1)
-}));
-
-class Database {
-
-  queryItems() {
-    return Promise.resolve(ITEMS);
-  }
-
-  upsertItems(items) {
-    let itemMap = ItemUtil.createItemMap(ITEMS);
-    _.each(items, item => {
-      let existing = itemMap.get(item.id);
-      if (existing) {
-        _.merge(item, existing);
-      } else {
-        ITEMS.push(item);
-      }
-
-      console.log('Database.upsertItems[' + item.id + '] = ' + JSON.stringify(item));
-    });
-
-    return Promise.resolve(items);
-  }
-}
-
-/**
- * Test NetworkInterface
- */
-class TestingNetworkInterface {
-
-  // TODO(burdon): Mocks.
-  // import { mockServer } from 'graphql-tools';\
-
-  static NETWORK_DELAY = 2000;
-
-  database = new Database();
-
-  count = 0;
-
-  constructor(stateGetter) {
-    this.stateGetter = stateGetter;
-  }
-
-  //
-  // NetworkInterface
-  //
-
-  query({ operationName, query, variables }) {
-    let { options } = this.stateGetter();
-    let delay = options.networkDelay ? TestingNetworkInterface.NETWORK_DELAY : 0;
-
-    let count = ++this.count;
-    console.info(`REQ[${operationName}:${count}]`, TypeUtil.stringify(variables));
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        this.processQuery(operationName, query, variables)
-
-          .then(response => {
-            console.info(`RES[${operationName}:${count}]`, TypeUtil.stringify(response));
-            resolve(response);
-          })
-
-          .catch(error => {
-            reject({
-              errors: [{ message: 'TestingNetworkInterface Error: ' + String(error) }],
-            });
-          });
-      }, delay);
-    });
-  }
-
-  processQuery(operationName, query, variables) {
-    switch (operationName) {
-
-      //
-      // Query
-      //
-      case TestQueryName: {
-        return this.database.queryItems().then(items => {
-          return {
-            data: {
-              search: {
-                __typename: 'SearchResult', // NOTE: Must be present in result.
-
-                items: _.map(items, item => ({
-                  __typename: item.type,
-                  ...item
-                }))
-              }
-            }
-          };
-        });
-      }
-
-      //
-      // Mutation
-      //
-      case TestMutationName: {
-        return this.database.queryItems().then(items => {
-          let { mutations } = variables;
-
-          let upsertItems = [];
-
-          let itemMap = ItemUtil.createItemMap(items);
-          _.each(mutations, mutation => {
-            let { itemId } = mutation;
-            let item = itemMap.get(itemId);
-            if (!item) {
-              item = {
-                type: itemId.substring(0, itemId.indexOf('/')),
-                id: itemId
-              };
-            }
-
-            let upsertItem = Transforms.applyObjectMutations(item, mutation.mutations);
-
-            // Important for client-side cache-normalization.
-            _.assign(upsertItem, {
-              __typename: item.type
-            });
-
-            console.log('Upsert Item: ' + JSON.stringify(upsertItem));
-            upsertItems.push(upsertItem);
-          });
-
-          return this.database.upsertItems(upsertItems).then(items => {
-            return {
-              data: {
-                upsertItems: items
-              }
-            };
-          });
-        });
-      }
-
-      default: {
-        return Promise.reject('Invalid operation: ' + operationName);
-      }
-    }
-  }
-}
 
 //-------------------------------------------------------------------------------------------------
 // Root Component.
@@ -672,7 +551,36 @@ const AppReducer = (initalState) => (state=initalState, action) => {
 
 export class App {
 
-  constructor() {
+  constructor(config) {
+    console.assert(config);
+
+    // TODO(burdon): Use actual interface.
+    let networkInterface;
+    switch (_.get(config, 'query.network')) {
+      case 'testing': {
+        networkInterface = new TestingNetworkInterface(() => AppState(this._store.getState()));
+        break;
+      }
+
+      default: {
+        networkInterface = createNetworkInterface({
+          uri: _.get(config, 'graphql')
+        }).use([
+          {
+            // http://dev.apollodata.com/core/network.html#networkInterfaceMiddleware
+            applyMiddleware: ({ options }, next) => {
+
+              // Set the Auth header.
+              options.headers = _.assign(options.headers, {
+                'Authorization': AuthDefs.JWT_SCHEME + ' ' + _.get(config, 'credentials.id_token')
+              });
+
+              next();
+            }
+          }
+        ]);
+      }
+    }
 
     //
     // Apollo.
@@ -682,6 +590,7 @@ export class App {
     // http://dev.apollodata.com/core/apollo-client-api.html#apollo-client
     this._client = new ApolloClient({
 
+      // TODO(burdon): Factor out.
       // Cache normalization (allows for automatic updates to all queries following mutations).
       // Requires mutatied items to include __typename attributes.
       // http://dev.apollodata.com/react/cache-updates.html
@@ -694,7 +603,7 @@ export class App {
 
       // http://dev.apollodata.com/core/network.html#NetworkInterface
       // https://github.com/apollographql/apollo-client/blob/master/src/transport/networkInterface.ts
-      networkInterface: new TestingNetworkInterface(() => AppState(this._store.getState()))
+      networkInterface
     });
 
     //

@@ -2,8 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
-const fs = require('fs');
-
+import * as fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
 import yaml from 'node-yaml';
