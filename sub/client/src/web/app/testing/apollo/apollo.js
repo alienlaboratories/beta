@@ -172,7 +172,9 @@ class SimpleListComponent extends React.Component {
         <div className="test-component">
           <div className="test-body">
             {_.map(items, item => (
-              <div key={ item.id }>{ item.title }</div>
+              <div key={ item.id }>
+                <div title={ item.id }>{ item.title }</div>
+              </div>
             ))}
           </div>
         </div>
