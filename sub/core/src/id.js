@@ -55,6 +55,7 @@ export class ID {
   static fromGlobalId(globalId) {
     console.assert(_.isString(globalId));
     let parts = atob(globalId).match(/(.+)\/(.+)/);
+    console.assert(parts.length === 3, 'Invalid ID:', globalId);
     return {
       type: parts[1],
       id: parts[2]

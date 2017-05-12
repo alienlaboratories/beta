@@ -121,6 +121,7 @@ export class ItemStore extends QueryProcessor {
   static applyMutations(itemStore, context, itemMutations) {
     console.assert(itemStore && context && itemMutations);
 
+    // TODO(burdon): Get items in batch.
     return Promise.all(_.map(itemMutations, itemMutation => {
       let { itemId, mutations } = itemMutation;
       let { type, id:localId } = ID.fromGlobalId(itemId);

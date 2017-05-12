@@ -39,6 +39,7 @@ const ProjectFilter = {
 
 // TODO(burdon): Network delay for server network interface.
 // TODO(burdon): Subscriptions.
+// TODO(burdon): Version numbers (inc. on server).
 
 //-------------------------------------------------------------------------------------------------
 // React Components.
@@ -53,7 +54,7 @@ class ListComponent extends React.Component {
 
     this.state = {
       text: '',
-      items: _.map(this.props.items, item => _.clone(item))
+      items: _.map(this.props.items, item => _.cloneDeep(item))
     };
   }
 
@@ -62,7 +63,7 @@ class ListComponent extends React.Component {
   componentWillReceiveProps(nextProps) {
     console.log('componentWillReceiveProps:', TypeUtil.stringify(nextProps));
     this.setState({
-      items: _.map(nextProps.items, item => _.clone(item))
+      items: _.map(nextProps.items, item => _.cloneDeep(item))
     });
   }
 
@@ -412,43 +413,50 @@ class Batch {
    * Commit all changes.
    */
   commit() {
+
+    // Create optimistic response.
     let optimisticResponse = undefined;
     if (this._optimistic) {
-      optimisticResponse = {
 
-        upsertItems: _.map(this._mutations, mutation => {
-          let { itemId, mutations } = mutation;
-          let { id } = ID.fromGlobalId(itemId);
-          let item = this._items.get(id);
-          console.assert(item);
+      // Apply the mutations to the current (cloned) items.
+      let upsertItems = _.map(this._mutations, mutation => {
+        let { itemId, mutations } = mutation;
+        let { id } = ID.fromGlobalId(itemId);
+        let item = this._items.get(id);
+        console.assert(item);
 
-          // Patch IDs with items.
-          // Clone mutations, iterate tree and replace id with object value.
-          // NOTE: This isn't 100% clean since theoretically some value mutations may legitimately deal with IDs.
-          // May need to "mark" ID values when set in batch mutation API call.
-          let clonedMutations = _.clone(mutations);
-          TypeUtil.traverse(clonedMutations, (value, key, root) => {
-            if (key === 'id') {
-              let referencedItem = this._items.get(value);
-              if (referencedItem) {
-                root[key] = referencedItem;
-              }
+        // Patch IDs with items.
+        // Clone mutations, iterate tree and replace id with object value.
+        // NOTE: This isn't 100% clean since theoretically some value mutations may legitimately deal with IDs.
+        // May need to "mark" ID values when set in batch mutation API call.
+        let clonedMutations = _.cloneDeep(mutations);
+        TypeUtil.traverse(clonedMutations, (value, key, root) => {
+          if (key === 'id') {
+            let referencedItem = this._items.get(value);
+            if (referencedItem) {
+              root[key] = referencedItem;
             }
-          });
+          }
+        });
 
-          // http://dev.apollodata.com/react/optimistic-ui.html
-          // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-optimisticResponse
-          // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
-          let updatedItem = Transforms.applyObjectMutations(_.clone(item), clonedMutations);
-          this._items.set(item.id, updatedItem);  // Update the batch's cache for patching above.
+        // http://dev.apollodata.com/react/optimistic-ui.html
+        // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-optimisticResponse
+        // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
+        let updatedItem = Transforms.applyObjectMutations(_.cloneDeep(item), clonedMutations);
 
-          // Important for update.
-          _.assign(updatedItem, {
-            __typename: item.type
-          });
+        // Update the batch's cache for patching above.
+        this._items.set(item.id, updatedItem);
 
-          return updatedItem;
-        })
+        // Important for update.
+        _.assign(updatedItem, {
+          __typename: item.type
+        });
+
+        return updatedItem;
+      });
+
+      optimisticResponse = {
+        upsertItems
       };
     }
 
