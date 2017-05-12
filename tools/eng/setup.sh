@@ -21,6 +21,7 @@ brew install memcached
 brew install npm
 brew install python
 brew install redis
+brew install watchman
 brew install --HEAD xhyve
 
 brew cask install minikube

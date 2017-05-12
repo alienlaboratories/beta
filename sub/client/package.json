@@ -38,6 +38,7 @@
     "grunt-run": "^0.6.0",
     "grunt-version": "^1.1.1",
     "grunt-webpack": "^3.0.0",
+    "identity-obj-proxy": "^3.0.0",
     "jest": "^19.0.2",
     "jquery": "^3.1.1",
     "json-loader": "^0.5.4",
@@ -109,9 +110,13 @@
       "\\.(css|less)$": "identity-obj-proxy"
     }
   },
+  "//": {
+    "jest": "Error: Error watching file for changes: EMFILE (Fix: brew install watchman)"
+  },
   "scripts": {
     "//": "https://webpack.github.io/docs/webpack-dev-server.html#content-base",
     "lint": "eslint -c ../../.eslintrc.yml ./src",
+    "testing": "jest --watchAll",
     "test": "jest",
     "start": "webpack-dev-server --content-base=src/web/"
   }

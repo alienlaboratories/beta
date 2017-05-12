@@ -9,57 +9,65 @@ import { MutationUtil } from 'alien-core';
 import { ID, App, AppState, AppTestAction, TestMutation, TestQuery } from './apollo';
 
 it('Renders without crashing', () => {
-  const app = new App();
 
-  // Get Redux store updates.
-  // http://redux.js.org/docs/api/Store.html#subscribe
-  // http://redux.js.org/docs/faq/StoreSetup.html#store-setup-subscriptions
-  // https://facebook.github.io/jest/docs/tutorial-async.html#content
-  // https://github.com/markerikson/redux-ecosystem-links/blob/master/store.md#store-change-subscriptions
-  app.store.subscribe(() => {
-    console.log('[[ UPDATE ]]', JSON.stringify(AppState(app.store.getState())));
-  });
+  let config = {
+    query: {
+      network: 'testing'
+    }
+  };
 
-  // Render.
-  ReactDOM.render(app.root, document.createElement('div'));
+  new App(config).init(app => {
 
-  // End-to-end unit test.
-  // https://github.com/apollographql/react-apollo/tree/master/examples/create-react-app#running-tests
+    // Get Redux store updates.
+    // http://redux.js.org/docs/api/Store.html#subscribe
+    // http://redux.js.org/docs/faq/StoreSetup.html#store-setup-subscriptions
+    // https://facebook.github.io/jest/docs/tutorial-async.html#content
+    // https://github.com/markerikson/redux-ecosystem-links/blob/master/store.md#store-change-subscriptions
+    app.store.subscribe(() => {
+      console.log('[[ UPDATE ]]', JSON.stringify(AppState(app.store.getState())));
+    });
 
-  // Trigger async action.
-  return app.store.dispatch(AppTestAction('test')).then(result => {
+    // Render.
+    ReactDOM.render(app.root, document.createElement('div'));
 
-    //
-    // Test Mutation.
-    // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.mutate
-    //
-    return app.client.mutate({
-      mutation: TestMutation,
-      variables: {
-        mutations: [
-          {
-            itemId: ID('Task'),
-            mutations: [
-              MutationUtil.createFieldMutation('title', 'string', 'Test Item')
-            ]
-          }
-        ]
-      }
-    }).then(result => {
-      let { upsertItems } = result.data;
-      console.assert(_.size(upsertItems) === 1);
-      let title = upsertItems[0].title;
+    // End-to-end unit test.
+    // https://github.com/apollographql/react-apollo/tree/master/examples/create-react-app#running-tests
+
+    // Trigger async action.
+    return app.store.dispatch(AppTestAction('test')).then(result => {
 
       //
-      // Test Query.
-      // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.query
+      // Test Mutation.
+      // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.mutate
       //
-      return app.client.query({
-        query: TestQuery
+      return app.client.mutate({
+        mutation: TestMutation,
+        variables: {
+          mutations: [
+            {
+              itemId: ID('Task'),
+              mutations: [
+                MutationUtil.createFieldMutation('title', 'string', 'Test Item')
+              ]
+            }
+          ]
+        }
       }).then(result => {
-        let { search: { items } } = result.data;
-        let item = _.find(items, item => item.title === title);
-        console.assert(item);
+        let { upsertItems } = result.data;
+        console.assert(_.size(upsertItems) === 1);
+        let title = upsertItems[0].title;
+
+        //
+        // Test Query.
+        // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.query
+        //
+        return app.client.query({
+          query: TestQuery
+        }).then(result => {
+          let { search: { items } } = result.data;
+          let item = _.find(items, item => item.title === title);
+          console.assert(item);
+        });
       });
     });
   });

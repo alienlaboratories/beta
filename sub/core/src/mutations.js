@@ -130,8 +130,8 @@ export class MutationUtil {
   /**
    * Creates a mutation field if the old and new values are different.
    *
-   * @param field
-   * @param type If null, then set nul value.
+   * @param {string} field
+   * @param {string} type If null, then set nul value.
    * @param value If null, then set null value.
    * @returns {Mutation}
    */
@@ -149,7 +149,7 @@ export class MutationUtil {
 
   /**
    * Creates a mutation to add or remove a label.
-   * @param label
+   * @param {string} label
    * @param set
    * @returns {Mutation}
    */

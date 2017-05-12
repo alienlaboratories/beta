@@ -15,10 +15,11 @@ import { createNetworkInterface } from 'apollo-client';
 import update from 'immutability-helper';
 
 import { TypeUtil } from 'alien-util';
-import { AuthDefs, ID, IdGenerator, ItemUtil, MutationUtil, Transforms } from 'alien-core';
+import { AuthDefs, IdGenerator, ItemUtil, MutationUtil } from 'alien-core';
 
 import { ReactUtil } from '../../../util/index';
 
+import { Batch } from './batch';
 import { ProjectsQuery, ProjectsQueryName, UpsertItemsMutation, UpsertItemsMutationName } from './common';
 import { TestingNetworkInterface } from './testing';
 
@@ -115,11 +116,11 @@ class ListComponent extends React.Component {
     let bucket = _.get(project, 'group.id');
     if (text) {
       createBatch(bucket)
-        .createItem('Task', [
+        .createItem('Task', idGenerator.createId(), [
           MutationUtil.createFieldMutation('title', 'string', text)
-        ], 'x')
+        ], 'task')
         .updateItem(project, [
-          Batch.ref('x', item => MutationUtil.createSetMutation('tasks', 'id', item.id))
+          Batch.ref('task', item => MutationUtil.createSetMutation('tasks', 'id', item.id))
         ])
         .commit();
 
@@ -299,171 +300,6 @@ const SearchReducer = (path, options={}) => (previousResult, action, variables) 
 
   return previousResult;
 };
-
-//-------------------------------------------------------------------------------------------------
-// Batch
-//-------------------------------------------------------------------------------------------------
-
-// TODO(burdon): Unit test.
-
-class Batch {
-
-  /**
-   * Creates a generator that will be called with the ID of the referenced item to create the mutation.
-   * @param {string} label
-   * @param {function({Item})} callback Callback returns a {Mutation}.
-   */
-  static ref(label, callback) {
-    return (batch) => {
-      let itemId = batch._refs.get(label);
-      console.assert(itemId);
-      let item = batch._items.get(itemId);
-      console.assert(item);
-      return callback(item);
-    };
-  }
-
-  /**
-   * Do NOT create directly.
-   * @param {function} mutate Mutate function provided by Apollo.
-   * @param {string} bucket All batched operations must belong to the same bucket.
-   * @param {boolean} optimistic
-   * @private
-   */
-  constructor(mutate, bucket, optimistic=false) {
-    this._mutate = mutate;
-    this._bucket = bucket;
-    this._optimistic = optimistic;
-    this._refs = new Map();
-    this._items = new Map();
-    this._mutations = [];
-  }
-
-  /**
-   * Create a new item.
-   * @param {string} type Item type.
-   * @param {[{Mutation}]} mutations Mutations to apply.
-   * @param {string} ref Optional label that can be used as a reference for subsequent batch operations.
-   * @returns {Batch}
-   */
-  createItem(type, mutations, ref=undefined) {
-    console.assert(type && mutations);
-    let itemId = idGenerator.createId();
-    this._items.set(itemId, { type, id: itemId });
-
-    // TODO(burdon): Remove from client (when transplant to current app).
-    // TODO(burdon): Enforce server-side (and/or move into schema proto).
-    mutations.unshift(
-      MutationUtil.createFieldMutation('bucket', 'string', this._bucket),
-      MutationUtil.createFieldMutation('type', 'string', type)
-    );
-
-    this._mutations.push({
-      bucket: this._bucket,
-      itemId: ID.toGlobalId(type, itemId),
-      mutations
-    });
-
-    if (ref) {
-      this._refs.set(ref, itemId);
-    }
-
-    return this;
-  }
-
-  /**
-   * Update an existing item.
-   * @param {Item} item Item to mutate.
-   * @param {[{Mutation}]} mutations Mutations to apply.
-   * @returns {Batch}
-   */
-  updateItem(item, mutations) {
-    console.assert(item && mutations);
-    this._items.set(item.id, item);
-
-    this._mutations.push({
-      bucket: this._bucket,
-      itemId: ID.toGlobalId(item.type, item.id),
-      mutations: _.map(mutations, mutation => {
-        if (_.isFunction(mutation)) {
-          return mutation(this);
-        } else {
-          return mutation;
-        }
-      })
-    });
-
-    return this;
-  }
-
-  /**
-   * Commit all changes.
-   */
-  commit() {
-
-    // Create optimistic response.
-    let optimisticResponse = undefined;
-    if (this._optimistic) {
-
-      // Apply the mutations to the current (cloned) items.
-      let upsertItems = _.map(this._mutations, mutation => {
-        let { itemId, mutations } = mutation;
-        let { id } = ID.fromGlobalId(itemId);
-        let item = this._items.get(id);
-        console.assert(item);
-
-        // Patch IDs with items.
-        // Clone mutations, iterate tree and replace id with object value.
-        // NOTE: This isn't 100% clean since theoretically some value mutations may legitimately deal with IDs.
-        // May need to "mark" ID values when set in batch mutation API call.
-        mutations = _.cloneDeep(mutations);
-        TypeUtil.traverse(mutations, (value, key, root) => {
-          if (key === 'id') {
-            let referencedItem = this._items.get(value);
-            if (referencedItem) {
-              root[key] = referencedItem;
-            }
-          }
-        });
-
-        // http://dev.apollodata.com/react/optimistic-ui.html
-        // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-optimisticResponse
-        // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
-        let updatedItem = Transforms.applyObjectMutations(_.cloneDeep(item), mutations);
-
-        // TODO(burdon): Remove not working.
-        // TODO(burdon): Test moving.
-        // TODO(burdon): Mutation patching above isn't right since patching Item into "id" field.
-        // TODO(burdon): Leave ID and patch in reducer?
-        // TODO(burdon): Transformer should understand ID? I.e., test for { id }
-//      console.log('############', updatedItem);
-
-        // Update the batch's cache for patching above.
-        this._items.set(item.id, updatedItem);
-
-        // Important for update.
-        _.assign(updatedItem, {
-          __typename: item.type
-        });
-
-        return updatedItem;
-      });
-
-      optimisticResponse = {
-        upsertItems
-      };
-    }
-
-    // Submit mutation.
-    this._mutate({
-      variables: {
-        mutations: this._mutations
-      },
-
-      optimisticResponse
-    });
-  }
-}
 
 //-------------------------------------------------------------------------------------------------
 // Apollo Container.
@@ -648,7 +484,7 @@ const AppReducer = (initalState) => (state=initalState, action) => {
 
 export class App {
 
-  constructor(config) {
+  constructor(config={}) {
     console.assert(config);
     this._config = config;
   }
@@ -663,6 +499,7 @@ export class App {
 
   initNetwork() {
     switch (_.get(this._config, 'query.network')) {
+
       case 'testing': {
         this._networkInterface = new TestingNetworkInterface(() => AppState(this._store.getState()));
         return this._networkInterface.init();

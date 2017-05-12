@@ -1,20 +1,18 @@
 # Apollo
 
 
-#### PHONE JAMMER
-#### OPERA BOXING
-#### HEADPHONE
+## TODO
 
+TODO(burdon): Pass Type, Bucket with mutation (not as item mutations). Implement client/server.
+TODO(burdon): Ids (global/local) and dataIdFromObject.
 
-TODO(burdon): Ids (global/local)
-TODO(burdon): Ids/items
-TODO(burdon): Optimistic responses and reducers.
 
 ## Data Model
 
 - The data model consists of Items that have fields that contain vectors of Item IDs (references).
 - The server-side resolver converts these references into Item objects that are returned to the client.
 - The Apollo client maintains a map of Items by ID.
+
 
 ### Mutations
 
@@ -30,11 +28,13 @@ TODO(burdon): Optimistic responses and reducers.
 - ISSUE: Expensive for the mutation to return the entire updated item (e.g., adding Task to Project with many Tasks).
   Return deltas? Or just item with IDs for 'tasks' field.
 
+
 ### Optimisic Responses
 
 - The graphql mutation spec's mutate function takes an `optimisticResponse` parameter which predicts the entire
   server mutation result.
   - ISSUE: does this need to match the query spec of the mutation?
+
   
 ### Reducer
 
