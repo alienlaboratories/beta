@@ -146,15 +146,11 @@ export class TestingNetworkInterface {
         let { mutations } = variables;
 
         return ItemStore.applyMutations(this._itemStore, context, mutations).then(upsertItems => {
-
-          // TODO(burdon):
           _.each(upsertItems, item => {
             _.assign(item, {
               __typename: item.type
             });
           });
-
-          console.log('####', upsertItems);
 
           return {
             data: {

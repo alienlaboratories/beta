@@ -270,19 +270,26 @@ const OptionsComponentWithRedux = connect(mapStateToProps, mapDispatchToProps)(O
 //-------------------------------------------------------------------------------------------------
 
 const ProjectReducer = (path, options={}) => (previousResult, action, variables) => {
-  const tasksReducer = ListReducer(path + '[0].tasks', options);
+  // const tasksReducer = ListReducer(path + '[0].tasks', options);
 
   // Isolate mutations.
   if (action.type === 'APOLLO_MUTATION_RESULT' &&
     action.operationName === UpsertItemsMutationName && options.reducer) {
 
+
+    // TODO(burdon): The action contains the optimistic result for the project (with task IDs).
+    // Path the previous result with the Task (which should also be in this action).
+    console.log('##### RES', JSON.stringify(action.result, null, 2));
+
+    
     // Compound reducer.
-    return tasksReducer(previousResult, action, variables);
+    // return tasksReducer(previousResult, action, variables);
   }
 
   return previousResult;
 };
 
+/*
 const ListReducer = (path, options={}) => (previousResult, action, variables) => {
 
   // Isolate mutations.
@@ -312,6 +319,7 @@ const ListReducer = (path, options={}) => (previousResult, action, variables) =>
 
   return previousResult;
 };
+*/
 
 //-------------------------------------------------------------------------------------------------
 // Batch
@@ -458,6 +466,8 @@ class Batch {
       optimisticResponse = {
         upsertItems
       };
+
+      console.log('##### OPT #####\n', JSON.stringify(optimisticResponse, null, 2));
     }
 
     // Submit mutation.
@@ -579,10 +589,13 @@ const SimpleListComponentWithApollo = compose(
     props: ({ ownProps, data }) => {
       let { errors, loading, search } = data;
 
+      let project = _.get(search, 'items[0]');
+      let items = _.get(project, 'tasks');
+
       return {
         errors,
         loading,
-        items: _.get(search, 'items[0].tasks', [])
+        items
       };
     }
   })
