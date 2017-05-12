@@ -24,7 +24,6 @@ body {
     padding: 1px 6px;
     font-size: 18px;
     border: 1px solid #AAA;
-    border-top: none;
   }
 
   i.material-icons {
@@ -54,8 +53,8 @@ body {
     flex-grow: 1;
     flex-basis: 0;
     margin: 0 8px;
+    padding: 8px;
     background-color: whitesmoke;
-    border: 8px solid #E5E5E5;
   }
   .test-component:first-child, .test-component:last-child {
     margin: 0;
@@ -65,6 +64,7 @@ body {
     display: flex;
     flex-shrink: 0;
     padding-right: 2px;
+    margin-bottom: 16px;
 
     input {
       flex-grow: 1;
@@ -89,6 +89,13 @@ body {
 
         input {
           flex-grow: 1;
+          border: 1px solid #CCC;
+          border-top: none;
+        }
+      }
+      .test-list-item:first-child {
+        input {
+          border-top: 1px solid #CCC;
         }
       }
     }

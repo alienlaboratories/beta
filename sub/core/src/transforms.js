@@ -108,7 +108,7 @@ export class Transforms {
   // merge and replace (by default replace).
 
   /**
-   * Update map.
+   * Update map values.
    *
    * NOTE: GraphQL doesn't support maps (i.e., arbitrary keyed objects).
    * Instead we declare arrays of typed objects and use Map mutations to update them.
@@ -159,8 +159,16 @@ export class Transforms {
     let value = Matcher.scalarValue(mutation.value);
     console.assert(value !== undefined);
 
+    // Remove or add.
     if (mutation.add === false) {
-      _.pull(set, value);
+
+      // NOTE: Local transformations my involve removing keys from arrays that contain resolved items.
+      // In this case test if the object value has a matching ID.
+      if (mutation.value.id) {
+        _.pullAllWith(set, [value], (setValue, value) => { return setValue === value || setValue.id === value; });
+      } else {
+        _.pull(set, value);
+      }
     } else {
       set = _.union(set, [value]);
     }

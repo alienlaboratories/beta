@@ -99,6 +99,16 @@ class ListComponent extends React.Component {
     input.focus();
   }
 
+  handleDelete(item, event) {
+    let { project, createBatch } = this.props;
+    let bucket = _.get(project, 'group.id');
+    createBatch(bucket)
+      .updateItem(project, [
+        MutationUtil.createSetMutation('tasks', 'id', item.id, false)
+      ])
+      .commit();
+  }
+
   handleInsert(event) {
     let { project, createBatch } = this.props;
     let { text } = this.state;
@@ -148,6 +158,7 @@ class ListComponent extends React.Component {
                   <input ref={ 'INPUT/' + item.id } type="text" data={ item.id } value={ item.title } spellCheck={ false }
                          onChange={ this.handleTextChange.bind(this) }/>
 
+                  <i className="material-icons" onClick={ this.handleDelete.bind(this, item) }>cancel</i>
                   <i className="material-icons" onClick={ this.handleUpdate.bind(this, item) }>save</i>
                 </div>
               ))}
@@ -419,6 +430,13 @@ class Batch {
         // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-optimisticResponse
         // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
         let updatedItem = Transforms.applyObjectMutations(_.cloneDeep(item), mutations);
+
+        // TODO(burdon): Remove not working.
+        // TODO(burdon): Test moving.
+        // TODO(burdon): Mutation patching above isn't right since patching Item into "id" field.
+        // TODO(burdon): Leave ID and patch in reducer?
+        // TODO(burdon): Transformer should understand ID? I.e., test for { id }
+//      console.log('############', updatedItem);
 
         // Update the batch's cache for patching above.
         this._items.set(item.id, updatedItem);
