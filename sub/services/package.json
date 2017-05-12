@@ -28,6 +28,7 @@
     "alien-client": "0.0.1",
     "alien-core": "0.0.1",
     "alien-util": "0.0.1",
+    "babel-polyfill": "^6.23.0",
     "email-addresses": "^2.0.2",
     "express": "^4.15.2",
     "firebase": "^3.9.0",
@@ -52,7 +53,8 @@
     "googleapis": "Requires additional deps [swig, js-beautify]. Also, must install googleapis in dependent module (e.g., sub/app-server)"
   },
   "scripts": {
-    "admin": "babel-node src/admin.js",
-    "test": "mocha --compilers js:babel-core/register src/**"
+    "lint": "eslint -c ../../.eslintrc.yml ./src",
+    "test": "BABEL_DISABLE_CACHE=1 mocha --full-trace --require babel-polyfill --compilers js:babel-register \"src/**/*.test.js\"",
+    "admin": "babel-node src/admin.js"
   }
 }

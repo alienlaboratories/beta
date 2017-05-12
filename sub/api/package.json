@@ -51,6 +51,7 @@
   },
   "scripts": {
     "//": "NOTE: Restart after updates to dependent libs (e.g., alien-util, alient-core)",
+    "lint": "eslint -c ../../.eslintrc.yml ./src",
     "test": "BABEL_DISABLE_CACHE=1 mocha --full-trace --require babel-polyfill --compilers js:babel-register \"src/**/*.test.js\"",
     "test-watch": "BABEL_DISABLE_CACHE=1 mocha --watch --require babel-polyfill --compilers js:babel-register \"src/**/*.test.js\"",
     "firebase-admin": "BABEL_DISABLE_CACHE=1 babel-node ./src/db/firebase/firebase_admin.js",

@@ -38,7 +38,6 @@ export class TestGenerator {
         randomizer.chance.sentence({ words: randomizer.chance.natural({ min: 3, max: 5 }) })),
 
       Randomizer.property('contacts', (item, context, randomizer) => {
-        let { userId } = context;
         let num = randomizer.chance.natural({ min: 3, max: 5 });
         if (num) {
           // TODO(burdon): Reuse generator? (but same project).
@@ -203,11 +202,11 @@ export class TestGenerator {
                     this.generateItems(context, 'Task', this._randomizer.chance.natural({ min: 10, max: 20 })))
 
                   .then(() =>
-                    this.generateItems(context, 'Contact', this._randomizer.chance.natural({ min: 1, max: 3 })))
+                    this.generateItems(context, 'Contact', this._randomizer.chance.natural({ min: 1, max: 3 })));
               }));
             });
         }));
-    });
+      });
   }
 
   generateItems(context, type, count) {
@@ -247,7 +246,7 @@ export class TestGenerator {
                 return itemStore.upsertItem(context, item);
               });
             }));
-          })
+          });
         });
       });
   }

@@ -8,6 +8,9 @@ import { Batch } from './batch';
 
 const bucket = 'Group-1';
 
+// Jest:
+// https://facebook.github.io/jest/docs/expect.html#tohavelengthnumber
+
 describe('Batch:', () => {
 
   it('Null batch.', (done) => {

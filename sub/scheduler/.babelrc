@@ -7,5 +7,11 @@
   "presets": [
     "es2015",
     "stage-0"
+  ],
+
+  "plugins": [
+
+    // http://babeljs.io/docs/plugins/transform-async-to-generator
+    "transform-async-to-generator"
   ]
 }

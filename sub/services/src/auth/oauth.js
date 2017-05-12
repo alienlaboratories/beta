@@ -340,10 +340,11 @@ export const oauthRouter = (userManager, systemStore, oauthRegistry, config={}) 
         //
         // Redirect after successful callback.
         //
-        default:
-          let { redirectUrl='/home' } = state;
+        default: {
+          let { redirectUrl = '/home' } = state;
           res.redirect(redirectUrl);
           break;
+        }
       }
     });
   });

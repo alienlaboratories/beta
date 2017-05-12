@@ -73,7 +73,7 @@ export class SlackQueryProcessor extends QueryProcessor {
       //snippet: match.text,
       url: match.permalink,
       iconUrl: '/img/slack-icon-24px.png'
-    }
+    };
   }
 
   /**
@@ -150,7 +150,7 @@ export class SlackQueryProcessor extends QueryProcessor {
         return this.convertToContactItems(bot, slackApiToken, slackUserIds)
           .then(results => {
             return results;
-          })
+          });
       });
     }
   }

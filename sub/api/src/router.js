@@ -6,7 +6,7 @@ import _ from 'lodash';
 import express from 'express';
 
 import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
-import { GraphQLError, BREAK } from 'graphql';
+// import { GraphQLError, BREAK } from 'graphql';
 import { makeExecutableSchema } from 'graphql-tools';
 
 import { ErrorUtil, Logger } from 'alien-util';

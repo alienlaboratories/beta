@@ -71,7 +71,12 @@ config(CONF_DIR).then(config => {
       // https://github.com/google/google-api-nodejs-client/#manually-refreshing-access-token
       _.set(user, 'credentials.google.access_token', access_token);
 
-      if (false) {
+      const tests = {
+        drive: false,
+        gmail: false
+      };
+
+      if (tests.drive) {
         const text = 'entube';
         const query = `fullText contains "${text}"`;
 
@@ -81,7 +86,7 @@ config(CONF_DIR).then(config => {
         });
       }
 
-      if (true) {
+      if (tests.gmail) {
         let query = 'label:UNREAD';
 
         let client = new GoogleMailClient();
