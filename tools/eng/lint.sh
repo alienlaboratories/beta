@@ -4,7 +4,7 @@
 # Lint all modules.
 #
 
-MODULES="api client core services util"
+MODULES="api client core scheduler services util"
 
 for mod in ${MODULES[@]}; do
   echo

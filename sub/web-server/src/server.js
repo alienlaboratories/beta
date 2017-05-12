@@ -17,8 +17,7 @@ import { Const } from './const';
 
 const __ENV__ = _.get(process.env, 'NODE_ENV', 'development');
 
-const __DEVELOPMENT__   = __ENV__ === 'development';
-const __PRODUCTION__    = __ENV__ === 'production';
+const __PRODUCTION__ = __ENV__ === 'production';
 
 const ENV = {
   PORT: _.get(process.env, 'PORT', 3000),

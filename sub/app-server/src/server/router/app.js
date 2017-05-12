@@ -6,12 +6,9 @@ import _ from 'lodash';
 import express from 'express';
 
 import { AppDefs } from 'alien-client';
-import { Logger, TypeUtil } from 'alien-util';
 import { getUserSession, isAuthenticated } from 'alien-services';
 
 import { Const } from '../../common/defs';
-
-const logger = Logger.get('app');
 
 /**
  * Sets-up serving the app (and related assets).

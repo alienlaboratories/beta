@@ -55,7 +55,6 @@
   "scripts": {
     "//": "TODO(burdon): Add mocha testing for server. Also, Travis?",
     "lint": "eslint -c ../../.eslintrc.yml ./src",
-    "test": "karma start --single-run",
-    "test2": "NODE_ENV=test nyc mocha src/*.test.js"
+    "test": "karma start --single-run"
   }
 }
