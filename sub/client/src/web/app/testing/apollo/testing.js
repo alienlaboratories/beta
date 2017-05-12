@@ -105,34 +105,34 @@ export class TestingNetworkInterface {
   }
 
   processQuery(operationName, query, variables) {
+
+    // Resolve vector of IDs to objects.
+    const resolve = (parent, field, type) => {
+      return this._itemStore.queryItems(context, {}, { ids: parent[field] }).then(items => {
+        parent[field] = _.map(items, item => _.defaults(item, { __typename: type }));
+        return parent;
+      });
+    };
+
     switch (operationName) {
 
       //
-      // ProjectsQuery (hard coded).
+      // ProjectsQuery
       //
       case ProjectsQueryName: {
         let { filter } = variables;
-        return this._itemStore.queryItems(context, {}, filter).then(items => {
 
-          // For each 'Project' get list of task IDs and query for that.
+        return this._itemStore.queryItems(context, {}, filter).then(items => {
           return Promise.all(_.map(items, item => {
             item.__typename = item.type;
-
-            // TODO(burdon): Implement mini resolver here (i.e., query for items with ID stored in project).
-            return this._itemStore.queryItems(context, {}, { ids: item.tasks }).then(tasks => {
-              item.tasks = _.map(tasks, task => _.defaults(task, {
-                __typename: task.type
-              }));
-
-              return item;
-            });
+            return resolve(item, 'tasks', 'Task');
           }));
         }).then(items => {
           return {
             data: {
               search: {
                 __typename: 'SeachResult',
-                items: items
+                items
               }
             }
           };
@@ -146,12 +146,18 @@ export class TestingNetworkInterface {
         let { mutations } = variables;
 
         return ItemStore.applyMutations(this._itemStore, context, mutations).then(upsertItems => {
-          _.each(upsertItems, item => {
-            _.assign(item, {
-              __typename: item.type
-            });
-          });
+          return Promise.all(_.map(upsertItems, upsertItem => {
+            upsertItem.__typename = upsertItem.type;
 
+            switch (upsertItem.type) {
+              case 'Project':
+                return resolve(_.cloneDeep(upsertItem), 'tasks', 'Task');
+
+              default:
+                return Promise.resolve(upsertItem);
+            }
+          }));
+        }).then(upsertItems => {
           return {
             data: {
               upsertItems

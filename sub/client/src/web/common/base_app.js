@@ -166,6 +166,7 @@ export class BaseApp {
       addTypename: true,
 
       // Support validation for fragments of interfaces.
+      // Otherwise: WARNING: heuristic fragment matching going on!
       fragmentMatcher,
 
       // TODO(burdon): Need to update reducers to accept multiple results.

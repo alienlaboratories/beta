@@ -9,7 +9,7 @@ import { createMemoryHistory, Route, Router } from 'react-router';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import { routerMiddleware, routerReducer } from 'react-router-redux';
-import { graphql, ApolloProvider } from 'react-apollo';
+import { graphql, ApolloProvider, IntrospectionFragmentMatcher } from 'react-apollo';
 import ApolloClient from 'apollo-client';
 import { createNetworkInterface } from 'apollo-client';
 import update from 'immutability-helper';
@@ -157,6 +157,7 @@ class ListComponent extends React.Component {
 
           <div className="test-footer">
             <div className="test-expand">Render: { ++this.count }</div>
+            <button>Reset</button>
             <button onClick={ this.handleRefetch.bind(this) }>Refetch</button>
           </div>
 
@@ -276,50 +277,65 @@ const ProjectReducer = (path, options={}) => (previousResult, action, variables)
   if (action.type === 'APOLLO_MUTATION_RESULT' &&
     action.operationName === UpsertItemsMutationName && options.reducer) {
 
+    // Build map of items.
+    let itemCache = new Map();
+    let { upsertItems } = _.get(action, 'result.data');
+    _.each(upsertItems, upsertItem => {
+      console.assert(upsertItem.id);
+      itemCache.set(upsertItem.id, upsertItem);
+    });
 
-    // TODO(burdon): The action contains the optimistic result for the project (with task IDs).
-    // Path the previous result with the Task (which should also be in this action).
-    console.log('##### RES', JSON.stringify(action.result, null, 2));
+    // TODO(burdon): Genaralize: 1) helpers; 2). parse AST.
 
-    
-    // Compound reducer.
-    // return tasksReducer(previousResult, action, variables);
-  }
+    let i = 0;
+    let updateSpec = {};
+    _.each(upsertItems, upsertItem => {
+      switch (upsertItem.type) {
+        case 'Project': {
+          // Find current item in previous results.
+          let project = _.find(_.get(previousResult, 'search.items'), item => {
+            item.id === upsertItem.id;
+          });
 
-  return previousResult;
-};
+          // Put existing tasks into map.
+          _.each(_.get(project, 'tasks'), task => {
+            itemCache.set(task.id, task);
+          });
 
-/*
-const ListReducer = (path, options={}) => (previousResult, action, variables) => {
+          // Get updated task list.
+          let newTasks = [];
+          let taskIds = _.get(upsertItem, 'tasks');
+          _.each(taskIds, taskId => {
+            let task = itemCache.get(taskId);
+            console.assert(task, 'Item not found: ', taskId);
+            newTasks.push(task);
+          });
 
-  // Isolate mutations.
-  if (action.type === 'APOLLO_MUTATION_RESULT' &&
-    action.operationName === UpsertItemsMutationName && options.reducer) {
-    let { upsertItems } = action.result.data;
-    let currentItems = _.get(previousResult, path);
+          // Accumulat the diffs.
+          _.merge(updateSpec, {
+            search: {
+              items: {
+                // Replace list.
+                // TODO(burdon): Get ordinal position.
+                [i]: {
+                  tasks: { $set: newTasks }
+                }
+              }
+            }
+          });
+        }
+      }
 
-    // TODO(burdon): Test belongs to this list (project mutation should happen first)? Batch?
+      i++;
+    });
 
-    // Append.
-    // TODO(burdon): Test for removal (matcher).
-    // TODO(burdon): Sort order.
-    let appendItems =
-      _.filter(upsertItems, item => !_.find(currentItems, currentItem => currentItem.id === item.id));
-
-    if (!_.isEmpty(appendItems)) {
-
-      // https://github.com/kolodny/immutability-helper
-      let tranform = _.set({}, path, {
-        $push: appendItems
-      });
-
-      return update(previousResult, tranform);
+    if (!_.isEmpty(updateSpec)) {
+      return update(previousResult, updateSpec);
     }
   }
 
   return previousResult;
 };
-*/
 
 //-------------------------------------------------------------------------------------------------
 // Batch
@@ -437,8 +453,8 @@ class Batch {
         // Clone mutations, iterate tree and replace id with object value.
         // NOTE: This isn't 100% clean since theoretically some value mutations may legitimately deal with IDs.
         // May need to "mark" ID values when set in batch mutation API call.
-        let clonedMutations = _.cloneDeep(mutations);
-        TypeUtil.traverse(clonedMutations, (value, key, root) => {
+        mutations = _.cloneDeep(mutations);
+        TypeUtil.traverse(mutations, (value, key, root) => {
           if (key === 'id') {
             let referencedItem = this._items.get(value);
             if (referencedItem) {
@@ -450,7 +466,7 @@ class Batch {
         // http://dev.apollodata.com/react/optimistic-ui.html
         // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-optimisticResponse
         // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
-        let updatedItem = Transforms.applyObjectMutations(_.cloneDeep(item), clonedMutations);
+        let updatedItem = Transforms.applyObjectMutations(_.cloneDeep(item), mutations);
 
         // Update the batch's cache for patching above.
         this._items.set(item.id, updatedItem);
@@ -466,8 +482,6 @@ class Batch {
       optimisticResponse = {
         upsertItems
       };
-
-      console.log('##### OPT #####\n', JSON.stringify(optimisticResponse, null, 2));
     }
 
     // Submit mutation.
@@ -717,16 +731,33 @@ export class App {
     // http://dev.apollodata.com/core/apollo-client-api.html#apollo-client
     this._client = new ApolloClient({
 
+      // By default, Apollo identifies objects based on two properties: The __typename and an ID field, either id or _id.
       // TODO(burdon): Factor out.
       // Cache normalization (allows for automatic updates to all queries following mutations).
       // Requires mutatied items to include __typename attributes.
       // http://dev.apollodata.com/react/cache-updates.html
-      addTypename: true,
-      dataIdFromObject: (obj) => {
-        if (obj.__typename && obj.id) {
-          return obj.__typename + '/' + obj.id;
+      // TODO(burdon): Replace to/from global ID.
+      // Access via client.dataIdFromObject(item) => Task:xxx
+      // addTypename: true,
+      // dataIdFromObject: (obj) => {
+      //   console.assert(obj.__typename && obj.id);
+      //   return obj.__typename + '/' + obj.id;
+      // },
+
+      // http://dev.apollodata.com/react/initialization.html#fragment-matcher
+      fragmentMatcher: new IntrospectionFragmentMatcher({
+        introspectionQueryResultData: {
+          __schema: {
+            types: [
+              {
+                kind: 'INTERFACE',
+                name: 'Item',
+                possibleTypes: ['Project', 'Task']
+              }
+            ],
+          },
         }
-      },
+      }),
 
       // http://dev.apollodata.com/core/network.html#NetworkInterface
       // https://github.com/apollographql/apollo-client/blob/master/src/transport/networkInterface.ts
@@ -742,7 +773,7 @@ export class App {
     let initialState = {
       options: {
         reducer: false,
-        optimisticResponse: true,
+        optimisticResponse: false,
         networkDelay: false
       }
     };

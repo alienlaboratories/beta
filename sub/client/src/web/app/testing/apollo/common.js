@@ -43,6 +43,12 @@ export const UpsertItemsMutation = gql`
       type
       id
       title
+      
+      ... on Project {
+        tasks {
+          id
+        }
+      }
     }
   }
 `;

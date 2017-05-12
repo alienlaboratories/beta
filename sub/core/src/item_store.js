@@ -130,23 +130,22 @@ export class ItemStore extends QueryProcessor {
       // Get and update item.
       // TODO(burdon): Relies on getItem to return {} for not found.
       //
-      return itemStore.getItem(context, type, localId)
-        .then(item => {
+      return itemStore.getItem(context, type, localId).then(item => {
 
-          // If not found (i.e., insert).
-          // TODO(burdon): Check this is an insert (not a miss due to a bug); use version?
-          if (!item) {
-            item = {
-              id: localId,
-              type: type
-            };
-          }
+        // If not found (i.e., insert).
+        // TODO(burdon): Check this is an insert (not a miss due to a bug); use version?
+        if (!item) {
+          item = {
+            id: localId,
+            type: type
+          };
+        }
 
-          //
-          // Apply mutations.
-          //
-          return Transforms.applyObjectMutations(item, mutations);
-        });
+        //
+        // Apply mutations.
+        //
+        return Transforms.applyObjectMutations(item, mutations);
+      });
     }))
 
       //

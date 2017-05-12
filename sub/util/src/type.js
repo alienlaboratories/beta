@@ -56,9 +56,9 @@ export class TypeUtil {
   /**
    * Concise stringify.
    */
-  static stringify(json, indent=0) {
+  static stringify(json, indent=0, verbose=false) {
     let str = JSON.stringify(json, (key, value) => {
-      if (_.isArray(value)) {
+      if (_.isArray(value) && !verbose) {
         return `len(${value.length})`;
       }
       if (_.isString(value)) {
