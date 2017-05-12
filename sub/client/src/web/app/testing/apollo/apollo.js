@@ -270,64 +270,16 @@ const OptionsComponentWithRedux = connect(mapStateToProps, mapDispatchToProps)(O
 //
 //-------------------------------------------------------------------------------------------------
 
-const ProjectReducer = (path, options={}) => (previousResult, action, variables) => {
-  // const tasksReducer = ListReducer(path + '[0].tasks', options);
-
-  // Isolate mutations.
+const SearchReducer = (path, options={}) => (previousResult, action, variables) => {
   if (action.type === 'APOLLO_MUTATION_RESULT' &&
     action.operationName === UpsertItemsMutationName && options.reducer) {
 
-    // Build map of items.
-    let itemCache = new Map();
-    let { upsertItems } = _.get(action, 'result.data');
-    _.each(upsertItems, upsertItem => {
-      console.assert(upsertItem.id);
-      itemCache.set(upsertItem.id, upsertItem);
-    });
+    // NOTE: The reducer isn't necessary for mutations that return full responses (with ID/links, etc.)
+    // It is required for search results.
+    // It will also be required later when as an optimization, mutation results are not complete
+    // (i.e., don't contain full items in fields -- perhaps just returning lists of IDs).
 
-    // TODO(burdon): Genaralize: 1) helpers; 2). parse AST.
-
-    let i = 0;
     let updateSpec = {};
-    _.each(upsertItems, upsertItem => {
-      switch (upsertItem.type) {
-        case 'Project': {
-          // Find current item in previous results.
-          let project = _.find(_.get(previousResult, 'search.items'), item => {
-            item.id === upsertItem.id;
-          });
-
-          // Put existing tasks into map.
-          _.each(_.get(project, 'tasks'), task => {
-            itemCache.set(task.id, task);
-          });
-
-          // Get updated task list.
-          let newTasks = [];
-          let taskIds = _.get(upsertItem, 'tasks');
-          _.each(taskIds, taskId => {
-            let task = itemCache.get(taskId);
-            console.assert(task, 'Item not found: ', taskId);
-            newTasks.push(task);
-          });
-
-          // Accumulat the diffs.
-          _.merge(updateSpec, {
-            search: {
-              items: {
-                // Replace list.
-                // TODO(burdon): Get ordinal position.
-                [i]: {
-                  tasks: { $set: newTasks }
-                }
-              }
-            }
-          });
-        }
-      }
-
-      i++;
-    });
 
     if (!_.isEmpty(updateSpec)) {
       return update(previousResult, updateSpec);
@@ -528,7 +480,7 @@ const ListComponentWithApollo = compose(
 //      fetchPolicy: 'network-only',
 
         // http://dev.apollodata.com/react/cache-updates.html#resultReducers
-        reducer: ProjectReducer('search.items', options)
+        reducer: SearchReducer('search.items', options)
       };
     },
 
@@ -773,8 +725,8 @@ export class App {
     let initialState = {
       options: {
         reducer: false,
-        optimisticResponse: false,
-        networkDelay: false
+        optimisticResponse: true,
+        networkDelay: true
       }
     };
 
