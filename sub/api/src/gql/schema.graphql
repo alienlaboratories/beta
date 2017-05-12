@@ -330,12 +330,13 @@ type RootQuery {
 
 input ItemMutationInput {
 
-  # TODO(burdon): Regular ID + type?
-  # Item to mutate.
-  itemId: ID!
-
   # Bucket.
   bucket: String!
+
+  # TODO(burdon): Regular ID + type?
+  # TODO(burdon): Set type (not part of mutation).
+  # Item to mutate.
+  itemId: ID!
 
   # Array of generic mutations.
   mutations: [ObjectMutationInput]!

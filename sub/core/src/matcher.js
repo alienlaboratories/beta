@@ -40,8 +40,8 @@ export class Matcher {
    * @returns {boolean} True if the item matches the filter.
    */
   matchItem(context, root, filter, item) {
-//  console.log('MATCH: [%s]: %s', JSON.stringify(filter), JSON.stringify(item));
     console.assert(item && filter);
+//  console.log('MATCH: [%s]: %s', JSON.stringify(filter), JSON.stringify(item));
 
     // TODO(burdon): Filter should not include bucket (implicit in query)?
     if (filter.bucket && filter.bucket !== item.bucket) {

@@ -9,4 +9,6 @@ import { App } from './apollo';
 /**
  * Complete minimal React-Redux-Apollo client app.
  */
-ReactDOM.render(new App().root, document.getElementById('test-container'));
+new App().init(app => {
+  ReactDOM.render(app.root, document.getElementById('test-container'));
+});

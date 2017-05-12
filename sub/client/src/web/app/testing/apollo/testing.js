@@ -3,45 +3,15 @@
 //
 
 import { TypeUtil } from 'alien-util';
-import { ID, IdGenerator, ItemUtil, Transforms } from 'alien-core';
+import { IdGenerator, ItemStore, Matcher, MemoryItemStore } from 'alien-core';
 
 import { UpsertItemsMutationName, ProjectsQueryName } from './common';
-
-const idGenerator = new IdGenerator();
 
 //-------------------------------------------------------------------------------------------------
 // Test Server.
 //-------------------------------------------------------------------------------------------------
 
-const ITEMS = _.times(5, i => ({
-  bucket:   'Group-0',
-  type:     'Task',
-  id:       idGenerator.createId(),
-  title:    'Task ' + (i + 1)
-}));
-
-class Database {
-
-  queryItems() {
-    return Promise.resolve(ITEMS);
-  }
-
-  upsertItems(items) {
-    let itemMap = ItemUtil.createItemMap(ITEMS);
-    _.each(items, item => {
-      let existing = itemMap.get(item.id);
-      if (existing) {
-        _.merge(item, existing);
-      } else {
-        ITEMS.push(item);
-      }
-
-      console.log('Database.upsertItems[' + item.id + '] = ' + JSON.stringify(item));
-    });
-
-    return Promise.resolve(items);
-  }
-}
+const bucket = 'Group-0';
 
 /**
  * Test NetworkInterface
@@ -53,8 +23,6 @@ export class TestingNetworkInterface {
 
   static NETWORK_DELAY = 2000;
 
-  database = new Database();
-
   count = 0;
 
   /**
@@ -62,7 +30,28 @@ export class TestingNetworkInterface {
    */
   constructor(stateGetter) {
     console.assert(stateGetter);
-    this.stateGetter = stateGetter;
+    this._stateGetter = stateGetter;
+    this._itemStore = new MemoryItemStore(new IdGenerator(), new Matcher(), 'testing', false);
+  }
+
+  init() {
+    // TODO(burdon): Test data.
+    return this._itemStore.upsertItem({}, {
+      __typename: 'Project',
+
+      id: 'P-0',
+      bucket,
+      type: 'Project',
+      title: 'Default Project',
+      labels: ['_default'],
+
+      group: {
+        __typename: 'Group',
+
+        id: bucket,
+        title: 'Default Group'
+      }
+    });
   }
 
   //
@@ -70,7 +59,7 @@ export class TestingNetworkInterface {
   //
 
   query({ operationName, query, variables }) {
-    let { options } = this.stateGetter();
+    let { options } = this._stateGetter();
     let delay = options.networkDelay ? TestingNetworkInterface.NETWORK_DELAY : 0;
 
     let count = ++this.count;
@@ -94,38 +83,35 @@ export class TestingNetworkInterface {
   }
 
   processQuery(operationName, query, variables) {
+    let context = { buckets: [bucket] };
+
     switch (operationName) {
 
       //
-      // TestQuery
+      // ProjectsQuery (hard coded).
       //
       case ProjectsQueryName: {
-        return this.database.queryItems().then(items => {
+        let { filter } = variables;
+        return this._itemStore.queryItems(context, {}, filter).then(items => {
+
+          // For each 'Project' get list of task IDs and query for that.
+          return Promise.all(_.map(items, item => {
+
+            // TODO(burdon): Implement mini resolver here (i.e., query for items with ID stored in project).
+            return this._itemStore.queryItems(context, {}, { ids: item.tasks }).then(tasks => {
+              item.tasks = _.map(tasks, task => _.defaults(task, {
+                __typename: task.type
+              }));
+
+              return item;
+            });
+          }));
+        }).then(items => {
           return {
             data: {
               search: {
                 __typename: 'SeachResult',
-                items: [
-                  {
-                    __typename: 'Project',
-
-                    bucket: 'Group-0',
-                    id: 'P-0',
-                    type: 'Project',
-                    title: 'Default Project',
-                    labels: ['_default'],
-                    group: {
-                      __typename: 'Group',
-
-                      id: 'Group-0',
-                      title: 'Default Group'
-                    },
-                    tasks: _.map(items, item => ({
-                      __typename: item.type,
-                      ...item
-                    }))
-                  }
-                ]
+                items: items
               }
             }
           };
@@ -133,48 +119,30 @@ export class TestingNetworkInterface {
       }
 
       //
-      // TestMutation
+      // UpsertItemsMutation
       //
       case UpsertItemsMutationName: {
-        return this.database.queryItems().then(items => {
-          let { mutations } = variables;
+        let { mutations } = variables;
 
-          let upsertItems = [];
+        // TODO(burdon): Check applies mutation to existing record. Global/localID?
+        console.log('###', mutations);
 
-          let itemMap = ItemUtil.createItemMap(items);
-          _.each(mutations, mutation => {
-            let { bucket, itemId } = mutation;
-            let { id:localId } = ID.fromGlobalId(itemId);
-            let item = itemMap.get(localId);
-            if (!item) {
-              item = {
-                bucket,
-                type: itemId.substring(0, itemId.indexOf('/')),
-                id: localId
-              };
+        return ItemStore.applyMutations(this._itemStore, context, mutations).then(upsertItems => {
 
-              itemMap.set(localId, item);
-            }
-
-            // Apply transforms.
-            let upsertItem = Transforms.applyObjectMutations(item, mutation.mutations);
-
-            // Important for client-side cache-normalization.
-            _.assign(upsertItem, {
+          // TODO(burdon):
+          _.each(upsertItems, item => {
+            _.assign(item, {
               __typename: item.type
             });
-
-            console.log('Upsert Item: ' + JSON.stringify(upsertItem));
-            upsertItems.push(upsertItem);
           });
 
-          return this.database.upsertItems(upsertItems).then(items => {
-            return {
-              data: {
-                upsertItems: items
-              }
-            };
-          });
+          console.log('####', upsertItems);
+
+          return {
+            data: {
+              upsertItems
+            }
+          };
         });
       }
 

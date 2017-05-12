@@ -110,6 +110,7 @@ export class MutationUtil {
    * @param {string} type
    * @param {string|int} value
    * @param {boolean} add
+   * @returns {Mutation}
    */
   static createSetMutation(field, type, value, add=true) {
     console.assert(field && type && value);
@@ -132,7 +133,7 @@ export class MutationUtil {
    * @param field
    * @param type If null, then set nul value.
    * @param value If null, then set null value.
-   * @returns {mutation}
+   * @returns {Mutation}
    */
   static createFieldMutation(field, type=null, value=null) {
     console.assert(field);
@@ -150,7 +151,7 @@ export class MutationUtil {
    * Creates a mutation to add or remove a label.
    * @param label
    * @param set
-   * @returns {mutation}
+   * @returns {Mutation}
    */
   static createLabelMutation(label, set=true) {
     console.assert(label);
@@ -169,7 +170,7 @@ export class MutationUtil {
 
   /**
    * Adds the delete label.
-   * @returns {mutation}
+   * @returns {Mutation}
    */
   static createDeleteMutation(set=true) {
     return MutationUtil.createLabelMutation('_deleted', set);

@@ -12,4 +12,6 @@ let config = window.config;
 /**
  * Complete minimal React-Redux-Apollo client app.
  */
-ReactDOM.render(new App(config).root, document.getElementById(AppDefs.DOM_ROOT));
+new App(config).init().then(app => {
+  ReactDOM.render(app.root, document.getElementById(AppDefs.DOM_ROOT));
+});

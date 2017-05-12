@@ -37,8 +37,6 @@ const ProjectFilter = {
   }
 };
 
-// TODO(burdon): Link mutations (batch 2 items). Query Tasks for Project (add to Project).
-
 // TODO(burdon): Network delay for server network interface.
 // TODO(burdon): Subscriptions.
 
@@ -85,29 +83,34 @@ class ListComponent extends React.Component {
   }
 
   handleUpdate(item, event) {
-    let { project, updateItem } = this.props;
+    let { project, createBatch } = this.props;
     let bucket = _.get(project, 'group.id');
     let input = this.refs['INPUT/' + item.id];
     let text = $(input).val();
     if (text) {
-      updateItem(item, bucket, [
-        MutationUtil.createFieldMutation('type', 'string', 'Task'),
-        MutationUtil.createFieldMutation('title', 'string', text)
-      ]);
+      createBatch(bucket)
+        .updateItem(item, [
+          MutationUtil.createFieldMutation('title', 'string', text)
+        ])
+        .commit();
     }
 
     input.focus();
   }
 
   handleInsert(event) {
-    let { project, insertItem } = this.props;
+    let { project, createBatch } = this.props;
     let { text } = this.state;
     let bucket = _.get(project, 'group.id');
     if (text) {
-      insertItem('Task', bucket, [
-        MutationUtil.createFieldMutation('bucket', 'string', bucket),
-        MutationUtil.createFieldMutation('title', 'string', text)
-      ]);
+      createBatch(bucket)
+        .createItem('Task', [
+          MutationUtil.createFieldMutation('title', 'string', text)
+        ], 'x')
+        .updateItem(project, [
+          Batch.ref('x', item => MutationUtil.createSetMutation('tasks', 'id', item.id))
+        ])
+        .commit();
 
       this.setState({
         text: ''
@@ -310,25 +313,155 @@ const ListReducer = (path, options={}) => (previousResult, action, variables) =>
 };
 
 //-------------------------------------------------------------------------------------------------
-// Optimistic Updates.
-// http://dev.apollodata.com/react/optimistic-ui.html
-// http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-optimisticResponse
-// http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
+// Batch
 //-------------------------------------------------------------------------------------------------
 
-const OptimisticResponse = (item, mutations) => {
+// TODO(burdon): Unit test.
 
-  let updatedItem = Transforms.applyObjectMutations(item, mutations);
+class Batch {
 
-  // Important for update.
-  _.assign(updatedItem, {
-    __typename: item.type
-  });
+  /**
+   * Creates a generator that will be called with the ID of the referenced item to create the mutation.
+   * @param {string} label
+   * @param {function({Item})} callback Callback returns a {Mutation}.
+   */
+  static ref(label, callback) {
+    return (batch) => {
+      let itemId = batch._refs.get(label);
+      console.assert(itemId);
+      let item = batch._items.get(itemId);
+      console.assert(item);
+      return callback(item);
+    };
+  }
 
-  return {
-    upsertItems: [updatedItem]
-  };
-};
+  /**
+   * Do NOT create directly.
+   * @param {function} mutate Mutate function provided by Apollo.
+   * @param {string} bucket All batched operations must belong to the same bucket.
+   * @param {boolean} optimistic
+   * @private
+   */
+  constructor(mutate, bucket, optimistic=false) {
+    this._mutate = mutate;
+    this._bucket = bucket;
+    this._optimistic = optimistic;
+    this._refs = new Map();
+    this._items = new Map();
+    this._mutations = [];
+  }
+
+  /**
+   * Create a new item.
+   * @param {string} type Item type.
+   * @param {[{Mutation}]} mutations Mutations to apply.
+   * @param {string} ref Optional label that can be used as a reference for subsequent batch operations.
+   * @returns {Batch}
+   */
+  createItem(type, mutations, ref=undefined) {
+    console.assert(type && mutations);
+    let itemId = idGenerator.createId();
+    this._items.set(itemId, { type, id: itemId });
+
+    // TODO(burdon): Remove from client (when transplant to current app).
+    // TODO(burdon): Enforce server-side (and/or move into schema proto).
+    mutations.unshift(
+      MutationUtil.createFieldMutation('bucket', 'string', this._bucket),
+      MutationUtil.createFieldMutation('type', 'string', type)
+    );
+
+    this._mutations.push({
+      bucket: this._bucket,
+      itemId: ID.toGlobalId(type, itemId),
+      mutations
+    });
+
+    if (ref) {
+      this._refs.set(ref, itemId);
+    }
+
+    return this;
+  }
+
+  /**
+   * Update an existing item.
+   * @param {Item} item Item to mutate.
+   * @param {[{Mutation}]} mutations Mutations to apply.
+   * @returns {Batch}
+   */
+  updateItem(item, mutations) {
+    console.assert(item && mutations);
+    this._items.set(item.id, item);
+
+    this._mutations.push({
+      bucket: this._bucket,
+      itemId: ID.toGlobalId(item.type, item.id),
+      mutations: _.map(mutations, mutation => {
+        if (_.isFunction(mutation)) {
+          return mutation(this);
+        } else {
+          return mutation;
+        }
+      })
+    });
+
+    return this;
+  }
+
+  /**
+   * Commit all changes.
+   */
+  commit() {
+    let optimisticResponse = undefined;
+    if (this._optimistic) {
+      optimisticResponse = {
+
+        upsertItems: _.map(this._mutations, mutation => {
+          let { itemId, mutations } = mutation;
+          let { id } = ID.fromGlobalId(itemId);
+          let item = this._items.get(id);
+          console.assert(item);
+
+          // Patch IDs with items.
+          // Clone mutations, iterate tree and replace id with object value.
+          // NOTE: This isn't 100% clean since theoretically some value mutations may legitimately deal with IDs.
+          // May need to "mark" ID values when set in batch mutation API call.
+          let clonedMutations = _.clone(mutations);
+          TypeUtil.traverse(clonedMutations, (value, key, root) => {
+            if (key === 'id') {
+              let referencedItem = this._items.get(value);
+              if (referencedItem) {
+                root[key] = referencedItem;
+              }
+            }
+          });
+
+          // http://dev.apollodata.com/react/optimistic-ui.html
+          // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-optimisticResponse
+          // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
+          let updatedItem = Transforms.applyObjectMutations(_.clone(item), clonedMutations);
+          this._items.set(item.id, updatedItem);  // Update the batch's cache for patching above.
+
+          // Important for update.
+          _.assign(updatedItem, {
+            __typename: item.type
+          });
+
+          return updatedItem;
+        })
+      };
+    }
+
+    // Submit mutation.
+    this._mutate({
+      variables: {
+        mutations: this._mutations
+      },
+
+      optimisticResponse
+    });
+  }
+}
 
 //-------------------------------------------------------------------------------------------------
 // Apollo Container.
@@ -344,9 +477,10 @@ const ListComponentWithApollo = compose(
     };
   }),
 
-
   // http://dev.apollodata.com/react/queries.html
   graphql(ProjectsQuery, {
+
+    // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
 
     // http://dev.apollodata.com/react/queries.html#graphql-options
     options: (props) => {
@@ -408,57 +542,13 @@ const ListComponentWithApollo = compose(
     // http://dev.apollodata.com/react/mutations.html#custom-arguments
     props: ({ ownProps, mutate }) => ({
 
-      // TODO(burdon): update.
-      // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
-
-      //
-      // Insert item.
-      //
-      updateItem: (item, bucket, mutations) => {
-        console.assert(item && bucket && mutations);
-
-        let optimisticResponse =
-          ownProps.options.optimisticResponse && OptimisticResponse(item, mutations);
-
-        return mutate({
-          variables: {
-            mutations: [
-              {
-                itemId: ID.toGlobalId(item.type, item.id),
-                bucket,
-                mutations
-              }
-            ]
-          },
-
-          optimisticResponse
-        });
-      },
-
-      //
-      // Insert item.
-      //
-      insertItem: (type, bucket, mutations) => {
-        console.assert(type && bucket && mutations);
-
-        let itemId = idGenerator.createId();
-
-        let optimisticResponse =
-          ownProps.options.optimisticResponse && OptimisticResponse({ type, id: itemId }, mutations);
-
-        return mutate({
-          variables: {
-            mutations: [
-              {
-                itemId: ID.toGlobalId(type, itemId),
-                bucket,
-                mutations
-              }
-            ]
-          },
-
-          optimisticResponse
-        });
+      /**
+       * Creates a batch.
+       * @param bucket
+       * @returns {Batch}
+       */
+      createBatch: (bucket) => {
+        return new Batch(mutate, bucket, ownProps.options.optimisticResponse);
       }
     })
   })
@@ -555,18 +645,27 @@ export class App {
 
   constructor(config) {
     console.assert(config);
+    this._config = config;
+  }
 
-    // TODO(burdon): Use actual interface.
-    let networkInterface;
-    switch (_.get(config, 'query.network')) {
+  init() {
+    console.log('Initializing...');
+    return this.initNetwork().then(() => {
+      this.postInit();
+      return this;
+    });
+  }
+
+  initNetwork() {
+    switch (_.get(this._config, 'query.network')) {
       case 'testing': {
-        networkInterface = new TestingNetworkInterface(() => AppState(this._store.getState()));
-        break;
+        this._networkInterface = new TestingNetworkInterface(() => AppState(this._store.getState()));
+        return this._networkInterface.init();
       }
 
       default: {
-        networkInterface = createNetworkInterface({
-          uri: _.get(config, 'graphql')
+        this._networkInterface = createNetworkInterface({
+          uri: _.get(this._config, 'graphql')
         }).use([
           {
             // http://dev.apollodata.com/core/network.html#networkInterfaceMiddleware
@@ -574,15 +673,20 @@ export class App {
 
               // Set the Auth header.
               options.headers = _.assign(options.headers, {
-                'Authorization': AuthDefs.JWT_SCHEME + ' ' + _.get(config, 'credentials.id_token')
+                'Authorization': AuthDefs.JWT_SCHEME + ' ' + _.get(this._config, 'credentials.id_token')
               });
 
               next();
             }
           }
         ]);
+
+        return Promise.resolve();
       }
     }
+  }
+
+  postInit() {
 
     //
     // Apollo.
@@ -605,7 +709,7 @@ export class App {
 
       // http://dev.apollodata.com/core/network.html#NetworkInterface
       // https://github.com/apollographql/apollo-client/blob/master/src/transport/networkInterface.ts
-      networkInterface
+      networkInterface: this._networkInterface
     });
 
     //
@@ -616,7 +720,7 @@ export class App {
     // Initial options.
     let initialState = {
       options: {
-        reducer: true,
+        reducer: false,
         optimisticResponse: true,
         networkDelay: false
       }
