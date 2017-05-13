@@ -4,7 +4,7 @@
 # Install common modules required by Grunt.
 #
 
-MODULES=$(ls sub)
+MODULES="api client core scheduler services util"
 
 for mod in ${MODULES[@]}; do
   pushd sub/$mod

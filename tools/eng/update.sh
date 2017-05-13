@@ -9,7 +9,7 @@
 # https://facebook.github.io/react/warnings/refs-must-have-owner.html#multiple-copies-of-react
 #
 
-MODULES=$(ls sub)
+MODULES="api client core scheduler services util"
 
 for mod in ${MODULES[@]}; do
   echo
