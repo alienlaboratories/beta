@@ -18,6 +18,7 @@ for mod in ${MODULES[@]}; do
 
   pushd sub/$mod
   npm-workspace install
+  npm update
   popd
 done
 

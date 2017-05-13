@@ -2,11 +2,13 @@
 // Copyright 2017 Alien Labs.
 //
 
-import { MutationUtil } from 'alien-core';
+import { IdGenerator, MutationUtil } from 'alien-core';
 
 import { Batch } from './batch';
 
 const bucket = 'Group-1';
+
+const idGenerator = new IdGenerator();
 
 // Jest:
 // https://facebook.github.io/jest/docs/expect.html#tohavelengthnumber
@@ -19,7 +21,7 @@ describe('Batch:', () => {
       done();
     }
 
-    new Batch(mutator, bucket).commit();
+    new Batch(mutator, idGenerator, bucket).commit();
   });
 
   it('Create item.', (done) => {
@@ -32,8 +34,8 @@ describe('Batch:', () => {
       done();
     }
 
-    new Batch(mutator, bucket)
-      .createItem('Task', 'T-1', [
+    new Batch(mutator, idGenerator, bucket)
+      .createItem('Task', [
         MutationUtil.createFieldMutation('title', 'string', 'Test')
       ])
       .commit();
@@ -49,8 +51,8 @@ describe('Batch:', () => {
       done();
     }
 
-    new Batch(mutator, bucket, true)
-      .createItem('Task', 'T-1', [
+    new Batch(mutator, idGenerator, bucket, true)
+      .createItem('Task', [
         MutationUtil.createFieldMutation('title', 'string', 'Test')
       ], 'task')
       .updateItem({ id: 'P-1', type: 'Project' }, [
