@@ -52,7 +52,7 @@ class AdminActivity extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { items:groups } = this.props;
+      let { groups } = this.props;
       let { groupId } = this.state;
 
       // Join email whitelist with actual members.
@@ -135,13 +135,13 @@ export default Activity.compose(
     }),
 
     props: ({ ownProps, data }) => {
-      let { errors, loading, search } = data;
-      let { items } = search;
+      let { errors, loading, search={} } = data;
+      let { items:groups } = search;
 
       return {
         errors,
         loading,
-        items
+        groups
       };
     }
   })

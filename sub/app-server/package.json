@@ -32,7 +32,6 @@
     "grunt-run": "^0.6.0",
     "grunt-version": "^1.1.1",
     "grunt-webpack": "^3.0.0",
-    "jquery": "^3.2.1",
     "json-loader": "^0.5.4",
     "karma": "^1.7.0",
     "karma-babel-preprocessor": "^6.0.1",
@@ -46,7 +45,7 @@
     "less": "^2.7.1",
     "less-loader": "^4.0.3",
     "mocha": "^3.1.2",
-    "react-hot-loader": "^3.0.0-beta.6",
+    "react-hot-loader": "3.0.0-beta.7",
     "sinon": "^2.2.0",
     "sinon-chai": "^2.10.0",
     "style-loader": "^0.17.0",
@@ -78,14 +77,13 @@
     "express-handlebars": "^3.0.0",
     "express-session": "^1.15.2",
     "googleapis": "^19.0.0",
-    "history": "^4.4.0",
+    "jquery": "^3.2.1",
     "lodash": "^4.17.2",
     "moment": "^2.18.1",
     "node-yaml": "^3.0.3",
     "random-seed": "^0.3.0",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
-    "redux": "^3.6.0",
     "serve-favicon": "^2.4.2",
     "uuid": "^3.0.1"
   },
@@ -97,12 +95,12 @@
       "nodemon => babel-node: runs the server with auto-rebuild (via babel) on change.",
       "start => runs the server with hot module replacement (server not updated)."
     ],
-    "webpack":      "webpack --watch",
-    "lint":         "eslint -c ../../.eslintrc.yml ./src",
-    "test":         "BABEL_DISABLE_CACHE=1 mocha --full-trace --require babel-polyfill --compilers js:babel-register \"src/**/*.test.js\"",
-    "test-server":  "BABEL_DISABLE_CACHE=1 NODE_ENV=testing ALIEN_CONFIG='alienlabs-testing' babel-node src/server/main.js",
-    "hot":          "BABEL_DISABLE_CACHE=1 BABEL_ENV=hot NODE_ENV=hot ALIEN_CONFIG='alienlabs-testing' hilite babel-node src/server/main.js",
-    "server":       "BABEL_DISABLE_CACHE=1 babel-node src/server/main.js",
-    "start":        "hilite nodemon --exec npm run server"
+    "webpack": "webpack --watch",
+    "lint": "eslint -c ../../.eslintrc.yml ./src",
+    "test": "BABEL_DISABLE_CACHE=1 mocha --full-trace --require babel-polyfill --compilers js:babel-register \"src/**/*.test.js\"",
+    "test-server": "BABEL_DISABLE_CACHE=1 NODE_ENV=testing ALIEN_CONFIG='alienlabs-testing' babel-node src/server/main.js",
+    "hot": "BABEL_DISABLE_CACHE=1 BABEL_ENV=hot NODE_ENV=hot ALIEN_CONFIG='alienlabs-testing' hilite babel-node src/server/main.js",
+    "server": "BABEL_DISABLE_CACHE=1 babel-node src/server/main.js",
+    "start": "hilite nodemon --exec npm run server"
   }
 }

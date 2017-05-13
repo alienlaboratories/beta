@@ -4,10 +4,9 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { browserHistory, Route, Router } from 'react-router';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 
 import TestBoard from './test_board';
-import TestDragBoard from './dnd/board';
 import TestList from './test_list';
 import TestSidebar from './test_sidebar';
 import TestText from './test_text';
@@ -38,11 +37,6 @@ class Gallery extends React.Component {
       id: 'board',
       name: 'Board',
       render: () => <TestBoard/>
-    },
-    {
-      id: 'drag',
-      name: 'Drag',
-      render: () => <TestDragBoard/>
     },
     {
       id: 'sidebar',
@@ -82,13 +76,13 @@ class Gallery extends React.Component {
   }
 }
 
-// TODO(burdon): Proxy to allow routes.
-// http://stackoverflow.com/questions/26203725/how-to-allow-for-webpack-dev-server-to-allow-entry-points-from-react-router
+// TODO(burdon): StaticRouter
+// https://reacttraining.com/react-router/web/api/StaticRouter
 
 const App = (
-  <Router history={ browserHistory }>
-    <Route path="/components/testing/index.html" component={ Gallery }/>
+  <Router>
+    <Route path="/gallery" component={ Gallery }/>
   </Router>
 );
 
-ReactDOM.render(App, document.getElementById('test-container'));
+ReactDOM.render(App, document.getElementById('app-root'));

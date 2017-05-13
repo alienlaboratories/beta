@@ -23,7 +23,7 @@ const ENV = {
   PORT: _.get(process.env, 'PORT', 3000),
   HOST: _.get(process.env, 'HOST', __PRODUCTION__ ? '0.0.0.0' : '127.0.0.1'),
 
-  WEB_SERVER_VIEWS_DIR: _.get(process.env, 'WEB_SERVER_VIEWS_DIR', path.join(__dirname, './views')),
+  WEB_SERVER_VIEWS_DIR:  _.get(process.env, 'WEB_SERVER_VIEWS_DIR',  path.join(__dirname, './views')),
   WEB_SERVER_PUBLIC_DIR: _.get(process.env, 'WEB_SERVER_PUBLIC_DIR', path.join(__dirname, './public')),
 };
 

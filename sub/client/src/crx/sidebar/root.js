@@ -3,7 +3,7 @@
 //
 
 import React from 'react';
-import { IndexRedirect, Redirect, Route, Router } from 'react-router';
+import { MemoryRouter as Router, Redirect, Route } from 'react-router-dom';
 import { ApolloProvider } from 'react-apollo';
 import PropTypes from 'prop-types';
 
@@ -24,28 +24,22 @@ export class Application extends React.Component {
   static propTypes = {
     injector: PropTypes.object.isRequired,
     client: PropTypes.object.isRequired,
-    history: PropTypes.object.isRequired,
     store: PropTypes.object.isRequired
   };
 
   render() {
-    let { client, store, history } = this.props;
+    let { client, store } = this.props;
 
     return (
       <ApolloProvider client={ client } store={ store }>
-
-        <Router history={ history }>
+        <Router>
 
           <Route path={ Path.ROOT }>
-            <IndexRedirect to={ Path.HOME }/>
-
             <Route path={ Path.route(['folder']) } component={ FinderActivity }/>
-
             <Redirect from='*' to={ Path.HOME }/>
           </Route>
 
         </Router>
-
       </ApolloProvider>
     );
   }

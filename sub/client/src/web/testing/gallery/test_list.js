@@ -6,7 +6,7 @@ import React from 'react';
 
 import { Transforms } from 'alien-core';
 
-import { List, ListItem, ListItemEditor } from '../list';
+import { List, ListItem, ListItemEditor } from '../../components/list';
 
 /**
  * Test List.
@@ -40,6 +40,7 @@ export default class TestList extends React.Component {
     this.state = {
       items: [{
         id: TestList.createid(),
+        type: 'Test',
         title: 'A very very very very very very very long title.'
       }]
     };
@@ -47,6 +48,7 @@ export default class TestList extends React.Component {
     for (let i = 1; i < 50; i++) {
       this.state.items.push({
         id: TestList.createid(),
+        type: 'Test',
         title: 'Item ' + i
       });
     }
@@ -63,7 +65,8 @@ export default class TestList extends React.Component {
       this.forceUpdate();
     } else {
       item = {
-        id: TestList.createid()
+        id: TestList.createid(),
+        type: 'Test'
       };
 
       Transforms.applyObjectMutations(item, mutations);

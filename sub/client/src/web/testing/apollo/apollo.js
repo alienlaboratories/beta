@@ -5,7 +5,7 @@
 import _ from 'lodash';
 import React from 'react';
 import { connect } from 'react-redux';
-import { createMemoryHistory, Route, Router } from 'react-router';
+import { MemoryRouter as Router, Route } from 'react-router-dom';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import { routerMiddleware, routerReducer } from 'react-router-redux';
@@ -17,7 +17,7 @@ import update from 'immutability-helper';
 import { TypeUtil } from 'alien-util';
 import { AuthDefs, IdGenerator, ItemUtil, MutationUtil } from 'alien-core';
 
-import { ReactUtil } from '../../../util/index';
+import { ReactUtil } from '../../util/index';
 
 import { Batch } from './batch';
 import { ProjectsQuery, ProjectsQueryName, UpsertItemsMutation, UpsertItemsMutationName } from './common';
@@ -116,7 +116,7 @@ class ListComponent extends React.Component {
     let bucket = _.get(project, 'group.id');
     if (text) {
       createBatch(bucket)
-        .createItem('Task', idGenerator.createId(), [
+        .createItem('Task', [
           MutationUtil.createFieldMutation('title', 'string', text)
         ], 'task')
         .updateItem(project, [
@@ -386,7 +386,7 @@ const ListComponentWithApollo = compose(
        * @returns {Batch}
        */
       createBatch: (bucket) => {
-        return new Batch(mutate, bucket, ownProps.options.optimisticResponse);
+        return new Batch(mutate, idGenerator, bucket, ownProps.options.optimisticResponse);
       }
     })
   })
@@ -585,8 +585,6 @@ export class App {
       }
     };
 
-    this._history = createMemoryHistory('/');
-
     // https://github.com/acdlite/reduce-reducers
     const reducers = combineReducers({
       routing: routerReducer,
@@ -615,7 +613,7 @@ export class App {
   get root() {
     return (
       <ApolloProvider client={ this._client } store={ this._store }>
-        <Router history={ this._history }>
+        <Router>
           <Route path="/" component={ RootComponent }/>
         </Router>
       </ApolloProvider>

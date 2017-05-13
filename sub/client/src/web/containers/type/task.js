@@ -5,7 +5,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, graphql } from 'react-apollo';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 
 import { ID, Fragments, MutationUtil } from 'alien-core';

@@ -20,15 +20,16 @@ import { AppDefs } from '../../common/defs';
  */
 export class Path {
 
+  // app/testing
   // app/inbox          Inbox
   // app/favorites      Favorites with Item xxx selected (e.g., if WebLayout).
   // app/card/xxx       Card canvas Item xxx
   // app/board/xxx      Board canvas
 
   static ROOT     = AppDefs.APP_PATH;
-  static HOME     = AppDefs.APP_PATH + '/inbox';
   static TESTING  = AppDefs.APP_PATH + '/testing';
   static ADMIN    = AppDefs.APP_PATH + '/admin';
+  static HOME     = AppDefs.APP_PATH + '/inbox';
 
   /**
    * Generates path for router.

@@ -34,7 +34,7 @@ const baseConfig = {
 
       // http://stackoverflow.com/questions/40053344/npm-multiple-entry-points
       'alien-client/web-app'            : path.resolve('./node_modules/alien-client/src/web/app'),
-      'alien-client/web-test-apollo'    : path.resolve('./node_modules/alien-client/src/web/app/testing/apollo/apollo.js'),
+      'alien-client/web-test-apollo'    : path.resolve('./node_modules/alien-client/src/web/testing/apollo/apollo.js'),
       'alien-client/crx'                : path.resolve('./node_modules/alien-client/src/crx'),
       'alien-client/graphiql'           : path.resolve('./node_modules/alien-client/src/graphiql/graphiql'),
     }

@@ -4,9 +4,9 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
-import { IntrospectionFragmentMatcher } from 'react-apollo';
 import { syncHistoryWithStore, routerMiddleware, routerReducer } from 'react-router-redux';
+import { IntrospectionFragmentMatcher } from 'react-apollo';
+import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import ReduxThunk from 'redux-thunk';
 import reduceReducers from 'reduce-reducers';
 import ApolloClient from 'apollo-client';
@@ -265,6 +265,7 @@ export class BaseApp {
       // Apollo-Redux bindings.
       applyMiddleware(this._client.middleware()),
 
+      // TODO(burdon): Debug only.
       // https://github.com/zalmoxisus/redux-devtools-extension
       // https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd
       window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
@@ -282,10 +283,6 @@ export class BaseApp {
    * React router.
    */
   initRouter() {
-
-    // Enhanced history that syncs navigation events with the store.
-    this._reduxHistory = syncHistoryWithStore(this.history, this._store);
-
     this.history.listen(location => {
       logger.log('Router: ' + location.pathname);
       this._analytics.pageview(location);
@@ -303,13 +300,16 @@ export class BaseApp {
     this._client.resetStore();
   }
 
-  // TODO(burdon): 
+  /**
+   * Dependency injector.
+   * @return {Injector}
+   */
   get injector() {
     return this._injector;
   }
   
   /**
-   * Access config
+   * Access config.
    */
   get config() {
     return this._config;
@@ -324,6 +324,7 @@ export class BaseApp {
 
   /**
    * Apollo client.
+   * @return {ApolloClient}
    */
   get client() {
     return this._client;
@@ -398,14 +399,18 @@ export class BaseApp {
   render(App) {
     logger.info(`### [${moment().format('YYYY-MM-DD HH:mm Z')} ${_.get(this._config, 'env')}] ###`);
 
+    // Enhanced history that syncs navigation events with the store.
+    // https://github.com/reactjs/react-router-redux
+    let history = syncHistoryWithStore(this.history, this.store);
+
     // Construct app.
     const app = (
       // TODO(burdon): Get injector from redux store?
       <App
-        injector={ this._injector }
-        history={ this._reduxHistory }
-        client={ this._client }
-        store={ this._store }/>
+        injector={ this.injector }
+        client={ this.client }
+        store={ this.store }
+        history={ history }/>
     );
 
     // Render app.

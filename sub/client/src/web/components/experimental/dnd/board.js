@@ -22,7 +22,6 @@ import './board.less';
 
 /**
  * Item model.
- * TODO(burdon): Wraps query.
  */
 class ItemModel {
 

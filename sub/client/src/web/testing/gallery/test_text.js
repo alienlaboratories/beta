@@ -4,7 +4,7 @@
 
 import React from 'react';
 
-import { TextBox } from '../textbox';
+import { TextBox } from '../../components/textbox';
 
 /**
  * Test List.
@@ -42,7 +42,7 @@ export default class TestText extends React.Component {
     //
 
     return (
-      <div>
+      <div className="test-content">
         <TextBox autoFocus={ true } value={ text }/>
 
         <button onClick={ this.handleRefresh.bind(this) }>Refresh</button>

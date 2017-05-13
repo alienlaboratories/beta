@@ -101,7 +101,8 @@ class CloudMessenger {
  */
 export class FirebaseCloudMessenger extends CloudMessenger {
 
-  static TIMEOUT = 5000;
+  // TODO(burdon): !!!
+  static TIMEOUT = 0; // 5000;
 
   // TODO(burdon): Instance API (server side admin for client).
   // https://developers.google.com/instance-id/reference/server#get_information_about_app_instances

@@ -117,12 +117,18 @@ const web = webpackMerge(baseConfig, {
 
   // http://localhost:8080/assets/
   entry: {
-    gallery: [
-      path.resolve(baseConfig.context, 'src/web/components/testing/gallery.js'),
+
+    test_gallery: [
+      path.resolve(baseConfig.context, 'src/web/testing/gallery/gallery.js'),
     ],
-    apollo: [
-      path.resolve(baseConfig.context, 'src/web/app/testing/apollo/main.js'),
+
+    test_apollo: [
+      path.resolve(baseConfig.context, 'src/web/testing/apollo/test_apollo.js'),
     ],
+
+    test_router: [
+      path.resolve(baseConfig.context, 'src/web/testing/router/test_router.js'),
+    ]
   },
 
   output: {

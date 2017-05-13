@@ -19,7 +19,7 @@ TODO(burdon): Ids (global/local) and dataIdFromObject.
 - Mutations (Item upserts) are applied to Item instances on the client and server.
 - Mutations return the mutated Items, which are resolved according to the mutation's query spec. 
   I.e., mutations return fully formed Items.
-- By default, Apollo identifies objects based on two properties: The __typename and an ID field, either id or _id.
+- By default, Apollo identifies objects based on two properties: The `__typename` and an ID field, either id or _id.
 - This allows consistent local caching. 
   - This can be overridden by `dataIdFromObject`.
     - http://dev.apollodata.com/react/cache-updates.html#normalization

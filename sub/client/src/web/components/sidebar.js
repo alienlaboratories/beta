@@ -17,6 +17,14 @@ export class Sidebar extends React.Component {
   // TODO(burdon): Nav by keys.
   // http://codepen.io/chriscoyier/pen/umEgv
 
+  static propTypes = {
+    autoClose: PropTypes.bool
+  };
+
+  static defaultProps = {
+    autoClose: true
+  };
+
   constructor() {
     super(...arguments);
 
@@ -49,7 +57,9 @@ export class Sidebar extends React.Component {
   }
 
   onBlur() {
-    this.close();
+    if (this.props.autoClose) {
+      this.close();
+    }
   }
 
   render() {

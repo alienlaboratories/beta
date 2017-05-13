@@ -2,17 +2,18 @@
 // Copyright 2017 Alien Labs.
 //
 
-@import '../css/layout';
+@import '../../resources/css/core';
 
 body {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  margin: 0;
 
   .ux-fullscreen;
 }
 
-#test-container {
+#app-root {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -28,8 +29,8 @@ body {
 }
 
 .test-header {
-  background-color: cadetblue;
-  padding: 4px;
+  background-color: #90CAF9;
+  padding: 16px;
 
   select {
     border: none;
@@ -49,5 +50,9 @@ body {
 
   .ux-list {
     background-color: white;
+  }
+
+  .test-content {
+    padding: 16px;
   }
 }

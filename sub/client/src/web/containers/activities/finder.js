@@ -5,6 +5,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { Logger } from 'alien-util';
+
 import { AppDefs } from '../../../common/defs';
 
 import { ReactUtil } from '../../util/react';
@@ -15,6 +17,8 @@ import Finder from '../finder';
 import SearchPanel from '../search';
 
 import { Layout } from './layout';
+
+const logger = Logger.get('finder');
 
 /**
  * Finder Activity.
@@ -38,7 +42,9 @@ class FinderActivity extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { config, viewer, contextManager, params: { folder='inbox' } } = this.props;
+      let { config, viewer, contextManager, match } = this.props;
+      let { params: { folder='inbox' } } = match;
+      logger.log('Folder:', folder);
 
       let navbar = <Navbar><SearchPanel/></Navbar>;
 

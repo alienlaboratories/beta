@@ -32,14 +32,19 @@ export class Batch {
   /**
    * Do NOT create directly.
    * @param {function} mutate Mutate function provided by Apollo.
+   * @param {IdGenerator} idGenerator.
    * @param {string} bucket All batched operations must belong to the same bucket.
    * @param {boolean} optimistic
    * @private
    */
-  constructor(mutate, bucket, optimistic=false) {
+  constructor(mutate, idGenerator, bucket, optimistic=false) {
+    console.assert(mutate && idGenerator && bucket);
+
     this._mutate = mutate;
+    this._idGenerator = idGenerator;
     this._bucket = bucket;
     this._optimistic = optimistic;
+
     this._refs = new Map();
     this._items = new Map();
     this._mutations = [];
@@ -48,13 +53,14 @@ export class Batch {
   /**
    * Create a new item.
    * @param {string} type Item type.
-   * @param {string} itemId New Item ID.
    * @param {[{Mutation}]} mutations Mutations to apply.
    * @param {string} ref Optional label that can be used as a reference for subsequent batch operations.
    * @returns {Batch}
    */
-  createItem(type, itemId, mutations, ref=undefined) {
-    console.assert(type && itemId && mutations);
+  createItem(type, mutations, ref=undefined) {
+    console.assert(type && mutations);
+
+    let itemId = this._idGenerator.createId();
     this._items.set(itemId, { type, id: itemId });
 
     // TODO(burdon): Remove from client (when transplant to current app).
