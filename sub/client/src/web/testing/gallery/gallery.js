@@ -4,7 +4,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { Link, Router, Route, hashHistory } from 'react-router';
 
 import TestBoard from './test_board';
 import TestList from './test_list';
@@ -13,63 +13,49 @@ import TestText from './test_text';
 
 import './gallery.less';
 
-//
-// Open file relative to webpack-dev-server --content-base
-// http://localhost:8080/components/testing/index.html
-//
 
-// TODO(burdon): For offline testing, load material-icons locally.
+const Components = [
+  {
+    id: 'text',
+    name: 'Text',
+    render: () => <TestText/>
+  },
+  {
+    id: 'list',
+    name: 'List',
+    render: () => <TestList/>
+  },
+  {
+    id: 'board',
+    name: 'Board',
+    render: () => <TestBoard/>
+  },
+  {
+    id: 'sidebar',
+    name: 'Sidebar',
+    render: () => <TestSidebar/>
+  }
+];
+
 
 class Gallery extends React.Component {
 
-  static Components = [
-    {
-      id: 'text',
-      name: 'Text',
-      render: () => <TestText/>
-    },
-    {
-      id: 'list',
-      name: 'List',
-      render: () => <TestList/>
-    },
-    {
-      id: 'board',
-      name: 'Board',
-      render: () => <TestBoard/>
-    },
-    {
-      id: 'sidebar',
-      name: 'Sidebar',
-      render: () => <TestSidebar/>
-    }
-  ];
-
-  state = {
-    component: Gallery.Components[0]
-  };
-
-  handleSelectChanged(event) {
-    this.setState({
-      component: _.find(Gallery.Components, component => component.id === event.target.value)
-    });
-  }
-
   render() {
-    let { component } = this.state;
+    let { params={} } = this.props;
+    let { component } = params;
+
+    let c = _.find(Components, c => c.id === component) || Components[0];
 
     return (
       <div className="test-panel">
         <div className="test-header">
-          <select value={ component.id } onChange={ this.handleSelectChanged.bind(this) }>
-          { _.map(Gallery.Components, component => (
-            <option key={ component.id } value={ component.id }>{ component.name }</option>
+          { _.map(Components, component => (
+            <Link key={ component.id } to={ '/' + component.id }>{ component.name }</Link>
           ))}
-          </select>
         </div>
 
         <div className="test-container">
-          { component.render() }
+          { c.render() }
         </div>
       </div>
     );
@@ -80,8 +66,9 @@ class Gallery extends React.Component {
 // https://reacttraining.com/react-router/web/api/StaticRouter
 
 const App = (
-  <Router>
-    <Route path="/gallery" component={ Gallery }/>
+  <Router history={ hashHistory }>
+    <Route path="/" component={ Gallery }/>
+    <Route path="/:component" component={ Gallery }/>
   </Router>
 );
 

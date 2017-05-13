@@ -2,7 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
-import createMemoryHistory from 'history/createMemoryHistory';
+import { createMemoryHistory } from 'react-router';
 
 import { 
   Async, Injector, ChromeMessageChannel, ChromeMessageChannelRouter, Logger, WindowMessenger 

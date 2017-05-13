@@ -14,6 +14,7 @@ const logger = Logger.get('client');
 
 /**
  * Client endpoints.
+ * @return {Router}
  */
 // TODO(burdon): Move to alien-services
 export const clientRouter = (userManager, clientManager, systemStore, options={}) => {

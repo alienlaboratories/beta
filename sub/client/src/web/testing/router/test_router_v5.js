@@ -4,12 +4,28 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { applyMiddleware, compose, combineReducers, createStore } from 'redux';
+import { createStore, combineReducers } from 'redux';
 import { Provider, connect } from 'react-redux';
-import { hashHistory, Redirect, Route, Router, Link } from 'react-router';
-import { push, routerMiddleware, routerReducer, syncHistoryWithStore } from 'react-router-redux';
+import { Route, Link } from 'react-router-dom';
+import { ConnectedRouter, push, routerReducer } from 'react-router-redux';
+import createHashHistory from 'history/createHashHistory';
 
 import './test_router.less';
+
+//
+// TODO(burdon): Not working with v5.
+// https://github.com/ReactTraining/react-router/issues/5113 [burdon]
+//
+// NOTE: react-router-dom v4 requires react-router-redux v5
+// https://github.com/reactjs/react-router-redux
+// https://github.com/ReactTraining/react-router/tree/master/packages/react-router-redux
+//
+
+// Migration (v3=>v4)
+// (react-router => react-router-dom)
+// let { params } = props.match
+// <Switch> (matches first)
+// Redirect
 
 //--------------------------------------------------------------------------------------------------
 // Components
@@ -27,14 +43,12 @@ const Header = (props) => (
 
 const Foo = () => (
   <div>
-    <HeaderWithRedux/>
     <h1>Foo</h1>
   </div>
 );
 
 const Bar = () => (
   <div>
-    <HeaderWithRedux/>
     <h1>Bar</h1>
   </div>
 );
@@ -63,32 +77,27 @@ const reducers = [
   }
 ];
 
-// https://github.com/reactjs/react-router-redux
-
-const history = hashHistory;
-
 const store = createStore(
   combineReducers({
     ...reducers,
     routing: routerReducer
-  }),
-  compose(
-    applyMiddleware(routerMiddleware(history)),
-  )
+  })
 );
 
-const routerHistory = syncHistoryWithStore(history, store);
+// NOTE: Warning if click twice.
+// https://github.com/ReactTraining/react-router/issues/4467
+const history = createHashHistory();
 
 const Root = () => (
   <Provider store={ store }>
-    <Router history={ routerHistory }>
+    <ConnectedRouter history={ history }>
       <div>
+        <HeaderWithRedux/>
+
         <Route path="/foo" component={ Foo }/>
         <Route path="/bar" component={ Bar }/>
-
-        <Redirect from="*" to="/foo"/>
       </div>
-    </Router>
+    </ConnectedRouter>
   </Provider>
 );
 

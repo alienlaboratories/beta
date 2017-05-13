@@ -21,7 +21,6 @@ import SearchPanel from '../search';
 
 import { Layout } from './layout';
 
-
 /**
  * Canvas navbar,
  */
@@ -84,8 +83,8 @@ class CanvasActivity extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { config, viewer, match } = this.props;
-      let { params: { type, canvas, itemId } } = match;
+      let { config, viewer, params: { type, canvas, itemId } } = this.props;
+//    let { params: { type, canvas, itemId } } = match;
 
       let navbar = (
         <CanvasNavbar onSave={ this.handleSave.bind(this) } canvas={ canvas } type={ type } itemId={ itemId }/>

@@ -2,7 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
-import createBrowserHistory from 'history/createBrowserHistory';
+import { browserHistory } from 'react-router';
 
 import { Injector } from 'alien-util';
 
@@ -100,6 +100,6 @@ export class WebApp extends BaseApp {
   }
 
   get history() {
-    return createBrowserHistory();
+    return browserHistory;
   }
 }

@@ -42,8 +42,8 @@ class FinderActivity extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { config, viewer, contextManager, match } = this.props;
-      let { params: { folder='inbox' } } = match;
+      let { config, viewer, contextManager, params: { folder='inbox' } } = this.props;
+//    let { params: { folder='inbox' } } = match;
       logger.log('Folder:', folder);
 
       let navbar = <Navbar><SearchPanel/></Navbar>;

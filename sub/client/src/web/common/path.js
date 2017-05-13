@@ -71,7 +71,11 @@ export class Path {
  */
 export class Navigator {
 
+  /**
+   * @param dispatch Redux dispatcher.
+   */
   constructor(dispatch) {
+    console.assert(dispatch);
     this.dispatch = dispatch;
   }
 

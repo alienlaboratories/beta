@@ -5,9 +5,10 @@
 import _ from 'lodash';
 import React from 'react';
 import { connect } from 'react-redux';
-import { MemoryRouter as Router, Route } from 'react-router-dom';
+import { Router, Route } from 'react-router';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
+import { hashHistory } from 'react-router';
 import { routerMiddleware, routerReducer } from 'react-router-redux';
 import { graphql, ApolloProvider, IntrospectionFragmentMatcher } from 'react-apollo';
 import ApolloClient from 'apollo-client';
@@ -613,7 +614,7 @@ export class App {
   get root() {
     return (
       <ApolloProvider client={ this._client } store={ this._store }>
-        <Router>
+        <Router history={ hashHistory }>
           <Route path="/" component={ RootComponent }/>
         </Router>
       </ApolloProvider>

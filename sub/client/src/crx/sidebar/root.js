@@ -3,7 +3,7 @@
 //
 
 import React from 'react';
-import { MemoryRouter as Router, Redirect, Route } from 'react-router-dom';
+import { Router, Redirect, Route } from 'react-router';
 import { ApolloProvider } from 'react-apollo';
 import PropTypes from 'prop-types';
 

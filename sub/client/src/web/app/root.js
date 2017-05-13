@@ -3,7 +3,7 @@
 //
 
 import React from 'react';
-import { Redirect, Router, Route, Switch } from 'react-router-dom';
+import { Redirect, Router, Route } from 'react-router';
 import { ApolloProvider } from 'react-apollo';
 import PropTypes from 'prop-types';
 
@@ -40,7 +40,7 @@ export class Application extends React.Component {
     return (
       <ApolloProvider client={ client } store={ store }>
         <Router history={ history }>
-          <Switch>
+          {/* v4: <Switch> */}
 
             {/*
               * Must come first.
@@ -64,9 +64,9 @@ export class Application extends React.Component {
             {/*
               * Catch.
               */}
-            <Redirect to={ Path.HOME }/>
+            <Redirect from="*" to={ Path.HOME }/>
 
-          </Switch>
+          {/* </Switch> */}
         </Router>
       </ApolloProvider>
     );

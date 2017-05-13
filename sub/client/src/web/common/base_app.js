@@ -6,7 +6,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { syncHistoryWithStore, routerMiddleware, routerReducer } from 'react-router-redux';
 import { IntrospectionFragmentMatcher } from 'react-apollo';
-import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
+import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import ReduxThunk from 'redux-thunk';
 import reduceReducers from 'reduce-reducers';
 import ApolloClient from 'apollo-client';
