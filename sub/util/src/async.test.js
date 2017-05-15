@@ -2,7 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
-import { expect } from 'chai';
+import _ from 'lodash';
 
 import { Async } from './async';
 
@@ -20,7 +20,7 @@ describe('Async:', () => {
 
     Promise.all(_.map(values, value => multiply(value, 2)))
       .then(results => {
-        expect(results).to.eql([2, 4, 6]);
+        expect(results).toEqual([2, 4, 6]);
         done();
       });
   });
@@ -48,7 +48,7 @@ describe('Async:', () => {
 
     let count = 15;
     search(count).then(items => {
-      expect(items.length).to.equal(count);
+      expect(items.length).toEqual(count);
       done();
     });
   });
@@ -69,10 +69,10 @@ describe('Async:', () => {
     }).then((value) => {
 
       // Last value.
-      expect(value).to.equal(4);
+      expect(value).toEqual(4);
 
       // Test done sequentially.
-      expect(values.length).to.equal(5);
+      expect(values.length).toEqual(5);
 
       done();
     });

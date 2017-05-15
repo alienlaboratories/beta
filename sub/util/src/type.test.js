@@ -3,7 +3,6 @@
 //
 
 import _ from 'lodash';
-import { expect } from 'chai';
 
 import { TypeUtil } from './type';
 
@@ -13,20 +12,20 @@ describe('TypeUtil:', () => {
     let map = new Map();
     TypeUtil.defaultMap(map, 'a', Array).push('x');
     TypeUtil.defaultMap(map, 'a', Array).push('y');
-    expect(map.get('a')).to.have.lengthOf(2);
+    expect(map.get('a')).toHaveLength(2);
   });
 
   it('isEmpty', () => {
-    expect(TypeUtil.isEmpty()).to.be.true;
-    expect(TypeUtil.isEmpty({})).to.be.true;
-    expect(TypeUtil.isEmpty([])).to.be.true;
-    expect(TypeUtil.isEmpty(null)).to.be.true;
-    expect(TypeUtil.isEmpty({ foo: undefined })).to.be.true;
-    expect(TypeUtil.isEmpty({ foo: [] })).to.be.true;
-    expect(TypeUtil.isEmpty({ foo: {} })).to.be.true;
+    expect(TypeUtil.isEmpty()).toBe(true);
+    expect(TypeUtil.isEmpty({})).toBe(true);
+    expect(TypeUtil.isEmpty([])).toBe(true);
+    expect(TypeUtil.isEmpty(null)).toBe(true);
+    expect(TypeUtil.isEmpty({ foo: undefined })).toBe(true);
+    expect(TypeUtil.isEmpty({ foo: [] })).toBe(true);
+    expect(TypeUtil.isEmpty({ foo: {} })).toBe(true);
 
-    expect(TypeUtil.isEmpty([1])).to.be.false;
-    expect(TypeUtil.isEmpty({ foo: 1 })).to.be.false;
+    expect(TypeUtil.isEmpty([1])).toBe(false);
+    expect(TypeUtil.isEmpty({ foo: 1 })).toBe(false);
   });
 
   it('traverse', () => {
@@ -53,7 +52,7 @@ describe('TypeUtil:', () => {
       }
     });
 
-    expect(x).to.have.lengthOf(2);
+    expect(x).toHaveLength(2);
   });
 
   it('maybeSet', () => {
@@ -65,9 +64,9 @@ describe('TypeUtil:', () => {
       }
     };
 
-    expect(_.get(TypeUtil.maybeSet(obj, 'b.c', 'wow'), 'b.c')).to.equal('wow');
-    expect(_.get(TypeUtil.maybeSet(obj, 'b.x', undefined), 'b.x')).to.be.undefined;
-    expect(_.get(TypeUtil.maybeSet(obj, 'b.x', null), 'b.x')).to.be.undefined;
-    expect(_.get(TypeUtil.maybeSet(obj, 'b.x', false), 'b.x')).to.be.false;
+    expect(_.get(TypeUtil.maybeSet(obj, 'b.c', 'wow'), 'b.c')).toEqual('wow');
+    expect(_.get(TypeUtil.maybeSet(obj, 'b.x', undefined), 'b.x')).toBeUndefined();
+    expect(_.get(TypeUtil.maybeSet(obj, 'b.x', null), 'b.x')).toBeUndefined();
+    expect(_.get(TypeUtil.maybeSet(obj, 'b.x', false), 'b.x')).toBe(false);
   });
 });

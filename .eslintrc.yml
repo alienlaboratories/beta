@@ -5,10 +5,8 @@
 env:
   browser: true
   es6: true
-  jasmine: true
   jest: true
   jquery: true
-  mocha: true
   node: true
   serviceworker: true
   worker: true
@@ -19,11 +17,11 @@ globals:
   _: true
   chrome: true
 
-  __ENV__: true
-  __PRODUCTION__: true
-  __DEVELOPMENT__: true
-  __HOT__: true
-  __TESTING__: true
+  __ENV__:          true
+  __PRODUCTION__:   true
+  __DEVELOPMENT__:  true
+  __HOT__:          true
+  __TESTING__:      true
 
 parser: 'babel-eslint'
 
