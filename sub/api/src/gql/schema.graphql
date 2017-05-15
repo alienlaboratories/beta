@@ -14,6 +14,14 @@
 # https://github.com/apollostack/graphql-server/issues/172
 #===================================================================================================
 
+# TODO(burdon): Use Key everywhere (incl. fkey).
+type Key {
+  namespace: String           # External namespace (query provider).
+  bucket: ID                  # ID of User or Group (null for system item).
+  type: String!
+  id: ID!
+}
+
 interface Item {
   namespace: String           # External namespace (query provider).
   bucket: ID                  # ID of User or Group (null for system item).

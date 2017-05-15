@@ -25,6 +25,8 @@ const logger = Logger.get('mutations');
 // any data needed by any component, including detailed nested objects (e.g. ContactTaskFragment).
 // Unclear if there's a material downside to this, but it feels wrong.
 
+// TODO(burdon): Project board fragment shouldn't return all items.
+
 export const UpsertItemsMutation = gql`
   mutation UpsertItemsMutation($mutations: [ItemMutationInput]!) {
     upsertItems(mutations: $mutations) {

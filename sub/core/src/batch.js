@@ -5,9 +5,10 @@
 import _ from 'lodash';
 
 import { TypeUtil } from 'alien-util';
-import { ID, MutationUtil, Transforms } from 'alien-core';
 
-// TODO(burdon): Move to core.
+import { ID } from './id';
+import { MutationUtil } from './mutations';
+import { Transforms } from './transforms';
 
 /**
  * Batch mutations.

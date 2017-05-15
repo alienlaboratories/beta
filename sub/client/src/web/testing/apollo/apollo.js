@@ -16,11 +16,10 @@ import { createNetworkInterface } from 'apollo-client';
 import update from 'immutability-helper';
 
 import { TypeUtil } from 'alien-util';
-import { AuthDefs, IdGenerator, ItemUtil, MutationUtil } from 'alien-core';
+import { AuthDefs, Batch, IdGenerator, ItemUtil, MutationUtil } from 'alien-core';
 
 import { ReactUtil } from '../../util/index';
 
-import { Batch } from './batch';
 import { ProjectsQuery, ProjectsQueryName, UpsertItemsMutation, UpsertItemsMutationName } from './common';
 import { TestingNetworkInterface } from './testing';
 
@@ -91,6 +90,7 @@ class ListComponent extends React.Component {
     let input = this.refs['INPUT/' + item.id];
     let text = $(input).val();
     if (text) {
+
       createBatch(bucket)
         .updateItem(item, [
           MutationUtil.createFieldMutation('title', 'string', text)
@@ -104,6 +104,7 @@ class ListComponent extends React.Component {
   handleDelete(item, event) {
     let { project, createBatch } = this.props;
     let bucket = _.get(project, 'group.id');
+
     createBatch(bucket)
       .updateItem(project, [
         MutationUtil.createSetMutation('tasks', 'id', item.id, false)
@@ -116,8 +117,13 @@ class ListComponent extends React.Component {
     let { text } = this.state;
     let bucket = _.get(project, 'group.id');
     if (text) {
+      // TODO(burdon): For item creation (per-type validation).
+      let userId = _.get(this._config, 'userProfile.id');
+      console.assert(userId);
+
       createBatch(bucket)
         .createItem('Task', [
+          MutationUtil.createFieldMutation('owner', 'id', userId),
           MutationUtil.createFieldMutation('title', 'string', text)
         ], 'task')
         .updateItem(project, [

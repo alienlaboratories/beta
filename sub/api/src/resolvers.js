@@ -210,6 +210,7 @@ export class Resolvers {
         },
 
         owner: (obj, args, context) => {
+          console.assert(obj.owner);
           return database.getItemStore(Database.NAMESPACE.SYSTEM).getItem(context, 'User', obj.owner);
         },
 

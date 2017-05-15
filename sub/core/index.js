@@ -3,6 +3,7 @@
 //
 
 export * from './src/auth';
+export * from './src/batch';
 export * from './src/database';
 export * from './src/fragments';
 export * from './src/id';
