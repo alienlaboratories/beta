@@ -12,6 +12,8 @@ import { MutationUtil } from './mutations';
 
 const logger = Logger.get('reducer');
 
+// TODO(burdon): Remove.
+
 /**
  * { items: $remove: [item] }
  * @returns new array.
@@ -88,7 +90,6 @@ export class Reducer {
   }
 
   constructor(path) {
-    console.assert(path);
     this._path = path;
   }
 

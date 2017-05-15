@@ -2,6 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
+import _ from 'lodash';
 import { expect } from 'chai';
 
 import { Database, ResultMerger } from './database';

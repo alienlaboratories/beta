@@ -56,6 +56,7 @@
   "scripts": {
     "//": "TODO(burdon): Add mocha testing for server.",
     "lint": "eslint -c ../../.eslintrc.yml ./src",
+    "test-mocha": "BABEL_DISABLE_CACHE=1 mocha --full-trace --require babel-polyfill --compilers js:babel-register \"src/**/*.test.js\"",
     "test": "karma start --single-run"
   }
 }

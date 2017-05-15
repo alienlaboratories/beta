@@ -2,6 +2,9 @@
 // Copyright 2017 Alien Labs.
 //
 
+import _ from 'lodash';
+import { expect } from 'chai';
+
 import { Batch } from './batch';
 import { IdGenerator } from './id';
 import { MutationUtil } from './mutations';

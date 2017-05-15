@@ -3,6 +3,7 @@
 //
 
 import { ID } from './id';
+import { expect } from 'chai';
 
 describe('Data', () => {
 

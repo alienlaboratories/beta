@@ -2,7 +2,9 @@
 // Copyright 2017 Alien Labs.
 //
 
+import _ from 'lodash';
 import moment from 'moment';
+import { expect } from 'chai';
 
 import { Matcher } from './matcher';
 
