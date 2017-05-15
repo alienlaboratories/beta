@@ -95,15 +95,6 @@ const baseConfig = {
 };
 
 //
-// Karma config.
-//
-
-const karma = webpackMerge(baseConfig, {
-
-  devtool: 'inline-source-map'
-});
-
-//
 // Web config.
 //
 

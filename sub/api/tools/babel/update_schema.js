@@ -29,7 +29,7 @@ if (!fs.existsSync(dist)) {
   console.log('Creating schema...');
   try {
     const schema = makeExecutableSchema({
-      typeDefs: concatenateTypeDefs([Framework, Schema])
+      typeDefs: concatenateTypeDefs([ Framework, Schema ])
     });
 
     let result = await (graphql(schema, introspectionQuery));

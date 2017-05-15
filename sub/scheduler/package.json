@@ -11,19 +11,19 @@
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-core": "^6.24.1",
+    "babel-jest": "^20.0.1",
     "babel-loader": "^7.0.0",
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-preset-env": "^1.4.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
-    "chai": "^3.5.0",
     "express": "^4.15.2",
     "grunt": "^1.0.1",
     "grunt-dev-update": "^2.2.0",
     "json-loader": "^0.5.4",
-    "mocha": "^3.3.0",
     "redis": "^2.7.1",
     "redis-server": "^1.1.0",
+    "regenerator-runtime": "^0.10.5",
     "webpack": "^2.5.0",
     "webpack-merge": "^4.1.0",
     "webpack-node-externals": "^1.5.4"
@@ -39,7 +39,7 @@
   },
   "scripts": {
     "lint": "eslint -c ../../.eslintrc.yml ./src",
-    "test": "BABEL_DISABLE_CACHE=1 mocha --full-trace --require babel-polyfill --compilers js:babel-register \"src/**/*.test.js\"",
+    "test": "jest --verbose",
     "server": "BABEL_DISABLE_CACHE=1 hilite babel-node src/scheduler.js",
     "start": "hilite nodemon --exec npm run server"
   }

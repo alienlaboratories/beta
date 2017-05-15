@@ -5,11 +5,11 @@
 import _ from 'lodash';
 import path from 'path';
 import yaml from 'node-yaml';
-import { expect } from 'chai';
 
 import admin from 'firebase-admin';
 
-import { IdGenerator, Matcher, ItemStoreTests } from 'alien-core';
+import { IdGenerator, Matcher } from 'alien-core';
+import { ItemStoreTests } from 'alien-core/testing';
 
 import { FirebaseItemStore } from './firebase_item_store';
 
@@ -18,42 +18,54 @@ const CONF_DIR = path.join(__dirname, '../../../../../conf');
 // TODO(burdon): Make configurable.
 async function config(baseDir) {
   return await {
-    'firebase':       await yaml.read(path.join(baseDir, 'firebase/alienlabs-testing.yml')),
-    'firebase-admin': await yaml.read(path.join(baseDir, 'firebase/alienlabs-testing-admin.yml')),
+    'firebase': await yaml.read(path.join(baseDir, 'firebase/alienlabs-testing.yml')),
   };
 }
 
-config(CONF_DIR).then(config => {
-  console.log('Config = ' + JSON.stringify(config, null, 2));
+const idGenerator = new IdGenerator(1000);
 
-  const app = admin.initializeApp({
-    databaseURL: _.get(config, 'firebase.app.databaseURL'),
-    credential: admin.credential.cert(_.get(config, 'firebase.serviceAccount'))
-  });
+const matcher = new Matcher();
 
-  const db = app.database();
+describe('Integration: FirebaseItemStore (buckets):', () => {
 
-  const idGenerator = new IdGenerator(1000);
-  const matcher = new Matcher();
+  let app = null;
 
-  //
-  // End-to-end testing.
-  // https://firebase.googleblog.com/2015/04/end-to-end-testing-with-firebase-server_16.html
-  //
-
-  describe('FirebaseItemStore (buckets):', () => {
-    this.timeout(5000);
-
-    ItemStoreTests(() => {
-      return new FirebaseItemStore(idGenerator, matcher, db, 'testing', true).clear();
+  beforeAll(() => {
+    return config(CONF_DIR).then(config => {
+      app = admin.initializeApp({
+        databaseURL: _.get(config, 'firebase.app.databaseURL'),
+        credential: admin.credential.cert(_.get(config, 'firebase.serviceAccount'))
+      });
     });
   });
 
-  describe('FirebaseItemStore (no buckets):', () => {
-    this.timeout(5000);
-
-    ItemStoreTests(() => {
-      return new FirebaseItemStore(idGenerator, matcher, db, 'testing', false).clear();
-    }, false);
+  afterAll(() => {
+    app.delete();
   });
+
+  ItemStoreTests(() => {
+    return new FirebaseItemStore(idGenerator, matcher, app.database(), 'testing', true).clear();
+  });
+});
+
+describe('Integration: FirebaseItemStore (no buckets):', () => {
+
+  let app = null;
+
+  beforeAll(() => {
+    return config(CONF_DIR).then(config => {
+      app = admin.initializeApp({
+        databaseURL: _.get(config, 'firebase.app.databaseURL'),
+        credential: admin.credential.cert(_.get(config, 'firebase.serviceAccount'))
+      });
+    });
+  });
+
+  afterAll(() => {
+    app.delete();
+  });
+
+  ItemStoreTests(() => {
+    return new FirebaseItemStore(idGenerator, matcher, app.database(), 'testing', false).clear();
+  }, false);
 });

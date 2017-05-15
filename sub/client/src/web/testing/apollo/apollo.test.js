@@ -8,7 +8,7 @@ import { MutationUtil } from 'alien-core';
 
 import { ID, App, AppState, AppTestAction, TestMutation, TestQuery } from './apollo';
 
-it('Renders without crashing', () => {
+test('Renders without crashing.', () => {
 
   let config = {
     query: {

@@ -3,8 +3,6 @@
 //
 
 /*
-import { expect } from 'chai';
-
 import bluebird from 'bluebird';
 import fakeredis from 'fakeredis';
 
@@ -21,9 +19,11 @@ const matcher = new Matcher();
 
 const client = fakeredis.createClient('test');
 
-describe('RedisItemStore:', () => {
-  ItemStoreTests(() => {
-    return Promise.resolve(new RedisItemStore(idGenerator, matcher, client, 'testing'));
-  });
+ItemStoreTests(() => {
+  return Promise.resolve(new RedisItemStore(idGenerator, matcher, client, 'testing'));
 });
 */
+
+test('Sanity.', () => {
+  expect(true).toBe(true);
+});

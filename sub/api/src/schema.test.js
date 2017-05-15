@@ -2,7 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
-import { expect } from 'chai';
+import _ from 'lodash';
 
 import {
   graphql,
@@ -23,8 +23,7 @@ import { Resolvers } from './resolvers';
 import Framework from './gql/framework.graphql';
 import Schema from './gql/schema.graphql';
 
-const TypeDefs = concatenateTypeDefs([Framework, Schema]);
-
+const TypeDefs = concatenateTypeDefs([ Framework, Schema ]);
 
 //
 // 3 Tests (Native GraphQL API + 2 Apollo graphql-tools).
@@ -41,14 +40,14 @@ const query = `
   }
 `;
 
-const test = (result, expected) => {
+const testResult = (result, expected) => {
   return new Promise((resolve, reject) => {
     console.assert(result);
     if (result.errors) {
       console.error(result.errors);
       reject();
     } else {
-      expect(result.data).to.eql(expected);
+      expect(result.data).toEqual(expected);
       resolve();
     }
   });
@@ -69,7 +68,6 @@ function createDatabase() {
 // - Create Debug configuration.
 // - Reload Chrome tab to re-run tests (temperamental).
 //
-
 
 //
 // Mock server.
@@ -99,15 +97,15 @@ describe('GraphQL Mock Server:', () => {
   // http://graphql.org/blog/mocking-with-graphql
   let server = mockServer(TypeDefs, resolverMap);
 
-  it('Query viewer', (done) => {
-    server.query(query).then(result => test(result, {
+  test('Query viewer', () => {
+    return server.query(query).then(result => testResult(result, {
       viewer: {
         user: {
           id: 'alien',
           title: 'Alien'
         }
       }
-    }).then(done));
+    }));
   });
 });
 
@@ -134,27 +132,27 @@ describe('GraphQL Executable Schema:', () => {
     }
   });
 
-  database.getItemStore(Database.NAMESPACE.SYSTEM)
-    .upsertItems(context, [
-      { id: 'alien', type: 'User', displayName: 'Alien' }
-    ])
-    .then(() => {
-      it('Query viewer', (done) => {
-        database.getItemStore(Database.NAMESPACE.SYSTEM).getItem(context, 'User', 'alien').then(item => {
-          expect(item.id).to.equal('alien');
+  let item = { id: 'alien', type: 'User', displayName: 'Alien' };
+
+  test('Query viewer', () => {
+    return database.getItemStore(Database.NAMESPACE.SYSTEM)
+      .upsertItems(context, [item])
+      .then(() => {
+        return database.getItemStore(Database.NAMESPACE.SYSTEM).getItem(context, 'User', 'alien').then(item => {
+          expect(item.id).toEqual('alien');
 
           // https://github.com/graphql/graphql-js/blob/master/src/graphql.js
-          graphql(schema, query, null, context).then(result => test(result, {
+          return graphql(schema, query, null, context).then(result => testResult(result, {
             viewer: {
               user: {
                 id: 'alien',
                 title: 'Alien'
               }
             }
-          }).then(done));
+          }));
         });
       });
-    });
+  });
 });
 
 //
@@ -204,27 +202,26 @@ describe('GraphQL JS API:', () => {
     })
   });
 
-  it('Generate JSON', (done) => {
-    graphql(schema, introspectionQuery).then(result => {
+  test('Generate JSON.', () => {
+    return graphql(schema, introspectionQuery).then(result => {
 //    console.log('SCHEMA:\n', JSON.stringify(result, 0, 2));
-      done();
+      expect(_.isObject(result)).toBe(true);
     });
   });
 
-  database.getItemStore(Database.NAMESPACE.SYSTEM)
-    .upsertItems(context, [{ id: 'alien', type: 'User', title: 'Alien' }])
-    .then(() => {
-
-      it('Query viewer', (done) => {
+  test('Query viewer.', () => {
+    return database.getItemStore(Database.NAMESPACE.SYSTEM)
+      .upsertItems(context, [{ id: 'alien', type: 'User', title: 'Alien' }])
+      .then(() => {
         // https://github.com/graphql/graphql-js/blob/master/src/graphql.js
-        graphql(schema, query, null, context).then(result => test(result, {
+        return graphql(schema, query, null, context).then(result => testResult(result, {
           viewer: {
             user: {
               id: 'alien',
               title: 'Alien'
             }
           }
-        })).then(done);
+        }));
       });
-    });
+  });
 });

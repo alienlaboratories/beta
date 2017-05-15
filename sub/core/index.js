@@ -8,7 +8,6 @@ export * from './src/database';
 export * from './src/fragments';
 export * from './src/id';
 export * from './src/item_store';
-export * from './src/item_store_tests';
 export * from './src/item_util';
 export * from './src/key';
 export * from './src/matcher';

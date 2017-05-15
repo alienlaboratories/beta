@@ -4,24 +4,20 @@
 
 import Iron from 'iron';
 import uuid from 'uuid';
-import { expect } from 'chai';
 
 let password = uuid.v4();
 
-describe('Iron encryption:', () => {
+test('Encrypt and Decrypt.', (done) => {
+  let data = { value: 'hello' };
 
-  it('Encrypt and Decrypt.', (done) => {
-    let data = { value: 'hello' };
+  // https://www.npmjs.com/package/iron
+  Iron.seal(data, password, Iron.defaults, (err, sealed) => {
+//  console.log(sealed);
 
-    // https://www.npmjs.com/package/iron
-    Iron.seal(data, password, Iron.defaults, (err, sealed) => {
-      console.log(sealed);
-
-      Iron.unseal(sealed, password, Iron.defaults, (err, unsealed) => {
-        console.log(unsealed);
-        expect(unsealed).to.eql(data);
-        done();
-      });
+    Iron.unseal(sealed, password, Iron.defaults, (err, unsealed) => {
+//    console.log(unsealed);
+      expect(unsealed).toEqual(data);
+      done();
     });
   });
 });

@@ -10,9 +10,8 @@
  */
 export const ItemStoreTests = (storeFactory, buckets=true) => {
 
-  test('Stores and retrieves items.', (done) => {
-    storeFactory().then(itemStore => {
-
+  test('Stores and retrieves items.', () => {
+    return storeFactory().then(itemStore => {
       let context = {
         buckets: buckets ? ['test-bucket']: []
       };
@@ -38,7 +37,7 @@ export const ItemStoreTests = (storeFactory, buckets=true) => {
       ];
 
       // Write items.
-      itemStore.upsertItems(context, items)
+      return itemStore.upsertItems(context, items)
 
         //
         // Look-up by filter.
@@ -50,8 +49,6 @@ export const ItemStoreTests = (storeFactory, buckets=true) => {
           };
 
           return itemStore.queryItems(context, root, filter).then(matchedItems => {
-
-            done();
             // expect(matchedItems).toHaveLength(upsertedItems.length);
             // return upsertedItems;
           });

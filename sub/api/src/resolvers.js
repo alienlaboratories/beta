@@ -36,7 +36,7 @@ export class Resolvers {
   }
 
   static get typeDefs() {
-    return concatenateTypeDefs([Framework, Schema]);
+    return concatenateTypeDefs([ Framework, Schema ]);
   }
 
   //
