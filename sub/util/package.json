@@ -29,20 +29,13 @@
     "moment": "^2.18.1"
   },
   "jest": {
-    "verbose": true
-  },
-  "nyc": {
-    "require": [
-      "babel-register"
-    ],
-    "include": [
-      "src/*.js"
-    ],
-    "sourceMap": false,
-    "instrument": false
+    "verbose": false,
+    "transformIgnorePatterns": [
+      "/node_modules/(?!alien-)"
+    ]
   },
   "scripts": {
     "lint": "eslint -c ../../.eslintrc.yml ./src",
-    "test": "jest"
+    "test": "jest --verbose"
   }
 }

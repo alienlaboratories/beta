@@ -2,18 +2,15 @@
 // Copyright 2017 Alien Labs.
 //
 
-// 28441 jb
-
 /**
  * Standard tests for all ItemStore implementations
  *
- * @param expect Chai expect (This module is exported so do not import chai.)
  * @param storeFactory
  * @param buckets
  */
-export const ItemStoreTests = (expect, storeFactory, buckets=true) => {
+export const ItemStoreTests = (storeFactory, buckets=true) => {
 
-  it('Stores and retrieves items.', (done) => {
+  test('Stores and retrieves items.', (done) => {
     storeFactory().then(itemStore => {
 
       let context = {
@@ -47,7 +44,7 @@ export const ItemStoreTests = (expect, storeFactory, buckets=true) => {
         // Look-up by filter.
         //
         .then(upsertedItems => {
-          expect(upsertedItems).to.have.lengthOf(items.length);
+          expect(upsertedItems).toHaveLength(items.length);
           let filter = {
             type: 'Task'
           };
@@ -55,7 +52,7 @@ export const ItemStoreTests = (expect, storeFactory, buckets=true) => {
           return itemStore.queryItems(context, root, filter).then(matchedItems => {
 
             done();
-            // expect(matchedItems).to.have.lengthOf(upsertedItems.length);
+            // expect(matchedItems).toHaveLength(upsertedItems.length);
             // return upsertedItems;
           });
         });
@@ -64,11 +61,11 @@ export const ItemStoreTests = (expect, storeFactory, buckets=true) => {
         // Look-up by ID.
         //
         // .then(upsertedItems => {
-        //   expect(upsertedItems).to.have.lengthOf(items.length);
+        //   expect(upsertedItems).toHaveLength(items.length);
         //   let itemIds = _.map(upsertedItems, item => item.id);
         //
         //   return itemStore.getItems(context, 'Task', itemIds).then(matchedItems => {
-        //     expect(matchedItems).to.have.lengthOf(items.length);
+        //     expect(matchedItems).toHaveLength(items.length);
         //     return upsertedItems;
         //   });
         // })
@@ -77,7 +74,7 @@ export const ItemStoreTests = (expect, storeFactory, buckets=true) => {
         // Test.
         //
         // .then(upsertedItems => {
-        //   expect(upsertedItems).to.have.lengthOf(items.length);
+        //   expect(upsertedItems).toHaveLength(items.length);
         //   done();
         // });
     });

@@ -219,15 +219,21 @@ export class Database {
 export class ResultMerger {
 
   constructor(queryProcessors) {
+    console.assert(queryProcessors);
     this._queryProcessors = queryProcessors;
   }
 
   /**
+   * Merges the results from multiple queryies.
    *
-   * @param results
-   * @return {Promise.<TResult>}
+   * @param {[[{Item}]]} results Array of results from different {QueryProcessor}s.
+   * @param context
+   * @param root
+   * @return {Promise.<[{Item}]>} Merged items.
    */
   mergeResults(results, context, root={}) {
+    console.assert(results && context && root);
+
     // Skip empty results (e.g., on error).
     results = _.compact(results);
 
@@ -305,6 +311,7 @@ export class ResultMerger {
               // Skip merged results that have already been emitted.
               return;
             }
+
             // Check if there's a merged item that hasn't been emitted yet, and emit that.
             let mergedItem = itemsWithForeignKeys.get(fkey);
             if (mergedItem) {
@@ -312,6 +319,7 @@ export class ResultMerger {
               item = mergedItem;
             }
           }
+
           items.push(item);
         });
       });

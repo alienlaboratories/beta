@@ -7,8 +7,8 @@ import update from 'immutability-helper';
 
 import { Logger } from 'alien-util';
 
-import { ID } from './id';
-import { MutationUtil } from './mutations';
+import { ID } from '../id';
+import { MutationUtil } from '../mutations';
 
 const logger = Logger.get('reducer');
 

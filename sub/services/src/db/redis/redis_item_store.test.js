@@ -22,7 +22,7 @@ const matcher = new Matcher();
 const client = fakeredis.createClient('test');
 
 describe('RedisItemStore:', () => {
-  ItemStoreTests(expect, () => {
+  ItemStoreTests(() => {
     return Promise.resolve(new RedisItemStore(idGenerator, matcher, client, 'testing'));
   });
 });

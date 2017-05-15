@@ -44,7 +44,7 @@ config(CONF_DIR).then(config => {
   describe('FirebaseItemStore (buckets):', () => {
     this.timeout(5000);
 
-    ItemStoreTests(expect, () => {
+    ItemStoreTests(() => {
       return new FirebaseItemStore(idGenerator, matcher, db, 'testing', true).clear();
     });
   });
@@ -52,7 +52,7 @@ config(CONF_DIR).then(config => {
   describe('FirebaseItemStore (no buckets):', () => {
     this.timeout(5000);
 
-    ItemStoreTests(expect, () => {
+    ItemStoreTests(() => {
       return new FirebaseItemStore(idGenerator, matcher, db, 'testing', false).clear();
     }, false);
   });

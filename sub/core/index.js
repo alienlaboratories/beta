@@ -17,9 +17,5 @@ export * from './src/mutations';
 export * from './src/parser';
 export * from './src/randomizer';
 export * from './src/queries';
-export * from './src/reducer';
 export * from './src/system_store';
 export * from './src/transforms';
-
-// TODO(burdon): Separate index for this.
-export * from './src/testing/test_item_store';

@@ -2,11 +2,15 @@
 // Copyright 2017 Alien Labs.
 //
 
-import { expect } from 'chai';
+import { MutationUtil } from './mutations';
 
-describe('Mutations:', () => {
+test('Clones item', () => {
 
-  it('Compiles OK.', () => {
-    expect(true).to.equal(true);
-  });
+  let item = {
+    id: 'I-1',
+    title: 'Test'
+  };
+
+  let mutations = MutationUtil.cloneItem('test', item);
+  expect(mutations).toHaveLength(2);
 });
