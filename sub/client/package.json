@@ -104,7 +104,7 @@
   "scripts": {
     "//": "https://webpack.github.io/docs/webpack-dev-server.html#content-base",
     "lint": "eslint -c ../../.eslintrc.yml ./src",
-    "test": "jest --verbose",
+    "test": "jest --silent",
     "hot": "webpack-dev-server --content-base=src/web/testing/",
     "start": "npm run hot"
   }

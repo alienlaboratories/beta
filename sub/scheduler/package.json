@@ -39,7 +39,7 @@
   },
   "scripts": {
     "lint": "eslint -c ../../.eslintrc.yml ./src",
-    "test": "jest --verbose",
+    "test": "jest --silent",
     "server": "BABEL_DISABLE_CACHE=1 hilite babel-node src/scheduler.js",
     "start": "hilite nodemon --exec npm run server"
   }

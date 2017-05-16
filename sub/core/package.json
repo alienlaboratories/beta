@@ -46,6 +46,6 @@
   },
   "scripts": {
     "lint": "eslint -c ../../.eslintrc.yml ./src",
-    "test": "jest --verbose"
+    "test": "jest --silent"
   }
 }

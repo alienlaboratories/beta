@@ -60,7 +60,7 @@
   },
   "scripts": {
     "lint": "eslint -c ../../.eslintrc.yml ./src",
-    "test": "jest --verbose --testNamePattern='^((?!Integration).)*$'",
+    "test": "jest --silent --testNamePattern='^((?!Integration).)*$'",
     "all-tests": "jest --verbose",
     "admin": "babel-node src/admin.js"
   }
