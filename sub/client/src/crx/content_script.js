@@ -244,7 +244,7 @@ class Frame {
    * @param {string} page Frame source.
    * @param {string} channel Routing identifier.
    * @param {Node} root Root node for iframe channel.
-   * @param {Function} onLoading Loading Callback.
+   * @param {function} onLoading Loading Callback.
    */
   constructor(page, channel, root, onLoading) {
     console.assert(page && channel && root);

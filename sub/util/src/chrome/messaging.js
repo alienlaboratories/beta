@@ -38,7 +38,7 @@ export class ChromeMessageSender {
 
   /**
    * Connects and listens for inbound messages.
-   * @param {Function} onMessage
+   * @param {function} onMessage
    * @return {ChromeMessageSender}
    */
   connect(onMessage=undefined) {
@@ -109,7 +109,7 @@ export class ChromeMessageReceiver {
 
   /**
    * Listens for inbound messages.
-   * @param {Function} onMessage
+   * @param {function} onMessage
    * @return {ChromeMessageReceiver}
    */
   listen(onMessage) {
@@ -321,7 +321,7 @@ export class ChromeMessageChannelDispatcher {
    * Listens for channel messages.
    *
    * @param {string} channel
-   * @param {Function} onMessage Optionally returns a promise yielding the response.
+   * @param {function} onMessage Optionally returns a promise yielding the response.
    * @return {ChromeMessagePushChannel}
    */
   listen(channel, onMessage) {

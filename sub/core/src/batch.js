@@ -31,8 +31,9 @@ export class Batch {
   }
 
   /**
-   * Do NOT create directly.
-   * @param {function} mutate Mutate function provided by Apollo.
+   * Manages batch mutations.
+   *
+   * @param {function.<{Options}>} mutate Mutate function provided by Apollo.
    * @param {IdGenerator} idGenerator.
    * @param {string} bucket All batched operations must belong to the same bucket.
    * @param {boolean} optimistic

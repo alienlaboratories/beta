@@ -26,7 +26,7 @@ const logger = Logger.get('gql');
  * @param database
  * @param options
  * {
- *   contextProvider: {Function(request)}
+ *   contextProvider: {function(request)}
  * }
  *
  * @returns {Router}

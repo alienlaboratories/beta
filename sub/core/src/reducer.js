@@ -7,8 +7,8 @@ import update from 'immutability-helper';
 
 import { Logger } from 'alien-util';
 
-import { ID } from '../id';
-import { MutationUtil } from '../mutations';
+import { ID } from './id';
+import { MutationUtil } from './mutations';
 
 const logger = Logger.get('reducer');
 
@@ -69,6 +69,11 @@ update.extend('$remove', (removeItems, items) => {
 export class Reducer {
 
   /**
+   * Creates a reducer callback (for graphql options) with the given reducer.
+   * The reducer is called whenever mutations are applied.
+   *
+   * Returns a function which is a closure aroudn the props that are supplied by the graphql options.
+   *
    * const MyReducer = new ListReducer(Query);
    *
    * compose(
@@ -80,16 +85,29 @@ export class Reducer {
    *     }
    *   })
    * )
+   *
+   * @param reducer
+   * @param props
+   * @returns {function()}
    */
   static callback(reducer, props) {
+    console.assert(reducer && props);
+
     return (previousResult, action) => {
       let updatedItems = MutationUtil.getUpsertItemsMutationResult(action);
-      let newResult = updatedItems && reducer.applyMutations(props, previousResult, updatedItems);
-      return newResult || previousResult;
+      if (updatedItems) {
+        let newResult = reducer.applyMutations(props, previousResult, updatedItems);
+        if (newResult) {
+          return newResult;
+        }
+      }
+
+      return previousResult;
     };
   }
 
   constructor(path) {
+    console.assert(path);
     this._path = path;
   }
 

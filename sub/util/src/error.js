@@ -73,7 +73,7 @@ export class ErrorUtil {
    * Node-specific catch-all.
    *
    * @param root For node, provide process global; For DOM provide window.
-   * @param {Function} callback (error) => {}.
+   * @param {function} callback (error) => {}.
    */
   static handleErrors(root, callback) {
     console.assert(root && callback);

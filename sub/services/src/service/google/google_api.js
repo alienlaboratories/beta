@@ -16,7 +16,7 @@ export class GoogleApiUtil {
   /**
    * Iteratively retrieve pages.
    *
-   * @param {Function.<{ pageSize, pageToken, i }>} fetcher
+   * @param {function.<{ pageSize, pageToken, i }>} fetcher
    * @param maxResults
    * @returns {Promise.<Array>}
    */

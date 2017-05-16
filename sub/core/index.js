@@ -15,6 +15,7 @@ export * from './src/memory_item_store';
 export * from './src/mutations';
 export * from './src/parser';
 export * from './src/randomizer';
+export * from './src/reducer';
 export * from './src/queries';
 export * from './src/system_store';
 export * from './src/transforms';

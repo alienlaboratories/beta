@@ -41,9 +41,12 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 /**
- * Creates HOC for item query.
+ * Creates HOC for queries.
  */
 export class Connector {
+
+  static DEFAULT_ITEM_REDUCER = new Reducer('item');
+  static DEFAULT_SEARCH_REDUCER = new ListReducer('search');
 
   /**
    * HOC wrapper for reducers.
@@ -61,17 +64,13 @@ export class Connector {
   }
 
   /**
+   * Item query.
    *
    * @param query
    * @param reducer
    */
-  static itemQuery(query, reducer=undefined) {
-    console.assert(query);
-
-    // TODO(burdon): Infer path.
-    if (!reducer) {
-      reducer = new Reducer('item');
-    }
+  static itemQuery(query, reducer=Connector.DEFAULT_ITEM_REDUCER) {
+    console.assert(query && reducer);
 
     return graphql(query, {
       withRef: 'true',
@@ -109,17 +108,13 @@ export class Connector {
   }
 
   /**
+   * List query.
    *
    * @param query
    * @param reducer
    */
-  static searchQuery(query, reducer=undefined) {
-    console.assert(query);
-
-    // TODO(burdon): Infer path.
-    if (!reducer) {
-      reducer = new ListReducer('search.items');
-    }
+  static searchQuery(query, reducer=Connector.DEFAULT_SEARCH_REDUCER) {
+    console.assert(query && reducer);
 
     // Return HOC.
     return graphql(query, {

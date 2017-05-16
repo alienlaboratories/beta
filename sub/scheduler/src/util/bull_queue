@@ -78,7 +78,7 @@ export class Queue {
   /**
    * Sets the job processor.
    *
-   * @param {Function.<{Data}, {Job}>} handler
+   * @param {function.<{Data}, {Job}>} handler
    * @returns {Queue}
    */
   process(handler) {

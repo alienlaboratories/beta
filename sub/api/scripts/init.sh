@@ -6,7 +6,6 @@
 
 brew update
 brew install node
-brew install phantomjs
 brew outdated
 
 #

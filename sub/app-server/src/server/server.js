@@ -15,7 +15,8 @@ import session from 'express-session';
 import uuid from 'uuid';
 
 import { ExpressUtil, HttpError, HttpUtil, Logger } from 'alien-util';
-import { AuthUtil, Database, IdGenerator, Matcher, MemoryItemStore, SystemStore, TestItemStore } from 'alien-core';
+import { AuthUtil, Database, IdGenerator, Matcher, MemoryItemStore, SystemStore } from 'alien-core';
+import { TestItemStore } from 'alien-core/testing';
 import { AppDefs } from 'alien-client';
 import { apiRouter } from 'alien-api';
 import { Loader, TestGenerator } from 'alien-services';
