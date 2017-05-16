@@ -556,7 +556,7 @@ export class WebServer {
     ]).then(() => {
       logger.log('Initializing groups...');
       return loader.initGroups().then(() => {
-        if (__TESTING__) {
+        if (__TESTING__ && false) {
           logger.log('Generating test data...');
           return new TestGenerator(this._database).generate();
         }

@@ -85,20 +85,20 @@ export class ContactCard extends React.Component {
           MutationUtil.createFieldMutation('project', 'id', project.id),
           MutationUtil.createFieldMutation('owner',   'id', user.id),
           assignee && MutationUtil.createFieldMutation('assignee', 'id', assignee.id)
-        ]), 'new_task')
+        ]), 'task')
 
         // Update contact.
         // TODO(burdon): Bidirectional links?
         .updateItem(contact, [
-          MutationUtil.createSetMutation('tasks', 'id', '${new_task}')
-        ], 'updated_contact')
+          ({ task }) => MutationUtil.createSetMutation('tasks', 'id', task.id)
+        ], 'contact')
 
         // Parent project.
         .updateItem(project, [
-          MutationUtil.createSetMutation('tasks', 'id', '${new_task}'),
+          ({ task }) => MutationUtil.createSetMutation('tasks', 'id', task.id),
 
           // NOTE: Named since ID may have changed due to cloning.
-          MutationUtil.createSetMutation('contacts', 'id', '${updated_contact}')
+          ({ contact }) => MutationUtil.createSetMutation('contacts', 'id', contact.id)
         ])
 
         .commit();

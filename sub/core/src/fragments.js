@@ -223,6 +223,11 @@ export const Fragments = {
 
   ProjectBoardFragment: gql`
     fragment ProjectBoardFragment on Project {
+      
+      tasks {
+        id
+      }
+
       boards {
         alias
 

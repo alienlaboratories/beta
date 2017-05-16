@@ -96,6 +96,12 @@ export class Reducer {
     return (previousResult, action) => {
       let updatedItems = MutationUtil.getUpsertItemsMutationResult(action);
       if (updatedItems) {
+
+        // TODO(burdon): Called twice: ItemQuery (ItemCanvasHeader) + ProjectBoardQuery
+
+        // TODO(burdon): Apply mutations to result.
+        console.log('?????????????', action, previousResult);
+
         let newResult = reducer.applyMutations(props, previousResult, updatedItems);
         if (newResult) {
           return newResult;

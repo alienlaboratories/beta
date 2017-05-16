@@ -79,12 +79,16 @@ export class Connector {
       // http://dev.apollodata.com/react/queries.html#graphql-options
       options: (props) => {
         let { matcher, context, itemId } = props;
+
+        console.log('>>>>>>>>>>>>', itemId);
+
         return {
           variables: {
             itemId
           },
 
-          reducer: Reducer.callback(reducer, { matcher, context })
+          reducer: (p) => { console.log('xxx', query); return p; },
+//        reducer: Reducer.callback(reducer, { matcher, context })
         };
       },
 
@@ -94,8 +98,9 @@ export class Connector {
         let { errors, loading, refetch } = data;
         let item = reducer.getResult(data);
 
-        // TODO(burdon): Item returned as null even when: a) not loading; b) item exists (e.g., after create).
-//      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>', loading, errors, item);
+        // TODO(burdon): Item returned as null even when: a) not loading; b) item exists (e.g., after optimistic).
+        console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<', loading, item || data);
+        console.assert(loading || item);
 
         return {
           errors,

@@ -16,34 +16,32 @@ import { Transforms } from './transforms';
 export class Batch {
 
   /**
-   * Creates a generator that will be called with the ID of the referenced item to create the mutation.
-   * @param {string} label
-   * @param {function({Item})} callback Callback returns a {Mutation}.
-   */
-  static ref(label, callback) {
-    return (batch) => {
-      let itemId = batch._refs.get(label);
-      console.assert(itemId);
-      let item = batch._items.get(itemId);
-      console.assert(item);
-      return callback(item);
-    };
-  }
-
-  /**
    * Manages batch mutations.
    *
-   * @param {function.<{Options}>} mutate Mutate function provided by Apollo.
+   * new Batch(idGenerator, mutator, bucket, true)
+   *
+   *   .createItem('Task', [
+   *     MutationUtil.createFieldMutation('title', 'string', 'Test')
+   *   ], 'task')
+   *
+   *   .updateItem({ id: 'P-1', type: 'Project' }, [
+   *     MutationUtil.createSetMutation('labels', 'string', 'foo')
+   *     ({ task }) => MutationUtil.createSetMutation('tasks', 'id', task.id)
+   *   ])
+   *
+   *   .commit();
+   *
    * @param {IdGenerator} idGenerator.
+   * @param {function.<{Options}>} mutate Mutate function provided by Apollo.
    * @param {string} bucket All batched operations must belong to the same bucket.
    * @param {boolean} optimistic
    * @private
    */
-  constructor(mutate, idGenerator, bucket, optimistic=false) {
-    console.assert(mutate && idGenerator && bucket);
+  constructor(idGenerator, mutate, bucket, optimistic=false) {
+    console.assert(idGenerator && mutate && bucket);
 
-    this._mutate = mutate;
     this._idGenerator = idGenerator;
+    this._mutate = mutate;
     this._bucket = bucket;
     this._optimistic = optimistic;
 
@@ -53,19 +51,34 @@ export class Batch {
   }
 
   /**
+   * Returns an object containing label:Item values for each referenced value in the batch.
+   * @returns {{}}
+   */
+  get refs() {
+    let refs = {};
+    this._refs.forEach((itemId, label) => {
+      let item = this._items.get(itemId);
+      console.assert(item);
+      refs[label] = item;
+    });
+
+    return refs;
+  }
+
+  /**
    * Create a new item.
    * @param {string} type Item type.
    * @param {[{Mutation}]} mutations Mutations to apply.
-   * @param {string} ref Optional label that can be used as a reference for subsequent batch operations.
+   * @param {string} label Optional label that can be used as a reference for subsequent batch operations.
    * @returns {Batch}
    */
-  createItem(type, mutations, ref=undefined) {
+  createItem(type, mutations, label=undefined) {
     console.assert(type && mutations);
+    mutations = _.flattenDeep(mutations);
 
     let itemId = this._idGenerator.createId();
     this._items.set(itemId, { type, id: itemId });
 
-    // TODO(burdon): Remove from client (when transplant to current app).
     // TODO(burdon): Enforce server-side (and/or move into schema proto).
     mutations.unshift(
       MutationUtil.createFieldMutation('bucket', 'string', this._bucket),
@@ -78,8 +91,8 @@ export class Batch {
       mutations
     });
 
-    if (ref) {
-      this._refs.set(ref, itemId);
+    if (label) {
+      this._refs.set(label, itemId);
     }
 
     return this;
@@ -88,11 +101,14 @@ export class Batch {
   /**
    * Update an existing item.
    * @param {Item} item Item to mutate.
-   * @param {[{Mutation}]} mutations Mutations to apply.
+   * @param {[{Mutation}|function]} mutations Mutations to apply.
+   * @param {string} label Optional label that can be used as a reference for subsequent batch operations.
    * @returns {Batch}
    */
-  updateItem(item, mutations) {
-    console.assert(item && mutations);
+  updateItem(item, mutations, label=undefined) {
+    console.assert(item && item.id && mutations);
+    mutations = _.flattenDeep(mutations);
+
     this._items.set(item.id, item);
 
     this._mutations.push({
@@ -100,12 +116,16 @@ export class Batch {
       itemId: ID.toGlobalId(item.type, item.id),
       mutations: _.map(mutations, mutation => {
         if (_.isFunction(mutation)) {
-          return mutation(this);
+          return mutation.call(this, this.refs);
         } else {
           return mutation;
         }
       })
     });
+
+    if (label) {
+      this._refs.set(label, item.id);
+    }
 
     return this;
   }
@@ -159,10 +179,22 @@ export class Batch {
         return updatedItem;
       });
 
+      // Create the response (GraphQL mutation API).
+      // http://dev.apollodata.com/react/mutations.html#optimistic-ui
+      // http://dev.apollodata.com/react/optimistic-ui.html#optimistic-basics
+      // http://dev.apollodata.com/react/cache-updates.html
       optimisticResponse = {
+
+        // Add hint for reducer.
+        optimistic: true,
+
         upsertItems
       };
     }
+
+
+    console.log('>>>>>>>>>>>>', JSON.stringify(optimisticResponse, 0, 2));
+
 
     // Submit mutation.
     this._mutate({

@@ -116,7 +116,7 @@ export class Canvas extends React.Component {
   save() {
     let { mutator } = this.context;
     let { item, onSave } = this.props;
-    let mutations = TypeUtil.flattenArrays([ this.getMutations(), onSave() ]);
+    let mutations = _.flatten([ this.getMutations(), onSave() ]);
     if (!_.isEmpty(mutations)) {
       mutator.batch(item.bucket).updateItem(item, mutations).commit();
     }

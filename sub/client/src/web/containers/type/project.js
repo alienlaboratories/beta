@@ -341,9 +341,9 @@ class ProjectBoardCanvasComponent extends React.Component {
           MutationUtil.createFieldMutation('owner', 'id', user.id),
           MutationUtil.createFieldMutation('project', 'id', project.id),
           mutations
-        ], 'new_task')
+        ], 'task')
         .updateItem(project, [
-          MutationUtil.createSetMutation('tasks', 'id', '${new_task}')
+          ({ task }) => MutationUtil.createSetMutation('tasks', 'id', task.id)
         ])
         .commit();
     }
@@ -409,7 +409,7 @@ class ProjectBoardCanvasComponent extends React.Component {
           }
         }]
       }
-    })), null, ProjectBoardQuery);
+    })));
 
     batch.commit();
   }

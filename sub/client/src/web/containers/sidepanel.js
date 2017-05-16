@@ -78,7 +78,7 @@ class SidePanel extends React.Component {
 
       let folders = viewer.folders;
       let groups = viewer.groups;
-      let projects = TypeUtil.flattenArrays(_.map(groups, group => group.projects));
+      let projects = _.flatten(_.map(groups, group => group.projects));
 
       return (
         <div className="app-sidepanel">

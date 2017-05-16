@@ -24,7 +24,7 @@ export class DebugPanel extends React.Component {
 
     // TODO(burdon): Redux action to recreate network interface.
     if (name === 'networkDelay') {
-      value = value ? 200000 : 0;       // TODO(burdon): Const.
+      value = value ? 5000: 0;       // TODO(burdon): Const.
     }
 
     _.set(config.options, name, value);

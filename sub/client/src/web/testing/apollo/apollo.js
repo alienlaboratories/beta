@@ -90,7 +90,6 @@ class ListComponent extends React.Component {
     let input = this.refs['INPUT/' + item.id];
     let text = $(input).val();
     if (text) {
-
       createBatch(bucket)
         .updateItem(item, [
           MutationUtil.createFieldMutation('title', 'string', text)
@@ -113,12 +112,12 @@ class ListComponent extends React.Component {
   }
 
   handleInsert(event) {
-    let { project, createBatch } = this.props;
+    let { config, project, createBatch } = this.props;
     let { text } = this.state;
     let bucket = _.get(project, 'group.id');
     if (text) {
       // TODO(burdon): For item creation (per-type validation).
-      let userId = _.get(this._config, 'userProfile.id');
+      let userId = _.get(config, 'userProfile.id');
       console.assert(userId);
 
       createBatch(bucket)
@@ -127,7 +126,7 @@ class ListComponent extends React.Component {
           MutationUtil.createFieldMutation('title', 'string', text)
         ], 'task')
         .updateItem(project, [
-          Batch.ref('task', item => MutationUtil.createSetMutation('tasks', 'id', item.id))
+          ({ task }) => MutationUtil.createSetMutation('tasks', 'id', task.id)
         ])
         .commit();
 
@@ -315,9 +314,12 @@ const SearchReducer = (path, options={}) => (previousResult, action, variables) 
 
 const ListComponentWithApollo = compose(
 
+  // Connect redux properties.
   connect((state, ownProps) => {
-    let { options } = AppState(state);
+    let { config, options } = AppState(state);
+
     return {
+      config,
       options
     };
   }),
@@ -393,7 +395,7 @@ const ListComponentWithApollo = compose(
        * @returns {Batch}
        */
       createBatch: (bucket) => {
-        return new Batch(mutate, idGenerator, bucket, ownProps.options.optimisticResponse);
+        return new Batch(idGenerator, mutate, bucket, ownProps.options.optimisticResponse);
       }
     })
   })
@@ -585,6 +587,9 @@ export class App {
 
     // Initial options.
     let initialState = {
+
+      config: this._config,
+
       options: {
         reducer: false,
         optimisticResponse: true,

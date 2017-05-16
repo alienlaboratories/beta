@@ -19,13 +19,12 @@ test('Null batch.', (done) => {
   }
 
   try {
-    new Batch(mutator, idGenerator, bucket).commit();
+    new Batch(idGenerator, mutator, bucket).commit();
   } catch (err) {
     done.fail(err);
   }
 });
 
-if (false)
 test('Create item.', (done) => {
   function mutator(options) {
     expect(_.get(options, 'variables.mutations')).toHaveLength(1);
@@ -36,14 +35,13 @@ test('Create item.', (done) => {
     done();
   }
 
-  new Batch(mutator, idGenerator, bucket)
+  new Batch(idGenerator, mutator, bucket)
     .createItem('Task', [
       MutationUtil.createFieldMutation('title', 'string', 'Test')
     ])
     .commit();
 });
 
-if (false)
 test('Create and insert (with optimistic responses).', (done) => {
   function mutator(options) {
     let { upsertItems } = _.get(options, 'optimisticResponse');
@@ -54,12 +52,12 @@ test('Create and insert (with optimistic responses).', (done) => {
     done();
   }
 
-  new Batch(mutator, idGenerator, bucket, true)
+  new Batch(idGenerator, mutator, bucket, true)
     .createItem('Task', [
       MutationUtil.createFieldMutation('title', 'string', 'Test')
     ], 'task')
     .updateItem({ id: 'P-1', type: 'Project' }, [
-      Batch.ref('task', item => MutationUtil.createSetMutation('tasks', 'id', item.id))
+      ({ task }) => MutationUtil.createSetMutation('tasks', 'id', task.id)
     ])
     .commit();
 });

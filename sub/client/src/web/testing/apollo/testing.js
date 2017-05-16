@@ -13,7 +13,7 @@ import { UpsertItemsMutationName, ProjectsQueryName } from './common';
 
 const bucket = 'Group-1';
 
-const context = { buckets: [bucket] };
+const context = { buckets: [ bucket ] };
 
 /**
  * Test NetworkInterface
