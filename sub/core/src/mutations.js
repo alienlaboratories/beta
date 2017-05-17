@@ -18,20 +18,9 @@ import { Fragments } from './fragments';
 export const UpsertItemsMutation = gql`
   mutation UpsertItemsMutation($mutations: [ItemMutationInput]!) {
     upsertItems(mutations: $mutations) {
-
-      # TODO(burdon): Stops working if Fragment replaces field.
-      # https://github.com/apollographql/apollo-client/issues/1708
-
-      bucket
-      type
-      id
-      labels
-      title
-
       ...ItemFragment
       ...ContactTasksFragment
       ...TaskFragment
-#     ...ProjectFragment
       ...ProjectBoardFragment
     }
   }
@@ -41,8 +30,6 @@ export const UpsertItemsMutation = gql`
   ${Fragments.TaskFragment}
   ${Fragments.ProjectBoardFragment}
 `;
-
-// ${Fragments.ProjectFragment}
 
 export const UpsertItemsMutationName = // 'UpsertItemsMutation'
   _.get(UpsertItemsMutation, 'definitions[0].name.value');
