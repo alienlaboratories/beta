@@ -91,7 +91,7 @@ export class Batch {
     this._mutations.push({
       bucket: this._bucket,
       itemId: ID.toGlobalId(type, itemId),
-      mutations
+      mutations: _.map(mutations, mutation => this._resolve(mutation))
     });
 
     if (label) {
@@ -122,13 +122,7 @@ export class Batch {
     this._mutations.push({
       bucket: this._bucket,
       itemId: ID.toGlobalId(item.type, item.id),
-      mutations: _.map(mutations, mutation => {
-        if (_.isFunction(mutation)) {
-          return mutation.call(this, this.refs);
-        } else {
-          return mutation;
-        }
-      })
+      mutations: _.map(mutations, mutation => this._resolve(mutation))
     });
 
     if (label) {
@@ -206,6 +200,7 @@ export class Batch {
     // http://dev.apollodata.com/react/mutations.html#calling-mutations
     // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.mutate
     //
+    logger.log('Batch: ' + TypeUtil.stringify(this._mutations));
     return this._mutate({
 
       // Input to the mutation.
@@ -262,6 +257,20 @@ export class Batch {
   }
 
   /**
+   * Resolves mutation or mutation generator.
+   * @param mutation
+   * @return {*}
+   * @private
+   */
+  _resolve(mutation) {
+    if (_.isFunction(mutation)) {
+      return mutation.call(this, this.refs);
+    } else {
+      return mutation;
+    }
+  }
+
+  /**
    * Determines if the item should be cloned. If so, creates a new item.
    *
    * @param item
@@ -290,7 +299,7 @@ export class Batch {
       case Database.NAMESPACE.LOCAL: {
         logger.log('Cloning item: ' + JSON.stringify(_.pick(item, 'namespace', 'type', 'id')));
 
-        let cloneMutations = _.concat(
+        let clonedMutations = _.concat(
           // Mutations to clone the item's properties.
           // TODO(burdon): Remove mutations for current properties below.
           MutationUtil.cloneItem(this._bucket, item),
@@ -300,7 +309,7 @@ export class Batch {
         );
 
         // TODO(burdon): Add fkey (e.g., email)?
-        this.createItem(item.type, cloneMutations, label);
+        this.createItem(item.type, clonedMutations, label);
         return true;
       }
 
@@ -312,7 +321,7 @@ export class Batch {
       default: {
         logger.log('Cloning item: ' + JSON.stringify(_.pick(item, 'namespace', 'type', 'id')));
 
-        let cloneMutations = _.concat(
+        let clonedMutations = _.concat(
           // Reference the external item.
           MutationUtil.createFieldMutation('fkey', 'string', ID.getForeignKey(item)),
 
@@ -324,7 +333,7 @@ export class Batch {
           mutations
         );
 
-        this.createItem(item.type, cloneMutations, label);
+        this.createItem(item.type, clonedMutations, label);
         return true;
       }
     }

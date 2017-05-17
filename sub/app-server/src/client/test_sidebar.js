@@ -12,7 +12,7 @@ import { TestSidebarApp } from 'alien-client/crx/sidebar_test';
 const logger = Logger.get('sidebar-test');
 
 /**
-// Test config.
+ * Test config.
  */
 const config = _.defaultsDeep(window.config, {
   debug: true,
@@ -21,22 +21,19 @@ const config = _.defaultsDeep(window.config, {
   }
 });
 
-//
-// App instance.
-//
-
 const app = new TestSidebarApp(config);
-
-const render = () => {
-  const App = require('alien-client/crx/sidebar/root');
-  app.render(App);
-};
 
 //
 // React Hot Loader.
 // https://github.com/gaearon/react-hot-boilerplate/pull/61
 // https://webpack.github.io/docs/hot-module-replacement.html
 //
+
+const render = () => {
+  // Load the root component.
+  const App = require('alien-client/crx/sidebar/root');
+  app.render(App);
+};
 
 if (module.hot && _.get(config, 'env') === 'hot') {
   module.hot.accept('alien-client/crx/sidebar/root', () => render());
@@ -46,10 +43,10 @@ if (module.hot && _.get(config, 'env') === 'hot') {
 // Start app.
 //
 
-app.init().then(root => {
-  render();
-
+app.init().then(() => {
   setupTestContext(document.body);
+
+  render();
 });
 
 //
@@ -93,8 +90,8 @@ function setupTestContext(root) {
         context: context
       };
 
-      window.alien.store.dispatch(action);
-      logger.log(`window.alien.store.dispatch(${JSON.stringify(action)})`);
+      app.store.dispatch(action);
+      logger.log(`alien.app.store.dispatch(${JSON.stringify(action)})`);
     });
 
   _.each(window.ITEMS, (value, key) => {

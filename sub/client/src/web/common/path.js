@@ -114,6 +114,9 @@ export class WindowNavigator {
 
   pushCanvas(item) {
     let path = this._serverProvider.value + Path.canvas(ID.toGlobalId(item.type, item.id));
-    window.open(path, 'ALIEN');
+
+    console.log('::::', path);
+
+//    window.open(path, 'ALIEN');
   }
 }

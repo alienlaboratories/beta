@@ -26,9 +26,9 @@ export class Application extends React.Component {
 
   static propTypes = {
     injector: PropTypes.object.isRequired,
-    history: PropTypes.object.isRequired,
     client: PropTypes.object.isRequired,
-    store: PropTypes.object.isRequired
+    store: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired
   };
 
   render() {

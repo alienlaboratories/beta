@@ -54,7 +54,11 @@ export class BaseApp {
 
     // Debugging.
     // TODO(burdon): Factor out debug root.
-    _.set(window, 'alien.app', this);
+    _.defaultsDeep(window, {
+      alien: {
+        app: this
+      }
+    });
   }
 
   get initialized() {
@@ -403,6 +407,9 @@ export class BaseApp {
    *     <Canvas/>
    *   </Layout>
    * </Activity>
+   *
+   * @param {React.Component} App Root app class.
+   * @return {Promise}
    */
   render(App) {
     logger.info(`### [${moment().format('YYYY-MM-DD HH:mm Z')} ${_.get(this._config, 'env')}] ###`);

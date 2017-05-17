@@ -35,7 +35,7 @@ export class DebugPanel extends React.Component {
     let { config } = this.context;
 
     // TODO(burdon): Should be part of Redux state (to update listeners).
-    let { debug, optimisticResponse, invalidations, networkDelay } = _.get(config, 'options', {});
+    let { debugInfo, optimisticResponse, invalidations, networkDelay } = _.get(config, 'options', {});
 
     // console.warn('DEBUG\n' + JSON.stringify(config, null, 2));
 
@@ -49,8 +49,8 @@ export class DebugPanel extends React.Component {
           <div>
             <label>
               <input type="checkbox"
-                     onChange={ this.handleOptionChanged.bind(this, 'debug') }
-                     checked={ debug }/> Debug Info</label>
+                     onChange={ this.handleOptionChanged.bind(this, 'debugInfo') }
+                     checked={ debugInfo }/> Debug Info</label>
           </div>
           <div>
             <label>

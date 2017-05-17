@@ -155,7 +155,7 @@ export class Connector {
         let { errors, loading, refetch } = data;
 
         // Get query result.
-        let items = _.get(data, path, []);
+        let items = _.get(data, path + '.items', []);
         let groupedItems = _.get(data, path + '.groupedItems');
 
         // Inject additional items (e.g., from context).
