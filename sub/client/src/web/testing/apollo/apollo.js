@@ -15,15 +15,19 @@ import ApolloClient from 'apollo-client';
 import { createNetworkInterface } from 'apollo-client';
 import update from 'immutability-helper';
 
-import { TypeUtil } from 'alien-util';
+import { Logger, TypeUtil } from 'alien-util';
 import { AuthDefs, Batch, IdGenerator, ItemUtil, MutationUtil } from 'alien-core';
 
 import { ReactUtil } from '../../util/index';
 
-import { ProjectsQuery, ProjectsQueryName, UpsertItemsMutation, UpsertItemsMutationName } from './common';
+import { UpsertItemsMutation, UpsertItemsMutationName } from 'alien-core';
+
+import { ProjectsQuery, ProjectsQueryName } from './common';
 import { TestingNetworkInterface } from './testing';
 
 import './apollo.less';
+
+const logger = Logger.get('apollo');
 
 const idGenerator = new IdGenerator();
 
@@ -62,7 +66,7 @@ class ListComponent extends React.Component {
   // TODO(burdon): Dispatch redux action.
 
   componentWillReceiveProps(nextProps) {
-    console.log('componentWillReceiveProps:', TypeUtil.stringify(nextProps));
+//  logger.log('componentWillReceiveProps:', TypeUtil.stringify(nextProps));
     this.setState({
       items: _.map(nextProps.items, item => _.cloneDeep(item))
     });
@@ -144,11 +148,16 @@ class ListComponent extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
+      let { project } = this.props;
       let { items, text } = this.state;
-      console.log('RootComponent.render', _.size(items));
+      this.count++;
+
+      logger.log('RootComponent.render', _.size(items));
 
       return (
         <div className="test-component">
+
+          <h3>{ project.title }</h3>
 
           <div className="test-header">
             <input ref="INPUT_NEW" type="text" value={ text } autoFocus={ true } spellCheck={ false }
@@ -174,7 +183,7 @@ class ListComponent extends React.Component {
           </div>
 
           <div className="test-footer">
-            <div className="test-expand">Render: { ++this.count }</div>
+            <div className="test-expand">Render: #{ this.count }</div>
             <button>Reset</button>
             <button onClick={ this.handleRefetch.bind(this) }>Refetch</button>
           </div>
@@ -332,7 +341,7 @@ const ListComponentWithApollo = compose(
     // http://dev.apollodata.com/react/queries.html#graphql-options
     options: (props) => {
       let { options } = props;
-      console.log('graphql.options:', ProjectsQueryName);
+      logger.log('graphql.options:', ProjectsQueryName);
 
       return {
         variables: {
@@ -353,7 +362,7 @@ const ListComponentWithApollo = compose(
     // http://dev.apollodata.com/react/queries.html#graphql-props-option
     props: ({ ownProps, data }) => {
       let { errors, loading, search } = data;
-      console.log('graphql.props:', ProjectsQueryName, loading ? 'loading...' : TypeUtil.stringify(search));
+      logger.log('graphql.props:', ProjectsQueryName, loading ? 'loading...' : TypeUtil.stringify(search));
 
       let project = _.get(search, 'items[0]');
       let items = _.get(project, 'tasks');
@@ -477,7 +486,7 @@ export const AppState = (state) => state[APP_NAMESPACE];
 const AppReducer = (initalState) => (state=initalState, action) => {
   switch (action.type) {
     case APP_UPDATE_OPTIONS: {
-      console.log('AppReducer: ' + JSON.stringify(action));
+      logger.log('AppReducer: ' + JSON.stringify(action));
       let { options } = action;
       return _.merge({}, state, { options });
     }
@@ -499,7 +508,7 @@ export class App {
   }
 
   init() {
-    console.log('Initializing...');
+    logger.log('Initializing...');
     return this.initNetwork().then(() => {
       this.postInit();
       return this;

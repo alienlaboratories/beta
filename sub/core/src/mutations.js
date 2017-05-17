@@ -9,32 +9,41 @@ import { graphql } from 'react-apollo';
 import { Batch } from './batch';
 import { Fragments } from './fragments';
 
-
 // TODO(burdon): Project board fragment shouldn't return all items.
 // TODO(madadam): Think more about "thin vs fat" fragments for the generic mutation.
 // Since we're using a single generic mutation type, it has to be configured to retrieve
 // any data needed by any component, including detailed nested objects (e.g. ContactTaskFragment).
 // Unclear if there's a material downside to this, but it feels wrong.
 
-
 export const UpsertItemsMutation = gql`
   mutation UpsertItemsMutation($mutations: [ItemMutationInput]!) {
     upsertItems(mutations: $mutations) {
+
+      # TODO(burdon): Stops working if Fragment replaces field.
+      # https://github.com/apollographql/apollo-client/issues/1708
+
+      bucket
+      type
+      id
+      labels
+      title
+
       ...ItemFragment
 #     ...ContactTasksFragment
-#     ...TaskFragment
-#     ...ProjectFragment
+      ...TaskFragment
+      ...ProjectFragment
 #     ...ProjectBoardFragment
     }
   }
-  
+
   ${Fragments.ItemFragment}
+  ${Fragments.TaskFragment}
+  ${Fragments.ProjectBoardFragment}
 `;
 
-  // ${Fragments.ContactTasksFragment}
-  // ${Fragments.TaskFragment}
-  // ${Fragments.ProjectFragment}
-  // ${Fragments.ProjectBoardFragment}
+// ${Fragments.TaskFragment}
+// ${Fragments.ContactTasksFragment}
+// ${Fragments.ProjectFragment}
 
 export const UpsertItemsMutationName = // 'UpsertItemsMutation'
   _.get(UpsertItemsMutation, 'definitions[0].name.value');
@@ -46,28 +55,6 @@ export const UpsertItemsMutationPath = // 'upsertItems'
  * Utils to create mutations.
  */
 export class MutationUtil {
-
-  /**
-   * Get the UpsertItemsMutation from an Apollo Redux action.
-   *
-   * @param action Redux action.
-   * @param optimistic If true then also return optimistic results.
-   *
-   * NOTE: The optimistic results may not have well-formed items (e.g., linked items may just have string IDs),
-   * so in some cases (e.g., Finder's ContextHandler) we may want to skip these partial results.
-   *
-   * @returns root result object or undefined.
-   */
-  static getUpsertItemsMutationResult(action, optimistic=true) {
-    // Filter for UpsertItemsMutationName mutations.
-    if (action.type === 'APOLLO_MUTATION_RESULT' && action.operationName === UpsertItemsMutationName) {
-
-      // Filter-out optimistic updates if required.
-      if (optimistic || !_.get(action, 'result.data.optimistic')) {
-        return _.get(action.result.data, UpsertItemsMutationPath);
-      }
-    }
-  }
 
   /**
    * Create mutations to clone the given item.

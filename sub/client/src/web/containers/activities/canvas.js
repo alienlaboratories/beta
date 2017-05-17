@@ -89,6 +89,7 @@ class CanvasActivity extends React.Component {
       let navbar = (
         <CanvasNavbar onSave={ this.handleSave.bind(this) } canvas={ canvas } type={ type } itemId={ itemId }/>
       );
+      navbar = <div></div>;
 
       let canvasComponent = (
         <CanvasContainer ref="canvas" canvas={ canvas } type={ type } itemId={ itemId }/>

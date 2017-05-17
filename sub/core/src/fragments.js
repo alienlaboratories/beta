@@ -33,6 +33,8 @@ const ItemMetaFragment = gql`
     bucket
     type
     id
+
+    labels
     
     title
   }
@@ -109,7 +111,6 @@ export const Fragments = {
 
       namespace
       fkey
-      labels
 
       description
     }

@@ -39,6 +39,9 @@ export class ID {
    * @param obj Data item.
    * @returns {*}
    */
+  // TODO(burdon): This is the default behavior so not necessary.
+  // TODO(burdon): See toIdValue.
+  // http://dev.apollodata.com/react/cache-updates.html#cacheRedirect
   static dataIdFromObject(obj) {
     if (obj.__typename && obj.id) {
       return obj.__typename + '/' + obj.id;

@@ -2,10 +2,12 @@
 // Copyright 2017 Alien Labs.
 //
 
-import { TypeUtil } from 'alien-util';
+import { Logger, TypeUtil } from 'alien-util';
 import { IdGenerator, ItemStore, Matcher, MemoryItemStore } from 'alien-core';
 
 import { UpsertItemsMutationName, ProjectsQueryName } from './common';
+
+const logger = Logger.get('testing');
 
 //-------------------------------------------------------------------------------------------------
 // Test Server.
@@ -85,13 +87,13 @@ export class TestingNetworkInterface {
     let delay = options.networkDelay ? TestingNetworkInterface.NETWORK_DELAY : 0;
 
     let count = ++this.count;
-    console.info(`REQ[${operationName}:${count}]`, TypeUtil.stringify(variables));
+    logger.info(`REQ[${operationName}:${count}]`, TypeUtil.stringify(variables));
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         Promise.resolve(this.processQuery(operationName, query, variables))
 
           .then(response => {
-            console.info(`RES[${operationName}:${count}]`, TypeUtil.stringify(response));
+            logger.info(`RES[${operationName}:${count}]`, TypeUtil.stringify(response));
             resolve(response);
           })
 

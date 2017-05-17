@@ -4,11 +4,14 @@
 
 import _ from 'lodash';
 
-import { TypeUtil } from 'alien-util';
+import { Logger, TypeUtil } from 'alien-util';
 
+import { Database } from './database';
 import { ID } from './id';
-import { MutationUtil } from './mutations';
+import { MutationUtil, UpsertItemsMutationName } from './mutations';
 import { Transforms } from './transforms';
+
+const logger = Logger.get('batch');
 
 /**
  * Batch mutations.
@@ -109,6 +112,11 @@ export class Batch {
     console.assert(item && item.id && mutations);
     mutations = _.flattenDeep(mutations);
 
+    // Transient and external items should be cloned.
+    if (this._copyOnWrite(item, mutations, label)) {
+      return this;
+    }
+
     this._items.set(item.id, item);
 
     this._mutations.push({
@@ -132,11 +140,12 @@ export class Batch {
 
   /**
    * Commit all changes.
+   * @returns {Promise}
    */
   commit() {
 
     // Create optimistic response.
-    let optimisticResponse = undefined;
+    let optimisticResponse;
     if (this._optimistic) {
 
       // Apply the mutations to the current (cloned) items.
@@ -166,7 +175,6 @@ export class Batch {
         let updatedItem = Transforms.applyObjectMutations(_.cloneDeep(item), mutations);
 
         // TODO(burdon): Mutation patching above isn't right since patching Item into "id" field.
-        // TODO(burdon): Leave ID and patch in reducer?
 
         // Update the batch's cache for patching above.
         this._items.set(item.id, updatedItem);
@@ -184,25 +192,131 @@ export class Batch {
       // http://dev.apollodata.com/react/optimistic-ui.html#optimistic-basics
       // http://dev.apollodata.com/react/cache-updates.html
       optimisticResponse = {
+        __typename: UpsertItemsMutationName,
 
         // Add hint for reducer.
-        optimistic: true,
+//      optimistic: true,
 
         upsertItems
       };
     }
 
-
-    console.log('>>>>>>>>>>>>', JSON.stringify(optimisticResponse, 0, 2));
-
-
+    //
     // Submit mutation.
-    this._mutate({
+    // http://dev.apollodata.com/react/mutations.html#calling-mutations
+    // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.mutate
+    //
+    return this._mutate({
+
+      // Input to the mutation.
       variables: {
         mutations: this._mutations
       },
 
-      optimisticResponse
+      optimisticResponse,
+
+      // TODO(burdon): refetchQueries
+      // TODO(burdon): updateQueries
+
+      /**
+       * Updates the cache.
+       * By default the cache is updates items that match ApolloClient.dataIdFromObject.
+       * This method allows for the update of cached queries (and replaces deprecated reducers).
+       *
+       * Called for both optimistic and network mutation response.
+       * Once immediately after client.mutate with the optimisticResponse.
+       * After the network response the optimistic changes are rolled back and update called with the actual data.
+       *
+       * http://dev.apollodata.com/react/cache-updates.html#directAccess
+       * http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
+       * http://dev.apollodata.com/core/read-and-write.html#updating-the-cache-after-a-mutation
+       *
+       * @param {DatProxy} proxy http://dev.apollodata.com/core/apollo-client-api.html#DataProxy
+       * @param {Object} data Mutation result.
+       */
+      update: (proxy, { data }) => {
+        console.log('## BATCH UPDATE ===========>', data);
+
+        // TODO(burdon): Update specific queries (register here).
+
+        // Read the data from our cache for this query.
+        // let data = store.readQuery({ query: TestQuery });
+        // Add our comment from the mutation to the end.
+        // data.comments.push(submitComment);
+        // Write our data back to the cache.
+        // store.writeQuery({ query: CommentAppQuery, data });
+      }
+
+    }).then(({ data }) => {
+
+      // Called when on network response (not optimistic response).
+      logger.log('Commit', TypeUtil.stringify(data));
+      return true;
     });
+  }
+
+  /**
+   * Determines if the item should be cloned. If so, creates a new item.
+   *
+   * @param item
+   * @param mutations
+   * @param label
+   * @return {boolean} True if the item was cloned.
+   * @private
+   */
+  _copyOnWrite(item, mutations, label) {
+    switch (item.namespace) {
+
+      //
+      // Normal item (do nothing).
+      //
+      case Database.NAMESPACE.USER: {
+        return false;
+      }
+
+      //
+      // Clone local (transient) item on mutation.
+      //
+      case Database.NAMESPACE.LOCAL: {
+        logger.log('Cloning item: ' + JSON.stringify(_.pick(item, 'namespace', 'type', 'id')));
+
+        let cloneMutations = _.concat(
+          // Mutations to clone the item's properties.
+          // TODO(burdon): Remove mutations for current properties below.
+          MutationUtil.cloneItem(this._bucket, item),
+
+          // Current mutations.
+          mutations
+        );
+
+        // TODO(burdon): Add fkey (e.g., email)?
+        this.createItem(item.type, cloneMutations, label);
+        return true;
+      }
+
+      //
+      // Clone external item on mutation.
+      // NOTE: This assumes that external items are never presented to the client when a USER item
+      // exists; i.e., external/USER items are merged on the server (Database.search).
+      //
+      default: {
+        logger.log('Cloning item: ' + JSON.stringify(_.pick(item, 'namespace', 'type', 'id')));
+
+        let cloneMutations = _.concat(
+          // Reference the external item.
+          MutationUtil.createFieldMutation('fkey', 'string', ID.getForeignKey(item)),
+
+          // Mutations to clone the item's properties.
+          // TODO(burdon): Remove mutations for current properties below.
+          MutationUtil.cloneItem(this._bucket, item),
+
+          // Current mutations.
+          mutations
+        );
+
+        this.createItem(item.type, cloneMutations, label);
+        return true;
+      }
+    }
   }
 }
