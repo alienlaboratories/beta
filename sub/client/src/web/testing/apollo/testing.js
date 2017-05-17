@@ -109,10 +109,11 @@ export class TestingNetworkInterface {
   processQuery(operationName, query, variables) {
 
     // Resolve vector of IDs to objects.
-    const resolve = (parent, field, type) => {
-      return this._itemStore.queryItems(context, {}, { ids: parent[field] }).then(items => {
-        parent[field] = _.map(items, item => _.defaults(item, { __typename: type }));
-        return parent;
+    const resolveItems = (item, type, field) => {
+      let filter = { ids: item[field] };
+      return this._itemStore.queryItems(context, {}, filter).then(items => {
+        item[field] = _.map(items, item => _.defaults(item, { __typename: type }));
+        return item;
       });
     };
 
@@ -127,7 +128,7 @@ export class TestingNetworkInterface {
         return this._itemStore.queryItems(context, {}, filter).then(items => {
           return Promise.all(_.map(items, item => {
             item.__typename = item.type;
-            return resolve(item, 'tasks', 'Task');
+            return resolveItems(item, 'Task', 'tasks');
           }));
         }).then(items => {
           return {
@@ -151,9 +152,10 @@ export class TestingNetworkInterface {
           return Promise.all(_.map(upsertItems, upsertItem => {
             upsertItem.__typename = upsertItem.type;
 
+            // Mini-resolver.
             switch (upsertItem.type) {
               case 'Project':
-                return resolve(_.cloneDeep(upsertItem), 'tasks', 'Task');
+                return resolveItems(_.cloneDeep(upsertItem), 'Task', 'tasks');
 
               default:
                 return Promise.resolve(upsertItem);

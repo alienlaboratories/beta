@@ -77,7 +77,7 @@ export class Batch {
    */
   createItem(type, mutations, label=undefined) {
     console.assert(type && mutations);
-    mutations = _.flattenDeep(mutations);
+    mutations = _.compact(_.flattenDeep(mutations));
 
     let itemId = this._idGenerator.createId();
     this._items.set(itemId, { type, id: itemId });
@@ -110,7 +110,7 @@ export class Batch {
    */
   updateItem(item, mutations, label=undefined) {
     console.assert(item && item.id && mutations);
-    mutations = _.flattenDeep(mutations);
+    mutations = _.compact(_.flattenDeep(mutations));
 
     // Transient and external items should be cloned.
     if (this._copyOnWrite(item, mutations, label)) {
@@ -265,6 +265,10 @@ export class Batch {
    * @private
    */
   _copyOnWrite(item, mutations, label) {
+    if (!item.namespace) {
+      return false;
+    }
+
     switch (item.namespace) {
 
       //

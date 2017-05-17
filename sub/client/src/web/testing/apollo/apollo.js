@@ -20,7 +20,8 @@ import { AuthDefs, Batch, IdGenerator, ItemUtil, MutationUtil } from 'alien-core
 
 import { ReactUtil } from '../../util/index';
 
-import { UpsertItemsMutation, UpsertItemsMutationName } from 'alien-core';
+//import { UpsertItemsMutation, UpsertItemsMutationName } from 'alien-core';
+import { UpsertItemsMutation, UpsertItemsMutationName } from './common';
 
 import { ProjectsQuery, ProjectsQueryName } from './common';
 import { TestingNetworkInterface } from './testing';
@@ -42,9 +43,18 @@ const ProjectFilter = {
   }
 };
 
-// TODO(burdon): Network delay for server network interface.
 // TODO(burdon): Subscriptions.
 // TODO(burdon): Version numbers (inc. on server).
+
+// TODO(burdon): Minimal GQL explorer app? D3?
+// TODO(burdon): Remove local/global ID (encode only for URIs). change API to require type/ID (create Reference type)
+
+// TODO(burdon): Document effect of just returning IDs for mutation (e.g., cache doesn't update field even if opt).
+// TODO(burdon): Try this on main app and/or context setting to return IDs only (rather than object lookup).
+// TODO(burdon): Is is necessary to return any information from the mutation (can opt result alone update store).
+
+// TODO(burdon): Create ideas board for the following (and folder for grabs from movies, etc.)
+// TODO(burdon): Canvas/stickies/lightboard; drag live cards. cards interact with surface. UX will drive product. Make it cool. Kumiko
 
 //-------------------------------------------------------------------------------------------------
 // React Components.
@@ -198,10 +208,12 @@ class SimpleListComponent extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { items } = this.props;
+      let { project, items } = this.props;
 
       return (
         <div className="test-component">
+          <h3>{ project.title }</h3>
+
           <div className="test-body">
             {_.map(items, item => (
               <div key={ item.id }>
@@ -223,16 +235,10 @@ class OptionsComponent extends React.Component {
 
   render() {
     let { options={} } = this.props;
-    let { reducer, optimisticResponse, networkDelay } = options;
+    let { optimisticResponse, networkDelay } = options;
 
     return (
       <div className="test-component">
-        <div>
-          <label>
-            <input type="checkbox" onChange={ this.handleOptionsUpdate.bind(this, 'reducer') }
-                   checked={ reducer }/> Reducer.
-          </label>
-        </div>
         <div>
           <label>
             <input type="checkbox" onChange={ this.handleOptionsUpdate.bind(this, 'optimisticResponse') }
@@ -433,6 +439,8 @@ const SimpleListComponentWithApollo = compose(
       return {
         errors,
         loading,
+
+        project,
         items
       };
     }
