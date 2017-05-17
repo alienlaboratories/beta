@@ -424,11 +424,6 @@ class ProjectBoardCanvasComponent extends React.Component {
       let { item:project, refetch, boardAlias } = this.props;
       let { itemOrderModel } = this.state;
 
-      console.log('## RENDER', project);
-      if (!project) {
-        return <div/>;
-      }
-
       // TODO(burdon): List should handle null.
       let items = _.get(project, this.boardAdapter.field()) || [];
 

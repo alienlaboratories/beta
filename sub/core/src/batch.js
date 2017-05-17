@@ -194,8 +194,8 @@ export class Batch {
       optimisticResponse = {
         __typename: UpsertItemsMutationName,
 
-        // Add hint for reducer.
-//      optimistic: true,
+        // Add hint for batch.update.
+        optimistic: true,
 
         upsertItems
       };
@@ -235,7 +235,7 @@ export class Batch {
        * @param {Object} data Mutation result.
        */
       update: (proxy, { data }) => {
-        console.log('## BATCH UPDATE ===========>', data);
+        logger.log('Batch.mutate.update', data);
 
         // TODO(burdon): Update specific queries (register here).
 
@@ -252,6 +252,12 @@ export class Batch {
       // Called when on network response (not optimistic response).
       logger.log('Commit', TypeUtil.stringify(data));
       return true;
+    }).catch(err => {
+
+      // TODO(burdon): Error with optimistic updates (mutaion selection set doesn't match).
+      // TypeError: Cannot read property 'variables' of undefined
+      // https://github.com/apollographql/apollo-client/issues/1708
+      logger.error(err);
     });
   }
 

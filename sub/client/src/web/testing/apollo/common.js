@@ -47,10 +47,7 @@ export const UpsertItemsMutation = gql`
 
       ... on Project {
         tasks {
-          bucket
-          type
-          id
-          title
+          id                # This is enough for Apollo to reconcile the ID with the item.
         }
       }
     }

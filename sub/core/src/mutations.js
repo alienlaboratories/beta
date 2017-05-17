@@ -29,20 +29,19 @@ export const UpsertItemsMutation = gql`
       title
 
       ...ItemFragment
-#     ...ContactTasksFragment
+      ...ContactTasksFragment
       ...TaskFragment
-      ...ProjectFragment
-#     ...ProjectBoardFragment
+#     ...ProjectFragment
+      ...ProjectBoardFragment
     }
   }
 
   ${Fragments.ItemFragment}
+  ${Fragments.ContactTasksFragment}
   ${Fragments.TaskFragment}
   ${Fragments.ProjectBoardFragment}
 `;
 
-// ${Fragments.TaskFragment}
-// ${Fragments.ContactTasksFragment}
 // ${Fragments.ProjectFragment}
 
 export const UpsertItemsMutationName = // 'UpsertItemsMutation'
@@ -210,7 +209,7 @@ export class Mutator {
    */
   batch(bucket) {
     console.assert(bucket, 'Invalid bucket.');
-    let optimistic = _.get(this._config, 'options.optimistic');
+    let optimistic = _.get(this._config, 'options.optimisticResponse');
     return new Batch(this._idGenerator, this._mutate, bucket, optimistic);
   }
 }

@@ -152,6 +152,8 @@ export class TestingNetworkInterface {
           return Promise.all(_.map(upsertItems, upsertItem => {
             upsertItem.__typename = upsertItem.type;
 
+            upsertItem.labels = upsertItem.labels || [];
+
             // Mini-resolver.
             switch (upsertItem.type) {
               case 'Project':
