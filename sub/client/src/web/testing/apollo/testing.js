@@ -166,8 +166,8 @@ export class TestingNetworkInterface {
         }).then(upsertItems => {
           return {
             data: {
-              // status: 200
-              upsertItems
+              status: 200
+              // upsertItems
             }
           };
         });

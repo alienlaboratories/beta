@@ -3,6 +3,7 @@
 //
 
 import _ from 'lodash';
+import gql from 'graphql-tag';
 
 import { Logger, TypeUtil } from 'alien-util';
 
@@ -12,6 +13,18 @@ import { MutationUtil, UpsertItemsMutationName } from './mutations';
 import { Transforms } from './transforms';
 
 const logger = Logger.get('batch');
+
+// TODO(burdon): Items.
+// TODO(burdon): Custom resolver?
+export const ItemQuery = gql`
+  query ItemQuery($filter: FilterInput) {
+    search(filter: $filter) {
+      items {
+        id
+      }
+    }
+  }
+`;
 
 /**
  * Batch mutations.
@@ -191,7 +204,8 @@ export class Batch {
         // Add hint for batch.update.
         optimistic: true,
 
-        upsertItems
+        status: 200
+        // upsertItems
       };
     }
 
@@ -234,12 +248,32 @@ export class Batch {
 
         // TODO(burdon): Update specific queries (register here).
 
+        console.log(this._mutations[0]);
         // Read the data from our cache for this query.
-        // let data = store.readQuery({ query: TestQuery });
+        let { id, type } = ID.fromGlobalId(this._mutations[0].itemId);
+        let filter = { type, ids: [ id ] };
+        console.log('>>>>', JSON.stringify(filter));
+
+
+        // TODO(burdon): readQuery only matches exact query (otherwise throws error).
+        const ProjectFilter = {
+          type: 'Project',
+          expr: {
+            comp: 'IN',
+            field: 'labels',
+            value: {
+              string: '_default'
+            }
+          }
+        };
+
+        let d2 = proxy.readQuery({ query: ItemQuery, variables: { filter:ProjectFilter } });
+        console.log('#########', d2);
+
         // Add our comment from the mutation to the end.
         // data.comments.push(submitComment);
         // Write our data back to the cache.
-        // store.writeQuery({ query: CommentAppQuery, data });
+        // proxy.writeQuery({ query: CommentAppQuery, data });
       }
 
     }).then(({ data }) => {

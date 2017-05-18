@@ -16,6 +16,7 @@
       background-color: white;
       font-family: Roboto, sans-serif;
       font-weight: 100;
+      overflow: hidden;
     }
     h1, h2, h3 {
       font-weight: 100;
@@ -24,9 +25,22 @@
     img {
       width: 100%;
     }
+    i {
+      cursor: pointer;
+    }
+    .invisible {
+      visibility: hidden;
+    }
+    .alert {
+      color: darkred;
+    }
     .test-container {
       display: flex;
       flex-grow: 1;
+      position: fixed;
+      right: 0;
+      top: 0;
+      bottom: 0;
     }
     .test-card-deck {
       display: flex;
@@ -36,7 +50,7 @@
       overflow-y: scroll;
     }
     .test-card-deck::-webkit-scrollbar {
-      width: 2px;
+      width: 4px;
     }
     .test-card-deck::-webkit-scrollbar-thumb {
       background-color: #333;
@@ -55,6 +69,14 @@
       padding: 4px;
       border-top-left-radius: 2px;
       border-top-right-radius: 2px;
+    }
+    .test-card-container .test-card .test-card-header > div i {
+      padding-right: 4px;
+      color: cornflowerblue;
+      opacity: .5;
+    }
+    .test-card-container .test-card .test-card-header > div i.pinned {
+      opacity: 1;
     }
     .test-card-container .test-card .test-card-header h1 {
       font-size: 18px;
@@ -92,7 +114,6 @@
       padding: 4px;
       color: #999;
     }
-
     .test-row {
       display: flex;
       flex-direction: row;
@@ -121,7 +142,10 @@
       <div class="test-card-container">
         <div class="test-card">
           <div class="test-card-header">
-            <h1>Alice Braintree</h1>
+            <div class="test-row">
+              <i class="material-icons pinned">label</i>
+              <h1>Alice Braintree</h1>
+            </div>
             <i class="material-icons">menu</i>
           </div>
           <div class="test-card-section">
@@ -145,7 +169,7 @@
               <i class="material-icons">keyboard_arrow_down</i>
             </div>
             <div class="test-row">
-              <i class="material-icons">mail</i>
+              <i class="material-icons alert">mail</i>
               <span>Sales numbers...</span>
             </div>
             <div class="test-row">
@@ -181,17 +205,20 @@
       <div class="test-card-container">
         <div class="test-card">
           <div class="test-card-header">
-            <h1>Lunch</h1>
+            <div class="test-row">
+              <i class="material-icons">label_outline</i>
+              <h1>Lunch</h1>
+            </div>
             <i class="material-icons">menu</i>
           </div>
           <div class="test-card-panel">
-            <img src="http://www.droid-life.com/wp-content/uploads/2017/03/google-maps-location-sharing.jpg"/>
+            <img src="https://maps.googleapis.com/maps/api/staticmap?center=10012&zoom=16&size=300x150&style=element:labels|visibility:off&style=element:geometry.stroke|visibility:off&style=feature:all&style=feature:water"/>
           </div>
 
           <div class="test-card-section">
             <div class="test-row">
               <span>12:00</span>
-              <span>Cafe Millie Miglia, New York</span>
+              <span>Cafe Millie Miglia, New York, 10013</span>
             </div>
           </div>
 
@@ -199,7 +226,7 @@
             <div class="test-row">
               <img class="test-avatar" style="width:32px; height:32px" src="./img/people/p1.png"/>
               <img class="test-avatar" style="width:32px; height:32px" src="./img/people/p2.png"/>
-              <img class="test-avatar" style="width:32px; height:32px" src="./img/people/p3.png"/>
+              <img class="test-avatar" style="width:32px; height:32px; opacity: .2" src="./img/people/p3.png"/>
             </div>
           </div>
 
@@ -242,7 +269,55 @@
       <div class="test-card-container">
         <div class="test-card">
           <div class="test-card-header">
-            <h1>Fred Bott</h1>
+            <div class="test-row">
+              <i class="material-icons">label_outline</i>
+              <h1>Receruiting Drive</h1>
+            </div>
+            <i class="material-icons">menu</i>
+          </div>
+          <div class="test-card-section">
+            <div class="test-header-row">
+              <h2>Candidates</h2>
+              <i class="material-icons">keyboard_arrow_down</i>
+            </div>
+            <div class="test-row">
+              <i class="material-icons invisible">error_outline</i>
+              <span>06/11</span>
+              <span>Sarah K.</span>
+            </div>
+            <div class="test-row">
+              <i class="material-icons invisible">error_outline</i>
+              <span>06/11</span>
+              <span>Jason B.</span>
+            </div>
+            <div class="test-row">
+              <i class="material-icons alert">error_outline</i>
+              <span>07/03</span>
+              <span>Atsuko Y.</span>
+            </div>
+            <div class="test-row">
+              <i class="material-icons invisible">error_outline</i>
+              <span>07/11</span>
+              <span>Mesch.</span>
+            </div>
+            <div class="test-row">
+              <i class="material-icons alert">error_outline</i>
+              <span>07/12</span>
+              <span>Aleksey.</span>
+            </div>
+          </div>
+
+          <div class="test-card-footer">Updated 07:20 today.</div>
+        </div>
+      </div>
+
+      <div class="test-card-container">
+        <div class="test-card">
+          <div class="test-card-header">
+            <div class="test-row">
+              <i class="material-icons">label_outline</i>
+              <h1>Fred Bott</h1>
+            </div>
             <i class="material-icons">menu</i>
           </div>
           <div class="test-card-section">

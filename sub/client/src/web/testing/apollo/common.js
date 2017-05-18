@@ -36,20 +36,28 @@ export const ProjectsQuery = gql`
   }
 `;
 
+// export const UpsertItemsMutation = gql`
+//   mutation UpsertItemsMutation($mutations: [ItemMutationInput]!) {
+//     upsertItems(mutations: $mutations) {
+//       bucket
+//       type
+//       id
+//       title
+//       labels
+//
+//       ... on Project {
+//         tasks {
+//           id                # This is enough for Apollo to reconcile the ID with the item.
+//         }
+//       }
+//     }
+//   }
+// `;
+
 export const UpsertItemsMutation = gql`
   mutation UpsertItemsMutation($mutations: [ItemMutationInput]!) {
     upsertItems(mutations: $mutations) {
-      bucket
-      type
-      id
-      title
-      labels
-
-      ... on Project {
-        tasks {
-          id                # This is enough for Apollo to reconcile the ID with the item.
-        }
-      }
+      status
     }
   }
 `;
