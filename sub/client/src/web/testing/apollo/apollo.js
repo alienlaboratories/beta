@@ -15,15 +15,20 @@ import ApolloClient from 'apollo-client';
 import { createNetworkInterface } from 'apollo-client';
 import update from 'immutability-helper';
 
-import { TypeUtil } from 'alien-util';
+import { Logger, TypeUtil } from 'alien-util';
 import { AuthDefs, Batch, IdGenerator, ItemUtil, MutationUtil } from 'alien-core';
 
 import { ReactUtil } from '../../util/index';
 
-import { ProjectsQuery, ProjectsQueryName, UpsertItemsMutation, UpsertItemsMutationName } from './common';
+//import { UpsertItemsMutation, UpsertItemsMutationName } from 'alien-core';
+import { UpsertItemsMutation, UpsertItemsMutationName } from './common';
+
+import { ProjectsQuery, ProjectsQueryName } from './common';
 import { TestingNetworkInterface } from './testing';
 
 import './apollo.less';
+
+const logger = Logger.get('apollo');
 
 const idGenerator = new IdGenerator();
 
@@ -38,9 +43,18 @@ const ProjectFilter = {
   }
 };
 
-// TODO(burdon): Network delay for server network interface.
 // TODO(burdon): Subscriptions.
 // TODO(burdon): Version numbers (inc. on server).
+
+// TODO(burdon): Minimal GQL explorer app? D3?
+// TODO(burdon): Remove local/global ID (encode only for URIs). change API to require type/ID (create Reference type)
+
+// TODO(burdon): Document effect of just returning IDs for mutation (e.g., cache doesn't update field even if opt).
+// TODO(burdon): Try this on main app and/or context setting to return IDs only (rather than object lookup).
+// TODO(burdon): Is is necessary to return any information from the mutation (can opt result alone update store).
+
+// TODO(burdon): Create ideas board for the following (and folder for grabs from movies, etc.)
+// TODO(burdon): Canvas/stickies/lightboard; drag live cards. cards interact with surface. UX will drive product. Make it cool. Kumiko
 
 //-------------------------------------------------------------------------------------------------
 // React Components.
@@ -62,7 +76,7 @@ class ListComponent extends React.Component {
   // TODO(burdon): Dispatch redux action.
 
   componentWillReceiveProps(nextProps) {
-    console.log('componentWillReceiveProps:', TypeUtil.stringify(nextProps));
+//  logger.log('componentWillReceiveProps:', TypeUtil.stringify(nextProps));
     this.setState({
       items: _.map(nextProps.items, item => _.cloneDeep(item))
     });
@@ -144,11 +158,16 @@ class ListComponent extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
+      let { project } = this.props;
       let { items, text } = this.state;
-      console.log('RootComponent.render', _.size(items));
+      this.count++;
+
+      logger.log('RootComponent.render', _.size(items));
 
       return (
         <div className="test-component">
+
+          <h3>{ project.title }</h3>
 
           <div className="test-header">
             <input ref="INPUT_NEW" type="text" value={ text } autoFocus={ true } spellCheck={ false }
@@ -174,7 +193,7 @@ class ListComponent extends React.Component {
           </div>
 
           <div className="test-footer">
-            <div className="test-expand">Render: { ++this.count }</div>
+            <div className="test-expand">Render: #{ this.count }</div>
             <button>Reset</button>
             <button onClick={ this.handleRefetch.bind(this) }>Refetch</button>
           </div>
@@ -189,10 +208,12 @@ class SimpleListComponent extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { items } = this.props;
+      let { project, items } = this.props;
 
       return (
         <div className="test-component">
+          <h3>{ project.title }</h3>
+
           <div className="test-body">
             {_.map(items, item => (
               <div key={ item.id }>
@@ -214,16 +235,10 @@ class OptionsComponent extends React.Component {
 
   render() {
     let { options={} } = this.props;
-    let { reducer, optimisticResponse, networkDelay } = options;
+    let { optimisticResponse, networkDelay } = options;
 
     return (
       <div className="test-component">
-        <div>
-          <label>
-            <input type="checkbox" onChange={ this.handleOptionsUpdate.bind(this, 'reducer') }
-                   checked={ reducer }/> Reducer.
-          </label>
-        </div>
         <div>
           <label>
             <input type="checkbox" onChange={ this.handleOptionsUpdate.bind(this, 'optimisticResponse') }
@@ -332,7 +347,7 @@ const ListComponentWithApollo = compose(
     // http://dev.apollodata.com/react/queries.html#graphql-options
     options: (props) => {
       let { options } = props;
-      console.log('graphql.options:', ProjectsQueryName);
+      logger.log('graphql.options:', ProjectsQueryName);
 
       return {
         variables: {
@@ -353,7 +368,7 @@ const ListComponentWithApollo = compose(
     // http://dev.apollodata.com/react/queries.html#graphql-props-option
     props: ({ ownProps, data }) => {
       let { errors, loading, search } = data;
-      console.log('graphql.props:', ProjectsQueryName, loading ? 'loading...' : TypeUtil.stringify(search));
+      logger.log('graphql.props:', ProjectsQueryName, loading ? 'loading...' : TypeUtil.stringify(search));
 
       let project = _.get(search, 'items[0]');
       let items = _.get(project, 'tasks');
@@ -424,6 +439,8 @@ const SimpleListComponentWithApollo = compose(
       return {
         errors,
         loading,
+
+        project,
         items
       };
     }
@@ -477,7 +494,7 @@ export const AppState = (state) => state[APP_NAMESPACE];
 const AppReducer = (initalState) => (state=initalState, action) => {
   switch (action.type) {
     case APP_UPDATE_OPTIONS: {
-      console.log('AppReducer: ' + JSON.stringify(action));
+      logger.log('AppReducer: ' + JSON.stringify(action));
       let { options } = action;
       return _.merge({}, state, { options });
     }
@@ -499,7 +516,7 @@ export class App {
   }
 
   init() {
-    console.log('Initializing...');
+    logger.log('Initializing...');
     return this.initNetwork().then(() => {
       this.postInit();
       return this;

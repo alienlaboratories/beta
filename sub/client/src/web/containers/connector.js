@@ -2,15 +2,19 @@
 // Copyright 2017 Alien Labs.
 //
 
+import _ from 'lodash';
 import { connect } from 'react-redux';
 import { compose, graphql } from 'react-apollo';
 
-import { Fragments, Matcher, Reducer, ListReducer } from 'alien-core';
+import { Logger } from 'alien-util';
+import { ID, Fragments, Matcher } from 'alien-core';
 
 import { AppAction } from '../common/reducers';
 
+const logger = Logger.get('connector');
+
 //-------------------------------------------------------------------------------------------------
-// Connector required by reducers.
+// Query HOC utils.
 //-------------------------------------------------------------------------------------------------
 
 const mapStateToProps = (state, ownProps) => {
@@ -45,8 +49,15 @@ const mapStateToProps = (state, ownProps) => {
  */
 export class Connector {
 
-  static DEFAULT_ITEM_REDUCER = new Reducer('item');
-  static DEFAULT_SEARCH_REDUCER = new ListReducer('search');
+  // TODO(burdon): Debug only.
+  static registerQuery(query) {
+    let name = _.get(query, 'definitions[0].name.value');
+    let queries = _.get(window, 'alien.queries', {});
+    queries[name] = query;
+    _.set(window, 'alien.queries', queries);
+
+    logger.log('Query: ' + name);
+  }
 
   /**
    * HOC wrapper for reducers.
@@ -67,10 +78,11 @@ export class Connector {
    * Item query.
    *
    * @param query
-   * @param reducer
+   * @param path
    */
-  static itemQuery(query, reducer=Connector.DEFAULT_ITEM_REDUCER) {
-    console.assert(query && reducer);
+  static itemQuery(query, path='item') {
+    console.assert(query && path);
+    Connector.registerQuery(query);
 
     return graphql(query, {
       withRef: 'true',
@@ -78,17 +90,12 @@ export class Connector {
       // Map properties to query.
       // http://dev.apollodata.com/react/queries.html#graphql-options
       options: (props) => {
-        let { matcher, context, itemId } = props;
-
-        console.log('>>>>>>>>>>>>', itemId);
+        let { itemId } = props;
 
         return {
           variables: {
             itemId
-          },
-
-          reducer: (p) => { console.log('xxx', query); return p; },
-//        reducer: Reducer.callback(reducer, { matcher, context })
+          }
         };
       },
 
@@ -96,11 +103,11 @@ export class Connector {
       // http://dev.apollodata.com/react/queries.html#graphql-props
       props: ({ ownProps, data }) => {
         let { errors, loading, refetch } = data;
-        let item = reducer.getResult(data);
+        let item = _.get(data, path);
 
-        // TODO(burdon): Item returned as null even when: a) not loading; b) item exists (e.g., after optimistic).
-        console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<', loading, item || data);
-        console.assert(loading || item);
+        if (!loading && !item) {
+          console.warn('Invalid item: ' + JSON.stringify(ID.fromGlobalId(ownProps.itemId)));
+        }
 
         return {
           errors,
@@ -116,10 +123,11 @@ export class Connector {
    * List query.
    *
    * @param query
-   * @param reducer
+   * @param path
    */
-  static searchQuery(query, reducer=Connector.DEFAULT_SEARCH_REDUCER) {
-    console.assert(query && reducer);
+  static searchQuery(query, path='search') {
+    console.assert(query && path);
+    Connector.registerQuery(query);
 
     // Return HOC.
     return graphql(query, {
@@ -129,16 +137,14 @@ export class Connector {
       // http://dev.apollodata.com/react/queries.html#graphql-options
       // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient\.query
       options: (props) => {
-        let { matcher, context, filter } = props;
+        let { filter } = props;
 
         // TODO(burdon): Generates a new callback each time rendered. Create property for class.
         // https://github.com/apollostack/apollo-client/blob/master/src/ApolloClient.ts
         return {
           variables: {
             filter,
-          },
-
-          reducer: Reducer.callback(reducer, { matcher, context })
+          }
         };
       },
 
@@ -149,8 +155,8 @@ export class Connector {
         let { errors, loading, refetch } = data;
 
         // Get query result.
-        let items = reducer.getResult(data, []);
-        let groupedItems = _.get(data, reducer.path + '.groupedItems');
+        let items = _.get(data, path + '.items', []);
+        let groupedItems = _.get(data, path + '.groupedItems');
 
         // Inject additional items (e.g., from context).
         if (itemInjector) {
@@ -180,7 +186,7 @@ export class Connector {
               // TODO(burdon): Grouped items.
               updateQuery: (previousResult, { fetchMoreResult }) => {
                 return _.assign({}, previousResult, {
-                  items: [...reducer.getResult(previousResult), ...reducer.getResult(fetchMoreResult.data)]
+                  items: [..._.get(previousResult, path), ..._.get(fetchMoreResult.data, path)]
                 });
               }
             });

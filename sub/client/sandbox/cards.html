@@ -13,36 +13,72 @@
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       margin: 0;
-      background-color: #CCC;
+      background-color: white;
       font-family: Roboto, sans-serif;
+      font-weight: 100;
     }
     h1, h2, h3 {
       font-weight: 100;
       margin: 0;
     }
+    img {
+      width: 100%;
+    }
     .test-container {
       display: flex;
       flex-grow: 1;
     }
+    .test-card-deck {
+      display: flex;
+      flex-direction: column;
+      background-color: #CCC;
+      width: 300px;
+      overflow-y: scroll;
+    }
+    .test-card-deck::-webkit-scrollbar {
+      width: 2px;
+    }
+    .test-card-deck::-webkit-scrollbar-thumb {
+      background-color: #333;
+    }
     .test-card-container {
-      background-color: #EEE;
-      margin: 0 32px;
-      padding: 16px 8px;
+      padding: 4px 8px;
     }
     .test-card-container .test-card {
-      width: 300px;
+      box-shadow: 1px 2px #999;
     }
     .test-card-container .test-card .test-card-header {
-      background-color: #a5bde8;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      background-color: #F5F5F5;
       padding: 4px;
-      border-top-left-radius: 8px;
-      border-top-right-radius: 8px;
+      border-top-left-radius: 2px;
+      border-top-right-radius: 2px;
+    }
+    .test-card-container .test-card .test-card-header h1 {
+      font-size: 18px;
+    }
+    .test-card-container .test-card .test-card-panel {
+      line-height: 0;
     }
     .test-card-container .test-card .test-card-section {
       padding: 4px;
       background-color: white;
     }
-    .test-card-container .test-card .test-card-section img {
+    .test-card-container .test-card .test-card-section h2 {
+      font-size: 12px;
+      color: cornflowerblue;
+    }
+    .test-card-container .test-card .test-card-section .material-icons {
+      font-size: 14px;
+      padding-right: 4px;
+    }
+    .test-card-container .test-card .test-card-section .test-row {
+      font-size: 14px;
+      color: #666;
+    }
+    .test-card-container .test-card .test-card-section img.test-avatar {
       width: 80px;
     }
     .test-card-container .test-card .test-card-rule {
@@ -50,14 +86,26 @@
     }
     .test-card-container .test-card .test-card-footer {
       background-color: white;
-      border-bottom-left-radius: 8px;
-      border-bottom-right-radius: 8px;
-      height: 8px;
+      border-bottom-left-radius: 2px;
+      border-bottom-right-radius: 2px;
+      font-size: 12px;
+      padding: 4px;
+      color: #999;
     }
 
     .test-row {
       display: flex;
       flex-direction: row;
+      align-items: center;
+    }
+    .test-header-row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .test-row span {
+      padding-right: 4px;
     }
     .test-column {
       display: flex;
@@ -68,35 +116,153 @@
 <body>
 
   <div class="test-container">
+    <div class="test-card-deck">
 
-    <div class="test-card-container">
-      <div class="test-card">
-        <div class="test-card-header">
-          <h3>Alice</h3>
-        </div>
-        <div class="test-card-section">
-          <div class="test-row">
-            <div>
-              <img src="./img/people/p1.png"/>
-            </div>
-            <div class="test-column">
-              <div>Alien Labs</div>
-              <div>SVP Product</div>
-              <div>alice.braintree@gmail.com</div>
-              <div>(212) 345-9078</div>
+      <div class="test-card-container">
+        <div class="test-card">
+          <div class="test-card-header">
+            <h1>Alice Braintree</h1>
+            <i class="material-icons">menu</i>
+          </div>
+          <div class="test-card-section">
+            <div class="test-row">
+              <div>
+                <img class="test-avatar" src="./img/people/p1.png"/>
+              </div>
+              <div class="test-column">
+                <div>Alien Labs</div>
+                <div>SVP Product</div>
+                <div>alice.braintree@gmail.com</div>
+                <div>(212) 345-9078</div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="test-card-rule"></div>
-        <div class="test-card-section">
-          <div>
-            Content
+
+          <div class="test-card-rule"></div>
+          <div class="test-card-section">
+            <div class="test-header-row">
+              <h2>Messages</h2>
+              <i class="material-icons">keyboard_arrow_down</i>
+            </div>
+            <div class="test-row">
+              <i class="material-icons">mail</i>
+              <span>Sales numbers...</span>
+            </div>
+            <div class="test-row">
+              <i class="material-icons">mail</i>
+              <span>Tomorrow's demo.</span>
+            </div>
+            <div class="test-row">
+              <i class="material-icons">mail</i>
+              <span>Customer meeting.</span>
+            </div>
           </div>
+
+          <div class="test-card-rule"></div>
+          <div class="test-card-section">
+            <div class="test-header-row">
+              <h2>Tasks</h2>
+              <i class="material-icons">keyboard_arrow_down</i>
+            </div>
+            <div class="test-row">
+              <i class="material-icons">check</i>
+              <span>Projections.</span>
+            </div>
+            <div class="test-row">
+              <i class="material-icons">check</i>
+              <span>Deck.</span>
+            </div>
+          </div>
+
+          <div class="test-card-footer">Updated 14:23 today.</div>
         </div>
-        <div class="test-card-footer"></div>
       </div>
-    </div>
 
+      <div class="test-card-container">
+        <div class="test-card">
+          <div class="test-card-header">
+            <h1>Lunch</h1>
+            <i class="material-icons">menu</i>
+          </div>
+          <div class="test-card-panel">
+            <img src="http://www.droid-life.com/wp-content/uploads/2017/03/google-maps-location-sharing.jpg"/>
+          </div>
+
+          <div class="test-card-section">
+            <div class="test-row">
+              <span>12:00</span>
+              <span>Cafe Millie Miglia, New York</span>
+            </div>
+          </div>
+
+          <div class="test-card-section">
+            <div class="test-row">
+              <img class="test-avatar" style="width:32px; height:32px" src="./img/people/p1.png"/>
+              <img class="test-avatar" style="width:32px; height:32px" src="./img/people/p2.png"/>
+              <img class="test-avatar" style="width:32px; height:32px" src="./img/people/p3.png"/>
+            </div>
+          </div>
+
+          <div class="test-card-rule"></div>
+          <div class="test-card-section">
+            <div class="test-header-row">
+              <h2>Related</h2>
+              <i class="material-icons">keyboard_arrow_down</i>
+            </div>
+            <div class="test-row">
+              <i class="material-icons">description</i>
+              <span>Pricing Report.</span>
+            </div>
+          </div>
+
+          <div class="test-card-rule"></div>
+          <div class="test-card-section">
+            <div class="test-header-row">
+              <h2>Follow-up</h2>
+              <i class="material-icons">keyboard_arrow_down</i>
+            </div>
+            <div class="test-row">
+              <i class="material-icons">check_box_outline_blank</i>
+              <span>Agenda.</span>
+            </div>
+            <div class="test-row">
+              <i class="material-icons">check</i>
+              <span>Review Pricing Report.</span>
+            </div>
+            <div class="test-row">
+              <i class="material-icons">check</i>
+              <span>Recruiting plan.</span>
+            </div>
+          </div>
+
+          <div class="test-card-footer">Updated 3 days ago.</div>
+        </div>
+      </div>
+
+      <div class="test-card-container">
+        <div class="test-card">
+          <div class="test-card-header">
+            <h1>Fred Bott</h1>
+            <i class="material-icons">menu</i>
+          </div>
+          <div class="test-card-section">
+            <div class="test-row">
+              <div>
+                <img class="test-avatar" src="./img/people/p2.png"/>
+              </div>
+              <div class="test-column">
+                <div>Alien Labs</div>
+                <div>CTO</div>
+                <div>alice.braintree@gmail.com</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="test-card-footer">Updated 17:20 today.</div>
+        </div>
+      </div>
+
+    </div>
   </div>
 
 </body>

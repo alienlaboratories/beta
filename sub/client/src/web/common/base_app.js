@@ -53,7 +53,12 @@ export class BaseApp {
     ErrorUtil.handleErrors(window, error => this.onError(error));
 
     // Debugging.
-    _.set(window, 'alien', this);
+    // TODO(burdon): Factor out debug root.
+    _.defaultsDeep(window, {
+      alien: {
+        app: this
+      }
+    });
   }
 
   get initialized() {
@@ -173,8 +178,9 @@ export class BaseApp {
       // https://dev-blog.apollodata.com/query-batching-in-apollo-63acfd859862
 //    shouldBatch: true,
 
+      // Map identical queries to the same request.
       // http://dev.apollodata.com/core/network.html#query-deduplication
-      queryDeduplication: true,
+//    queryDeduplication: true,
 
       // http://dev.apollodata.com/core/network.html
       networkInterface: this.networkInterface,
@@ -185,20 +191,26 @@ export class BaseApp {
       connectToDevTools: true,
 
       // TODO(burdon): Change ID to key.
-      // Custom resolver (items are resolved from the cache.
+      // Custom resolver (items are resolved from the cache).
       // http://dev.apollodata.com/react/cache-updates.html#cacheRedirect
       // https://github.com/apollographql/apollo-client/blob/a86acf25df5eaf0fdaab264fd16c2ed22657e65c/test/customResolvers.ts
       // https://github.com/apollographql/apollo-client/blob/6b6e8ded1e0f83cb134d2261a3cf7d2d9416400f/src/data/storeUtils.ts
-      customResolvers: {
-        Query: {
-          item: (_, args) => {
-            return {
-              type: 'id',
-              id: args['itemId']  // GraphQL query-soecific.
-            };
-          }
-        }
-      }
+      // customResolvers: {
+      //   RootQuery: {                // Root query type name.
+      //     item: (_, args) => {
+      //
+      //       console.log('#####################<><><><><><>#', args);
+      //
+      //       // toIdValue(dataIdFromObject({ __typename: 'book', id: args['id'] })),
+      //
+      //
+      //       return {
+      //         type: 'id',
+      //         id: args['itemId']    // GraphQL query-soecific.
+      //       };
+      //     }
+      //   }
+      // }
     });
   }
 
@@ -395,6 +407,9 @@ export class BaseApp {
    *     <Canvas/>
    *   </Layout>
    * </Activity>
+   *
+   * @param {React.Component} App Root app class.
+   * @return {Promise}
    */
   render(App) {
     logger.info(`### [${moment().format('YYYY-MM-DD HH:mm Z')} ${_.get(this._config, 'env')}] ###`);

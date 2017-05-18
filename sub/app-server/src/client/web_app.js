@@ -28,9 +28,8 @@ const config = _.defaultsDeep(window.config, {
 
   // Framework debug options.
   options: {
-    debug: (window.config.env !== 'production'),
-    reducer: false,
-    optimistic: false,
+    debugInfo: (window.config.env !== 'production') && false,
+    optimisticResponse: false,
     invalidations: false,
     networkDelay: 0
   },
@@ -40,23 +39,19 @@ const config = _.defaultsDeep(window.config, {
   }
 });
 
-//
-// App instance.
-//
-
 const app = new WebApp(config);
-
-const render = () => {
-  // Load the root component.
-  const App = require('alien-client/web-app/root');
-  app.render(App);
-};
 
 //
 // React Hot Loader.
 // https://github.com/gaearon/react-hot-boilerplate/pull/61
 // https://webpack.github.io/docs/hot-module-replacement.html
 //
+
+const render = () => {
+  // Load the root component.
+  const App = require('alien-client/web-app/root');
+  app.render(App);
+};
 
 if (module.hot && _.get(config, 'env') === 'hot') {
   module.hot.accept('alien-client/web-app/root', () => render());
@@ -65,6 +60,7 @@ if (module.hot && _.get(config, 'env') === 'hot') {
 //
 // Prevent/warn unload.
 // https://developer.mozilla.org/en-US/docs/Web/Events/beforeunload
+// TODO(burdon): Factor out.
 //
 
 window.addEventListener('beforeunload', event => {

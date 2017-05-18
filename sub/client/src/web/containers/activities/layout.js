@@ -166,9 +166,11 @@ export class LayoutComponent extends React.Component {
             <div className="ux-columns">
 
               {/* Sidebar */}
+              { platform !== AppDefs.PLATFORM.CRX &&
               <Sidebar ref="sidebar">
                 { sidePanel }
               </Sidebar>
+              }
 
               {/* Main Content */}
               <div className="app-layout ux-column">

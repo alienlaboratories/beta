@@ -36,20 +36,10 @@ export const ProjectsQuery = gql`
   }
 `;
 
-// TODO(burdon): Minimal GQL explorer app? D3?
-// TODO(burdon): Remove local/global ID (encode only for URIs). change API to require type/ID (create Reference type)
-
-// TODO(burdon): Document effect of just returning IDs for mutation (e.g., cache doesn't update field even if opt).
-// TODO(burdon): Try this on main app and/or context setting to return IDs only (rather than object lookup).
-// TODO(burdon): Is is necessary to return any information from the mutation (can opt result alone update store).
-// TODO(burdon): Test against real server.
-
-// TODO(burdon): Create ideas board for the following (and folder for grabs from movies, etc.)
-// TODO(burdon): Canvas/stickies/lightboard; drag live cards. cards interact with surface. UX will drive product. Make it cool. Kumiko
-
 export const UpsertItemsMutation = gql`
   mutation UpsertItemsMutation($mutations: [ItemMutationInput]!) {
     upsertItems(mutations: $mutations) {
+<<<<<<< HEAD
       
       status
       
@@ -63,6 +53,19 @@ export const UpsertItemsMutation = gql`
 #          id
 #        }
 #      }
+=======
+      bucket
+      type
+      id
+      title
+      labels
+
+      ... on Project {
+        tasks {
+          id                # This is enough for Apollo to reconcile the ID with the item.
+        }
+      }
+>>>>>>> 6f003e81846022966fd79b3a8012409502d9e1ca
     }
   }
 `;

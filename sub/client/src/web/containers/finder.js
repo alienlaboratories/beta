@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import { compose, graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { Fragments, IdGenerator, ListReducer, QueryParser } from 'alien-core';
+import { Fragments, IdGenerator, QueryParser } from 'alien-core';
 
 import { AppDefs } from '../../common/defs';
 
@@ -158,8 +158,6 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const ContextListReducer = new ListReducer(ContextQuery, 'contextSearch.items');
-
 export default compose(
 
   // Redux.
@@ -194,7 +192,7 @@ export default compose(
   Connector.connect(graphql(ContextQuery, {
 
     options: (props) => {
-      let { context, matcher, contextManager } = props;
+      let { contextManager } = props;
 
       // Lookup items from context.
       let filter = {};
@@ -202,12 +200,13 @@ export default compose(
         filter = contextManager.getFilter() || {};
       }
 
+      // TODO(burdon): Reducer.
+      // const ContextListReducer = new ListReducer(ContextQuery, 'contextSearch.items');
+
       return {
         variables: {
           filter
-        },
-
-        reducer: ListReducer.callback(ContextListReducer, { matcher, context, filter })
+        }
       };
     },
 

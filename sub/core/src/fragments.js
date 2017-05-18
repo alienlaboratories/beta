@@ -30,9 +30,14 @@ const ValueFragment = gql`
 //
 const ItemMetaFragment = gql`
   fragment ItemMetaFragment on Item {
+    namespace
     bucket
     type
     id
+
+    fkey
+
+    labels
     
     title
   }
@@ -107,10 +112,7 @@ export const Fragments = {
     fragment ItemFragment on Item {
       ...ItemMetaFragment
 
-      namespace
-      fkey
-      labels
-
+      title
       description
     }
     
@@ -225,7 +227,8 @@ export const Fragments = {
     fragment ProjectBoardFragment on Project {
       
       tasks {
-        id
+        ...ItemMetaFragment
+        status
       }
 
       boards {
