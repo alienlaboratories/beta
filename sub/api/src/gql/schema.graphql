@@ -14,10 +14,10 @@
 # https://github.com/apollostack/graphql-server/issues/172
 #===================================================================================================
 
-# TODO(burdon): Uriencode?
+# TODO(burdon): type and input type.
 # TODO(burdon): Consider AmazonDB partition/sort_key.
 # TODO(burdon): Use Key everywhere (incl. fkey).
-type Key {
+input KeyInput {
   namespace: String           # External namespace (query provider).
   bucket: ID                  # ID of User or Group (null for system item).
   type: String!
@@ -326,7 +326,7 @@ type RootQuery {
   viewer: Viewer!
 
   # Get specific.
-  item(itemId: ID!): Item!
+  item(key: KeyInput!): Item!
 
   # Search.
   # TODO(burdon): Rename items.
@@ -340,13 +340,9 @@ type RootQuery {
 
 input ItemMutationInput {
 
-  # Bucket.
-  bucket: String!
-
-  # TODO(burdon): Regular ID + type?
-  # TODO(burdon): Set type (not part of mutation).
   # Item to mutate.
-  itemId: ID!
+  # TODO(burdon): Set key and bucket here (not in mutation).
+  key: KeyInput!
 
   # TODO(burdon): Rename itemMutations
   # Array of generic mutations.

@@ -27,10 +27,9 @@ import { Layout } from './layout';
 class CanvasNavbar extends React.Component {
 
   static propTypes = {
-    onSave: PropTypes.func.isRequired,
-    type:   PropTypes.string.isRequired,
-    itemId: PropTypes.string.isRequired,
-    canvas: PropTypes.string,
+    itemKey:  PropTypes.object.isRequired,
+    canvas:   PropTypes.string,
+    onSave:   PropTypes.func.isRequired,
   };
 
   static contextTypes = {
@@ -39,17 +38,16 @@ class CanvasNavbar extends React.Component {
 
   render() {
     let { typeRegistry } = this.context;
-    let { onSave, itemId } = this.props;
+    let { itemKey, onSave } = this.props;
 
-    let { type } = ID.fromGlobalId(itemId);
-    let Toolbar = typeRegistry.toolbar(type);
+    let Toolbar = typeRegistry.toolbar(itemKey.type);
     let toolbar = Toolbar && <Toolbar/>;
 
     // TODO(burdon): Save button.
     return (
       <Navbar>
         <SearchPanel/>
-        <ItemCanvasHeader onSave={ onSave } itemId={ itemId } toolbar={ toolbar }/>
+        <ItemCanvasHeader onSave={ onSave } itemKey={ itemKey } toolbar={ toolbar }/>
       </Navbar>
     );
   }
@@ -66,8 +64,8 @@ class CanvasActivity extends React.Component {
   static propTypes = {
     params: PropTypes.shape({
       type: PropTypes.string.isRequired,
+      key: PropTypes.string.isRequired,
       canvas: PropTypes.string,
-      itemId: PropTypes.string.isRequired
     })
   };
 
@@ -83,15 +81,16 @@ class CanvasActivity extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { config, viewer, params: { type, canvas, itemId } } = this.props;
-//    let { params: { type, canvas, itemId } } = match;
+      let { config, viewer, params: { canvas, key:encodedKey } } = this.props;
+//    let { params: { canvas, key } } = match;
+      let key = ID.decodeKey(encodedKey);
 
       let navbar = (
-        <CanvasNavbar onSave={ this.handleSave.bind(this) } canvas={ canvas } type={ type } itemId={ itemId }/>
+        <CanvasNavbar itemKey={ key } canvas={ canvas } onSave={ this.handleSave.bind(this) }/>
       );
 
       let canvasComponent = (
-        <CanvasContainer ref="canvas" canvas={ canvas } type={ type } itemId={ itemId }/>
+        <CanvasContainer ref="canvas" itemKey={ key } canvas={ canvas }/>
       );
 
       let finder = null;

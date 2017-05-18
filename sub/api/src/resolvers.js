@@ -304,17 +304,14 @@ export class Resolvers {
           return {};
         },
 
-        // TODO(burdon): items
         item: (obj, args, context) => {
           Resolvers.checkAuthentication(context);
+          let { key: { type, id } } = args;
 
-          let { itemId } = args;
-          let { type, id:localId } = ID.fromGlobalId(itemId);
-
-          // TODO(burdon): Should be from args or ID.
+          // TODO(burdon): Should be from key.
           let namespace = Resolvers.getNamespaceForType(type);
 
-          return database.getItemStore(namespace).getItem(context, type, localId);
+          return database.getItemStore(namespace).getItem(context, type, id);
         },
 
         search: (obj, args, context) => {

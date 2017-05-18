@@ -120,7 +120,7 @@ export class TaskCard extends React.Component {
   }
 
   handleTaskSelect(item) {
-    this.context.navigator.push(Path.canvas(ID.getGlobalId(item)));
+    this.context.navigator.push(Path.canvas(ID.key(item)));
   }
 
   handleTaskUpdate(item, mutations) {
@@ -189,9 +189,10 @@ class TaskCanvasComponent extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     let { item } = nextProps;
-    if (_.get(item, 'id') !== this.state.itemId) {
+    let key = ID.key(item);
+    if (!ID.keyEqual(key, this.state.key)) {
       this.setState({
-        itemId:         _.get(item, 'id'),
+        key:            key,
         assigneeText:   _.get(item, 'assignee.title'),
         assignee:       _.get(item, 'assignee.id'),
         status:         _.get(item, 'status', 0)
@@ -223,7 +224,7 @@ class TaskCanvasComponent extends React.Component {
 
   handleTaskSelect(item) {
     console.assert(item);
-    this.context.navigator.push(Path.canvas(ID.getGlobalId(item)));
+    this.context.navigator.push(Path.canvas(ID.key(item)));
   }
 
   handleTaskUpdate(item, mutations) {
@@ -288,7 +289,7 @@ class TaskCanvasComponent extends React.Component {
                 <div className="ux-data-label">Project</div>
                 <div className="ux-text">
                   { project &&
-                  <Link to={ Path.canvas(ID.toGlobalId('Project', project.id)) }>{ project.title }</Link>
+                  <Link to={ Path.canvas(ID.key(project)) }>{ project.title }</Link>
                   }
                 </div>
               </div>
@@ -341,8 +342,8 @@ class TaskCanvasComponent extends React.Component {
 //-------------------------------------------------------------------------------------------------
 
 const MembersQuery = gql`
-  query MembersQuery($itemId: ID!) {
-    group: item(itemId: $itemId) {
+  query MembersQuery($key: KeyInput!) {
+    group: item(key: $key) {
       ... on Group {
         members {
           type
@@ -362,7 +363,7 @@ const MembersPicker = compose(
 
       return {
         variables: {
-          itemId: ID.toGlobalId('Group', groupId)
+          key: { type: 'Group', id: groupId }
         }
       };
     },
@@ -385,8 +386,8 @@ const MembersPicker = compose(
 //-------------------------------------------------------------------------------------------------
 
 const TaskQuery = gql`
-  query TaskQuery($itemId: ID!) {
-    item(itemId: $itemId) {
+  query TaskQuery($key: KeyInput!) {
+    item(key: $key) {
       ...ItemFragment
       ...TaskFragment
       

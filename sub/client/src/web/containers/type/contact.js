@@ -329,8 +329,8 @@ export class ContactCanvasComponent extends React.Component {
 //-------------------------------------------------------------------------------------------------
 
 const ContactQuery = gql`
-  query ContactQuery($itemId: ID!) {
-    item(itemId: $itemId) {
+  query ContactQuery($key: KeyInput!) {
+    item(key: $key) {
       ...ItemFragment
       ...ContactTasksFragment
     }

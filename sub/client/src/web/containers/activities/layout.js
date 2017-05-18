@@ -125,7 +125,7 @@ export class LayoutComponent extends React.Component {
         if (group.bucket !== viewer.user.id) {
           return (
             <li key={ group.id }>
-              <Link to={ Path.canvas(ID.toGlobalId('Group', group.id)) }>{ group.title }</Link>
+              <Link to={ Path.canvas(ID.key(group)) }>{ group.title }</Link>
             </li>
           );
         }

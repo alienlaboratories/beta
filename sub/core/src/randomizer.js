@@ -93,11 +93,11 @@ export class Randomizer {
       // Merge mutations.
       let mutationMap = new Map();
       _.each(_.compact(itemMutations), itemMutation => {
-        let currentItemMutation = mutationMap.get(itemMutation.itemId);
+        let currentItemMutation = mutationMap.get(itemMutation.key);
         if (currentItemMutation) {
           TypeUtil.maybeAppend(currentItemMutation.mutations, itemMutation.mutations);
         } else {
-          mutationMap.set(itemMutation.itemId, itemMutation);
+          mutationMap.set(itemMutation.key, itemMutation);
         }
       });
 

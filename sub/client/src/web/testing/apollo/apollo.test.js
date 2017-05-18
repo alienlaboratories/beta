@@ -4,9 +4,10 @@
 
 import ReactDOM from 'react-dom';
 
-import { MutationUtil } from 'alien-core';
+import { ID, MutationUtil } from 'alien-core';
 
-import { ID, App, AppState, AppTestAction, TestMutation, TestQuery } from './apollo';
+// TODO(burdon): ???
+import { App, AppState, AppTestAction } from './apollo';
 
 test('Renders without crashing.', () => {
 
@@ -45,7 +46,7 @@ test('Renders without crashing.', () => {
         variables: {
           mutations: [
             {
-              itemId: ID('Task'),
+              key: ID.key({ type: 'Task', id: '123' }),
               mutations: [
                 MutationUtil.createFieldMutation('title', 'string', 'Test Item')
               ]

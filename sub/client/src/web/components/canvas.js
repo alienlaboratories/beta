@@ -27,8 +27,7 @@ import { getWrappedInstance } from '../util/react';
 export class CanvasContainer extends React.Component {
 
   static propTypes = {
-    type: PropTypes.string.isRequired,
-    itemId: PropTypes.string.isRequired,
+    itemKey: PropTypes.object.isRequired,
     canvas: PropTypes.string,
   };
 
@@ -43,14 +42,13 @@ export class CanvasContainer extends React.Component {
 
   render() {
     let { typeRegistry } = this.context;
-    let { itemId, canvas } = this.props;
+    let { itemKey, canvas } = this.props;
 
-    let { type } = ID.fromGlobalId(itemId);
-    let TypeCanvas = typeRegistry.canvas(type, canvas);
+    let TypeCanvas = typeRegistry.canvas(itemKey.type, canvas);
 
     return (
       <div className="ux-canvas-container">
-        <TypeCanvas ref="canvas" itemId={ itemId }/>
+        <TypeCanvas ref="canvas" itemKey={ itemKey }/>
       </div>
     );
   }

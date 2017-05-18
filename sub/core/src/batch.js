@@ -34,8 +34,8 @@ const logger = Logger.get('batch');
 //   }
 // `;
 // const ItemQuery = gql`
-//   query ItemQuery($itemId: ID) {
-//     item(itemId: $itemId) {
+//   query ItemQuery($key: Key) {
+//     item(key: $key) {
 //       id
 //       title
 //     }
@@ -108,23 +108,23 @@ export class Batch {
     console.assert(type && mutations);
     mutations = _.compact(_.flattenDeep(mutations));
 
-    let itemId = this._idGenerator.createId();
-    this._items.set(itemId, { type, id: itemId });
+    let id = this._idGenerator.createId();
+    let key = { bucket: this._bucket, type, id };
+    this._items.set(id, key);
 
-    // TODO(burdon): Enforce server-side (and/or move into schema proto).
+    // TODO(burdon): Move to mutation key and set server side (rather than by field mutation).
     mutations.unshift(
       MutationUtil.createFieldMutation('bucket', 'string', this._bucket),
       MutationUtil.createFieldMutation('type', 'string', type)
     );
 
     this._mutations.push({
-      bucket: this._bucket,
-      itemId: ID.toGlobalId(type, itemId),
+      key,
       mutations: _.map(mutations, mutation => this._resolve(mutation))
     });
 
     if (label) {
-      this._refs.set(label, itemId);
+      this._refs.set(label, id);
     }
 
     return this;
@@ -147,10 +147,10 @@ export class Batch {
     }
 
     this._items.set(item.id, item);
+    let key = { bucket: this._bucket, type: item.type, id: item.id };
 
     this._mutations.push({
-      bucket: this._bucket,
-      itemId: ID.toGlobalId(item.type, item.id),
+      key,
       mutations: _.map(mutations, mutation => this._resolve(mutation))
     });
 
@@ -173,9 +173,8 @@ export class Batch {
 
       // Apply the mutations to the current (cloned) items.
       let upsertItems = _.map(this._mutations, mutation => {
-        let { itemId, mutations } = mutation;
-        let { id } = ID.fromGlobalId(itemId);
-        let item = this._items.get(id);
+        let { key, mutations } = mutation;
+        let item = this._items.get(key.id);
         console.assert(item);
 
         // Patch IDs with items.
@@ -266,10 +265,8 @@ export class Batch {
 
 //         console.log(this._mutations[0]);
 //         // Read the data from our cache for this query.
-//         let { id, type } = ID.fromGlobalId(this._mutations[0].itemId);
 //         let filter = { type, ids: [ id ] };
 //         console.log('>>>>', JSON.stringify(filter));
-//
 //
 //         // TODO(burdon): readQuery only matches exact query (otherwise throws error).
 //         const ProjectFilter = {
@@ -285,7 +282,7 @@ export class Batch {
 //
 //         // TODO(burdon): Apply mutations.
 // //      let d2 = proxy.readQuery({ query: SearchQuery, variables: { filter:ProjectFilter } });
-//         let d2 = proxy.readQuery({ query: ItemQuery, variables: { itemId: this._mutations[0].itemId } });
+//         let d2 = proxy.readQuery({ query: ItemQuery, variables: { key: ID.key(this._mutations[0]) } });
 //
 //         let tasks = _.get(d2,'search.items[0].tasks');
 //         console.log('#########', d2, tasks);
@@ -379,6 +376,7 @@ export class Batch {
 
         let clonedMutations = _.concat(
           // Reference the external item.
+          // TODO(burdon): Key object.
           MutationUtil.createFieldMutation('fkey', 'string', ID.getForeignKey(item)),
 
           // Mutations to clone the item's properties.

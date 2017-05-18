@@ -48,7 +48,7 @@ export class ProjectCard extends React.Component {
   }
 
   handleItemSelect(item) {
-    this.context.navigator.push(Path.canvas(ID.getGlobalId(item)));
+    this.context.navigator.push(Path.canvas(ID.key(item)));
   }
 
   handleItemUpdate(item, mutations) {
@@ -324,7 +324,7 @@ class ProjectBoardCanvasComponent extends React.Component {
   }
 
   handleItemSelect(item) {
-    this.context.navigator.push(Path.canvas(ID.getGlobalId(item)));
+    this.context.navigator.push(Path.canvas(ID.key(item)));
   }
 
   handleItemUpdate(item, mutations, column) {
@@ -493,8 +493,8 @@ export class ProjectCanvasToolbarComponent extends React.Component {
 //-------------------------------------------------------------------------------------------------
 
 const ProjectBoardQuery = gql`
-  query ProjectBoardQuery($itemId: ID!) {
-    item(itemId: $itemId) {
+  query ProjectBoardQuery($key: KeyInput!) {
+    item(key: $key) {
       ...ItemFragment
 
       ... on Project {
