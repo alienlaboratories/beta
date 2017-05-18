@@ -203,7 +203,6 @@ export class BaseApp {
       //
       //       // toIdValue(dataIdFromObject({ __typename: 'book', id: args['id'] })),
       //
-      //
       //       return {
       //         type: 'id',
       //         id: args['itemId']    // GraphQL query-soecific.

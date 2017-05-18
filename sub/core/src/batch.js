@@ -3,7 +3,7 @@
 //
 
 import _ from 'lodash';
-import gql from 'graphql-tag';
+// import gql from 'graphql-tag';
 
 import { Logger, TypeUtil } from 'alien-util';
 
@@ -16,15 +16,31 @@ const logger = Logger.get('batch');
 
 // TODO(burdon): Items.
 // TODO(burdon): Custom resolver?
-export const ItemQuery = gql`
-  query ItemQuery($filter: FilterInput) {
-    search(filter: $filter) {
-      items {
-        id
-      }
-    }
-  }
-`;
+// export const SearchQuery = gql`
+//   query SearchQuery($filter: FilterInput) {
+//     search(filter: $filter) {
+//       items {
+//         id
+//         title
+//
+//         ... on Project {
+//           tasks {
+//             id
+//             title
+//           }
+//         }
+//       }
+//     }
+//   }
+// `;
+// const ItemQuery = gql`
+//   query ItemQuery($itemId: ID) {
+//     item(itemId: $itemId) {
+//       id
+//       title
+//     }
+//   }
+// `;
 
 /**
  * Batch mutations.
@@ -204,8 +220,8 @@ export class Batch {
         // Add hint for batch.update.
         optimistic: true,
 
-        status: 200
-        // upsertItems
+        // status: 200
+        upsertItems
       };
     }
 
@@ -248,32 +264,38 @@ export class Batch {
 
         // TODO(burdon): Update specific queries (register here).
 
-        console.log(this._mutations[0]);
-        // Read the data from our cache for this query.
-        let { id, type } = ID.fromGlobalId(this._mutations[0].itemId);
-        let filter = { type, ids: [ id ] };
-        console.log('>>>>', JSON.stringify(filter));
+//         console.log(this._mutations[0]);
+//         // Read the data from our cache for this query.
+//         let { id, type } = ID.fromGlobalId(this._mutations[0].itemId);
+//         let filter = { type, ids: [ id ] };
+//         console.log('>>>>', JSON.stringify(filter));
+//
+//
+//         // TODO(burdon): readQuery only matches exact query (otherwise throws error).
+//         const ProjectFilter = {
+//           type: 'Project',
+//           expr: {
+//             comp: 'IN',
+//             field: 'labels',
+//             value: {
+//               string: '_default'
+//             }
+//           }
+//         };
+//
+//         // TODO(burdon): Apply mutations.
+// //      let d2 = proxy.readQuery({ query: SearchQuery, variables: { filter:ProjectFilter } });
+//         let d2 = proxy.readQuery({ query: ItemQuery, variables: { itemId: this._mutations[0].itemId } });
+//
+//         let tasks = _.get(d2,'search.items[0].tasks');
+//         console.log('#########', d2, tasks);
+//
+//         tasks[0].title = 'xxx';
 
-
-        // TODO(burdon): readQuery only matches exact query (otherwise throws error).
-        const ProjectFilter = {
-          type: 'Project',
-          expr: {
-            comp: 'IN',
-            field: 'labels',
-            value: {
-              string: '_default'
-            }
-          }
-        };
-
-        let d2 = proxy.readQuery({ query: ItemQuery, variables: { filter:ProjectFilter } });
-        console.log('#########', d2);
-
-        // Add our comment from the mutation to the end.
-        // data.comments.push(submitComment);
-        // Write our data back to the cache.
-        // proxy.writeQuery({ query: CommentAppQuery, data });
+        // proxy.writeQuery({
+        //   query: SearchQuery,
+        //   data: d2
+        // });
       }
 
     }).then(({ data }) => {

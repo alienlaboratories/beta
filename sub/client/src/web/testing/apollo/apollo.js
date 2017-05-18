@@ -513,6 +513,12 @@ export class App {
   constructor(config={}) {
     console.assert(config);
     this._config = config;
+
+    _.defaultsDeep(window, {
+      alien: {
+        app: this
+      }
+    });
   }
 
   init() {
@@ -591,6 +597,23 @@ export class App {
           },
         }
       }),
+
+      // dataIdFromObject: o => o.id,
+      // customResolvers: {
+      //   RootQuery: {                // Root query type name.
+      //     item: (_, args) => {
+      //
+      //       console.log('#####################<><><><><><>#', args);
+      //
+      //       // toIdValue(dataIdFromObject({ __typename: 'book', id: args['id'] })),
+      //
+      //       return {
+      //         type: 'id',
+      //         id: args['itemId']    // GraphQL query-soecific.
+      //       };
+      //     }
+      //   }
+      // },
 
       // http://dev.apollodata.com/core/network.html#NetworkInterface
       // https://github.com/apollographql/apollo-client/blob/master/src/transport/networkInterface.ts
