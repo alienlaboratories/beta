@@ -11,6 +11,9 @@ import { UpsertItemsMutationName, ProjectsQueryName } from './common';
 // Test Server.
 //-------------------------------------------------------------------------------------------------
 
+// TODO(burdon): Use actual mock server with existing resolvrer (extend current api tests).
+// import { mockServer } from 'graphql-tools';
+
 const bucket = 'Group-1';
 
 const context = { buckets: [ bucket ] };
@@ -19,9 +22,6 @@ const context = { buckets: [ bucket ] };
  * Test NetworkInterface
  */
 export class TestingNetworkInterface {
-
-  // TODO(burdon): Mocks.
-  // import { mockServer } from 'graphql-tools';
 
   static NETWORK_DELAY = 2000;
 
@@ -160,7 +160,8 @@ export class TestingNetworkInterface {
         }).then(upsertItems => {
           return {
             data: {
-              upsertItems
+              status: 200
+//            upsertItems
             }
           };
         });

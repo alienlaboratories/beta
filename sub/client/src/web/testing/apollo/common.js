@@ -50,16 +50,19 @@ export const ProjectsQuery = gql`
 export const UpsertItemsMutation = gql`
   mutation UpsertItemsMutation($mutations: [ItemMutationInput]!) {
     upsertItems(mutations: $mutations) {
-      bucket
-      type
-      id
-      title
       
-      ... on Project {
-        tasks {
-          id
-        }
-      }
+      status
+      
+#      bucket
+#      type
+#      id
+#      title
+#      
+#      ... on Project {
+#        tasks {
+#          id
+#        }
+#      }
     }
   }
 `;
