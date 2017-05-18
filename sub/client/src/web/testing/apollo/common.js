@@ -39,21 +39,6 @@ export const ProjectsQuery = gql`
 export const UpsertItemsMutation = gql`
   mutation UpsertItemsMutation($mutations: [ItemMutationInput]!) {
     upsertItems(mutations: $mutations) {
-<<<<<<< HEAD
-      
-      status
-      
-#      bucket
-#      type
-#      id
-#      title
-#      
-#      ... on Project {
-#        tasks {
-#          id
-#        }
-#      }
-=======
       bucket
       type
       id
@@ -65,7 +50,6 @@ export const UpsertItemsMutation = gql`
           id                # This is enough for Apollo to reconcile the ID with the item.
         }
       }
->>>>>>> 6f003e81846022966fd79b3a8012409502d9e1ca
     }
   }
 `;
