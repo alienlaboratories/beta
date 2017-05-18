@@ -15,6 +15,8 @@ import { Fragments } from './fragments';
 // any data needed by any component, including detailed nested objects (e.g. ContactTaskFragment).
 // Unclear if there's a material downside to this, but it feels wrong.
 
+// TODO(burdon): Return updated mutations (e.g., ID replaced with object) and store in batch.update.
+
 export const UpsertItemsMutation = gql`
   mutation UpsertItemsMutation($mutations: [ItemMutationInput]!) {
     upsertItems(mutations: $mutations) {
