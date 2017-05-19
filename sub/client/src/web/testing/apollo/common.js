@@ -4,20 +4,21 @@
 
 import gql from 'graphql-tag';
 
+import { Fragments } from 'alien-core';
+
 //-------------------------------------------------------------------------------------------------
 // GQL Queries and Mutations.
 //-------------------------------------------------------------------------------------------------
+
+// TODO(burdon): Fragments don't work here!
+// TODO(burdon): Define Fragments for each type.
 
 export const ProjectsQuery = gql`
   query ProjectsQuery($filter: FilterInput) {
     search(filter: $filter) {
       items {
-        bucket
-        type
-        id
-        title
-        labels
-        
+        ...ItemFragment
+
         ... on Project {
           group {
             id
@@ -25,15 +26,14 @@ export const ProjectsQuery = gql`
           }
 
           tasks {
-            bucket
-            type
-            id
-            title
+            ...ItemFragment
           }
         }
       }
     }
   }
+  
+  ${Fragments.ItemFragment}
 `;
 
 export const UpsertItemsMutation = gql`

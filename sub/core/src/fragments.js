@@ -28,7 +28,7 @@ const ValueFragment = gql`
 //
 // Minimal Item fields.
 //
-const ItemMetaFragment = gql`
+export const ItemMetaFragment = gql`
   fragment ItemMetaFragment on Item {
     namespace
     bucket

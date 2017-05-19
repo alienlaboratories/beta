@@ -30,3 +30,12 @@
 
 - Error initializing new module (i.e., npm update)
   - Must ensure virtual env is already present and current (virtualenv tools/python)
+
+
+## Workspaces
+
+https://www.npmjs.com/package/npm-workspace
+https://github.com/lerna/lerna
+https://github.com/yarnpkg/yarn/issues/3294					
+https://yarnpkg.com/lang/en/docs/dependency-types
+https://gist.github.com/thejameskyle/1e0f781de728ec1f2597a0bdbe071675					

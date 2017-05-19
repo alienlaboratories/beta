@@ -344,15 +344,21 @@ input ItemMutationInput {
   # TODO(burdon): Set key and bucket here (not in mutation).
   key: KeyInput!
 
-  # TODO(burdon): Rename itemMutations
   # Array of generic mutations.
   mutations: [ObjectMutationInput]!
 }
 
+type ItemMutationResponse {
+
+  # TODO(burdon): Sequence numbers of each Item?
+  status: Int!
+}
+
 type RootMutation {
 
-  # Generic mutations.
-  upsertItems(namespace: String, mutations: [ItemMutationInput]!): [Item]!
+  # TODO(burdon): Rename itemMutations.
+  # TODO(burdon): Return status and or mutation diffs (client should perform mutations directly).
+  upsertItems(namespace: String, itemMutations: [ItemMutationInput]!): [Item]!
 }
 
 #===================================================================================================

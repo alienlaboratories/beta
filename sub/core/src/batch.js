@@ -12,6 +12,8 @@ import { ID } from './id';
 import { MutationUtil, UpsertItemsMutationName } from './mutations';
 import { Transforms } from './transforms';
 
+import { Fragments } from './fragments';
+
 const logger = Logger.get('batch');
 
 // TODO(burdon): Items.
@@ -79,7 +81,7 @@ export class Batch {
 
     this._refs = new Map();
     this._items = new Map();
-    this._mutations = [];
+    this._itemMutations = [];
   }
 
   /**
@@ -118,7 +120,7 @@ export class Batch {
       MutationUtil.createFieldMutation('type', 'string', type)
     );
 
-    this._mutations.push({
+    this._itemMutations.push({
       key,
       mutations: _.map(mutations, mutation => this._resolve(mutation))
     });
@@ -149,7 +151,7 @@ export class Batch {
     this._items.set(item.id, item);
     let key = { bucket: this._bucket, type: item.type, id: item.id };
 
-    this._mutations.push({
+    this._itemMutations.push({
       key,
       mutations: _.map(mutations, mutation => this._resolve(mutation))
     });
@@ -172,7 +174,7 @@ export class Batch {
     if (this._optimistic) {
 
       // Apply the mutations to the current (cloned) items.
-      let upsertItems = _.map(this._mutations, mutation => {
+      let upsertItems = _.map(this._itemMutations, mutation => {
         let { key, mutations } = mutation;
         let item = this._items.get(key.id);
         console.assert(item);
@@ -191,12 +193,12 @@ export class Batch {
           }
         });
 
+        // TODO(burdon): Move to batch.update below.
+        // TODO(burdon): Mutation patching above isn't right since patching Item into "id" field?
         // http://dev.apollodata.com/react/optimistic-ui.html
         // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-optimisticResponse
         // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
         let updatedItem = Transforms.applyObjectMutations(_.cloneDeep(item), mutations);
-
-        // TODO(burdon): Mutation patching above isn't right since patching Item into "id" field.
 
         // Update the batch's cache for patching above.
         this._items.set(item.id, updatedItem);
@@ -229,12 +231,12 @@ export class Batch {
     // http://dev.apollodata.com/react/mutations.html#calling-mutations
     // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.mutate
     //
-    logger.log('Batch: ' + TypeUtil.stringify(this._mutations));
+    logger.log('Batch:', TypeUtil.stringify(this._itemMutations));
     return this._mutate({
 
-      // Input to the mutation.
+      // RootMutation.upsertItems([ItemMutationInput]!)
       variables: {
-        mutations: this._mutations
+        itemMutations: this._itemMutations
       },
 
       optimisticResponse,
@@ -255,15 +257,50 @@ export class Batch {
        * http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
        * http://dev.apollodata.com/core/read-and-write.html#updating-the-cache-after-a-mutation
        *
-       * @param {DatProxy} proxy http://dev.apollodata.com/core/apollo-client-api.html#DataProxy
+       * @param {DataProxy} proxy http://dev.apollodata.com/core/apollo-client-api.html#DataProxy
        * @param {Object} data Mutation result.
        */
       update: (proxy, { data }) => {
         logger.log('Batch.mutate.update', data);
 
-        // TODO(burdon): Update specific queries (register here).
+        // TODO(burdon): Move Transforms.applyObjectMutations (from above) here.
 
-//         console.log(this._mutations[0]);
+        // TODO(burdon): Worst case: run mutations against all queries?
+        // But fragments returned are empty.
+
+        let key = this._itemMutations[0].key;
+        console.log('Key', key);
+
+        // http://dev.apollodata.com/core/apollo-client-api.html#DataProxy.readFragment
+        let item1 = proxy.readFragment({
+          fragment: Fragments.ItemFragment,
+          fragmentName: 'ItemFragment',
+          id: 'Task:T-1'
+        });
+        console.log('############', item1);
+
+        let item2 = proxy.readFragment({
+          fragment: Fragments.ItemFragment,
+          fragmentName: 'ItemFragment',
+          id: 'Project:P-1'
+        });
+        console.log('############', item2);
+
+        // proxy.writeFragment({
+        //   fragment: Fragments.ItemFragment,
+        //   fragmentName: 'ItemFragment',
+        //   id: key.type + ':' + key.id,
+        //   data: {
+        //     __typename: 'Task',
+        //     title: 'xxx'
+        //   }
+        // });
+
+        // TODO(burdon): Error with optimistic updates (selection set doesn't match).
+        // TypeError: Cannot read property 'variables' of undefined
+        // https://github.com/apollographql/apollo-client/issues/1708
+
+//         console.log(this._itemMutations[0]);
 //         // Read the data from our cache for this query.
 //         let filter = { type, ids: [ id ] };
 //         console.log('>>>>', JSON.stringify(filter));
@@ -280,9 +317,8 @@ export class Batch {
 //           }
 //         };
 //
-//         // TODO(burdon): Apply mutations.
 // //      let d2 = proxy.readQuery({ query: SearchQuery, variables: { filter:ProjectFilter } });
-//         let d2 = proxy.readQuery({ query: ItemQuery, variables: { key: ID.key(this._mutations[0]) } });
+//         let d2 = proxy.readQuery({ query: ItemQuery, variables: { key: ID.key(this._itemMutations[0]) } });
 //
 //         let tasks = _.get(d2,'search.items[0].tasks');
 //         console.log('#########', d2, tasks);
@@ -296,16 +332,12 @@ export class Batch {
       }
 
     }).then(({ data }) => {
-
       // Called when on network response (not optimistic response).
       logger.log('Commit', TypeUtil.stringify(data));
       return true;
     }).catch(err => {
-
-      // TODO(burdon): Error with optimistic updates (mutaion selection set doesn't match).
-      // TypeError: Cannot read property 'variables' of undefined
-      // https://github.com/apollographql/apollo-client/issues/1708
       logger.error(err);
+      return false;
     });
   }
 
