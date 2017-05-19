@@ -3,10 +3,7 @@
   "version": "0.0.1",
   "description": "Beta.",
   "license": "UNLICENSED",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com:alienlabs/beta.git"
-  },
+  "repository": "https://github.com/alienlabs/beta/tree/master/sub/web-server",
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-core": "^6.24.1",
@@ -27,7 +24,6 @@
     "grunt-contrib-watch": "^1.0.0",
     "grunt-convert": "^0.1.12",
     "grunt-crx": "^1.0.5",
-    "grunt-dev-update": "^2.2.0",
     "grunt-run": "^0.6.0",
     "grunt-version": "^1.1.1",
     "grunt-webpack": "^3.0.0",
@@ -76,6 +72,7 @@
       "start => runs the server with hot module replacement (server not updated)."
     ],
     "lint": "eslint -c ../../.eslintrc.yml ./src",
+    "test": "jest --silent",
     "webpack": "webpack --watch",
     "webpack-server": "webpack --config webpack.config.js",
     "babel-node": "BABEL_DISABLE_CACHE=1 babel-node src/main.js",

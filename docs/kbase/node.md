@@ -39,3 +39,13 @@ https://github.com/lerna/lerna
 https://github.com/yarnpkg/yarn/issues/3294					
 https://yarnpkg.com/lang/en/docs/dependency-types
 https://gist.github.com/thejameskyle/1e0f781de728ec1f2597a0bdbe071675					
+
+
+TODO(burdon): lerna (see babel)
+TODO(burdon): sub repos ("repository": "https://github.com/alienlabs/beta/tree/master/sub/alien-api")
+TODO(burdon): Remove grunt npm-update (yarn upgrade-interactive)
+TODO(burdon): circleci/travis?
+TODO(burdon): Github repo (with circle badge) Summarize toolchain (node, yarn, webpack/babel, jest, grunt)
+TODO(burdon): flow? gulp?
+https://github.com/palantir/yerna / https://github.com/lerna/lerna/issues/371 
+

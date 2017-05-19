@@ -3,10 +3,7 @@
   "version": "0.0.1",
   "description": "Alien Scheduler.",
   "license": "UNLICENSED",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com:alienlabs/beta.git"
-  },
+  "repository": "https://github.com/alienlabs/beta/tree/master/sub/scheduler",
   "main": "index.js",
   "devDependencies": {
     "babel-cli": "^6.24.1",
@@ -19,7 +16,6 @@
     "babel-preset-stage-0": "^6.24.1",
     "express": "^4.15.2",
     "grunt": "^1.0.1",
-    "grunt-dev-update": "^2.2.0",
     "json-loader": "^0.5.4",
     "redis": "^2.7.1",
     "redis-server": "^1.1.0",

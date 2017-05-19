@@ -1,14 +1,58 @@
-# Beta
+# Alien Beta
 
 ## Getting Started.
 
+### Toolchain
+
+Beta is a monorepo that uses `lerna` to manage multiple sub packages, and `yarn` to manage node dependencies.
+
+
+| First Header  | Second Header |
+| ------------- | ------------- |
+| Content Cell  | Content Cell  |
+| Content Cell  | Content Cell  |
+
+
+- `yarn`
+- `lerna`
+- `webpack`
+- `jest`
+- `grunt`
+
+
+### Cold start
+
 ~~~~
-  ./tools/eng/
-    init.sh         Configure all sub modules.
-    setup.sh        Install all tools.
-    test.sh         Run all unit tests.
-    update.sh       Update deps in all modules.
+git clone git@github.com:alienlabs/beta.git
+
+cd beta
+
+./tools/install_tools.sh
+
+lerna bootstrap
 ~~~~
+
+### Running tests
+
+~~~~
+lerna run test
+~~~~
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## TODO
 

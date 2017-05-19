@@ -3,10 +3,7 @@
   "version": "0.0.5",
   "description": "App Server.",
   "license": "UNLICENSED",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com:alienlabs/beta.git"
-  },
+  "repository": "https://github.com/alienlabs/beta/tree/master/sub/app-server",
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-core": "^6.24.1",
@@ -28,7 +25,6 @@
     "grunt-contrib-watch": "^1.0.0",
     "grunt-convert": "^0.1.12",
     "grunt-crx": "^1.0.5",
-    "grunt-dev-update": "^2.2.0",
     "grunt-run": "^0.6.0",
     "grunt-version": "^1.1.1",
     "grunt-webpack": "^3.0.0",
