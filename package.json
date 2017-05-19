@@ -1,4 +1,9 @@
 {
+  "name": "alien",
+  "version": "0.0.1",
+  "description": "Alien Beta.",
+  "license": "UNLICENSED",
+  "repository": "https://github.com/alienlabs/beta",
   "devDependencies": {
     "lerna": "^2.0.0-rc.4"
   }
