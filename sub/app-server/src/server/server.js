@@ -158,7 +158,7 @@ export class WebServer {
     //
 
     // Default login.
-    this._googleAuthProvider = new GoogleOAuthProvider(_.get(this._config, 'google'), ENV.APP_SERVER_URL);
+    this._googleAuthProvider = new GoogleOAuthProvider(_.get(this._config, 'google'), ENV.ALIEN_SERVER_URL);
 
     this._database
       .registerQueryProcessor(new GoogleDriveQueryProcessor(this._googleAuthProvider));
@@ -219,9 +219,9 @@ export class WebServer {
     logger.log('initMiddleware');
 
     // https://expressjs.com/en/starter/static-files.html
-    this._app.use(favicon(path.join(ENV.APP_SERVER_PUBLIC_DIR, 'favicon.ico')));
+    this._app.use(favicon(path.join(ENV.ALIEN_SERVER_PUBLIC_DIR, 'favicon.ico')));
 
-    this._app.use(express.static(ENV.APP_SERVER_PUBLIC_DIR));
+    this._app.use(express.static(ENV.ALIEN_SERVER_PUBLIC_DIR));
 
     this._app.use(bodyParser.urlencoded({ extended: false }));
     this._app.use(bodyParser.json());
@@ -272,8 +272,8 @@ export class WebServer {
     });
 
     this._app.engine('handlebars', handlebars({
-      layoutsDir: path.join(ENV.APP_SERVER_VIEWS_DIR, '/layouts'),
-      partialsDir: path.join(ENV.APP_SERVER_VIEWS_DIR, '/partials'),
+      layoutsDir: path.join(ENV.ALIEN_SERVER_VIEWS_DIR, '/layouts'),
+      partialsDir: path.join(ENV.ALIEN_SERVER_VIEWS_DIR, '/partials'),
       defaultLayout: 'main',
       helpers,
       partials: {
@@ -282,7 +282,7 @@ export class WebServer {
     }));
 
     this._app.set('view engine', 'handlebars');
-    this._app.set('views', ENV.APP_SERVER_VIEWS_DIR);
+    this._app.set('views', ENV.ALIEN_SERVER_VIEWS_DIR);
   }
 
   /**
@@ -309,7 +309,7 @@ export class WebServer {
     this._app.use(AppDefs.APP_PATH, appRouter(this._config, this._clientManager, {
 
       // Webpack bundles.
-      assets: ENV.APP_SERVER_ASSETS_DIR
+      assets: ENV.ALIEN_SERVER_ASSETS_DIR
     }));
   }
 
@@ -549,9 +549,9 @@ export class WebServer {
     let loader = new Loader(this._database);
     return Promise.all([
       // TODO(burdon): Testing only?
-      loader.parse(JSON.parse(fs.readFileSync(path.join(ENV.APP_SERVER_DATA_DIR, 'accounts.json'), 'utf8')),
+      loader.parse(JSON.parse(fs.readFileSync(path.join(ENV.ALIEN_SERVER_DATA_DIR, 'accounts.json'), 'utf8')),
         Database.NAMESPACE.SYSTEM, /^(Group)\.(.+)\.(.+)$/),
-      loader.parse(JSON.parse(fs.readFileSync(path.join(ENV.APP_SERVER_DATA_DIR, 'folders.json'), 'utf8')),
+      loader.parse(JSON.parse(fs.readFileSync(path.join(ENV.ALIEN_SERVER_DATA_DIR, 'folders.json'), 'utf8')),
         Database.NAMESPACE.SETTINGS, /^(Folder)\.(.+)$/)
     ]).then(() => {
       logger.log('Initializing groups...');

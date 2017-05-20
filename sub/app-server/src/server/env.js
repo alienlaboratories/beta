@@ -23,19 +23,19 @@ export default {
 
   HOST, PORT,
 
-  ALIEN_CONFIG:           _.get(process.env, 'ALIEN_CONFIG',            'alienlabs-testing'),
-  ALIEN_CONFIG_FIREBASE:  _.get(process.env, 'ALIEN_CONFIG_FIREBASE',   'firebase/alienlabs-dev'),
-  ALIEN_CONFIG_GOOGLE:    _.get(process.env, 'ALIEN_CONFIG_GOOGLE',     'google/alienlabs-dev'),
+  ALIEN_CONFIG:             _.get(process.env, 'ALIEN_CONFIG',              'alienlabs-testing'),
+  ALIEN_CONFIG_FIREBASE:    _.get(process.env, 'ALIEN_CONFIG_FIREBASE',     'firebase/alienlabs-dev'),
+  ALIEN_CONFIG_GOOGLE:      _.get(process.env, 'ALIEN_CONFIG_GOOGLE',       'google/alienlabs-dev'),
 
-  ALIEN_JWT_SECRET:       _.get(process.env, 'ALIEN_JWT_SECRET',        'alien-jwt-secret'),
-  ALIEN_JWT_AUDIENCE:     _.get(process.env, 'ALIEN_JWT_AUDIENCE',      'alienlabs.io'),
-  ALIEN_SESSION_SECRET:   _.get(process.env, 'ALIEN_SESSION_SECRET',    'alien-session-secret'),
+  ALIEN_JWT_SECRET:         _.get(process.env, 'ALIEN_JWT_SECRET',          'alien-jwt-secret'),
+  ALIEN_JWT_AUDIENCE:       _.get(process.env, 'ALIEN_JWT_AUDIENCE',        'alienlabs.io'),
+  ALIEN_SESSION_SECRET:     _.get(process.env, 'ALIEN_SESSION_SECRET',      'alien-session-secret'),
 
-  APP_SERVER_URL:         _.get(process.env, 'APP_SERVER_URL',          'http://localhost:' + PORT),
+  ALIEN_SERVER_URL:         _.get(process.env, 'ALIEN_SERVER_URL',          'http://localhost:' + PORT),
 
-  APP_SERVER_ASSETS_DIR:  _.get(process.env, 'APP_SERVER_ASSETS_DIR',   path.join(__dirname, '../../dist')),
-  APP_SERVER_CONF_DIR:    _.get(process.env, 'APP_SERVER_CONF_DIR',     path.join(__dirname, '../../../../conf')),
-  APP_SERVER_DATA_DIR:    _.get(process.env, 'APP_SERVER_DATA_DIR',     path.join(__dirname, '../../../../data')),
-  APP_SERVER_PUBLIC_DIR:  _.get(process.env, 'APP_SERVER_PUBLIC_DIR',   path.join(__dirname, './public')),
-  APP_SERVER_VIEWS_DIR:   _.get(process.env, 'APP_SERVER_VIEWS_DIR',    path.join(__dirname, './views')),
+  ALIEN_SERVER_ASSETS_DIR:  _.get(process.env, 'ALIEN_SERVER_ASSETS_DIR',   path.join(__dirname, '../../dist')),
+  ALIEN_SERVER_CONF_DIR:    _.get(process.env, 'ALIEN_SERVER_CONF_DIR',     path.join(__dirname, '../../../../conf')),
+  ALIEN_SERVER_DATA_DIR:    _.get(process.env, 'ALIEN_SERVER_DATA_DIR',     path.join(__dirname, '../../../../data')),
+  ALIEN_SERVER_PUBLIC_DIR:  _.get(process.env, 'ALIEN_SERVER_PUBLIC_DIR',   path.join(__dirname, './public')),
+  ALIEN_SERVER_VIEWS_DIR:   _.get(process.env, 'ALIEN_SERVER_VIEWS_DIR',    path.join(__dirname, './views')),
 };

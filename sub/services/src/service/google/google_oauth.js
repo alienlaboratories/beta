@@ -59,8 +59,8 @@ export class GoogleOAuthProvider extends OAuthProvider {
 
     // https://github.com/google/google-api-nodejs-client/#oauth2-client
     let authClient = new google.auth.OAuth2(
-      config.clientId,
-      config.clientSecret,
+      _.get(config, 'web.clientId'),
+      _.get(config, 'web.clientSecret'),
       callback
     );
 
@@ -164,8 +164,8 @@ export class GoogleOAuthProvider extends OAuthProvider {
     // https://github.com/jaredhanson/passport-google-oauth
     // https://github.com/jaredhanson/passport-google-oauth2
     return new GoogleStrategy({
-      clientID:       this._config.clientId,
-      clientSecret:   this._config.clientSecret,
+      clientID:       _.get(this._config, 'web.clientId'),
+      clientSecret:   _.get(this._config, 'web.clientSecret'),
       callbackURL:    this._callbackUrl
     }, loginCallback);
   }

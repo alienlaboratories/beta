@@ -1,61 +1,37 @@
 #!/usr/bin/env babel-node
 
-// TODO(burdon): Webpack.
+import _ from 'lodash';
+import path from 'path';
+import yaml from 'node-yaml';
 
-// http://nodeca.github.io/argparse
-// https://www.npmjs.com/package/argparse
-// https://www.npmjs.com/package/inquirer
-// https://www.npmjs.com/package/node-cli-google
+import { App } from './src/app';
 
-import { ArgumentParser } from 'argparse';
+global.__ENV__            = _.get(process.env, 'NODE_ENV', 'development');
+global.__PRODUCTION__     = __ENV__ === 'production';
+global.__DEVELOPMENT__    = __ENV__ === 'development';
+global.__TESTING__        = __ENV__ === 'testing';
 
-import { LoginCommand } from './src/login';
-import { QueryCommand } from './src/query';
+global.ENV = {
+  ALIEN_CONFIG_FIREBASE: __PRODUCTION__ ? 'firebase/alienlabs-beta.yml' : 'firebase/alienlabs-dev.yml',
+  ALIEN_CONFIG_GOOGLE:   __PRODUCTION__ ? 'google/alienlabs-beta.yml'   : 'google/alienlabs-dev.yml',
 
-// TODO(burdon): Config.
-// https://console.developers.google.com/apis/credentials?project=alienlabs-dev
-// Created 05/19/17
-const config = {
-  google: {
-    clientId: '933786919888-5p4cnpnqb1fjnkikq6ge6opqu2iljne7.apps.googleusercontent.com',
-    clientSecret: 'cc0vDu-8rQ6PER7Q012iE10g'
-  },
+  ALIEN_SERVER_CONF_DIR: path.join(__dirname, '../../conf'),
+  ALIEN_SERVER_DATA_DIR: path.join(__dirname, '../../data'),
 
-  // TODO(burdon): Runtime switch.
-  server: 'http://localhost:3000'
+  ALIEN_SERVER_URL: _.get(process.env, 'ALIEN_SERVER_URL', 'http://localhost:3000'),
 };
 
-let parser = new ArgumentParser({
-  version: '0.0.1',
-  addHelp: true,
-  description: 'Alien CLI.'
-});
-
-let commands = parser.addSubparsers({
-  title: 'commands',
-  dest: 'command'
-});
-
-commands.addParser('login',   { addHelp: true });
-commands.addParser('version', { addHelp: true });
-commands.addParser('status',  { addHelp: true, aliases: ['stat'] });
-
-let query = commands.addParser('query',   { addHelp: true, aliases: ['q'] });
-query.addArgument('query', { action: 'store', type: 'string' });
-
-const args = parser.parseArgs();
-
-// TODO(burdon): System status.
-// TODO(burdon): Move services admin here.
-// TODO(burdon): Trigger admin commands (as from web site).
-// TODO(burdon): Trigger tasks (e.g., sync).
-
-const handlers = {
-  'login': new LoginCommand(config),
-  'query': new QueryCommand(config)
-};
-
-let handler = handlers[args.command];
-if (handler) {
-  handler.exec(args);
+async function config(baseDir) {
+  return await {
+    'firebase': await yaml.read(path.join(baseDir, global.ENV.ALIEN_CONFIG_FIREBASE)),
+    'google':   await yaml.read(path.join(baseDir, global.ENV.ALIEN_CONFIG_GOOGLE)),
+  };
 }
+
+config(global.ENV.ALIEN_SERVER_CONF_DIR).then(config => {
+//console.log(JSON.stringify(config, null, 2));
+  new App(config).start().then(() => {
+    // TODO(burdon): Close resources.
+    process.exit(0);
+  });
+});

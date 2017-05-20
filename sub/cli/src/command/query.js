@@ -25,6 +25,19 @@ export class QueryCommand extends Command {
   }
 
   exec(args) {
+
+    let query = DEFAULT_QUERY;
+    let variables = {};
+
+    if (args.query_str) {
+      query = 'query SearchQuery($filter: FilterInput) { search(filter: $filter) { items { bucket, id, type, title } } }';
+      variables = {
+        filter: {
+          type: args.query_str
+        }
+      };
+    }
+
     return this.authenticate().then(token => {
 
       let options = {
@@ -33,20 +46,22 @@ export class QueryCommand extends Command {
           'Content-Type': 'application/json',
         }, token),
         body: JSON.stringify({
-          query: DEFAULT_QUERY,
-          variables: {}
+          query,
+          variables
         })
       };
 
       console.log('Requesting Token...');
-      request.post(options, (error, response, body) => {
-        if (error) {
-          throw error;
-        }
-
-        let { data } = JSON.parse(body);
-        console.log(JSON.stringify(data, null, 2));
-        return data;
+      return new Promise((resolve, reject) => {
+        request.post(options, (error, response, body) => {
+          if (error) {
+            reject(error);
+          } else {
+            let { data } = JSON.parse(body);
+            console.log(JSON.stringify(data, null, 2));
+            resolve(data);
+          }
+        });
       });
     });
   }

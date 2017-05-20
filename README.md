@@ -1,23 +1,22 @@
 # Alien Beta
 
-## Getting Started.
+## Getting Started
 
-### Toolchain
+### Development Tools
 
-Beta is a monorepo that uses `lerna` to manage multiple sub packages, and `yarn` to manage node dependencies.
+| ----------- | ------------------------------------------------------------------- |
+| `yarn`      | Node package manager (replaces `npm`)                               |
+| `lerna`     | Monorepo workspace manager (to be deprecated by `yarn`)             |
+| `webpack`   | Build JS assets                                                     |
+| `jest`      | Client/server test framework (replaces `mocha`, `jasmine`, `karma`  |
+| `grunt`     | Misc. build tools.                                                  |
 
 
-| First Header  | Second Header |
-| ------------- | ------------- |
-| Content Cell  | Content Cell  |
-| Content Cell  | Content Cell  |
-
-
-- `yarn`
-- `lerna`
-- `webpack`
-- `jest`
-- `grunt`
+NOTE: `lerna` is deprecated; `yarn` may subsume capabilities:
+  - https://github.com/lerna/lerna/issues/408
+  - https://github.com/yarnpkg/yarn/issues/3294
+  - https://github.com/yarnpkg/yarn/issues/2863
+    - https://github.com/yarnpkg/rfcs/pull/34
 
 
 ### Cold start

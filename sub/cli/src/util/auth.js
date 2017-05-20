@@ -2,10 +2,10 @@
 // Copyright 2017 Alien Labs.
 //
 
-import _ from 'lodash';
-import url from 'url';
-import GoogleAuth from 'google-cli-auth';
 import request from 'request';
+import url from 'url';
+
+import GoogleAuth from 'google-cli-auth';
 
 // TODO(burdon): Const.
 const GET_ID_TOKEN_URL = '/user/get_id_token';
@@ -15,13 +15,14 @@ const GET_ID_TOKEN_URL = '/user/get_id_token';
  */
 export class Authenticator {
 
-  // https://github.com/villadora/google-auth-cli
+  // TODO(burdon): Reimplement GoogleAuth (understand events and streams).
+  // Creates http.server to received callback URL from Google.
   // https://www.npmjs.com/package/google-cli-auth
-  // https://github.com/google/google-api-nodejs-client#using-jwt-service-tokens
 
-  constructor(config) {
-    console.assert(config);
+  constructor(config, server) {
+    console.assert(config && server);
     this._config = config;
+    this._server = server;
   }
 
   /**
@@ -31,15 +32,12 @@ export class Authenticator {
    */
   authenticate() {
     return new Promise((resolve, reject) => {
-      let {
-        clientId:client_id,
-        clientSecret:client_secret
-      } = _.get(this._config, 'google');
+      let { clientId, clientSecret } = this._config;
 
       GoogleAuth({
-        name: 'alien',      // Name of config file ~/.config/alien/token.json
-        client_id,
-        client_secret,
+        name: 'alien',                // Name of config file ~/.config/alien/token.json
+        client_id: clientId,
+        client_secret: clientSecret,
         scope: [
           'email'
         ]
@@ -50,7 +48,7 @@ export class Authenticator {
 //        console.log(JSON.stringify(credentials, null, 2));
 
           let options = {
-            url: url.resolve(_.get(this._config, 'server'), GET_ID_TOKEN_URL),
+            url: url.resolve(this._server, GET_ID_TOKEN_URL),
             headers: {
               'Content-Type': 'application/json'
             },
@@ -75,3 +73,32 @@ export class Authenticator {
     });
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

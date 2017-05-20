@@ -43,7 +43,7 @@ ErrorUtil.handleErrors(process, error => {
 // - deployed on the local minikube.
 // - deployed to the test cluster.
 
-config(ENV.APP_SERVER_CONF_DIR).then(config => {
+config(ENV.ALIEN_SERVER_CONF_DIR).then(config => {
   global.server = new WebServer(config);
   logger.info(WebServer.name, TypeUtil.stringify(global.server.info, 2));
   global.server.init().then(server => server.start());
