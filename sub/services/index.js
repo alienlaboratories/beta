@@ -2,6 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
+export * from './src/auth/jwt';
 export * from './src/auth/oauth';
 export * from './src/auth/user';
 

@@ -88,8 +88,26 @@ export class GoogleOAuthProvider extends OAuthProvider {
     });
   }
 
-  constructor(config, callbackUrl) {
-    super('google', callbackUrl);
+  static getUserProfile(authClient) {
+    return new Promise((resolve, reject) => {
+      // TODO(burdon): Factor out.
+      // https://developers.google.com/+/web/api/rest
+      let plus = google.plus('v1');
+      plus.people.get({
+        userId: 'me',
+        auth: authClient
+      }, (error, profile) => {
+        if (error) {
+          reject(new Error(error));
+        } else {
+          resolve(OAuthProvider.getCanonicalUserProfile(profile));
+        }
+      });
+    });
+  }
+
+  constructor(config, serverUrl) {
+    super('google', serverUrl);
 
     // Contains OAuth registration.
     this._config = config;
@@ -183,24 +201,8 @@ export class GoogleOAuthProvider extends OAuthProvider {
 
   getUserProfile(credentials) {
     console.assert(credentials);
-
-    return new Promise((resolve, reject) => {
-      let authClient = this.createAuthClient(credentials);
-
-      // TODO(burdon): Factor out.
-      // https://developers.google.com/+/web/api/rest
-      let plus = google.plus('v1');
-      plus.people.get({
-        userId: 'me',
-        auth: authClient
-      }, (error, profile) => {
-        if (error) {
-          throw new Error(error);
-        }
-
-        resolve(OAuthProvider.getCanonicalUserProfile(profile));
-      });
-    });
+    let authClient = this.createAuthClient(credentials);
+    return GoogleOAuthProvider.getUserProfile(authClient);
   }
 
   revokeCredentials(credentials) {

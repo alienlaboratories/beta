@@ -147,9 +147,10 @@ const srvConfig = webpackMerge(baseConfig, {
     // Otherwise __dirname === '/'
     __dirname: false,
 
+    // TODO(burdon): Remove?
     // https://webpack.js.org/configuration/node
     console: false,
-    // fs:  'empty',    // TODO(burdon): ???
+    fs:  'empty',
     net: 'empty',
     tls: 'empty'
   },

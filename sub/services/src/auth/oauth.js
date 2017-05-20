@@ -4,13 +4,13 @@
 
 import _ from 'lodash';
 import express from 'express';
-import jwt from 'jsonwebtoken';
 import moment from 'moment';
 import passport from 'passport';
-import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 
 import { Logger, HttpError, HttpUtil } from 'alien-util';
 import { AuthDefs, SystemStore } from 'alien-core';
+
+import { JwtUtil } from './jwt';
 
 const logger = Logger.get('oauth');
 
@@ -122,24 +122,9 @@ export const oauthRouter = (userManager, systemStore, oauthRegistry, config={}) 
   // https://www.npmjs.com/package/passport-jwt
   //
 
-  // TODO(burdon): Get from ENV or config.
-  const ALIEN_JWT_SECRET = _.get(process.env, 'ALIEN_JWT_SECRET', 'alien-jwt-secret');
-  const ALIEN_JWT_AUDIENCE = 'alienlabs.com';
-
-  passport.use(new JwtStrategy({
-
-    authScheme:         AuthDefs.JWT_SCHEME,
-    jwtFromRequest:     ExtractJwt.fromAuthHeader(),    // 'authorization: JWT xxx'
-    secretOrKey:        ALIEN_JWT_SECRET,
-    audience:           ALIEN_JWT_AUDIENCE,
-
-    // TODO(burdon): Implement auth-refresh.
-    ignoreExpiration:   true,
-
-    passReqToCallback:  true
-  }, (req, payload, done) => {
-
+  passport.use(JwtUtil.createStrategy((req, payload, done) => {
     let { id } = payload.data;
+
     userManager.getUserFromId(id).then(user => {
       if (!user) {
         return done('Invalid User ID: ' + id, false);
@@ -193,22 +178,13 @@ export const oauthRouter = (userManager, systemStore, oauthRegistry, config={}) 
       // Create the custom JWT token.
       // https://www.npmjs.com/package/jsonwebtoken
       //
-      let id_token_exp = moment().add(...AuthDefs.JWT_EXPIRATION).unix();
-      let idToken = jwt.sign({
-        aud: ALIEN_JWT_AUDIENCE,
-        iat: moment().unix(),
-        exp: id_token_exp,
-        data: {
-          // TODO(burdon): Add clientId for extra security.
-          id: user.id
-        }
-      }, ALIEN_JWT_SECRET);
+      let { token, exp } = JwtUtil.createToken(user.id);
 
       // Sets the transient User property (which is stored in the session store).
       _.assign(user, {
         session: {
-          id_token: idToken,
-          id_token_exp
+          id_token: token,
+          id_token_exp: exp
         }
       });
 
@@ -352,7 +328,7 @@ export const oauthRouter = (userManager, systemStore, oauthRegistry, config={}) 
   //
   // Logout.
   //
-  router.get('/logout/:providerId', isAuthenticated('/home'), (req, res, next) => {
+  router.get('/logout/:providerId', isAuthenticated('/home'), (req, res) => {
     let { providerId } = req.params;
     logger.log('Logout: ' + providerId);
 
@@ -362,9 +338,7 @@ export const oauthRouter = (userManager, systemStore, oauthRegistry, config={}) 
 
     // TODO(burdon): Logout/invalidate.
     let provider = oauthRegistry.getProvider(providerId);
-    provider.revoke().then(() => {
-      next();
-    });
+    return provider.revoke();
   });
 
   return router;

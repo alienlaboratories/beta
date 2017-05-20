@@ -416,7 +416,7 @@ export class WebServer {
     logger.log('initAdmin');
 
     // Status.
-    this._app.get('/status', (req, res, next) => {
+    this._app.get('/status', (req, res) => {
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify({
         env: __ENV__,

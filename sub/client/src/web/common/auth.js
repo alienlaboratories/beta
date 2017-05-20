@@ -14,20 +14,6 @@ const logger = Logger.get('auth');
  */
 export class AuthManager {
 
-  // TODO(burdon): Generalize for other clients (mobile, command line)?
-
-  /**
-   * Return the authentication header.
-   * https://en.wikipedia.org/wiki/Basic_access_authentication
-   * @param {string} idToken JWT token.
-   */
-  static getHeaders(idToken) {
-    console.assert(_.isString(idToken), 'Invalid token: ' + idToken);
-    return {
-      'Authorization': 'JWT ' + idToken
-    };
-  }
-
   /**
    * @param config
    *
