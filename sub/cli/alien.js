@@ -45,7 +45,10 @@ query.addArgument('query', { action: 'store', type: 'string' });
 
 const args = parser.parseArgs();
 
+// TODO(burdon): System status.
 // TODO(burdon): Move services admin here.
+// TODO(burdon): Trigger admin commands (as from web site).
+// TODO(burdon): Trigger tasks (e.g., sync).
 
 const handlers = {
   'login': new LoginCommand(config),
