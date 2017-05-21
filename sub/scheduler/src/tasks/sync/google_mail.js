@@ -29,6 +29,8 @@ export class GoogleMailSyncTask extends Task {
     this._client = new GoogleMailClient();
   }
 
+  // TODO(burdon): Move to service.
+
   async execTask(data) {
 
     /**
@@ -93,7 +95,6 @@ export class GoogleMailSyncTask extends Task {
       let items = [];
       _.each(contacts, contact => {
         let messages = messagesBySender.get(contact.email);
-        console.log('##', contact, messages);
         if (!_.isEmpty(messages)) {
           // Add messages to contact.
           contact.messages = _.map(messages, message => {
@@ -120,6 +121,7 @@ export class GoogleMailSyncTask extends Task {
 
       //
       // Notify clients.
+      // TODO(burdon): Factor out notifications.
       // TODO(burdon): Currently ClientStore is in-memory (Hack sends client map as part of the job data).
       //
       let client = _.find(_.get(data, 'clients'), client => client.userId === user.id);

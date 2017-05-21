@@ -5,16 +5,11 @@
 import _ from 'lodash';
 import google from 'googleapis';
 import Gmail from 'node-gmail-api';
-import addrs from 'email-addresses';
 
-import { ErrorUtil, Logger } from 'alien-util';
+import { DataUtil, ErrorUtil, Logger } from 'alien-util';
 
 import { OAuthServiceProvider } from '../service';
 import { GoogleApiUtil } from './google_api';
-
-_.mixin({
-  email: email => _.pick(addrs.parseOneAddress(email), 'name', 'address')
-});
 
 const NAMESPACE = 'google.com/mail';
 
@@ -53,10 +48,10 @@ export class GoogleMailClient {
 
         let to = _.chain(payload.headers)
           .filter(header => header.name === 'To')
-          .map(i => _.email(i.value))
+          .map(i => DataUtil.parseEmail(i.value))
           .value();
 
-        let from = _.email(_.find(payload.headers, header => header.name === 'From').value);
+        let from = DataUtil.parseEmail(_.find(payload.headers, header => header.name === 'From').value);
 
         let subject = _.find(payload.headers, header => header.name === 'Subject').value;
 

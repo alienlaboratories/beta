@@ -50,6 +50,8 @@ export class ID {
     return null;
   }
 
+  // TODO(burdon): KeyUtil.
+
   static key(item) {
     console.assert(item && item.type && item.id, 'Invalid item: ' + JSON.stringify(item));
     return _.pick(item, 'namespace', 'bucket', 'type', 'id');

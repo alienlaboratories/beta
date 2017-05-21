@@ -3,6 +3,7 @@
 //
 
 export * from './src/async';
+export * from './src/data';
 export * from './src/dom';
 export * from './src/event';
 export * from './src/error';

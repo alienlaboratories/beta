@@ -6,7 +6,7 @@ import _ from 'lodash';
 import path from 'path';
 import yaml from 'node-yaml';
 
-import { Logger } from 'alien-util';
+import { Logger, TypeUtil } from 'alien-util';
 import { Database, IdGenerator, Matcher, SystemStore } from 'alien-core';
 
 import { Firebase } from '../../db/firebase/firebase';
@@ -14,6 +14,7 @@ import { FirebaseItemStore } from '../../db/firebase/firebase_item_store';
 
 import { GoogleOAuthProvider } from './google_oauth';
 
+import { GoogleCalendarClient } from './google_calendar';
 import { GoogleDriveClient } from './google_drive';
 import { GoogleMailClient } from './google_mail';
 
@@ -21,6 +22,8 @@ const logger = Logger.get('test');
 
 // TODO(burdon): Set-up as large test.
 const CONF_DIR = path.join(__dirname, '../../../../../conf');
+
+// TODO(burdon): Generalize to test all services.
 
 /**
  * Asynchronously load the configuration.
@@ -30,6 +33,11 @@ async function config(baseDir) {
     'firebase': await yaml.read(path.join(baseDir, 'firebase/alienlabs-dev.yml')),
     'google':   await yaml.read(path.join(baseDir, 'google/alienlabs-dev.yml')),
   };
+}
+
+let test = 'mail';
+if (process.argv.length > 2) {
+  test = process.argv[2];
 }
 
 config(CONF_DIR).then(config => {
@@ -71,30 +79,46 @@ config(CONF_DIR).then(config => {
       // https://github.com/google/google-api-nodejs-client/#manually-refreshing-access-token
       _.set(user, 'credentials.google.access_token', access_token);
 
-      const tests = {
-        drive: false,
-        gmail: false
-      };
-
-      if (tests.drive) {
-        const text = 'entube';
-        const query = `fullText contains "${text}"`;
-
-        let client = new GoogleDriveClient();
-        client.list(authClient, query, 10).then(results => {
-          logger.log(`Results for ${email}:\n`, _.map(results, result => _.pick(result, 'title')));
-        });
-      }
-
-      if (tests.gmail) {
-        let query = 'label:UNREAD';
-
-        let client = new GoogleMailClient();
-        client.list(authClient, query, 10).then(results => {
-          logger.log(`Results for ${query}:\n`,
-            JSON.stringify(_.map(results, result => _.pick(result, 'from', 'title')), null, 2));
-        });
-      }
+      testApi(authClient, email).catch(err => {
+        console.err(err);
+      })
     });
   });
 });
+
+function testApi(authClient, email) {
+
+  switch (test) {
+
+    case 'calendar': {
+      let query = '';
+
+      let client = new GoogleCalendarClient();
+      return client.list(authClient, query, 10).then(results => {
+        logger.log(`Results for ${query}:\n`,
+          TypeUtil.stringify(_.map(results, result => _.pick(result, 'id', 'title')), 2, true));
+      });
+    }
+
+    case 'drive': {
+      const text = 'entube';
+      const query = `fullText contains "${text}"`;
+
+      let client = new GoogleDriveClient();
+      return client.list(authClient, query, 10).then(results => {
+        logger.log(`Results for ${email}:\n`,
+          TypeUtil.stringify(_.map(results, result => _.pick(result, 'id', 'title')), 2, true));
+      });
+    }
+
+    case 'mail': {
+      let query = 'label:UNREAD';
+
+      let client = new GoogleMailClient();
+      return client.list(authClient, query, 10).then(results => {
+        logger.log(`Results for ${query}:\n`,
+          TypeUtil.stringify(_.map(results, result => _.pick(result, 'id', 'title', 'from')), 2, true));
+      });
+    }
+  }
+}

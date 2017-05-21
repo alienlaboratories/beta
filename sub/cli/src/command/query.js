@@ -39,7 +39,6 @@ export class QueryCommand extends Command {
     }
 
     return this.authenticate().then(token => {
-
       let options = {
         url: this.getUrl(API_URL),
         headers: AuthUtil.setAuthHeader({

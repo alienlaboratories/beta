@@ -23,6 +23,5 @@ export class GoogleCalendarSyncTask extends Task {
     this._client = new GoogleCalendarClient();
   }
 
-  async execTask(data) {
-  }
+  async execTask(data) {}
 }

@@ -139,7 +139,7 @@ export class BaseApp {
 
     // NOTE: List Item types from schema.
     const ITEM_TYPES = [
-      'User', 'Group', 'Contact', 'Document', 'Event', 'Folder', 'Message', 'Place', 'Project', 'Task'
+      'User', 'Group', 'Contact', 'Document', 'Event', 'Folder', 'Location', 'Message', 'Project', 'Task'
     ];
 
     // http://dev.apollodata.com/react/initialization.html#fragment-matcher

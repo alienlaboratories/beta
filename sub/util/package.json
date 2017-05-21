@@ -17,6 +17,7 @@
     "regenerator-runtime": "^0.10.5"
   },
   "dependencies": {
+    "email-addresses": "^2.0.2",
     "lodash": "^4.17.1",
     "moment": "^2.18.1"
   },

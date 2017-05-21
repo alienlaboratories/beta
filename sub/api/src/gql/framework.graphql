@@ -22,6 +22,12 @@ scalar Version
 
 scalar Date
 
+type DateTime {
+  date:       String    # 2017-06-11
+  datetime:   String    # 2017-06-11T10:30:00-04:00   Zulu?
+  timezone:   String
+}
+
 #
 # Unix timestamp.
 # http://momentjs.com/docs/#/parsing/unix-timestamp-milliseconds
@@ -34,13 +40,19 @@ scalar Timestamp
 # TODO(burdon): Move Item def here?
 #===================================================================================================
 
-# TODO(burdon): Type for IDs/Buckets?
-scalar Bucket
-
 # Key and Foreign Key.
+# Represents DynamoDB parition key.
+# TODO(burdon): Use Key everywhere (incl. fkey).
 type Key {
   namespace:  String
   bucket:     String
+  type:       String!
+  id:         ID!
+}
+
+input KeyInput {
+  namespace:  String        # External namespace (query provider).
+  bucket:     String        # ID of User or Group (null for system item).
   type:       String!
   id:         ID!
 }
@@ -198,7 +210,7 @@ input FilterInput {
   type: String
   labels: [String]
   text: String
-  expr: ExpressionInput  # Expression tree.
+  expr: ExpressionInput     # Expression tree.
 
   # Match empty filter.
   matchAll: Boolean
@@ -240,6 +252,11 @@ type Value {
 type Geo {
   lat: Float!
   lng: Float!
+}
+
+type Address {
+  string: String
+  geo: Geo
 }
 
 # Item sort positions.
