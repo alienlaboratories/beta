@@ -37,8 +37,8 @@ export const ProjectsQuery = gql`
 `;
 
 export const UpsertItemsMutation = gql`
-  mutation UpsertItemsMutation($mutations: [ItemMutationInput]!) {
-    upsertItems(mutations: $mutations) {
+  mutation UpsertItemsMutation($itemMutations: [ItemMutationInput]!) {
+    upsertItems(itemMutations: $itemMutations) {
       bucket
       type
       id

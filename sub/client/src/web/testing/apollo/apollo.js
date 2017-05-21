@@ -20,8 +20,8 @@ import { AuthDefs, Batch, IdGenerator, ItemUtil, MutationUtil } from 'alien-core
 
 import { ReactUtil } from '../../util/index';
 
-//import { UpsertItemsMutation, UpsertItemsMutationName } from 'alien-core';
-import { UpsertItemsMutation, UpsertItemsMutationName } from './common';
+import { UpsertItemsMutation, UpsertItemsMutationName } from 'alien-core';
+// import { UpsertItemsMutation, UpsertItemsMutationName } from './common';
 
 import { ProjectsQuery, ProjectsQueryName } from './common';
 import { TestingNetworkInterface } from './testing';

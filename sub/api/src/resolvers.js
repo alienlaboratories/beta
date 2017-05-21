@@ -8,7 +8,7 @@ import { Kind } from 'graphql';
 import { concatenateTypeDefs } from 'graphql-tools';
 
 import { Logger, HttpError, TypeUtil } from 'alien-util';
-import { Database, ID, ItemStore } from 'alien-core';
+import { Database, ItemStore } from 'alien-core';
 
 import Framework from './gql/framework.graphql';
 import Schema from './gql/schema.graphql';
@@ -20,7 +20,7 @@ const logger = Logger.get('resolver');
  */
 export class Resolvers {
 
-  // TODO(burdon): Remove.
+  // TODO(burdon): Remove (should be part of namespace query).
   static getNamespaceForType(type) {
     switch (type) {
       case 'User':
@@ -39,29 +39,25 @@ export class Resolvers {
     return concatenateTypeDefs([ Framework, Schema ]);
   }
 
-  //
-  // Resolver Map
-  // http://dev.apollodata.com/tools/graphql-tools/resolvers.html#Resolver-map
-  // https://dev-blog.apollodata.com/graphql-explained-5844742f195e#.vcfu43qao
-  //
-  // TODO(burdon): See args and return values (incl. promise).
-  // http://dev.apollodata.com/tools/graphql-tools/resolvers.html#Resolver-function-signature
-  //
-  // TODO(burdon): Modularize
-  // http://dev.apollodata.com/tools/graphql-tools/generate-schema.html#modularizing
-  //
-
   /**
    * GraphQL Resolvers.
+   * http://dev.apollodata.com/tools/graphql-tools/resolvers.html#Resolver-map
+   * http://dev.apollodata.com/tools/graphql-tools/resolvers.html#Resolver-function-signature
+   * http://dev-blog.apollodata.com/graphql-explained-5844742f195e#.vcfu43qao
    *
-   * The context is set via the graphqlRouter's contextProvider.
+   * The context is set via the apiRouter's contextProvider.
    *
    * context: {
    *   userId,
    *   clientId
    * }
    */
-  static getResolvers(database) {
+  static getResolverMap(database) {
+    console.assert(database);
+
+    // TODO(burdon): Modularize
+    // http://dev.apollodata.com/tools/graphql-tools/generate-schema.html#modularizing
+
     return {
 
       //
@@ -308,7 +304,7 @@ export class Resolvers {
           Resolvers.checkAuthentication(context);
           let { key: { type, id } } = args;
 
-          // TODO(burdon): Should be from key.
+          // TODO(burdon): Should be from key and/or request (move to client). Or prevent querying directly?
           let namespace = Resolvers.getNamespaceForType(type);
 
           return database.getItemStore(namespace).getItem(context, type, id);
@@ -336,11 +332,11 @@ export class Resolvers {
 
           // TODO(burdon): Enforce bucket.
 
-          let { namespace=Database.NAMESPACE.USER, mutations } = args;
-          logger.log(`UPDATE[${namespace}]: ` + TypeUtil.stringify(mutations));
+          let { namespace=Database.NAMESPACE.USER, itemMutations } = args;
+          logger.log(`UPDATE[${namespace}]: ` + TypeUtil.stringify(itemMutations));
 
           let itemStore = database.getItemStore(namespace);
-          return ItemStore.applyMutations(itemStore, context, mutations)
+          return ItemStore.applyMutations(itemStore, context, itemMutations)
 
             //
             // Trigger notifications.
@@ -348,7 +344,7 @@ export class Resolvers {
             .then(items => {
 
               // TODO(burdon): Move mutation notifications to Notifier/QueryRegistry.
-              database.fireMutationNotification(context, mutations, items);
+              database.fireMutationNotification(context, itemMutations, items);
               return items;
             });
         }

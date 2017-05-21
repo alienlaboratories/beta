@@ -126,7 +126,7 @@ describe('GraphQL Executable Schema:', () => {
   // http://dev.apollodata.com/tools/graphql-tools/generate-schema.html
   let schema = makeExecutableSchema({
     typeDefs: Resolvers.typeDefs,
-    resolvers: Resolvers.getResolvers(database),
+    resolvers: Resolvers.getResolverMap(database),
     logger: {
       log: error => console.log('Schema Error', error)
     }

@@ -18,8 +18,8 @@ import { Fragments } from './fragments';
 // TODO(burdon): Return updated mutations (e.g., ID replaced with object) and store in batch.update.
 
 export const UpsertItemsMutation = gql`
-  mutation UpsertItemsMutation($mutations: [ItemMutationInput]!) {
-    upsertItems(mutations: $mutations) {
+  mutation UpsertItemsMutation($itemMutations: [ItemMutationInput]!) {
+    upsertItems(itemMutations: $itemMutations) {
       ...ItemFragment
       ...ContactTasksFragment
       ...TaskFragment

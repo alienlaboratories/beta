@@ -45,7 +45,7 @@ export const apiRouter = (database, options) => {
     typeDefs: Resolvers.typeDefs,
 
     // Resolvers.
-    resolvers: Resolvers.getResolvers(database),
+    resolvers: Resolvers.getResolverMap(database),
 
     // Log resolver errors (formatError returns message to client).
     // https://github.com/apollographql/graphql-tools/issues/291

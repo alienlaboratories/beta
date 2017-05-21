@@ -4,3 +4,4 @@
 
 export * from './src/testing/item_store_tests';
 export * from './src/testing/test_item_store';
+export * from './src/testing/test_util';
