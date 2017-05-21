@@ -11,6 +11,7 @@ import { TestUtil } from 'alien-core/testing';
 
 import { Resolvers } from './resolvers';
 
+let database = null;
 let schema = null;
 
 describe('GraphQL Resolvers:', () => {
@@ -18,7 +19,7 @@ describe('GraphQL Resolvers:', () => {
   const userId = 'test';
 
   beforeAll(() => {
-    let database = TestUtil.createDatabase();
+    database = TestUtil.createDatabase();
 
     schema = makeExecutableSchema({
       typeDefs: Resolvers.typeDefs,
@@ -68,7 +69,10 @@ describe('GraphQL Resolvers:', () => {
     let root = {};
 
     let context = {
-      userId
+      userId,
+      buckets: [
+        'bucket-1'
+      ]
     };
 
     let query = `
@@ -89,12 +93,6 @@ describe('GraphQL Resolvers:', () => {
           },
           mutations: [
             {
-              field: 'bucket',        // TODO(burdon): From key.
-              value: {
-                string: 'bucket-1'
-              }
-            },
-            {
               field: 'title',
               value: {
                 string: 'Task 1'
@@ -109,6 +107,31 @@ describe('GraphQL Resolvers:', () => {
       if (result.errors) {
         throw new Error(result.errors);
       }
+
+      query = `
+        query ItemQuery($key: KeyInput!) {
+          item(key: $key) {
+            id
+            title
+          }
+        }
+      `;
+
+      variables = {
+        key: {
+          bucket: 'bucket-1',
+          type: 'Task',
+          id: 'item-1'
+        }
+      };
+
+      return graphql(schema, query, root, context, variables).then(result => {
+        if (result.errors) {
+          throw new Error(result.errors);
+        }
+
+        expect(_.get(result, 'data.item.id')).toEqual('item-1');
+      });
     });
   });
 });

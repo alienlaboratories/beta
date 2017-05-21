@@ -130,7 +130,6 @@ class ProjectBoardCanvasComponent extends React.Component {
 
       onCreateMutations: (bucket, userId, column) => {
         return [
-          MutationUtil.createFieldMutation('bucket', 'string', bucket),
           MutationUtil.createFieldMutation('status', 'int', column.value)
         ];
       },
@@ -174,9 +173,7 @@ class ProjectBoardCanvasComponent extends React.Component {
       },
 
       onCreateMutations: (bucket, userId, column) => {
-        let mutations = [
-          MutationUtil.createFieldMutation('bucket', 'string', bucket)
-        ];
+        let mutations = [];
 
         // TODO(burdon): Optimistic concurrency fail (need to patch from cache).
         if (column.id !== ProjectBoardCanvasComponent.COLUMN_ICEBOX) {
@@ -225,7 +222,7 @@ class ProjectBoardCanvasComponent extends React.Component {
 
       onCreateMutations: (bucket, userId, column) => {
         return [
-          // TODO(burdon): Currently overwritten.
+          // TODO(burdon): Bucket should be same for entire batch?
           // TODO(burdon): Should used user's group.
           MutationUtil.createFieldMutation('bucket', 'string', userId)
         ];

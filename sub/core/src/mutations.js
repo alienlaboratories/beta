@@ -47,26 +47,26 @@ export class MutationUtil {
   /**
    * Create mutations to clone the given item.
    *
-   * @param {string} bucket
    * @param {Item} item
    * @return {[Mutation]}
    */
-  static cloneItem(bucket, item) {
-    console.assert(bucket && item);
+  static cloneItem(item) {
+    console.assert(item);
 
-    let mutations = [
-      MutationUtil.createFieldMutation('bucket', 'string', bucket)
-    ];
+    const keys = {
+      title:          'string',
+      email:          'string',
+      thumbnailUrl:   'string'
+    };
 
-    // TODO(burdon): Introspect type map.
-    mutations.push(MutationUtil.createFieldMutation('title', 'string', item.title));
+    let mutations = [];
 
-    if (item.email) {
-      mutations.push(MutationUtil.createFieldMutation('email', 'string', item.email));
-    }
-    if (item.thumbnailUrl) {
-      mutations.push(MutationUtil.createFieldMutation('thumbnailUrl', 'string', item.thumbnailUrl));
-    }
+    _.each(keys, (type, key) => {
+      let value = item[key];
+      if (value) {
+        mutations.push(MutationUtil.createFieldMutation('title', type, value));
+      }
+    });
 
     return mutations;
   }

@@ -126,7 +126,7 @@ export class ItemStore extends QueryProcessor {
     // TODO(burdon): Get items in batch.
     return Promise.all(_.map(itemMutations, itemMutation => {
       let { key, mutations } = itemMutation;
-      let { type, id } = key;
+      let { bucket, type, id } = key;
 
       //
       // Get and update item.
@@ -138,6 +138,7 @@ export class ItemStore extends QueryProcessor {
         // TODO(burdon): Check this is an insert (not a miss due to a bug); use version?
         if (!item) {
           item = {
+            bucket,
             type,
             id
           };

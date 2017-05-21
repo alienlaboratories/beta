@@ -12,5 +12,5 @@ test('Clones item', () => {
   };
 
   let mutations = MutationUtil.cloneItem('test', item);
-  expect(mutations).toHaveLength(2);
+  expect(mutations).toHaveLength(1);
 });

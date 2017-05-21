@@ -74,6 +74,8 @@ export class Batch {
   constructor(idGenerator, mutate, bucket, optimistic=false) {
     console.assert(idGenerator && mutate && bucket);
 
+    // TODO(burdon): Enforce same bucket for entire batch? Otherwise multiple batches (e.g., private task for project).
+
     this._idGenerator = idGenerator;
     this._mutate = mutate;
     this._bucket = bucket;
@@ -113,12 +115,6 @@ export class Batch {
     let id = this._idGenerator.createId();
     let key = { bucket: this._bucket, type, id };
     this._items.set(id, key);
-
-    // TODO(burdon): Move to mutation key and set server side (rather than by field mutation).
-    mutations.unshift(
-      MutationUtil.createFieldMutation('bucket', 'string', this._bucket),
-      MutationUtil.createFieldMutation('type', 'string', type)
-    );
 
     this._itemMutations.push({
       key,
@@ -386,8 +382,8 @@ export class Batch {
 
         let clonedMutations = _.concat(
           // Mutations to clone the item's properties.
-          // TODO(burdon): Remove mutations for current properties below.
-          MutationUtil.cloneItem(this._bucket, item),
+          // TODO(burdon): Remove mutations included below.
+          MutationUtil.cloneItem(item),
 
           // Current mutations.
           mutations
@@ -408,12 +404,11 @@ export class Batch {
 
         let clonedMutations = _.concat(
           // Reference the external item.
-          // TODO(burdon): Key object.
           MutationUtil.createFieldMutation('fkey', 'string', ID.getForeignKey(item)),
 
           // Mutations to clone the item's properties.
-          // TODO(burdon): Remove mutations for current properties below.
-          MutationUtil.cloneItem(this._bucket, item),
+          // TODO(burdon): Remove mutations included below.
+          MutationUtil.cloneItem(item),
 
           // Current mutations.
           mutations
