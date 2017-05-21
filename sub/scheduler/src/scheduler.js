@@ -12,8 +12,7 @@ import { Firebase, FirebaseItemStore, PushManager } from 'alien-services';
 
 import { Queue } from './util/bull_queue';
 
-import { GoogleCalendarSyncTask } from './tasks/sync/google_calendar';
-import { GoogleMailSyncTask } from './tasks/sync/google_mail';
+import { GoogleCalendarSyncTask, GoogleMailSyncTask } from './tasks/sync/google';
 
 // TODO(burdon): Set-up as large test.
 const CONF_DIR = path.join(__dirname, '../../../conf');

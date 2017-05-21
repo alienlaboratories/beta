@@ -21,9 +21,18 @@ import { GoogleMailClient } from './google_mail';
 const logger = Logger.get('test');
 
 // TODO(burdon): Set-up as large test.
+// TODO(burdon): Generalize to test all services.
+// TODO(burdon): Test syncers.
 const CONF_DIR = path.join(__dirname, '../../../../../conf');
 
-// TODO(burdon): Generalize to test all services.
+// TODO(burdon): Replace with alice test account.
+// TODO(burdon): Encrypt data and keys.
+const email = 'rich.burdon@gmail.com';
+
+let service = 'mail';
+if (process.argv.length > 2) {
+  service = process.argv[2];
+}
 
 /**
  * Asynchronously load the configuration.
@@ -33,11 +42,6 @@ async function config(baseDir) {
     'firebase': await yaml.read(path.join(baseDir, 'firebase/alienlabs-dev.yml')),
     'google':   await yaml.read(path.join(baseDir, 'google/alienlabs-dev.yml')),
   };
-}
-
-let test = 'mail';
-if (process.argv.length > 2) {
-  test = process.argv[2];
 }
 
 config(CONF_DIR).then(config => {
@@ -60,9 +64,6 @@ config(CONF_DIR).then(config => {
   // - https://console.cloud.google.com/apis/library?project=alienlabs-dev [933786919888]
   //
 
-  // TODO(burdon): Replace with alice. Encrypt.
-  const email = 'rich.burdon@gmail.com';
-
   // Get token for user and make request.
   systemStore.queryItems({}, {}, { type: 'User' }).then(items => {
     firebase.close();
@@ -71,30 +72,25 @@ config(CONF_DIR).then(config => {
     console.assert(user);
 
     let authClient = GoogleOAuthProvider.createAuthClient(_.get(config, 'google'), _.get(user, 'credentials.google'));
-
-    authClient.refreshAccessToken((err, tokens) => {
-      console.assert(!err);
-      let { access_token } = tokens;
-
-      // https://github.com/google/google-api-nodejs-client/#manually-refreshing-access-token
+    GoogleOAuthProvider.refreshAccessToken(authClient).then(({ access_token }) => {
       _.set(user, 'credentials.google.access_token', access_token);
-
-      testApi(authClient, email).catch(err => {
+      testApi(authClient, email, service).catch(err => {
         console.err(err);
-      })
+      });
     });
   });
 });
 
-function testApi(authClient, email) {
+function testApi(authClient, email, service) {
+  const num = 20;
 
-  switch (test) {
+  switch (service) {
 
     case 'calendar': {
       let query = '';
 
       let client = new GoogleCalendarClient();
-      return client.list(authClient, query, 10).then(results => {
+      return client.list(authClient, query, num).then(results => {
         logger.log(`Results for ${query}:\n`,
           TypeUtil.stringify(_.map(results, result => _.pick(result, 'id', 'title')), 2, true));
       });
@@ -105,7 +101,7 @@ function testApi(authClient, email) {
       const query = `fullText contains "${text}"`;
 
       let client = new GoogleDriveClient();
-      return client.list(authClient, query, 10).then(results => {
+      return client.list(authClient, query, num).then(results => {
         logger.log(`Results for ${email}:\n`,
           TypeUtil.stringify(_.map(results, result => _.pick(result, 'id', 'title')), 2, true));
       });
@@ -115,7 +111,7 @@ function testApi(authClient, email) {
       let query = 'label:UNREAD';
 
       let client = new GoogleMailClient();
-      return client.list(authClient, query, 10).then(results => {
+      return client.list(authClient, query, num).then(results => {
         logger.log(`Results for ${query}:\n`,
           TypeUtil.stringify(_.map(results, result => _.pick(result, 'id', 'title', 'from')), 2, true));
       });

@@ -73,6 +73,8 @@ export class GoogleOAuthProvider extends OAuthProvider {
 
   /**
    * Refreshes the access_token if the refresh_token is set.
+   * https://github.com/google/google-api-nodejs-client/#manually-refreshing-access-token
+   *
    * @param {google.auth.OAuth2} authClient
    * @returns {Promise.<{tokens}>}
    */

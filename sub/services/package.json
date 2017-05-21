@@ -24,6 +24,7 @@
     "alien-core": "0.0.1",
     "alien-util": "0.0.1",
     "babel-polyfill": "^6.23.0",
+    "email-addresses": "^2.0.2",
     "express": "^4.15.2",
     "firebase": "^3.9.0",
     "firebase-admin": "^4.2.1",
