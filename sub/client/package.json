@@ -60,8 +60,6 @@
     "fbemitter": "^2.1.1",
     "firebase": "^3.9.0",
     "graphiql": "^0.10.2",
-    "graphql": "^0.9.6",
-    "graphql-tag": "^2.0.0",
     "history": "^3.3.0",
     "immutability-helper": "^2.2.0",
     "jquery": "^3.2.1",
@@ -81,6 +79,10 @@
     "reduce-reducers": "^0.1.2",
     "redux": "^3.6.0",
     "redux-thunk": "^2.2.0"
+  },
+  "peerDependencies": {
+    "graphql": "^0.9.6",
+    "graphql-tag": "^2.0.0"
   },
   "jest": {
     "verbose": false,

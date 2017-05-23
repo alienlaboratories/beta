@@ -179,7 +179,7 @@ export class Mutator {
 
   /**
    * @param idGenerator
-   * @param mutate Function provided by apollo.
+   * @param {function} mutate Provided by apollo.
    * @param config
    * @param analytics
    */

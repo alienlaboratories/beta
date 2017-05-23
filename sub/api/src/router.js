@@ -10,9 +10,6 @@ import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 
 import { ErrorUtil, Logger } from 'alien-util';
 
-// TODO(burdon): Invert dependency (this is the only dep on alien-services).
-import { hasJwtHeader } from 'alien-services';
-
 import { SchemaUtil } from './schema';
 import { graphqlLogger } from './util/logger';
 
@@ -27,7 +24,8 @@ const logger = Logger.get('gql');
  * @param database
  * @param options
  * {
- *   contextProvider: {function(request)}
+ *   {function} authCheck
+ *   {function(request)} contextProvider
  * }
  *
  * @returns {Router}
@@ -56,7 +54,7 @@ export const apiRouter = (database, options) => {
   // Which is subtlely different from the graphql implementation:
   // https://github.com/graphql/express-graphql
   //
-  router.post(options.graphql, hasJwtHeader(), graphqlExpress(req => {
+  router.post(options.graphql, options.authCheck(), graphqlExpress(req => {
     const startTime = Date.now();
 
     //

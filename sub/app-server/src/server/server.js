@@ -19,7 +19,7 @@ import { AuthUtil, Const, Database, IdGenerator, Matcher, MemoryItemStore, Syste
 import { TestItemStore } from 'alien-core/testing';
 import { AppDefs } from 'alien-client';
 import { apiRouter } from 'alien-api';
-import { Loader, TestGenerator } from 'alien-services';
+import { hasJwtHeader, Loader, TestGenerator } from 'alien-services';
 
 import {
   getIdToken,
@@ -319,6 +319,9 @@ export class WebServer {
 
     // Register the API router.
     this._app.use('/api', apiRouter(this._database, {
+
+      // Auth function for routes.
+      authCheck: hasJwtHeader,
 
       // API request.
       graphql: '/graphql',

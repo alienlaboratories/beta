@@ -52,7 +52,7 @@ export class Async {
   /**
    * Aborts promise if times out.
    *
-   * @param {function} fn Function to execute returning a Promise.
+   * @param {function} fn Executed returning a Promise.
    * @param {number} t Timeout in ms.
    * @return {Promise}
    */
@@ -77,7 +77,7 @@ export class Async {
 
   /**
    * Retry the promise with back-off.
-   * @param {function} fn Function to execute returning a Promise.
+   * @param {function} fn Called returning a Promise.
    * @param {number} retries
    * @param {number} delay
    * @param {number} maxDelay

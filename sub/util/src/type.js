@@ -169,7 +169,7 @@ export class TypeUtil {
    * Iterates the collection sequentially calling the async function for each.
    *
    * @param obj
-   * @param f Function to call for each key x value. (root, value, key/index, path)
+   * @param {function} f Called for each key x value. (root, value, key/index, path)
    */
   static traverse(obj, f) {
     const t = (obj, f, path='') => {
