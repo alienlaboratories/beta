@@ -9,6 +9,8 @@ import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 // import { GraphQLError, BREAK } from 'graphql';
 
 import { ErrorUtil, Logger } from 'alien-util';
+
+// TODO(burdon): Invert dependency (this is the only dep on alien-services).
 import { hasJwtHeader } from 'alien-services';
 
 import { SchemaUtil } from './schema';

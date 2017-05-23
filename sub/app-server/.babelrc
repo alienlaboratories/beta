@@ -10,10 +10,18 @@
     "react"
   ],
 
-  // https://facebook.github.io/jest/docs/webpack.html
+  "plugins": [
+
+    // http://babeljs.io/docs/plugins/transform-async-to-generator
+    "transform-async-to-generator"
+  ],
+
+  // http://facebook.github.io/jest/docs/webpack.html#using-with-webpack-2
   "env": {
     "test": {
-      "plugins": ["transform-es2015-modules-commonjs"]
+      "plugins": [
+        "transform-es2015-modules-commonjs"
+      ]
     }
   }
 }

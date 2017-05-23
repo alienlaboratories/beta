@@ -81,12 +81,7 @@ const baseConfig = {
           path.resolve(__dirname, '../client/src'),
           path.resolve(__dirname, '../core/src'),
           path.resolve(__dirname, '../services/src'),
-          path.resolve(__dirname, '../util/src'),
-
-          // TODO(burdon): How to use source rather than dist (alias/resolver)?
-          // https://github.com/webpack-contrib/source-map-loader
-//        /apollo-client/
-          /graphql/
+          path.resolve(__dirname, '../util/src')
         ],
         options: {
           cacheDirectory: './dist/babel-cache/'
@@ -217,6 +212,7 @@ const webConfig = webpackMerge(baseConfig, {
 
     // Main app.
     web: [
+      'babel-polyfill',
       path.resolve(baseConfig.context, 'src/client/web_app.js')
     ],
 

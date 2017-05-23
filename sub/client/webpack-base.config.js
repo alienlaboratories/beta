@@ -76,6 +76,15 @@ const baseConfig = {
           fallback: 'style-loader',
           use: ['css-loader', 'less-loader']
         })
+      },
+
+      // Allow direct imports of .graphql files.
+      // http://dev.apollodata.com/react/webpack.html
+      // https://github.com/apollostack/graphql-tag#webpack-preprocessing
+      {
+        test: /\.(graphql|gql)$/,
+        exclude: /node_modules/,
+        loader: 'graphql-tag/loader'
       }
     ]
   },
@@ -110,14 +119,17 @@ const web = webpackMerge(baseConfig, {
   entry: {
 
     test_gallery: [
+      'babel-polyfill',
       path.resolve(baseConfig.context, 'src/web/testing/gallery/gallery.js'),
     ],
 
     test_apollo: [
+      'babel-polyfill',
       path.resolve(baseConfig.context, 'src/web/testing/apollo/test_apollo.js'),
     ],
 
     test_router: [
+      'babel-polyfill',
       path.resolve(baseConfig.context, 'src/web/testing/router/test_router.js'),
     ]
   },
@@ -143,14 +155,17 @@ const crx = webpackMerge(baseConfig, {
   entry: {
 
     background: [
+      'babel-polyfill',
       path.resolve(baseConfig.context, 'src/crx/background.js')
     ],
 
     content_script: [
+      'babel-polyfill',
       path.resolve(baseConfig.context, 'src/crx/content_script.js')
     ],
 
     browser_action: [
+      'babel-polyfill',
       path.resolve(baseConfig.context, 'src/crx/browser_action.js')
     ],
 
