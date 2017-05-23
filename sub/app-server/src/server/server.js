@@ -15,7 +15,7 @@ import session from 'express-session';
 import uuid from 'uuid';
 
 import { ExpressUtil, HttpError, HttpUtil, Logger } from 'alien-util';
-import { AuthUtil, Database, IdGenerator, Matcher, MemoryItemStore, SystemStore } from 'alien-core';
+import { AuthUtil, Const, Database, IdGenerator, Matcher, MemoryItemStore, SystemStore } from 'alien-core';
 import { TestItemStore } from 'alien-core/testing';
 import { AppDefs } from 'alien-client';
 import { apiRouter } from 'alien-api';
@@ -54,8 +54,7 @@ import { clientRouter, ClientManager } from './router/client';
 import { hotRouter } from './router/hot';
 import { loggingRouter } from './router/log';
 
-import { Const } from '../common/defs';
-
+import META from './meta';
 import ENV from './env';
 
 const logger = Logger.get('server');
@@ -261,7 +260,7 @@ export class WebServer {
       global: (key) => {
         return _.get({
           env: __ENV__,
-          version: Const.APP_VERSION
+          version: META.APP_VERSION
         }, key);
       },
 
@@ -348,7 +347,7 @@ export class WebServer {
           credentials: user.credentials,
 
           // TODO(burdon): Why is this needed?
-          clientId: req.headers[AppDefs.HEADER.CLIENT_ID]
+          clientId: req.headers[Const.HEADER.CLIENT_ID]
         };
 
         if (!userId) {
@@ -474,7 +473,7 @@ export class WebServer {
     this._app.get(AppDefs.GRAPHIQL_PATH, isAuthenticated(), (req, res) => {
       let headers = {};
       AuthUtil.setAuthHeader(headers, getIdToken(req.user));
-      headers[AppDefs.HEADER.CLIENT_ID] = req.query.clientId;
+      headers[Const.HEADER.CLIENT_ID] = req.query.clientId;
       res.render('testing/graphiql', {
         config: {
           graphql: AppDefs.GRAPHQL_PATH,

@@ -10,14 +10,16 @@ import { Fragments } from 'alien-core';
 // GQL Queries and Mutations.
 //-------------------------------------------------------------------------------------------------
 
-// TODO(burdon): Fragments don't work here!
+// TODO(burdon): Fragments don't work here!!!!!!!!!!!!!!!
 // TODO(burdon): Define Fragments for each type.
 
-export const ProjectsQuery = gql`
-  query ProjectsQuery($filter: FilterInput) {
+export const SearchQuery = gql`
+  query SearchQuery($filter: FilterInput) {
     search(filter: $filter) {
       items {
         ...ItemFragment
+        id
+        title
 
         ... on Project {
           group {
@@ -27,6 +29,8 @@ export const ProjectsQuery = gql`
 
           tasks {
             ...ItemFragment
+            id
+            title
           }
         }
       }
@@ -62,5 +66,5 @@ export const UpsertItemsMutation = gql`
 //   }
 // `;
 
-export const ProjectsQueryName        = _.get(ProjectsQuery,        'definitions[0].name.value');
+export const SearchQueryName          = _.get(SearchQuery,          'definitions[0].name.value');
 export const UpsertItemsMutationName  = _.get(UpsertItemsMutation,  'definitions[0].name.value');

@@ -3,10 +3,11 @@
 //
 
 import _ from 'lodash';
-
 import { Chance } from 'chance';
 
 import { Async, Logger, TypeUtil } from 'alien-util';
+
+import { ID } from '../id';
 
 const logger = Logger.get('randomizer');
 
@@ -90,18 +91,22 @@ export class Randomizer {
         return Promise.resolve(linker(item, context));
       }
     }))).then(itemMutations => {
+
       // Merge mutations.
-      let mutationMap = new Map();
+      let itemMutationsByKey = new Map();
       _.each(_.compact(itemMutations), itemMutation => {
-        let currentItemMutation = mutationMap.get(itemMutation.key);
-        if (currentItemMutation) {
-          TypeUtil.maybeAppend(currentItemMutation.mutations, itemMutation.mutations);
+        let { key, mutations } = itemMutation;
+        let keyStr = ID.keyToString(key);
+
+        let itemMutations = itemMutationsByKey.get(keyStr);
+        if (itemMutations) {
+          TypeUtil.maybeAppend(itemMutations.mutations, mutations);
         } else {
-          mutationMap.set(itemMutation.key, itemMutation);
+          itemMutationsByKey.set(keyStr, itemMutation);
         }
       });
 
-      return Array.from(mutationMap.values());
+      return Array.from(itemMutationsByKey.values());
     });
   }
 }

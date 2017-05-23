@@ -6,7 +6,7 @@ import _ from 'lodash';
 import request from 'request';
 
 import { Logger, TypeUtil } from 'alien-util';
-import { AppDefs } from 'alien-client';
+import { Const } from 'alien-core';
 
 const logger = Logger.get('push');
 
@@ -47,12 +47,12 @@ export class PushManager {
 
       let url;
       switch (platform) {
-        case AppDefs.PLATFORM.CRX:
+        case Const.PLATFORM.CRX:
           // https://developers.google.com/cloud-messaging/downstream
           url = 'https://gcm-http.googleapis.com/gcm/send';
           break;
 
-        case AppDefs.PLATFORM.WEB:
+        case Const.PLATFORM.WEB:
         default:
           // https://firebase.google.com/docs/cloud-messaging/http-server-ref
           url = 'https://fcm.googleapis.com/fcm/send';

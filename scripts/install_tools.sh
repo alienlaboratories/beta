@@ -54,6 +54,7 @@ yarn global add eslint-plugin-react
 yarn global add firebase-tools
 yarn global add grunt
 yarn global add jest
+yarn global add node-inspector
 yarn global add nodemon
 yarn global add npm
 yarn global add serverless
@@ -73,3 +74,12 @@ pip install --upgrade virtualenv
 #
 
 pip install --upgrade --user awscli
+
+#
+# Extensions:
+# https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm
+# https://chrome.google.com/webstore/detail/chrome-apps-extensions-de/ohmmkhmmmpcnpikjeljgnaoabkaalbgc
+# https://chrome.google.com/webstore/detail/extensions-reloader/fimgfedafeadlieiabdeeaodndnlbhid
+# https://chrome.google.com/webstore/detail/jetbrains-ide-support/hmhgeddbohgjknpmjagkdomcpobmllji
+# https://chrome.google.com/webstore/detail/clear-cache/cppjkneekbjaeellbfkmgnhonkkjfpdn?hl=en
+#

@@ -7,9 +7,7 @@ import { connect } from 'react-redux';
 import { compose, graphql } from 'react-apollo';
 
 import { EventHandler, PropertyProvider } from 'alien-util';
-import { IdGenerator, Mutator, QueryRegistry, Fragments } from 'alien-core';
-
-import { AppDefs } from '../../common/defs';
+import { Const, IdGenerator, Mutator, QueryRegistry, Fragments } from 'alien-core';
 
 import { Analytics } from './analytics';
 import { ContextManager } from './context';
@@ -41,7 +39,7 @@ const mapStateToProps = (state, ownProps) => {
 
   // CRX Navigator opens in new window (overridden in mapDispatchToProps for web).
   let navigator;
-  if (_.get(config, 'app.platform') === AppDefs.PLATFORM.CRX) {
+  if (_.get(config, 'app.platform') === Const.PLATFORM.CRX) {
     navigator = new WindowNavigator(new PropertyProvider(appState, 'server'));
   }
 

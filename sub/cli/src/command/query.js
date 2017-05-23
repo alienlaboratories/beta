@@ -50,7 +50,6 @@ export class QueryCommand extends Command {
         })
       };
 
-      console.log('Requesting Token...');
       return new Promise((resolve, reject) => {
         request.post(options, (error, response, body) => {
           if (error) {

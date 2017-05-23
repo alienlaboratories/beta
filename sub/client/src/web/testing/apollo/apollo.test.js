@@ -4,28 +4,43 @@
 
 import ReactDOM from 'react-dom';
 
-import { ID, MutationUtil } from 'alien-core';
+import { ID, MutationUtil, UpsertItemsMutation } from 'alien-core';
+import { DatabaseUtil, TestData } from 'alien-core/testing';
 
-// TODO(burdon): ???
+import { LocalNetworkInterface } from 'alien-api/src/testing';
+
 import { App, AppState, AppTestAction } from './apollo';
+import { SearchQuery} from './common';
+
+// TODO(burdon): Broken.
 
 test('Renders without crashing.', () => {
 
+  let data = new TestData();
+
+  let database = DatabaseUtil.createDatabase();
+
+  let networkInterface = new LocalNetworkInterface(database, {
+    userId: data.userId
+  });
+
+  // TODO(burdon): Move App.init here?
   let config = {
-    query: {
-      network: 'testing'
+    testing: {
+      networkInterface
     }
   };
 
-  new App(config).init(app => {
+  return new App(config).init().then(app => {
 
     // Get Redux store updates.
     // http://redux.js.org/docs/api/Store.html#subscribe
     // http://redux.js.org/docs/faq/StoreSetup.html#store-setup-subscriptions
     // https://facebook.github.io/jest/docs/tutorial-async.html#content
     // https://github.com/markerikson/redux-ecosystem-links/blob/master/store.md#store-change-subscriptions
+    // TODO(burdon): Test update.
     app.store.subscribe(() => {
-      console.log('[[ UPDATE ]]', JSON.stringify(AppState(app.store.getState())));
+//    console.log('[[ UPDATE ]]', TypeUtil.stringify(AppState(app.store.getState())));
     });
 
     // Render.
@@ -34,7 +49,9 @@ test('Renders without crashing.', () => {
     // End-to-end unit test.
     // https://github.com/apollographql/react-apollo/tree/master/examples/create-react-app#running-tests
 
-    // Trigger async action.
+    //
+    // Trigger Redux test action.
+    //
     return app.store.dispatch(AppTestAction('test')).then(result => {
 
       //
@@ -42,11 +59,11 @@ test('Renders without crashing.', () => {
       // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.mutate
       //
       return app.client.mutate({
-        mutation: TestMutation,
+        mutation: UpsertItemsMutation,
         variables: {
-          mutations: [
+          itemMutations: [
             {
-              key: ID.key({ type: 'Task', id: '123' }),
+              key: ID.key({ bucket: data.bucket, type: 'Task', id: '123' }),
               mutations: [
                 MutationUtil.createFieldMutation('title', 'string', 'Test Item')
               ]
@@ -63,7 +80,12 @@ test('Renders without crashing.', () => {
         // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.query
         //
         return app.client.query({
-          query: TestQuery
+          query: SearchQuery,
+          variables: {
+            filter: {
+              type: 'Project'
+            }
+          }
         }).then(result => {
           let { search: { items } } = result.data;
           let item = _.find(items, item => item.title === title);

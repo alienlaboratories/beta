@@ -64,7 +64,7 @@ export class MutationUtil {
     _.each(keys, (type, key) => {
       let value = item[key];
       if (value) {
-        mutations.push(MutationUtil.createFieldMutation('title', type, value));
+        mutations.push(MutationUtil.createFieldMutation(key, type, value));
       }
     });
 

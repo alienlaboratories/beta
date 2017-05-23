@@ -9,7 +9,7 @@ global.__ENV__            = _.get(process.env, 'NODE_ENV', 'development');
 global.__PRODUCTION__     = __ENV__ === 'production';
 global.__DEVELOPMENT__    = __ENV__ === 'development';
 global.__HOT__            = __ENV__ === 'hot';
-global.__TESTING__        = __ENV__ === 'testing' || __HOT__;
+global.__TESTING__        = __ENV__ === 'testing';        // TODO(burdon): Document.
 
 const HOST = _.get(process.env, 'HOST', __PRODUCTION__ ? '0.0.0.0' : '127.0.0.1');
 const PORT = _.get(process.env, 'PORT', 3000);
@@ -38,4 +38,5 @@ export default {
   ALIEN_SERVER_DATA_DIR:    _.get(process.env, 'ALIEN_SERVER_DATA_DIR',     path.join(__dirname, '../../../../data')),
   ALIEN_SERVER_PUBLIC_DIR:  _.get(process.env, 'ALIEN_SERVER_PUBLIC_DIR',   path.join(__dirname, './public')),
   ALIEN_SERVER_VIEWS_DIR:   _.get(process.env, 'ALIEN_SERVER_VIEWS_DIR',    path.join(__dirname, './views')),
+
 };

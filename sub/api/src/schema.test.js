@@ -4,8 +4,11 @@
 
 import _ from 'lodash';
 
+import gql from 'graphql-tag';
+
 import {
   graphql,
+  print,
   GraphQLID,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -13,12 +16,13 @@ import {
   GraphQLString
 } from 'graphql';
 
-import { concatenateTypeDefs, makeExecutableSchema, mockServer } from 'graphql-tools';
+import { concatenateTypeDefs, mockServer } from 'graphql-tools';
 import { introspectionQuery } from 'graphql/utilities';
 
-import { Database, IdGenerator, Matcher, MemoryItemStore } from 'alien-core';
+import { Database } from 'alien-core';
+import { DatabaseUtil } from 'alien-core/testing';
 
-import { Resolvers } from './resolvers';
+import { SchemaUtil } from './schema';
 
 import Framework from './gql/framework.graphql';
 import Schema from './gql/schema.graphql';
@@ -29,7 +33,7 @@ const TypeDefs = concatenateTypeDefs([ Framework, Schema ]);
 // 3 Tests (Native GraphQL API + 2 Apollo graphql-tools).
 //
 
-const query = `
+const query = gql`
   query TestQuery { 
     viewer {
       user {
@@ -52,15 +56,6 @@ const testResult = (result, expected) => {
     }
   });
 };
-
-const idGenerator = new IdGenerator(1000);
-
-const matcher = new Matcher();
-
-function createDatabase() {
-  return new Database()
-    .registerItemStore(new MemoryItemStore(idGenerator, matcher, Database.NAMESPACE.SYSTEM, false));
-}
 
 //
 // Debugging
@@ -98,7 +93,7 @@ describe('GraphQL Mock Server:', () => {
   let server = mockServer(TypeDefs, resolverMap);
 
   test('Query viewer', () => {
-    return server.query(query).then(result => testResult(result, {
+    return server.query(print(query)).then(result => testResult(result, {
       viewer: {
         user: {
           id: 'alien',
@@ -121,16 +116,9 @@ describe('GraphQL Executable Schema:', () => {
     clientId: 'client-1'
   };
 
-  let database = createDatabase();
+  let database = DatabaseUtil.createDatabase();
 
-  // http://dev.apollodata.com/tools/graphql-tools/generate-schema.html
-  let schema = makeExecutableSchema({
-    typeDefs: Resolvers.typeDefs,
-    resolvers: Resolvers.getResolverMap(database),
-    logger: {
-      log: error => console.log('Schema Error', error)
-    }
-  });
+  let schema = SchemaUtil.createSchema(database);
 
   let item = { id: 'alien', type: 'User', displayName: 'Alien' };
 
@@ -141,8 +129,10 @@ describe('GraphQL Executable Schema:', () => {
         return database.getItemStore(Database.NAMESPACE.SYSTEM).getItem(context, 'User', 'alien').then(item => {
           expect(item.id).toEqual('alien');
 
+          let root = {};
+
           // https://github.com/graphql/graphql-js/blob/master/src/graphql.js
-          return graphql(schema, query, null, context).then(result => testResult(result, {
+          return graphql(schema, print(query), root, context).then(result => testResult(result, {
             viewer: {
               user: {
                 id: 'alien',
@@ -163,7 +153,7 @@ describe('GraphQL Executable Schema:', () => {
 describe('GraphQL JS API:', () => {
   let context = { userId: 'alien' };
 
-  let database = createDatabase();
+  let database = DatabaseUtil.createDatabase();
 
   let schema = new GraphQLSchema({
     query: new GraphQLObjectType({
@@ -213,8 +203,10 @@ describe('GraphQL JS API:', () => {
     return database.getItemStore(Database.NAMESPACE.SYSTEM)
       .upsertItems(context, [{ id: 'alien', type: 'User', title: 'Alien' }])
       .then(() => {
+        let root = {};
+
         // https://github.com/graphql/graphql-js/blob/master/src/graphql.js
-        return graphql(schema, query, null, context).then(result => testResult(result, {
+        return graphql(schema, print(query), root, context).then(result => testResult(result, {
           viewer: {
             user: {
               id: 'alien',

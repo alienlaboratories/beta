@@ -9,9 +9,7 @@ import { connect } from 'react-redux';
 import gql from 'graphql-tag';
 
 import { DomUtil } from 'alien-util';
-import { Fragments, ID, MutationUtil } from 'alien-core';
-
-import { Enum } from '../../../common/defs';
+import { Enum, Fragments, ID, MutationUtil } from 'alien-core';
 
 import { ReactUtil } from '../../util/react';
 import { connectWithRef } from '../../util/redux';

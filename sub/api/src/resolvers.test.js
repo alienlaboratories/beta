@@ -4,30 +4,23 @@
 
 import _ from 'lodash';
 import { graphql } from 'graphql';
-import { makeExecutableSchema } from 'graphql-tools';
 
 import { Database } from 'alien-core';
-import { TestUtil } from 'alien-core/testing';
+import { DatabaseUtil } from 'alien-core/testing';
 
-import { Resolvers } from './resolvers';
+import { SchemaUtil } from './schema';
 
 let database = null;
 let schema = null;
 
 describe('GraphQL Resolvers:', () => {
 
-  const userId = 'test';
+  const userId = 'tester';
 
   beforeAll(() => {
-    database = TestUtil.createDatabase();
+    database = DatabaseUtil.createDatabase();
 
-    schema = makeExecutableSchema({
-      typeDefs: Resolvers.typeDefs,
-      resolvers: Resolvers.getResolverMap(database),
-      logger: {
-        log: error => console.log('Schema Error', error)
-      }
-    });
+    schema = SchemaUtil.createSchema(database);
 
     return database.getItemStore(Database.NAMESPACE.SYSTEM).upsertItems({}, [
       {

@@ -4,12 +4,12 @@
 
 ### Development Tools
 
-| ----------- | ------------------------------------------------------------------- |
-| `yarn`      | Node package manager (replaces `npm`)                               |
-| `lerna`     | Monorepo workspace manager (to be deprecated by `yarn`)             |
-| `webpack`   | Build JS assets                                                     |
-| `jest`      | Client/server test framework (replaces `mocha`, `jasmine`, `karma`  |
-| `grunt`     | Misc. build tools.                                                  |
+| ----------- | --------------------------------------------------------------------------- |
+| `yarn`      | Node package manager (replaces `npm`)                                       |
+| `lerna`     | Monorepo workspace manager (to be deprecated by `yarn`)                     |
+| `webpack`   | Build JS assets                                                             |
+| `jest`      | Client/server test framework (uses `jasmine`; replaces `mocha`, `karma`)    |
+| `grunt`     | Misc. build tools.                                                          |
 
 
 NOTE: `lerna` is deprecated; `yarn` may subsume capabilities:

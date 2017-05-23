@@ -7,3 +7,4 @@
 //
 
 export * from './src/common/defs';
+export * from './src/util/apollo_tools';

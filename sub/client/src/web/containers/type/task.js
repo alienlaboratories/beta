@@ -8,9 +8,7 @@ import { compose, graphql } from 'react-apollo';
 import { Link } from 'react-router';
 import gql from 'graphql-tag';
 
-import { ID, Fragments, MutationUtil } from 'alien-core';
-
-import { Enum } from '../../../common/defs';
+import { ID, Enum, Fragments, MutationUtil } from 'alien-core';
 
 import { ReactUtil } from '../../util/react';
 

@@ -8,7 +8,7 @@ import { Link } from 'react-router';
 import PropTypes from 'prop-types';
 
 import { DomUtil, TypeUtil } from 'alien-util';
-import { ID } from 'alien-core';
+import { Const, ID } from 'alien-core';
 
 import { AppDefs } from '../../../common/defs';
 
@@ -101,7 +101,7 @@ export class LayoutComponent extends React.Component {
       let sidePanel = <SidePanel typeRegistry={ typeRegistry }/>;
 
       let content;
-      let showFinder = finder && (platform !== AppDefs.PLATFORM.WEB || search.text);
+      let showFinder = finder && (platform !== Const.PLATFORM.WEB || search.text);
       if (showFinder) {
         if (children) {
           content = (
@@ -138,7 +138,7 @@ export class LayoutComponent extends React.Component {
           <div className={ DomUtil.className('ux-main-layout', 'ux-column', 'app-layout-' + platform, className) }>
 
             {/* Header */}
-            { platform !== AppDefs.PLATFORM.CRX &&
+            { platform !== Const.PLATFORM.CRX &&
             <div className="ux-header ux-row">
               <div className="ux-row ux-expand">
                 <SidebarToggle sidebar={ () => this.refs.sidebar }/>
@@ -166,7 +166,7 @@ export class LayoutComponent extends React.Component {
             <div className="ux-columns">
 
               {/* Sidebar */}
-              { platform !== AppDefs.PLATFORM.CRX &&
+              { platform !== Const.PLATFORM.CRX &&
               <Sidebar ref="sidebar">
                 { sidePanel }
               </Sidebar>

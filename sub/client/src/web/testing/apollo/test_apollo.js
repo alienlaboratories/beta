@@ -7,11 +7,6 @@ import ReactDOM from 'react-dom';
 import { App } from './apollo';
 
 const config = {
-
-  query: {
-    network: 'testing'
-  },
-
   userProfile: {
     id: 'user-1'
   }

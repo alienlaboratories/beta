@@ -8,9 +8,7 @@ import { connect } from 'react-redux';
 import { compose, graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { Fragments, IdGenerator, QueryParser } from 'alien-core';
-
-import { AppDefs } from '../../common/defs';
+import { Const, Fragments, IdGenerator, QueryParser } from 'alien-core';
 
 import { ReactUtil } from '../util/react';
 import { SubscriptionWrapper } from '../util/subscriptions';
@@ -132,7 +130,7 @@ const mapStateToProps = (state, ownProps) => {
 
   // TODO(burdon): Move to layout config.
   let platform = _.get(config, 'app.platform');
-  let listType = (platform === AppDefs.PLATFORM.CRX) ? 'card' : 'list';
+  let listType = (platform === Const.PLATFORM.CRX) ? 'card' : 'list';
 
   // Construct filter (from sidebar context or searchbar).
   let queryParser = injector.get(QueryParser);
@@ -141,7 +139,7 @@ const mapStateToProps = (state, ownProps) => {
   // CRX app context.
   let contextManager = null;
   // TODO(burdon): Not just CRX.
-  if (platform === AppDefs.PLATFORM.CRX) {
+  if (platform === Const.PLATFORM.CRX) {
 
     // Current user context (e.g., host inspector transient items).
     // TODO(burdon): Binds to context action; should trigger context to requery.

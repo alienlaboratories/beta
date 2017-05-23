@@ -61,19 +61,33 @@ export class ID {
     return _.isEqual(key1, key2);
   }
 
-  /**
-   * Encodes the key as a base64 string that can be used as a parmalink.
-   * @param { [bucket], type, id } key
-   * @returns {string}
-   */
-  static encodeKey(key) {
+  static keyToString(key) {
     console.assert(key && key.type && key.id);
     let parts = [ key.type, key.id ];
     if (key.bucket) {
       parts.unshift(key.bucket);
     }
 
-    return btoa(_.join(parts, '/'));
+    return _.join(parts, '/');
+  }
+
+  static stringToKey(str) {
+    let parts = str.split('/');
+    let id = parts.pop();
+    let type = parts.pop();
+    let bucket = parts.pop();
+    return ID.key({
+      bucket, type, id
+    });
+  }
+
+  /**
+   * Encodes the key as a base64 string that can be used as a parmalink.
+   * @param { [bucket], type, id } key
+   * @returns {string}
+   */
+  static encodeKey(key) {
+    return btoa(ID.keyToString(key));
   }
 
   /**
@@ -82,13 +96,7 @@ export class ID {
    * @returns {Key}
    */
   static decodeKey(str) {
-    let parts = atob(str).split('/');
-    let id = parts.pop();
-    let type = parts.pop();
-    let bucket = parts.pop();
-    return ID.key({
-      bucket, type, id
-    });
+    return ID.stringToKey(atob(str));
   }
 
   /**

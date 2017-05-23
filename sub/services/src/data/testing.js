@@ -5,8 +5,8 @@
 import _ from 'lodash';
 
 import { Logger } from 'alien-util';
-import { Database, ID, MutationUtil, Randomizer, Transforms } from 'alien-core';
-import { Enum } from 'alien-client';
+import { Database, Enum, ID, MutationUtil, Transforms } from 'alien-core';
+import { Randomizer } from 'alien-core/testing';
 
 const logger = Logger.get('testing');
 
@@ -195,8 +195,8 @@ export class TestGenerator {
                   // TODO(burdon): Add default label for private project.
                   // TODO(burdon): Auto-provision project when creating a group.
 
-                  .then(() =>
-                    this.generateItems(context, 'Project', 1))
+                  // .then(() =>
+                  //   this.generateItems(context, 'Project', 1))
 
                   .then(() =>
                     this.generateItems(context, 'Task', this._randomizer.chance.natural({ min: 10, max: 20 })))

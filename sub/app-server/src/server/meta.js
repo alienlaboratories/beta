@@ -3,9 +3,9 @@
 //
 
 /**
- * App-wide constants.
+ * Build state.
  */
-export const Const = {
+export default {
 
   // Changed via grunt:version
   APP_VERSION: '0.0.5'

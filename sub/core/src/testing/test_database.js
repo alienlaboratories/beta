@@ -2,6 +2,8 @@
 // Copyright 2017 Alien Labs.
 //
 
+import _ from 'lodash';
+
 import { Database } from '../database';
 import { IdGenerator } from '../id';
 import { Matcher } from '../matcher';
@@ -9,10 +11,14 @@ import { SystemStore } from '../system_store';
 import { MemoryItemStore } from '../memory_item_store';
 
 /**
- * Testing utils.
+ * Testing.
  */
-export class TestUtil {
+export class DatabaseUtil {
 
+  /**
+   * Test in-memory database.
+   * @returns {Database}
+   */
   static createDatabase() {
     let idGenerator = new IdGenerator();
     let matcher = new Matcher();
@@ -23,12 +29,23 @@ export class TestUtil {
     let userDataStore =
       new MemoryItemStore(idGenerator, matcher, Database.NAMESPACE.USER, true);
 
-    let database = new Database()
+    return new Database()
       .registerItemStore(systemStore)
       .registerItemStore(userDataStore)
       .registerQueryProcessor(systemStore)
       .registerQueryProcessor(userDataStore);
+  }
 
-    return database;
+  /**
+   * Load test data into the database.
+   * @param database
+   * @param {{ userId, bucket }} context
+   * @param {{ namespace:[{Item}] }}itemMap
+   * @returns {Promise.<{Database}>}
+   */
+  static async init(database, context, itemMap) {
+    await _.map(itemMap, (items, namespace) => {
+      return database.getItemStore(namespace).upsertItems(context, items).then(() => database);
+    });
   }
 }

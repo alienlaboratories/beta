@@ -9,6 +9,7 @@ Logger.setLevel({
 import moment from 'moment';
 
 import { Async, ChromeMessageChannelDispatcher, ErrorUtil, EventHandler, Listeners, Logger, TypeUtil } from 'alien-util';
+import { Const } from 'alien-core';
 
 import { AuthManager } from '../web/common/auth';
 import { ConnectionManager } from '../web/common/client';
@@ -48,7 +49,7 @@ class BackgroundApp {
   static Config = {
     env: 'development',
     app: {
-      platform: AppDefs.PLATFORM.CRX
+      platform: Const.PLATFORM.CRX
     },
     google: {
       // TODO(burdon): Compile in config file.

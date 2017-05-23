@@ -53,7 +53,7 @@ export class App {
     // TODO(burdon): Sub-sub parser's help isn't shown.
     //
 
-    let db = commands.addParser('db', { addHelp: true, help: '{users, groups, init, reset, test-data}' });
+    let db = commands.addParser('db', { addHelp: true, help: '{users, groups, init, reset, testing}' });
     let dbCommand = db.addSubparsers({
       title: 'database',
       dest: 'db_command'

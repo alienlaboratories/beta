@@ -5,7 +5,7 @@
 import _ from 'lodash';
 
 import { DomUtil, Logger } from 'alien-util';
-import { AppDefs } from 'alien-client';
+import { Const } from 'alien-core';
 import { WebApp } from 'alien-client/web-app/main';
 
 Logger.setLevel({
@@ -35,7 +35,7 @@ const config = _.defaultsDeep(window.config, {
   },
 
   app: {
-    platform: DomUtil.isMobile() ? AppDefs.PLATFORM.MOBILE : AppDefs.PLATFORM.WEB
+    platform: DomUtil.isMobile() ? Const.PLATFORM.MOBILE : Const.PLATFORM.WEB
   }
 });
 

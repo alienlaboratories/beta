@@ -82,6 +82,11 @@ const baseConfig = {
           path.resolve(__dirname, '../core/src'),
           path.resolve(__dirname, '../services/src'),
           path.resolve(__dirname, '../util/src'),
+
+          // TODO(burdon): How to use source rather than dist (alias/resolver)?
+          // https://github.com/webpack-contrib/source-map-loader
+//        /apollo-client/
+          /graphql/
         ],
         options: {
           cacheDirectory: './dist/babel-cache/'
