@@ -33,10 +33,7 @@ test('Create item.', (done) => {
   function mutate(options) {
     return new Promise((resolve, reject) => {
       expect(_.get(options, 'variables.itemMutations')).toHaveLength(1);
-
-      // Auto add bucket and type mutations.
-      // TODO(burdon): These should be part of protocol not mutation.
-      expect(_.get(options, 'variables.itemMutations[0].mutations')).toHaveLength(3);
+      expect(_.get(options, 'variables.itemMutations[0].mutations')).toHaveLength(1);
       done();
     });
   }

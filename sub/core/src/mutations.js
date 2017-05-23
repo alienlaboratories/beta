@@ -44,21 +44,21 @@ export const UpsertItemsMutationPath = // 'upsertItems'
  */
 export class MutationUtil {
 
+  static DEF_ITEM_KEYS = {
+    title:          'string',
+    email:          'string',
+    thumbnailUrl:   'string'
+  };
+
   /**
    * Create mutations to clone the given item.
    *
    * @param {Item} item
+   * @param {[{ field:type }]} keys to clone.
    * @return {[Mutation]}
    */
-  static cloneItem(item) {
-    console.assert(item);
-
-    const keys = {
-      title:          'string',
-      email:          'string',
-      thumbnailUrl:   'string'
-    };
-
+  static cloneItem(item, keys=MutationUtil.DEF_ITEM_KEYS) {
+    console.assert(item && keys);
     let mutations = [];
 
     _.each(keys, (type, key) => {
