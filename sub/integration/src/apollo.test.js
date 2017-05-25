@@ -7,7 +7,7 @@ import gql from 'graphql-tag';
 import ApolloClient from 'apollo-client';
 
 import { DatabaseUtil, TestData } from 'alien-core/testing';
-import { SchemaUtil } from 'alien-api';
+import { SchemaUtil } from 'alien-api/testing';
 import { createFragmentMatcher } from 'alien-client';
 import { LocalNetworkInterface } from 'alien-client/testing';
 
@@ -57,6 +57,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     });
   });
 
+  // TODO(burdon): Query and mutations.
   test('Item Query.', () => {
 
   });

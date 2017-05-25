@@ -8,9 +8,7 @@ import gql from 'graphql-tag';
 import { graphql, print } from 'graphql';
 
 import { DatabaseUtil, TestData } from 'alien-core/testing';
-
-// TODO(burdon): Can't include entire alien-api.
-import { SchemaUtil } from 'alien-api/src/schema';
+import { SchemaUtil } from 'alien-api/testing';
 
 async function init() {
 

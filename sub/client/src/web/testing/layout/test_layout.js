@@ -8,106 +8,15 @@ import ReactDOM from 'react-dom';
 
 import { DomUtil } from 'alien-util';
 
-import './test_layout.less';
+import Data from './data/data.json';
 
-// TODO(burdon): Factor out test data. JSON file.
-const ITEMS = [
-  {
-    id: 'I-1',
-    type: 'Event',
-    title: 'Lunch',
-    location: {
-      title: 'Epistrophy, NY 10013',
-      mapImgUrl: '/layout/img/staticmap.png'
-    },
-    participants: [
-      {
-        id: 'C-1',
-        title: 'Alice',
-        imgUrl: '/layout/img/people/p1.png'
-      },
-      {
-        id: 'C-2',
-        title: 'Rich',
-        imgUrl: '/layout/img/people/p2.png'
-      }
-    ]
-  },
-  {
-    id: 'I-2',
-    type: 'Contact',
-    title: 'Alice',
-    description: 'VP Product',
-    avatarUrl: '/layout/img/people/p1.png',
-    messages: [
-      {
-        id: 'M-1',
-        title: 'Meeting on Thurs...'
-      },
-      {
-        id: 'M-2',
-        title: 'Getting mocks from Prod.'
-      }
-    ],
-    tasks: [
-      {
-        id: 'T-2',
-        title: 'UX mocks for review.'
-      }
-    ]
-  },
-  {
-    id: 'I-3',
-    type: 'Project',
-    title: 'Test Project',
-    description: 'UX Rebuild with strict CSS.',
-    tasks: [
-      {
-        id: 'T-1',
-        title: 'New CSS rules.'
-      },
-      {
-        id: 'T-2',
-        title: 'Top-level containers only (rebuild).'
-      },
-      {
-        id: 'T-3',
-        title: 'Apollo end-to-end tests.'
-      }
-    ]
-  },
-  {
-    id: 'I-4',
-    type: 'Contact',
-    title: 'Aleksey',
-    description: 'Director Engineering',
-    messages: [
-      {
-        id: 'M-1',
-        title: 'Eng candidate resumes.'
-      },
-      {
-        id: 'M-2',
-        title: 'Recruiting offers.'
-      },
-      {
-        id: 'M-3',
-        title: 'Spec starter project.'
-      }
-    ],
-    tasks: [
-      {
-        id: 'T-2',
-        title: 'St Petersburg trip.'
-      }
-    ]
-  }
-];
+import './test_layout.less';
 
 // Router Root (Activty)
 class Root extends React.Component {
   render() {
-    let items = ITEMS;
+    let { items } = Data;
+
     return (
       <Layout>
         <div className="tx-row tx-grow">
