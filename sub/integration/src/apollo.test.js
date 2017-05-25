@@ -153,6 +153,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
           expect(item.title).toEqual(title);
 
           // Get cached item directly from store.
+          // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.readQuery
           let data = client.readQuery({
             query: ItemQuery,
             variables: {
