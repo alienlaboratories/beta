@@ -108,6 +108,8 @@ h1, h2, h3, h4, h5 {
 .tx-header {
   .tx-panel;
   .tx-row;
+
+  padding: @panel-padding;
 }
 
 .tx-body {
@@ -119,6 +121,8 @@ h1, h2, h3, h4, h5 {
 .tx-footer {
   .tx-panel;
   .tx-row;
+
+  padding: @panel-padding;
 }
 
 //
@@ -206,6 +210,16 @@ h1, h2, h3, h4, h5 {
 @card-width:                    350px;
 @card-margin:                   6px;
 @card-radius:                   2px;
+
+//
+// Style.
+//
+
+.tx-font-xlarge   { font-size: @font-xlarge }
+.tx-font-large    { font-size: @font-large }
+.tx-font-medium   { font-size: @font-medium }
+.tx-font-small    { font-size: @font-small }
+.tx-font-xsmall   { font-size: @font-xsmall }
 
 //
 // Test components.
@@ -332,5 +346,8 @@ h1, h2, h3, h4, h5 {
     .tx-icon:last-child {
       margin-right: 0;
     }
+  }
+  .tx-list-item:hover {
+    background-color: #EEE;
   }
 }

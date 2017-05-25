@@ -11,12 +11,12 @@
       "participants": [
         {
           "id": "C-1",
-          "title": "Alice",
+          "title": "Alice Braintree",
           "imgUrl": "/layout/img/people/p1.png"
         },
         {
           "id": "C-2",
-          "title": "Rich",
+          "title": "Rich Burdon",
           "imgUrl": "/layout/img/people/p2.png"
         }
       ]
@@ -24,7 +24,8 @@
     {
       "id": "I-2",
       "type": "Contact",
-      "title": "Alice",
+      "title": "Alice Braintree",
+      "email": "alice.braintree@gmail.com",
       "description": "VP Product",
       "avatarUrl": "/layout/img/people/p1.png",
       "messages": [

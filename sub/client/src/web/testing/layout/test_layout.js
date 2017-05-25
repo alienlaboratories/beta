@@ -149,7 +149,10 @@ class Card extends React.Component {
           { item.description &&
           <div className="tx-card-section tx-padding">
             <div className="tx-row">
-              <div className="tx-grow">{ item.description }</div>
+              <div className="tx-column tx-grow">
+                <div>{ item.description }</div>
+                <div className="tx-font-small">{ item.email }</div>
+              </div>
               { item.avatarUrl &&
               <Img className="tx-item-avatar" url={ item.avatarUrl }/>
               }
