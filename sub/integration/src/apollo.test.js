@@ -22,10 +22,13 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
   let client;
 
   beforeAll(() => {
+    // In-memory database.
     let database = DatabaseUtil.createDatabase();
 
+    // Actual API resolvers.
     let schema = SchemaUtil.createSchema(database);
 
+    // Apollo client with local network interface.
     client = new ApolloClient({
       networkInterface: new LocalNetworkInterface(schema, data.context),
       createFragmentMatcher: createFragmentMatcher(schema)
@@ -34,14 +37,15 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     return DatabaseUtil.init(database, data.context, data.itemMap);
   });
 
-  test('Query.', () => {
+  test('Viewer Query.', () => {
     client.resetStore();
 
     // Errors.
     // GraphQLError
     //   - Bad query.
-    // Network error: Error: Schema must be an instance of GraphQLSchema. Also ensure that there are not multiple versions of GraphQL installed in your node_modules directory."
-    //   - Ensure packages are hoisted to the root package:
+    // Network error: Error: Schema must be an instance of GraphQLSchema.
+    // Also ensure that there are not multiple versions of GraphQL installed in your node_modules directory.
+    //   - Hoist graphql via lerna to the root package (lerna bootstrap --hoist graphql):
     //     - https://github.com/graphql/graphiql/issues/58
 
     const ViewerQuery = gql`query ViewerQuery { viewer { user { id, title } } }`;
@@ -51,5 +55,9 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     }).then(result => {
       expect(_.get(result, 'data.viewer.user.id')).toEqual(data.userId);
     });
+  });
+
+  test('Item Query.', () => {
+
   });
 });

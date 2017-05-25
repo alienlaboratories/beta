@@ -206,14 +206,14 @@ export class ContactCard extends React.Component {
       <Card ref="card" item={ contact }>
 
         <div className="ux-card-section">
-          <div style={ { display: 'flex', 'alignItems': 'flex-start' } }>
+          <div style={{ display: 'flex', 'alignItems': 'flex-start' }}>
             { thumbnailUrl &&
-            <div style={ { 'marginRight': '6px'} }>
+            <div style={ { marginRight: '6px'} }>
               <img className="ux-img" src={ thumbnailUrl }/>
             </div>
             }
             { email &&
-            <div className="ux-data-row" style={ { 'fontSize': '14px' } }>
+            <div className="ux-data-row" style={{ fontSize: '14px' }}>
               <i className="ux-icon">email</i>
               <div className="ux-text">{ email }</div>
             </div>

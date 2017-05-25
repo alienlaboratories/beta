@@ -2,48 +2,54 @@
 // Copyright 2017 Alien Labs.
 //
 
-// import ReactDOM from 'react-dom';
-
 // TODO(burdon): Strip down alien-api to be client/server.
 
 import gql from 'graphql-tag';
 import { graphql, print } from 'graphql';
-import { concatenateTypeDefs, makeExecutableSchema, mockServer } from 'graphql-tools';
 
-let server = mockServer(
-  concatenateTypeDefs(['type RootQuery { root: String! } schema { query: RootQuery }']),
-  {
-    RootQuery: () => ({
-      root: () => {
-        return 'alien';
-      }
-    })
-  }
-);
+import { DatabaseUtil, TestData } from 'alien-core/testing';
 
-server.query(print(gql`query TestQuery { root }`)).then(result => console.log(JSON.stringify(result)));
+// TODO(burdon): Can't include entire alien-api.
+import { SchemaUtil } from 'alien-api/src/schema';
 
-// let schema = makeExecutableSchema({
-//   typeDefs: concatenateTypeDefs(['type RootQuery { root: String! } schema { query: RootQuery }']),
-//   resolvers: {
-//     RootQuery: {
-//       root: () => {
-//         console.log('!!!!!!!!!!!!!!');
-//         return 'alien';
-//       }
-//     }
-//   },
-//   logger: {
-//     log: (error) => {
-//       console.error(error);
-//     }
-//   }
-// });
+async function init() {
+
+  let data = new TestData();
+  let database = await DatabaseUtil.init(DatabaseUtil.createDatabase(), data.context, data.itemMap);
+
+  let schema = SchemaUtil.createSchema(database);
+
+  const query = gql`query TestQuery { viewer { user { id } } }`;
+
+  let root = {};
+  let context = { userId: data.userId };
+  graphql(schema, print(query), root, context).then(result => {
+    console.log(JSON.stringify(result));
+  });
+}
+
+init();
+
+
+
+
+// TODO(burdon): Factor out.
+// import Framework from 'alien-api/src/gql/framework.graphql';
+// import Schema from 'alien-api/src/gql/schema.graphql';
+// let server = mockServer(
+//   concatenateTypeDefs([Framework, Schema]),
+//   Resolvers.getResolverMap(database)
+// );
 //
-// // TODO(burdon): This should fail.
-// graphql(schema, print(gql`query TestQuery { root }`)).then(result => {
-//   console.log(JSON.stringify(result));
-// });
+// server.query(print(gql`query TestQuery { viewer { user { id } } }`))
+//   .then(result => console.log(JSON.stringify(result)));
+
+
+
+
+// import ReactDOM from 'react-dom';
+
+// import { App } from './apollo';
 
 //
 // import { Resolvers } from 'alien-api';

@@ -17,6 +17,7 @@ export class DatabaseUtil {
 
   /**
    * Test in-memory database.
+   *
    * @returns {Database}
    */
   static createDatabase() {
@@ -38,7 +39,8 @@ export class DatabaseUtil {
 
   /**
    * Load test data into the database.
-   * @param database
+   *
+   * @param {Database} database
    * @param {{ userId, bucket }} context
    * @param {{ namespace:[{Item}] }}itemMap
    * @returns {Promise.<{Database}>}
@@ -47,5 +49,7 @@ export class DatabaseUtil {
     await _.map(itemMap, (items, namespace) => {
       return database.getItemStore(namespace).upsertItems(context, items).then(() => database);
     });
+
+    return database;
   }
 }

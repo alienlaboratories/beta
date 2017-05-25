@@ -53,6 +53,7 @@ const baseConfig = {
         exclude: /node_modules/,    // Don't transpile deps.
         include: [
           path.resolve('src'),
+          path.resolve(__dirname, '../api/src'),
           path.resolve(__dirname, '../core/src'),
           path.resolve(__dirname, '../util/src'),
         ],
@@ -118,14 +119,19 @@ const web = webpackMerge(baseConfig, {
   // http://localhost:8080/assets/
   entry: {
 
+    test_apollo: [
+      'babel-polyfill',
+      path.resolve(baseConfig.context, 'src/web/testing/apollo/test_apollo.js'),
+    ],
+
     test_gallery: [
       'babel-polyfill',
       path.resolve(baseConfig.context, 'src/web/testing/gallery/gallery.js'),
     ],
 
-    test_apollo: [
+    test_layout: [
       'babel-polyfill',
-      path.resolve(baseConfig.context, 'src/web/testing/apollo/test_apollo.js'),
+      path.resolve(baseConfig.context, 'src/web/testing/layout/test_layout.js'),
     ],
 
     test_router: [
@@ -170,10 +176,12 @@ const crx = webpackMerge(baseConfig, {
     ],
 
     sidebar: [
+      'babel-polyfill',
       path.resolve(baseConfig.context, 'src/crx/sidebar.js')
     ],
 
     options: [
+      'babel-polyfill',
       path.resolve(baseConfig.context, 'src/crx/options.js')
     ]
   },
