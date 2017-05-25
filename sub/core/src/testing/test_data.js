@@ -4,16 +4,17 @@
 
 import _ from 'lodash';
 
-import TEST_DATA from './data/data.json';
-
 /**
  * Test data util.
  */
 export class TestData {
 
-  constructor(data=TEST_DATA) {
+  static DEFAULT_FILE = './data/data.json';
+
+  constructor(data=TestData.DEFAULT_FILE) {
     console.assert(data);
-    this._data = data;
+
+    this._data = require(data);
 
     this._userId = null;
     this._buckets = [];

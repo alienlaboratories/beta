@@ -163,6 +163,12 @@ class ListComponent extends React.Component {
       this.count++;
 
       logger.log('RootComponent.render', _.size(items));
+      console.log('####', this.props);
+
+      if (!project) {
+        logger.warn('Null project.');
+        return <div/>;
+      }
 
       return (
         <div className="test-component">
@@ -209,6 +215,11 @@ class SimpleListComponent extends React.Component {
   render() {
     return ReactUtil.render(this, () => {
       let { project, items } = this.props;
+
+      if (!project) {
+        logger.warn('Null project.');
+        return <div/>;
+      }
 
       return (
         <div className="test-component">
@@ -534,13 +545,13 @@ export class App {
    * Init Apollo.
    */
   initClient() {
-    let schema = _.get(this._config, 'testing.schema');
+    let { schema, context } = _.get(this._config, 'testing');
 
     let networkInterface;
     let fragmentMatcher;
 
     if (schema) {
-      networkInterface = new LocalNetworkInterface(schema, _.get(this._config, 'testing.context'));
+      networkInterface = new LocalNetworkInterface(schema, context);
       fragmentMatcher = createFragmentMatcher(schema);
     } else {
       networkInterface = createNetworkInterfaceWithAuth(this._config);

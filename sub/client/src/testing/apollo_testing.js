@@ -48,6 +48,10 @@ export class LocalNetworkInterface {
    * @param schema GraphQL schema.
    * @param {{ userId, buckets }} context
    * @param {{}|function} options Provide callback for dynamic options.
+   *
+   * Options {
+   *  {number} networkDelay
+   * }
    */
   constructor(schema, context, options={}) {
     console.assert(schema && context && options);

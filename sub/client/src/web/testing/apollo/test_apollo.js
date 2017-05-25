@@ -35,6 +35,7 @@ async function init() {
       schema,
       context: data.context
     },
+
     userProfile: {
       id: data.context.userId
     }
