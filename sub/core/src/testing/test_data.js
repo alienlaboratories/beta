@@ -2,7 +2,9 @@
 // Copyright 2017 Alien Labs.
 //
 
-import { Database } from '../database';
+import _ from 'lodash';
+
+import TEST_DATA from './data/data.json';
 
 /**
  * Test data util.
@@ -12,89 +14,40 @@ export class TestData {
   constructor(data=TEST_DATA) {
     console.assert(data);
     this._data = data;
+
+    this._userId = null;
+    this._buckets = [];
+
+    // TODO(burdon): Assumes data has single user.
+    _.each(_.get(this._data, 'items.system'), item => {
+      switch (item.type) {
+        case 'Group':
+          this._buckets.push(item.id);
+          break;
+
+        case 'User':
+          console.assert(!this._userId);
+          this._userId = item.id;
+          break;
+      }
+    });
   }
 
+  /**
+   * Get the context for the default user.
+   */
   get context() {
     return {
-      userId: this.userId,
-      buckets: [ this.bucket ]
+      userId: this._userId,
+      buckets: this._buckets
     };
   }
 
-  get bucket() {
-    return this._data.bucket;
-  }
-
-  get userId() {
-    return this._data.userId;
-  }
-
+  /**
+   * Get the map of items (by namespace) to initializer the database.
+   * @returns {{ namespace: [{Item}] }}
+   */
   get itemMap() {
-    return this._data.itemMap;
+    return this._data.items;
   }
 }
-
-// TODO(burdon): JSON file.
-
-const GROUP_ID = 'G-1';
-
-const USER_ID = 'tester';
-
-const TEST_DATA = {
-
-  userId: USER_ID,
-
-  bucket: GROUP_ID,
-
-  itemMap: {
-
-    [Database.NAMESPACE.SYSTEM]: [
-      {
-        type: 'Group',
-        id: GROUP_ID,
-        title: 'Group 1'
-      },
-      {
-        type: 'User',
-        id: USER_ID,
-        displayName: 'Test User'
-      }
-    ],
-
-    [Database.NAMESPACE.USER]: [
-      {
-        bucket: GROUP_ID,
-        type: 'Project',
-        id: 'P-1',
-        title: 'Default Project',
-        labels: ['_default'],
-
-        group: {
-          id: GROUP_ID,
-          title: 'Default Group'
-        },
-
-        tasks: ['T-1', 'T-2', 'T-3']
-      },
-
-      {
-        bucket: GROUP_ID,
-        type: 'Task',
-        id: 'T-1',
-        title: 'Task 1',
-      },
-      {
-        bucket: GROUP_ID,
-        type: 'Task',
-        id: 'T-2',
-        title: 'Task 2',
-      },
-      {
-        bucket: GROUP_ID,
-        type: 'Task',
-        id: 'T-3',
-        title: 'Task 3',
-      }
-    ]
-  }
-};

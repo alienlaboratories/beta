@@ -358,10 +358,5 @@ export class Resolvers {
       // NOTE: getUserFromHeader should have already thrown before getting here.
       throw new HttpError(401);
     }
-
-    if (!context.clientId) {
-      logger.warn('Invalid client.');
-//    throw new HttpError(400, 'Invalid client.');
-    }
   }
 }

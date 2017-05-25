@@ -6,6 +6,7 @@ import _ from 'lodash';
 import gql from 'graphql-tag';
 import ApolloClient from 'apollo-client';
 
+import { ID } from 'alien-core';
 import { DatabaseUtil, TestData } from 'alien-core/testing';
 import { SchemaUtil } from 'alien-api/testing';
 import { createFragmentMatcher } from 'alien-client';
@@ -48,17 +49,120 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     //   - Hoist graphql via lerna to the root package (lerna bootstrap --hoist graphql):
     //     - https://github.com/graphql/graphiql/issues/58
 
-    const ViewerQuery = gql`query ViewerQuery { viewer { user { id, title } } }`;
+    const ViewerQuery = gql`
+      query ViewerQuery { 
+        viewer { 
+          user { 
+            id
+            title 
+          } 
+        } 
+      }
+    `;
 
     return client.query({
       query: ViewerQuery
     }).then(result => {
-      expect(_.get(result, 'data.viewer.user.id')).toEqual(data.userId);
+      expect(_.get(result, 'data.viewer.user.id')).toEqual(data.context.userId);
     });
   });
 
-  // TODO(burdon): Query and mutations.
-  test('Item Query.', () => {
+  test('Items Query.', () => {
 
+    // Query for items.
+    const SearchQuery = gql`
+      query SearchQuery($filter: FilterInput!) { 
+        search(filter: $filter) { 
+          items { 
+            bucket
+            type
+            id 
+            title 
+          } 
+        } 
+      }
+    `;
+
+    // Query for item.
+    const ItemQuery = gql`
+      query ItemQuery($key: KeyInput!) { 
+        item(key: $key) { 
+          bucket
+          type
+          id 
+          title 
+        } 
+      }
+    `;
+
+    // Muation for item.
+    const ItemMutationQuery = gql`
+      mutation ItemMutation($namespace: String, $itemMutations: [ItemMutationInput]!) {
+        upsertItems(namespace: $namespace, itemMutations: $itemMutations) {
+          bucket
+          type
+          id 
+          title 
+        }
+      }
+    `;
+
+    // Query items.
+    return client.query({
+      query: SearchQuery,
+      variables: {
+        filter: {
+          type: 'Task'
+        }
+      }
+    }).then(result => {
+      let items = _.get(result, 'data.search.items');
+      expect(items).toBeTruthy();
+
+      // Query item.
+      return client.query({
+        query: ItemQuery,
+        variables: {
+          key: ID.key(items[0])
+        }
+      }).then(result => {
+        let item = _.get(result, 'data.item');
+        expect(ID.key(item)).toEqual(ID.key(items[0]));
+
+        // Mutate item.
+        let title = 'New Title';
+        return client.mutate({
+          mutation: ItemMutationQuery,
+          variables: {
+            itemMutations: [
+              {
+                key: ID.key(item),
+                mutations: [
+                  {
+                    field: 'title',
+                    value: {
+                      string: title
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }).then(result => {
+          let item = _.get(result, 'data.upsertItems[0]');
+          expect(item.title).toEqual(title);
+
+          // Get cached item directly from store.
+          let data = client.readQuery({
+            query: ItemQuery,
+            variables: {
+              key: ID.key(items[0])
+            }
+          });
+
+          expect(data.item.title).toEqual(item.title);
+        });
+      });
+    });
   });
 });

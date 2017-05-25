@@ -21,7 +21,7 @@ test('Renders without crashing.', () => {
   let database = DatabaseUtil.createDatabase();
 
   let networkInterface = new LocalNetworkInterface(database, {
-    userId: data.userId
+    userId: data.context.userId
   });
 
   // TODO(burdon): Move App.init here?
@@ -63,7 +63,7 @@ test('Renders without crashing.', () => {
         variables: {
           itemMutations: [
             {
-              key: ID.key({ bucket: data.bucket, type: 'Task', id: '123' }),
+              key: ID.key({ bucket: data.context.bucket[0], type: 'Task', id: '123' }),
               mutations: [
                 MutationUtil.createFieldMutation('title', 'string', 'Test Item')
               ]

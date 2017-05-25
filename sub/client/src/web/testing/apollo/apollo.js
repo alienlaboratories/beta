@@ -540,7 +540,7 @@ export class App {
     let fragmentMatcher;
 
     if (schema) {
-      networkInterface = new LocalNetworkInterface(schema, {});
+      networkInterface = new LocalNetworkInterface(schema, _.get(this._config, 'testing.context'));
       fragmentMatcher = createFragmentMatcher(schema);
     } else {
       networkInterface = createNetworkInterfaceWithAuth(this._config);

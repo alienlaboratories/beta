@@ -84,6 +84,7 @@ export class LocalNetworkInterface {
       return graphql(this._schema, print(query), root, this._context, variables, operationName).then(result => {
         logger.info(`RES[${operationName}:${requestCount}]`, TypeUtil.stringify(result));
         if (result.errors) {
+          logger.error(result.errors[0]);
           throw new Error(result.errors[0]);
         }
 

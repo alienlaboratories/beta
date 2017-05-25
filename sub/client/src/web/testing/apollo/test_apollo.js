@@ -16,40 +16,30 @@ import { App } from './apollo';
  */
 async function init() {
 
-  // Create schema.
+  // Create executable schema with test data.
   let data = new TestData();
   let database = await DatabaseUtil.init(DatabaseUtil.createDatabase(), data.context, data.itemMap);
   let schema = SchemaUtil.createSchema(database);
 
   // Test schema.
   let root = {};
-  let context = { userId: data.userId };
+  let context = data.context;
   const query = gql`query TestQuery { viewer { user { id } } }`;
   await graphql(schema, print(query), root, context).then(result => {
-    console.log(JSON.stringify(result));
+    console.assert(_.get(result, 'data.viewer.user.id') === data.context.userId);
   });
 
   // Config.
   return {
     testing: {
-      schema
+      schema,
+      context: data.context
     },
     userProfile: {
-      id: data.userId
+      id: data.context.userId
     }
   };
 }
-
-// TODO(burdon): Factor out.
-// import Framework from 'alien-api/src/gql/framework.graphql';
-// import Schema from 'alien-api/src/gql/schema.graphql';
-// let server = mockServer(
-//   concatenateTypeDefs([Framework, Schema]),
-//   Resolvers.getResolverMap(database)
-// );
-//
-// server.query(print(gql`query TestQuery { viewer { user { id } } }`))
-//   .then(result => console.log(JSON.stringify(result)));
 
 /**
  * Complete minimal React-Redux-Apollo client app.

@@ -124,6 +124,7 @@ const web = webpackMerge(baseConfig, {
       path.resolve(baseConfig.context, 'src/web/testing/apollo/test_apollo.js'),
     ],
 
+    /*
     test_gallery: [
       'babel-polyfill',
       path.resolve(baseConfig.context, 'src/web/testing/gallery/gallery.js'),
@@ -134,7 +135,6 @@ const web = webpackMerge(baseConfig, {
       path.resolve(baseConfig.context, 'src/web/testing/layout/test_layout.js'),
     ],
 
-    /*
     test_router: [
       'babel-polyfill',
       path.resolve(baseConfig.context, 'src/web/testing/router/test_router.js'),
