@@ -130,6 +130,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
         expect(ID.key(item)).toEqual(ID.key(items[0]));
 
         // Mutate item.
+        // TODO(burdon): Prototype new mutation signaure (returns mutations). How to update store?
         let title = 'New Title';
         return client.mutate({
           mutation: ItemMutationQuery,
