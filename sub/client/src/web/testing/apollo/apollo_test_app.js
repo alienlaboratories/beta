@@ -3,8 +3,8 @@
 //
 
 import ReactDOM from 'react-dom';
-import gql from 'graphql-tag';
 import { graphql, print } from 'graphql';
+import gql from 'graphql-tag';
 
 import { DatabaseUtil, TestData } from 'alien-core/testing';
 import { SchemaUtil } from 'alien-api/testing';
@@ -12,8 +12,10 @@ import { SchemaUtil } from 'alien-api/testing';
 import { App } from './apollo';
 
 /**
- * Initialize.
+ * Complete minimal React-Redux-Apollo client app with in memory resolvers.
+ * https://github.com/apollographql/react-apollo/tree/master/examples/create-react-app#running-tests
  */
+
 async function init() {
 
   // Create executable schema with test data.
@@ -42,9 +44,6 @@ async function init() {
   };
 }
 
-/**
- * Complete minimal React-Redux-Apollo client app.
- */
 init().then(config => {
   new App(config).init().then(app => {
     console.log('Initialized.');

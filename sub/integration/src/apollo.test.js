@@ -16,6 +16,13 @@ import { LocalNetworkInterface } from 'alien-client/testing';
 // End-to-end Apollo tests.
 //
 
+// TODO(burdon): Subscriptions.
+// TODO(burdon): Mutations and store writes.
+// TODO(burdon): Version numbers (inc. on server).
+// TODO(burdon): Document effect of just returning IDs for mutation (e.g., cache doesn't update field even if opt).
+// TODO(burdon): Try this on main app and/or context setting to return IDs only (rather than object lookup).
+// TODO(burdon): Is is necessary to return any information from the mutation (can opt result alone update store).
+
 describe('End-to-end Apollo-GraphQL Resolver:', () => {
 
   const data = new TestData();

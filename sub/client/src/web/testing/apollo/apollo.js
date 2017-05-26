@@ -4,6 +4,7 @@
 
 import _ from 'lodash';
 import React from 'react';
+import gql from 'graphql-tag';
 import { connect } from 'react-redux';
 import { Router, Route } from 'react-router';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
@@ -15,16 +16,13 @@ import { graphql, ApolloProvider } from 'react-apollo';
 import update from 'immutability-helper';
 
 import { Logger, TypeUtil } from 'alien-util';
-import { Batch, IdGenerator, ItemUtil, MutationUtil } from 'alien-core';
+import { Batch, Fragments, IdGenerator, ItemUtil, MutationUtil } from 'alien-core';
 import { UpsertItemsMutation, UpsertItemsMutationName } from 'alien-core';
 
 import { createFragmentMatcher } from '../../../util/apollo_tools';
 import { createNetworkInterfaceWithAuth, LocalNetworkInterface } from '../../../testing/apollo_testing';
 
 import { ReactUtil } from '../../util/index';
-
-import { SearchQuery, SearchQueryName } from './common';
-// import { UpsertItemsMutation, UpsertItemsMutationName } from './common';
 
 import './apollo.less';
 
@@ -42,19 +40,6 @@ const ProjectFilter = {
     }
   }
 };
-
-// TODO(burdon): Subscriptions.
-// TODO(burdon): Version numbers (inc. on server).
-
-// TODO(burdon): Minimal GQL explorer app? D3?
-// TODO(burdon): Remove local/global ID (encode only for URIs). change API to require type/ID (create Reference type)
-
-// TODO(burdon): Document effect of just returning IDs for mutation (e.g., cache doesn't update field even if opt).
-// TODO(burdon): Try this on main app and/or context setting to return IDs only (rather than object lookup).
-// TODO(burdon): Is is necessary to return any information from the mutation (can opt result alone update store).
-
-// TODO(burdon): Create ideas board for the following (and folder for grabs from movies, etc.)
-// TODO(burdon): Canvas/stickies/lightboard; drag live cards. cards interact with surface. UX will drive product. Make it cool. Kumiko
 
 //-------------------------------------------------------------------------------------------------
 // React Components.
@@ -332,6 +317,39 @@ const SearchReducer = (path, options={}) => (previousResult, action, variables) 
 
   return previousResult;
 };
+
+//-------------------------------------------------------------------------------------------------
+// GQL Queries and Mutations.
+//-------------------------------------------------------------------------------------------------
+
+export const SearchQuery = gql`
+  query SearchQuery($filter: FilterInput) {
+    search(filter: $filter) {
+      items {
+        ...ItemFragment
+        id
+        title
+
+        ... on Project {
+          group {
+            id
+            title
+          }
+
+          tasks {
+            ...ItemFragment
+            id
+            title
+          }
+        }
+      }
+    }
+  }
+  
+  ${Fragments.ItemFragment}
+`;
+
+export const SearchQueryName = _.get(SearchQuery, 'definitions[0].name.value');
 
 //-------------------------------------------------------------------------------------------------
 // Apollo Container.
