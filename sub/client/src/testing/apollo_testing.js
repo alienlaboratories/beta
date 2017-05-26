@@ -63,6 +63,10 @@ export class LocalNetworkInterface {
     this._requestCount = 0;
   }
 
+  get count() {
+    return this._requestCount;
+  }
+
   //
   // NetworkInterface
   //

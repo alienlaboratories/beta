@@ -6,7 +6,8 @@ import _ from 'lodash';
 import gql from 'graphql-tag';
 import ApolloClient from 'apollo-client';
 
-import { ID } from 'alien-core';
+import { TypeUtil } from 'alien-util';
+import { ID, MutationUtil, Transforms } from 'alien-core';
 import { DatabaseUtil, TestData } from 'alien-core/testing';
 import { SchemaUtil } from 'alien-api/testing';
 import { createFragmentMatcher } from 'alien-client';
@@ -18,35 +19,129 @@ import { LocalNetworkInterface } from 'alien-client/testing';
 
 // TODO(burdon): Subscriptions.
 // TODO(burdon): Mutations and store writes.
+// TODO(burdon): Test fragments.
 // TODO(burdon): Version numbers (inc. on server).
 // TODO(burdon): Document effect of just returning IDs for mutation (e.g., cache doesn't update field even if opt).
 // TODO(burdon): Try this on main app and/or context setting to return IDs only (rather than object lookup).
 // TODO(burdon): Is is necessary to return any information from the mutation (can opt result alone update store).
 
+const ViewerQuery = gql`
+  query ViewerQuery { 
+    viewer { 
+      user { 
+        id
+        title 
+      } 
+    } 
+  }
+`;
+
+const SearchQuery = gql`
+  query SearchQuery($filter: FilterInput!) { 
+    search(filter: $filter) { 
+      items { 
+        bucket
+        type
+        id 
+        title 
+      } 
+    } 
+  }
+`;
+
+// TODO(burdon): Not used.
+const ProjectQuery = gql`
+  query ProjectQuery($key: KeyInput!) { 
+    item(key: $key) { 
+      bucket
+      type
+      id 
+      title 
+      
+      ... on Project {
+        tasks {
+          bucket
+          type
+          id
+          title
+        }
+      }
+    } 
+  }
+`;
+
+const ItemQuery = gql`
+  query ItemQuery($key: KeyInput!) { 
+    item(key: $key) { 
+      bucket
+      type
+      id 
+      title 
+    } 
+  }
+`;
+
+const TaskFragment = gql`
+  fragment TaskFragment on Task {
+    status
+  }
+`;
+
+const TaskQuery = gql`
+  query TaskQuery($key: KeyInput!) { 
+    item(key: $key) { 
+      bucket
+      type
+      id 
+      title 
+      
+      ...TaskFragment
+    } 
+  }
+  
+  ${TaskFragment}
+`;
+
+const ItemMutation = gql`
+  mutation ItemMutation($namespace: String, $itemMutations: [ItemMutationInput]!) {
+    upsertItems(namespace: $namespace, itemMutations: $itemMutations) {
+      bucket
+      type
+      id 
+      title 
+    }
+  }
+`;
+
 describe('End-to-end Apollo-GraphQL Resolver:', () => {
 
-  const data = new TestData();
+  const testData = new TestData();
+
+  const bucket = testData.context.buckets[0];
 
   let client;
+  let networkInterface;
 
-  beforeAll(() => {
+  beforeEach(() => {
     // In-memory database.
     let database = DatabaseUtil.createDatabase();
 
     // Actual API resolvers.
     let schema = SchemaUtil.createSchema(database);
 
-    // Apollo client with local network interface.
+    // Local network.
+    networkInterface = new LocalNetworkInterface(schema, testData.context);
+
+    // Apollo client.
     client = new ApolloClient({
-      networkInterface: new LocalNetworkInterface(schema, data.context),
+      networkInterface,
       createFragmentMatcher: createFragmentMatcher(schema)
     });
 
-    return DatabaseUtil.init(database, data.context, data.itemMap);
+    return DatabaseUtil.init(database, testData.context, testData.itemMap);
   });
 
-  test('Viewer Query.', () => {
-    client.resetStore();
+  test('Viewer Query.', async () => {
 
     // Errors.
     // GraphQLError
@@ -56,122 +151,150 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     //   - Hoist graphql via lerna to the root package (lerna bootstrap --hoist graphql):
     //     - https://github.com/graphql/graphiql/issues/58
 
-    const ViewerQuery = gql`
-      query ViewerQuery { 
-        viewer { 
-          user { 
-            id
-            title 
-          } 
-        } 
-      }
-    `;
-
-    return client.query({
+    let result = await client.query({
       query: ViewerQuery
-    }).then(result => {
-      expect(_.get(result, 'data.viewer.user.id')).toEqual(data.context.userId);
     });
+
+    expect(_.get(result, 'data.viewer.user.id')).toEqual(testData.context.userId);
   });
 
-  test('Items Query.', () => {
+  test('Query and mutate item then read from cache.', async () => {
 
-    // Query for items.
-    const SearchQuery = gql`
-      query SearchQuery($filter: FilterInput!) { 
-        search(filter: $filter) { 
-          items { 
-            bucket
-            type
-            id 
-            title 
-          } 
-        } 
-      }
-    `;
-
-    // Query for item.
-    const ItemQuery = gql`
-      query ItemQuery($key: KeyInput!) { 
-        item(key: $key) { 
-          bucket
-          type
-          id 
-          title 
-        } 
-      }
-    `;
-
-    // Muation for item.
-    const ItemMutationQuery = gql`
-      mutation ItemMutation($namespace: String, $itemMutations: [ItemMutationInput]!) {
-        upsertItems(namespace: $namespace, itemMutations: $itemMutations) {
-          bucket
-          type
-          id 
-          title 
-        }
-      }
-    `;
-
-    // Query items.
-    return client.query({
+    // Query tasks.
+    let searchResult = await client.query({
       query: SearchQuery,
       variables: {
         filter: {
           type: 'Task'
         }
       }
-    }).then(result => {
-      let items = _.get(result, 'data.search.items');
-      expect(items).toBeTruthy();
+    });
 
-      // Query item.
-      return client.query({
-        query: ItemQuery,
-        variables: {
-          key: ID.key(items[0])
-        }
-      }).then(result => {
-        let item = _.get(result, 'data.item');
-        expect(ID.key(item)).toEqual(ID.key(items[0]));
+    let items = _.get(searchResult, 'data.search.items');
+    expect(items).toBeTruthy();
 
-        // Mutate item.
-        // TODO(burdon): Prototype new mutation signaure (returns mutations). How to update store?
-        let title = 'New Title';
-        return client.mutate({
-          mutation: ItemMutationQuery,
-          variables: {
-            itemMutations: [
+    // Query item.
+    let itemResult = await client.query({
+      query: ItemQuery,
+      variables: {
+        key: ID.key(items[0])
+      }
+    });
+
+    let item = _.get(itemResult, 'data.item');
+    expect(ID.key(item)).toEqual(ID.key(items[0]));
+
+    // Mutate item.
+    let title = 'New Title';
+    let mutationResult = await client.mutate({
+      mutation: ItemMutation,
+      variables: {
+        itemMutations: [
+          {
+            key: ID.key(item),
+            mutations: [
               {
-                key: ID.key(item),
-                mutations: [
-                  {
-                    field: 'title',
-                    value: {
-                      string: title
-                    }
-                  }
-                ]
+                field: 'title',
+                value: {
+                  string: title
+                }
               }
             ]
           }
-        }).then(result => {
-          let item = _.get(result, 'data.upsertItems[0]');
-          expect(item.title).toEqual(title);
-
-          // Get cached item directly from store.
-          // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.readQuery
-          let data = client.readQuery({
-            query: ItemQuery,
-            variables: {
-              key: ID.key(items[0])
-            }
-          });
-
-          expect(data.item.title).toEqual(item.title);
-        });
-      });
+        ]
+      }
     });
+
+    let upsertItem = _.get(mutationResult, 'data.upsertItems[0]');
+    expect(upsertItem.title).toEqual(title);
+
+    // Get cached item directly from store.
+    // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.readQuery
+    let { item:cachedItem } = client.readQuery({
+      query: ItemQuery,
+      variables: {
+        key: ID.key(items[0])
+      }
+    });
+
+    expect(cachedItem.title).toEqual(upsertItem.title);
+  });
+
+  test('Optmistic update.', async () => {
+    let mutatedItem;
+
+    // TODO(burdon): dataIdFromObject
+    const taskId = 'Task:T-1';
+
+    const taskKey = { bucket, type: 'Task', id: 'T-1' };
+
+    {
+      let { data: { item } } = await client.query({
+        query: TaskQuery,
+        variables: {
+          key: taskKey
+        }
+      });
+
+      // Change fields (clone item since it's immutable).
+      mutatedItem = Transforms.applyObjectMutations(TypeUtil.clone(item), [
+        MutationUtil.createFieldMutation('title', 'string', 'New Title'),
+        MutationUtil.createFieldMutation('status', 'int', 1)
+      ]);
+
+      expect(networkInterface.count).toEqual(1);
+    }
+
+    {
+      // Update item in cache.
+      // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.writeFragment
+      console.log('Updating item: ' + JSON.stringify(mutatedItem));
+      client.writeFragment({
+        id: taskId,
+        fragment: TaskFragment,
+        fragmentName: 'TaskFragment',
+        data: mutatedItem
+      });
+
+      let taskFragment = client.readFragment({
+        id: taskId,
+        fragment: TaskFragment,
+        fragmentName: 'TaskFragment'
+      });
+
+      // Only updates the fields named in the fragment (i.e., status).
+      console.log('Updated fragment: ' + JSON.stringify(taskFragment));
+
+      // Update query.
+      // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.writeQuery
+      client.writeQuery({
+        query: TaskQuery,
+        variables: {
+          key: taskKey
+        },
+        data: {
+          item: mutatedItem
+        }
+      });
+    }
+
+    {
+      // Test reading query from cache.
+      // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.readQuery
+      let { item } = client.readQuery({
+        query: TaskQuery,
+        variables: {
+          key: taskKey
+        }
+      });
+
+      expect(networkInterface.count).toEqual(1);
+      expect(item.title).toEqual(mutatedItem.title);
+    }
+  });
+
+  // TODO(burdon): Query Project then update Task.
+  test('Optmistic update.', async () => {
+
   });
 });
