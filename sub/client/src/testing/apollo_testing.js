@@ -100,9 +100,6 @@ export class LocalNetworkInterface {
           throw new Error(result.errors[0]);
         }
 
-        result = _.clone(result);
-        console.log('## REQ ===>\n', print(query), JSON.stringify(result, null, 2));
-
         return result;
       });
     });

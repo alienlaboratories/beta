@@ -4,7 +4,6 @@
 
 import _ from 'lodash';
 import gql from 'graphql-tag';
-import { print } from 'graphql/language/printer';
 import ApolloClient from 'apollo-client';
 
 import { Logger, TypeUtil } from 'alien-util';
@@ -50,16 +49,14 @@ const ItemFragment = gql`
   }
 `;
 
-const MetaTaskFragment = gql`
-  fragment MetaTaskFragment on Task {
-    title
-  }
-`;
-
 const TaskFragment = gql`
   fragment TaskFragment on Task {
+    ...ItemFragment
+
     status
   }
+
+  ${ItemFragment}
 `;
 
 const ViewerQuery = gql`
@@ -77,61 +74,52 @@ const SearchQuery = gql`
   query SearchQuery($filter: FilterInput!) { 
     search(filter: $filter) { 
       items {
-        title
-#        ...TaskFragment
+        ...TaskFragment
       } 
     } 
   }
-
+  
+  ${TaskFragment}
 `;
-    // ...MetaTaskFragment
 
 const ProjectQuery = gql`
   query ProjectQuery($key: KeyInput!) { 
     item(key: $key) { 
-      bucket
-      type
-      id 
-      title 
+      ...ItemFragment
       
       ... on Project {
         tasks {
-          bucket
-          type
-          id
-          title
+        ...TaskFragment
         }
       }
     } 
   }
+
+  ${ItemFragment}
+  ${TaskFragment}
 `;
 
 const ItemQuery = gql`
   query ItemQuery($key: KeyInput!) { 
     item(key: $key) { 
-      bucket
-      type
-      id 
-      title 
+      ...ItemFragment
     } 
   }
+
+  ${ItemFragment}
 `;
 
 const TaskQuery = gql`
   query TaskQuery($key: KeyInput!) { 
     item(key: $key) { 
-      bucket
-      type
-      id 
-      title 
-      
-#      ...TaskFragment
+      ...TaskFragment
     } 
   }
   
+  ${TaskFragment}
 `;
-// #  ${TaskFragment}
 
+// TODO(burdon): Remove return items.
 const ItemMutation = gql`
   mutation ItemMutation($namespace: String, $itemMutations: [ItemMutationInput]!) {
     upsertItems(namespace: $namespace, itemMutations: $itemMutations) {
@@ -162,15 +150,18 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     // Local network.
     networkInterface = new LocalNetworkInterface(schema, testData.context);
 
+    // TODO(burdon): Factor out factory.
     // Apollo client.
     // http://dev.apollodata.com/core/apollo-client-api.html#apollo-client
     client = new ApolloClient({
 
-      addTypename: true,                                        // Automatically add __typename to query spec.
+      // Automatically add __typename to query spec.
+      addTypename: true,
 
-      dataIdFromObject: item => item.type + ':' + item.id,      // TODO(burdon): Factor out.
+      dataIdFromObject: ID.dataIdFromObject,
 
-      // fragmentMatcher: createFragmentMatcher(schema),
+//    fragmentMatcher: createFragmentMatcher(['Project', 'Task']),
+      fragmentMatcher: createFragmentMatcher(schema),
 
       networkInterface
     });
@@ -178,7 +169,6 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     return DatabaseUtil.init(database, testData.context, testData.itemMap);
   });
 
-  if (false)
   test('Viewer Query.', async () => {
 
     // Errors.
@@ -208,14 +198,9 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
         }
       }
     });
-    console.log('## <=== RES\n', print(SearchQuery), JSON.stringify(searchResult, null, 2));
-    return;
-
 
     let items = _.get(searchResult, 'data.search.items');
     expect(items).toBeTruthy();
-
-//    console.log('###\n', JSON.stringify(items, null, 2));
 
     // Query item.
     // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient\.query
@@ -230,7 +215,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     expect(ID.key(item)).toEqual(ID.key(items[0]));
 
     // Mutate item.
-    let title = 'New Title';
+    const title = 'Updated Task';
     let mutationResult = await client.mutate({
       mutation: ItemMutation,
       variables: {
@@ -265,7 +250,6 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     expect(cachedItem.title).toEqual(upsertItem.title);
   });
 
-  if (false)
   test('Optimistic update.', async () => {
     let mutatedItem;
 
@@ -341,7 +325,6 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
   });
 
   // TODO(burdon): Query Project then update Task.
-  if (false)
   test('Mutations.', async () => {
 
     const projectKey = { bucket, type: 'Project', id: 'P-1' };
@@ -358,35 +341,39 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     let task = project.tasks[0];
 
     // Change fields (clone item since it's immutable).
+    const title = 'Updated Task';
     let mutatedTask = Transforms.applyObjectMutations(TypeUtil.clone(task), [
-      MutationUtil.createFieldMutation('title', 'string', 'New Title'),
+      MutationUtil.createFieldMutation('title', 'string', title),
       MutationUtil.createFieldMutation('status', 'int', 1)
     ]);
 
-    console.log('####', JSON.stringify(mutatedTask));
-
+    // Write mutated Task to cache.
     client.writeFragment({
-      id: task.type + ':' + task.id,          // TODO(burdon): Util.
+      id: ID.dataIdFromObject(task),
       fragment: TaskFragment,
       fragmentName: 'TaskFragment',
       data: mutatedTask
     });
 
+    // Read Task from cache.
     let cachedTask = client.readFragment({
-      id: task.type + ':' + task.id,          // TODO(burdon): Util.
+      id: ID.dataIdFromObject(task),
       fragment: TaskFragment,
       fragmentName: 'TaskFragment'
     });
+    expect(cachedTask.title).toEqual(title);
 
-    console.log('######', JSON.stringify(cachedTask, null, 2));
-
+    // Read Project query from cache (check nested Task was updated).
     let { item:cachedProject } = client.readQuery({
       query: ProjectQuery,
       variables: {
         key: projectKey
       }
     });
+    let cachedNestedTask = _.find(_.get(cachedProject, 'tasks'), t => t.id === task.id);
+    expect(cachedNestedTask.title).toEqual(title);
 
-    console.log('######', JSON.stringify(cachedProject, null, 2));
+    // TODO(burdon): Test different if different fragments.
+    expect(cachedNestedTask).toEqual(cachedTask);
   });
 });

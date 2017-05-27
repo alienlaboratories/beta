@@ -14,7 +14,7 @@ export function createFragmentMatcher(itemTypes) {
   console.assert(itemTypes);
 
   if (!_.isArray(itemTypes)) {
-    itemTypes = _.map(_.get(itemTypes, '_implementations.Item'));
+    itemTypes = _.map(_.get(itemTypes, '_implementations.Item'), i => String(i));
   }
 
   // http://dev.apollodata.com/react/initialization.html#fragment-matcher
@@ -26,7 +26,7 @@ export function createFragmentMatcher(itemTypes) {
           {
             kind: 'INTERFACE',
             name: 'Item',
-            possibleTypes: _.map(itemTypes, type => ({ name: type }))
+            possibleTypes: _.map(itemTypes, itemType => ({ name: itemType }))
           }
         ]
       }
