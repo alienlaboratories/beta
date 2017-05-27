@@ -9,6 +9,8 @@ import gql from 'graphql-tag';
 import { DatabaseUtil, TestData } from 'alien-core/testing';
 import { SchemaUtil } from 'alien-api/testing';
 
+import TEST_DATA from 'alien-core/src/testing/data/data.json';
+
 import { App } from './apollo';
 
 /**
@@ -19,7 +21,7 @@ import { App } from './apollo';
 async function init() {
 
   // Create executable schema with test data.
-  let data = new TestData();
+  let data = new TestData(TEST_DATA);
   let database = await DatabaseUtil.init(DatabaseUtil.createDatabase(), data.context, data.itemMap);
   let schema = SchemaUtil.createSchema(database);
 

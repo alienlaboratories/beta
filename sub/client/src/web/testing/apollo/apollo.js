@@ -17,7 +17,7 @@ import update from 'immutability-helper';
 
 import { Logger, TypeUtil } from 'alien-util';
 import { Batch, Fragments, IdGenerator, ItemUtil, MutationUtil } from 'alien-core';
-import { UpsertItemsMutation, UpsertItemsMutationName } from 'alien-core';
+import { ITEM_TYPES, UpsertItemsMutation, UpsertItemsMutationName } from 'alien-core';
 
 import { createFragmentMatcher } from '../../../util/apollo_tools';
 import { createNetworkInterfaceWithAuth, LocalNetworkInterface } from '../../../testing/apollo_testing';
@@ -338,8 +338,12 @@ export const SearchQuery = gql`
 
           tasks {
             ...ItemFragment
+
             id
-            title
+            type
+            title                 # TODO(burdon): Breaks if missing.
+
+            ...TaskFragment
           }
         }
       }
@@ -347,6 +351,7 @@ export const SearchQuery = gql`
   }
   
   ${Fragments.ItemFragment}
+  ${Fragments.TaskFragment}
 `;
 
 export const SearchQueryName = _.get(SearchQuery, 'definitions[0].name.value');
@@ -573,12 +578,16 @@ export class App {
       fragmentMatcher = createFragmentMatcher(schema);
     } else {
       networkInterface = createNetworkInterfaceWithAuth(this._config);
-      fragmentMatcher = createFragmentMatcher();
+      fragmentMatcher = createFragmentMatcher(ITEM_TYPES);
     }
 
     this._client = new ApolloClient({
       networkInterface,
-      fragmentMatcher
+      fragmentMatcher,
+
+      addTypename: true,                                        // TODO(burdon): ???
+
+      dataIdFromObject: item => item.type + ':' + item.id,
     });
   }
 

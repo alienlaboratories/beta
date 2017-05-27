@@ -4,23 +4,27 @@
 
 import _ from 'lodash';
 
+import { Database } from '../database';
+
 /**
  * Test data util.
  */
 export class TestData {
 
-  static DEFAULT_FILE = './data/data.json';
+  // TODO(burdon): Rename DataParser? ImportTool?
 
-  constructor(data=TestData.DEFAULT_FILE) {
+  /**
+   * @param { items } data
+   */
+  constructor(data) {
     console.assert(data);
 
-    this._data = require(data);
-
+    this._items = data.items;
     this._userId = null;
     this._buckets = [];
 
     // TODO(burdon): Assumes data has single user.
-    _.each(_.get(this._data, 'items.system'), item => {
+    _.each(_.get(this._items, Database.NAMESPACE.SYSTEM), item => {
       switch (item.type) {
         case 'Group':
           this._buckets.push(item.id);
@@ -49,6 +53,6 @@ export class TestData {
    * @returns {{ namespace: [{Item}] }}
    */
   get itemMap() {
-    return this._data.items;
+    return this._items;
   }
 }

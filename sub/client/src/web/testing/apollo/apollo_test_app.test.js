@@ -7,6 +7,7 @@ import ReactDOM from 'react-dom';
 import { SchemaUtil } from 'alien-api/testing';
 import { Logger, TypeUtil } from 'alien-util';
 import { DatabaseUtil, TestData } from 'alien-core/testing';
+import TEST_DATA from 'alien-core/src/testing/data/data.json';
 
 import { App } from './apollo';
 
@@ -17,7 +18,7 @@ const logger = Logger.get('test');
  */
 test('Renders without crashing.', async () => {
 
-  let data = new TestData();
+  let data = new TestData(TEST_DATA);
   let database = await DatabaseUtil.init(DatabaseUtil.createDatabase(), data.context, data.itemMap);
   let schema = SchemaUtil.createSchema(database);
 

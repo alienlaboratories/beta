@@ -4,14 +4,18 @@
 
 import _ from 'lodash';
 import gql from 'graphql-tag';
+import { print } from 'graphql/language/printer';
 import ApolloClient from 'apollo-client';
 
-import { TypeUtil } from 'alien-util';
+import { Logger, TypeUtil } from 'alien-util';
 import { ID, MutationUtil, Transforms } from 'alien-core';
 import { DatabaseUtil, TestData } from 'alien-core/testing';
 import { SchemaUtil } from 'alien-api/testing';
 import { createFragmentMatcher } from 'alien-client';
 import { LocalNetworkInterface } from 'alien-client/testing';
+import TEST_DATA from 'alien-core/src/testing/data/data.json';
+
+Logger.setLevel({}, Logger.Level.warn);
 
 //
 // End-to-end Apollo tests.
@@ -19,11 +23,44 @@ import { LocalNetworkInterface } from 'alien-client/testing';
 
 // TODO(burdon): Subscriptions.
 // TODO(burdon): Mutations and store writes.
-// TODO(burdon): Test fragments.
 // TODO(burdon): Version numbers (inc. on server).
-// TODO(burdon): Document effect of just returning IDs for mutation (e.g., cache doesn't update field even if opt).
-// TODO(burdon): Try this on main app and/or context setting to return IDs only (rather than object lookup).
-// TODO(burdon): Is is necessary to return any information from the mutation (can opt result alone update store).
+// TODO(burdon): Implment local network interface for main app.
+
+//
+// http://graphql.org/learn/queries/#fragments
+// http://graphql.org/learn/queries/#inline-fragments
+//
+
+// TODO(burdon): Test fragments.
+// - define "thin" fragments for all types: incl. Item meta directly (id, type, title) and non-vectors.
+// - apply mutations in reducers for each query (traverse previousResult and apply)
+//   - need objects for IDs.
+
+// TODO(burdon): Fragments on interfaces?
+// https://github.com/apollographql/apollo-client/issues/1741 [burdon]
+// https://github.com/apollographql/apollo-client/issues/1708 [burdon]
+// https://github.com/apollographql/react-apollo/issues/386
+
+const ItemFragment = gql`
+  fragment ItemFragment on Item {
+    bucket
+    type
+    id 
+    title
+  }
+`;
+
+const MetaTaskFragment = gql`
+  fragment MetaTaskFragment on Task {
+    title
+  }
+`;
+
+const TaskFragment = gql`
+  fragment TaskFragment on Task {
+    status
+  }
+`;
 
 const ViewerQuery = gql`
   query ViewerQuery { 
@@ -39,17 +76,16 @@ const ViewerQuery = gql`
 const SearchQuery = gql`
   query SearchQuery($filter: FilterInput!) { 
     search(filter: $filter) { 
-      items { 
-        bucket
-        type
-        id 
-        title 
+      items {
+        title
+#        ...TaskFragment
       } 
     } 
   }
-`;
 
-// TODO(burdon): Not used.
+`;
+    // ...MetaTaskFragment
+
 const ProjectQuery = gql`
   query ProjectQuery($key: KeyInput!) { 
     item(key: $key) { 
@@ -81,12 +117,6 @@ const ItemQuery = gql`
   }
 `;
 
-const TaskFragment = gql`
-  fragment TaskFragment on Task {
-    status
-  }
-`;
-
 const TaskQuery = gql`
   query TaskQuery($key: KeyInput!) { 
     item(key: $key) { 
@@ -95,12 +125,12 @@ const TaskQuery = gql`
       id 
       title 
       
-      ...TaskFragment
+#      ...TaskFragment
     } 
   }
   
-  ${TaskFragment}
 `;
+// #  ${TaskFragment}
 
 const ItemMutation = gql`
   mutation ItemMutation($namespace: String, $itemMutations: [ItemMutationInput]!) {
@@ -115,7 +145,7 @@ const ItemMutation = gql`
 
 describe('End-to-end Apollo-GraphQL Resolver:', () => {
 
-  const testData = new TestData();
+  const testData = new TestData(TEST_DATA);
 
   const bucket = testData.context.buckets[0];
 
@@ -133,14 +163,22 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     networkInterface = new LocalNetworkInterface(schema, testData.context);
 
     // Apollo client.
+    // http://dev.apollodata.com/core/apollo-client-api.html#apollo-client
     client = new ApolloClient({
-      networkInterface,
-      createFragmentMatcher: createFragmentMatcher(schema)
+
+      addTypename: true,                                        // Automatically add __typename to query spec.
+
+      dataIdFromObject: item => item.type + ':' + item.id,      // TODO(burdon): Factor out.
+
+      // fragmentMatcher: createFragmentMatcher(schema),
+
+      networkInterface
     });
 
     return DatabaseUtil.init(database, testData.context, testData.itemMap);
   });
 
+  if (false)
   test('Viewer Query.', async () => {
 
     // Errors.
@@ -161,6 +199,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
   test('Query and mutate item then read from cache.', async () => {
 
     // Query tasks.
+    // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient\.query
     let searchResult = await client.query({
       query: SearchQuery,
       variables: {
@@ -169,11 +208,17 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
         }
       }
     });
+    console.log('## <=== RES\n', print(SearchQuery), JSON.stringify(searchResult, null, 2));
+    return;
+
 
     let items = _.get(searchResult, 'data.search.items');
     expect(items).toBeTruthy();
 
+//    console.log('###\n', JSON.stringify(items, null, 2));
+
     // Query item.
+    // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient\.query
     let itemResult = await client.query({
       query: ItemQuery,
       variables: {
@@ -220,7 +265,8 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     expect(cachedItem.title).toEqual(upsertItem.title);
   });
 
-  test('Optmistic update.', async () => {
+  if (false)
+  test('Optimistic update.', async () => {
     let mutatedItem;
 
     // TODO(burdon): dataIdFromObject
@@ -248,7 +294,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     {
       // Update item in cache.
       // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.writeFragment
-      console.log('Updating item: ' + JSON.stringify(mutatedItem));
+      console.log('Writing fragment: ' + JSON.stringify(mutatedItem));
       client.writeFragment({
         id: taskId,
         fragment: TaskFragment,
@@ -262,8 +308,9 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
         fragmentName: 'TaskFragment'
       });
 
+      // TODO(burdon): Check equal?
       // Only updates the fields named in the fragment (i.e., status).
-      console.log('Updated fragment: ' + JSON.stringify(taskFragment));
+      console.log('Read fragment: ' + JSON.stringify(taskFragment));
 
       // Update query.
       // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.writeQuery
@@ -294,7 +341,52 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
   });
 
   // TODO(burdon): Query Project then update Task.
-  test('Optmistic update.', async () => {
+  if (false)
+  test('Mutations.', async () => {
 
+    const projectKey = { bucket, type: 'Project', id: 'P-1' };
+
+    // Query project.
+    let projectResult = await client.query({
+      query: ProjectQuery,
+      variables: {
+        key: projectKey
+      }
+    });
+
+    let { data: { item:project }} = projectResult;
+    let task = project.tasks[0];
+
+    // Change fields (clone item since it's immutable).
+    let mutatedTask = Transforms.applyObjectMutations(TypeUtil.clone(task), [
+      MutationUtil.createFieldMutation('title', 'string', 'New Title'),
+      MutationUtil.createFieldMutation('status', 'int', 1)
+    ]);
+
+    console.log('####', JSON.stringify(mutatedTask));
+
+    client.writeFragment({
+      id: task.type + ':' + task.id,          // TODO(burdon): Util.
+      fragment: TaskFragment,
+      fragmentName: 'TaskFragment',
+      data: mutatedTask
+    });
+
+    let cachedTask = client.readFragment({
+      id: task.type + ':' + task.id,          // TODO(burdon): Util.
+      fragment: TaskFragment,
+      fragmentName: 'TaskFragment'
+    });
+
+    console.log('######', JSON.stringify(cachedTask, null, 2));
+
+    let { item:cachedProject } = client.readQuery({
+      query: ProjectQuery,
+      variables: {
+        key: projectKey
+      }
+    });
+
+    console.log('######', JSON.stringify(cachedProject, null, 2));
   });
 });

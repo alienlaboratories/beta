@@ -186,7 +186,7 @@ export const Fragments = {
   TaskFragment: gql`
     fragment TaskFragment on Task {
       ...ItemMetaFragment
-  
+      
       project {
         ...ItemMetaFragment
       }

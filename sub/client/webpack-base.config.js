@@ -121,7 +121,7 @@ const web = webpackMerge(baseConfig, {
 
     test_apollo: [
       'babel-polyfill',
-      path.resolve(baseConfig.context, 'src/web/testing/apollo/test_apollo.js'),
+      path.resolve(baseConfig.context, 'src/web/testing/apollo/apollo_test_app.js'),
     ],
 
     /*

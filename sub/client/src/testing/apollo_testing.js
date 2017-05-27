@@ -76,7 +76,11 @@ export class LocalNetworkInterface {
   // https://github.com/apollographql/apollo-client/blob/master/src/transport/networkInterface.ts
   //
 
-  query({ operationName, query, variables }) {
+  query(request) {
+    let { operationName, query, variables } = request;
+    if (!operationName) {
+      operationName = _.get(query, 'definitions[0].name.value');
+    }
     logger.log('Query:', operationName);
 
     let { networkDelay=0 } = _.isFunction(this._options) ? this._options() : this._options;
@@ -95,6 +99,9 @@ export class LocalNetworkInterface {
           logger.error(result.errors[0]);
           throw new Error(result.errors[0]);
         }
+
+        result = _.clone(result);
+        console.log('## REQ ===>\n', print(query), JSON.stringify(result, null, 2));
 
         return result;
       });
