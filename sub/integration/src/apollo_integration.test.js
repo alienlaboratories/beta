@@ -7,7 +7,7 @@ import gql from 'graphql-tag';
 import ApolloClient from 'apollo-client';
 
 import { Logger, TypeUtil } from 'alien-util';
-import { ID, MutationUtil, Transforms } from 'alien-core';
+import { Batch, ID, IdGenerator, MutationUtil, Transforms } from 'alien-core';
 import { DatabaseUtil, TestData } from 'alien-core/testing';
 import { SchemaUtil } from 'alien-api/testing';
 import { createFragmentMatcher } from 'alien-client';
@@ -21,6 +21,7 @@ Logger.setLevel({}, Logger.Level.warn);
 //
 
 // TODO(burdon): Batch mutations (return nothing).
+// TODO(burdon): Use schema/fragment defintions directly (maintain separation for sanity testing).
 
 // TODO(burdon): Subscriptions (onMutation)? Make future proof. For now, invalidate and requery).
 // http://dev.apollodata.com/react/subscriptions.html
@@ -143,7 +144,11 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
   let client;
   let networkInterface;
 
+  //
+  // Recreate database before each test.
+  //
   beforeEach(() => {
+
     // In-memory database.
     let database = DatabaseUtil.createDatabase();
 
@@ -172,6 +177,9 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     return DatabaseUtil.init(database, testData.context, testData.itemMap);
   });
 
+  //
+  // Basic sanity test.
+  //
   test('Viewer Query.', async () => {
 
     // Errors.
@@ -189,6 +197,9 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     expect(_.get(result, 'data.viewer.user.id')).toEqual(testData.context.userId);
   });
 
+  //
+  // Basic query/mutation.
+  //
   test('Query and mutate item then read from cache.', async () => {
 
     // Query tasks.
@@ -253,6 +264,9 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     expect(cachedItem.title).toEqual(upsertItem.title);
   });
 
+  //
+  // Update cache.
+  //
   test('Optimistic update.', async () => {
     let mutatedItem;
 
@@ -323,7 +337,10 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     }
   });
 
-  test('Mutations.', async () => {
+  //
+  // Mutate and write to cache updating nested queries.
+  //
+  test('Update nested queries.', async () => {
 
     const projectKey = { bucket, type: 'Project', id: 'P-1' };
 
@@ -375,7 +392,27 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     expect(cachedNestedTask).toEqual(cachedTask);
   });
 
-  // TODO(burdon): Create batch. Ignore result. Update items directly. Read from cache. Optimistic updates.
+  //
+  // Batch API.
+  //
   test('Batch mutations.', async () => {
+
+    const idGenerator = new IdGenerator();
+
+    // NOTE: Avoids dependency on (apollo-react) graphql. Wraps mutate method from options.
+    // http://dev.apollodata.com/react/api-graphql.html
+    // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.mutate
+    const mutate = ({ variables, optimisticResponse, update }) => {
+      return client.mutate({
+        mutation: ItemMutation,
+        variables,
+        optimisticResponse,
+        update
+      });
+    };
+
+    // TODO(burdon): Test null batch just gives warning (no error).
+    let batch = new Batch(idGenerator, mutate, bucket);
+    // return batch.commit();
   });
 });
