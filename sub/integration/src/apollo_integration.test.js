@@ -20,8 +20,11 @@ Logger.setLevel({}, Logger.Level.warn);
 // End-to-end Apollo tests.
 //
 
-// TODO(burdon): Subscriptions.
-// TODO(burdon): Mutations and store writes.
+// TODO(burdon): Batch mutations (return nothing).
+
+// TODO(burdon): Subscriptions (onMutation)? Make future proof. For now, invalidate and requery).
+// http://dev.apollodata.com/react/subscriptions.html
+
 // TODO(burdon): Version numbers (inc. on server).
 // TODO(burdon): Implment local network interface for main app.
 
@@ -30,12 +33,12 @@ Logger.setLevel({}, Logger.Level.warn);
 // http://graphql.org/learn/queries/#inline-fragments
 //
 
-// TODO(burdon): Test fragments.
+// TODO(burdon): Test fragments; e.g., partial updates (i.e., check updates all queries).
 // - define "thin" fragments for all types: incl. Item meta directly (id, type, title) and non-vectors.
 // - apply mutations in reducers for each query (traverse previousResult and apply)
 //   - need objects for IDs.
 
-// TODO(burdon): Fragments on interfaces?
+// TODO(burdon): Update issues (fragment matcher from schema).
 // https://github.com/apollographql/apollo-client/issues/1741 [burdon]
 // https://github.com/apollographql/apollo-client/issues/1708 [burdon]
 // https://github.com/apollographql/react-apollo/issues/386
@@ -150,9 +153,9 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     // Local network.
     networkInterface = new LocalNetworkInterface(schema, testData.context);
 
-    // TODO(burdon): Factor out factory.
     // Apollo client.
     // http://dev.apollodata.com/core/apollo-client-api.html#apollo-client
+    // TODO(burdon): Factor out factory.
     client = new ApolloClient({
 
       // Automatically add __typename to query spec.
@@ -253,9 +256,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
   test('Optimistic update.', async () => {
     let mutatedItem;
 
-    // TODO(burdon): dataIdFromObject
-    const taskId = 'Task:T-1';
-
+    const title = 'Updated Task';
     const taskKey = { bucket, type: 'Task', id: 'T-1' };
 
     {
@@ -268,7 +269,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
 
       // Change fields (clone item since it's immutable).
       mutatedItem = Transforms.applyObjectMutations(TypeUtil.clone(item), [
-        MutationUtil.createFieldMutation('title', 'string', 'New Title'),
+        MutationUtil.createFieldMutation('title', 'string', title),
         MutationUtil.createFieldMutation('status', 'int', 1)
       ]);
 
@@ -278,23 +279,21 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     {
       // Update item in cache.
       // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.writeFragment
-      console.log('Writing fragment: ' + JSON.stringify(mutatedItem));
       client.writeFragment({
-        id: taskId,
+        id: ID.dataIdFromObject(taskKey),
         fragment: TaskFragment,
         fragmentName: 'TaskFragment',
         data: mutatedItem
       });
 
       let taskFragment = client.readFragment({
-        id: taskId,
+        id: ID.dataIdFromObject(taskKey),
         fragment: TaskFragment,
         fragmentName: 'TaskFragment'
       });
 
-      // TODO(burdon): Check equal?
       // Only updates the fields named in the fragment (i.e., status).
-      console.log('Read fragment: ' + JSON.stringify(taskFragment));
+      expect(taskFragment.title).toEqual(title);
 
       // Update query.
       // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.writeQuery
@@ -324,7 +323,6 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     }
   });
 
-  // TODO(burdon): Query Project then update Task.
   test('Mutations.', async () => {
 
     const projectKey = { bucket, type: 'Project', id: 'P-1' };
@@ -375,5 +373,9 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
 
     // TODO(burdon): Test different if different fragments.
     expect(cachedNestedTask).toEqual(cachedTask);
+  });
+
+  // TODO(burdon): Create batch. Ignore result. Update items directly. Read from cache. Optimistic updates.
+  test('Batch mutations.', async () => {
   });
 });
