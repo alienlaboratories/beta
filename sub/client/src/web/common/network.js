@@ -6,9 +6,8 @@ import { print } from 'graphql/language/printer';
 import { createNetworkInterface } from 'apollo-client';
 
 import { HttpUtil, TypeUtil, Logger } from 'alien-util';
-import { AuthUtil, ItemStore, UpsertItemsMutationName } from 'alien-core';
+import { AuthUtil, Const, ItemStore, UpsertItemsMutationName } from 'alien-core';
 
-import { AppDefs } from '../../common/defs';
 import { ConnectionManager } from './client';
 
 const logger = Logger.get('net');
@@ -134,7 +133,7 @@ export class NetworkManager {
 
         // Add header to track response.
         options.headers = _.assign(options.headers, {
-          [AppDefs.HEADER.REQUEST_ID]: requestId
+          [Const.HEADER.REQUEST_ID]: requestId
         });
 
         this._logger.logRequest(requestId, request, options.headers);
@@ -157,7 +156,7 @@ export class NetworkManager {
         let clonedResponse = response.clone();
 
         // Match request.
-        const requestId = options.headers[AppDefs.HEADER.REQUEST_ID];
+        const requestId = options.headers[Const.HEADER.REQUEST_ID];
         let removed = this._requestMap.delete(requestId);
         console.assert(removed, 'Request not found: %s', requestId);
 
@@ -282,7 +281,7 @@ class NetworkLogger {
     if (_.get(this._options, 'debug', true)) {
       let url = HttpUtil.absoluteUrl(_.get(this._options, 'graphiql', '/graphiql'));
       logger.info('[' + TypeUtil.pad(requestId, 24) + ']: ' + url + '?' + HttpUtil.toUrlArgs({
-        clientId:   headers[AppDefs.HEADER.CLIENT_ID],
+        clientId:   headers[Const.HEADER.CLIENT_ID],
         query:      print(request.query),
         variables:  JSON.stringify(request.variables)
       }));

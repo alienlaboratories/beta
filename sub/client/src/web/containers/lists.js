@@ -83,9 +83,11 @@ export const DebugListItemRenderer = (item) => {
 const BasicItemFragment = gql`
   fragment BasicItemFragment on Item {
     namespace
-    fkey
+    bucket
     type
     id
+
+    fkey
 
     labels
     title

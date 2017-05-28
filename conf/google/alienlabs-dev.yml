@@ -9,5 +9,12 @@ projectNumber: "933786919888"
 # NOTE: Secret credentials (for whitelisted origins and redirect URIs).
 # Created 04/24/17 (Application type: "Web application"; Name: "Web")
 # https://console.developers.google.com/apis/credentials?project=alienlabs-dev
-clientId: "933786919888-hfvm36pm0cq9bh7k30dmdls2cd9bv459.apps.googleusercontent.com"
-clientSecret: "-aMLUE5T5nVOdKcafQt69-u_"
+web:
+  clientId: "933786919888-hfvm36pm0cq9bh7k30dmdls2cd9bv459.apps.googleusercontent.com"
+  clientSecret: "-aMLUE5T5nVOdKcafQt69-u_"
+
+# Created 05/19/17  (Application type: "Other"; Name: "CLI")
+# https://console.developers.google.com/apis/credentials?project=alienlabs-dev
+cli:
+  clientId: "933786919888-5p4cnpnqb1fjnkikq6ge6opqu2iljne7.apps.googleusercontent.com"
+  clientSecret: "cc0vDu-8rQ6PER7Q012iE10g"

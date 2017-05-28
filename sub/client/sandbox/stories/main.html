@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Nexus</title>
+
+  <!-- Material -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://code.getmdl.io/1.1.1/material.indigo-pink.min.css">
+
+  <!-- Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Play" type="text/css">
+
+  <!-- jquery -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+  <script src="main.js"></script>
+
+  <!-- project -->
+  <link rel="stylesheet" href="main.css">
+</head>
+<body>
+  <div class="container">
+    <div class="cards">
+
+      <!--
+        Trip
+        TODO(burdon): Make mobile friendly (i.e., column).
+        -->
+
+      <div class="card mdl-card mdl-shadow--2dp">
+        <div class="header">
+          <i class="material-icons">flight</i>
+          <h1>Tokyo Trip</h1>
+          <i class="material-icons menu">menu</i>
+        </div>
+
+        <div class="panel">
+          <!-- TODO(burdon): Label chips. -->
+        </div>
+
+        <div class="panel">
+          <div class="header">
+            <h2 class="mdl-badge" data-badge="1">Alerts</h2>
+            <span><i class="material-icons md-18">expand_less</i></span>
+          </div>
+          <div class="section">
+            <div class="row">
+              <span class="status alert" title="Unable to confirm reservation. On wait list."><i class="material-icons md-18">error_outline</i></span>
+              <span class="date">Jan 26</span>
+              <span class="time">20:00</span>
+              <span class="title">Gion Hatanaka</span>
+              <span class="icon"><i class="material-icons md-18">hotel</i></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="header">
+            <h2>People</h2>
+            <span><i class="material-icons md-18">expand_less</i></span>
+          </div>
+          <div class="section">
+            <div class="row">
+              <span class="status"><i class="material-icons md-18">check</i></span>
+              <span class="title">Rich</span>
+            </div>
+            <div class="row">
+              <span class="status"><i class="material-icons md-18">check</i></span>
+              <span class="title">Gaby</span>
+            </div>
+            <div class="row">
+              <span class="status warning"><i class="material-icons md-18">help_outline</i></span>
+              <span class="title">Sammy</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="header">
+            <h2>Itinerary</h2>
+            <span><i class="material-icons md-18 map-button">place</i></span>
+            <span>&nbsp;</span>
+            <span><i class="material-icons md-18">expand_less</i></span>
+          </div>
+          <div class="section">
+            <div class="row">
+              <span class="status warning"><i class="material-icons md-18">alarm</i></span>
+              <span class="date">Jan 23</span>
+              <span class="time">03:00</span>
+              <span class="from">Home</span>
+              <span class="to">JFK</span>
+              <span class="title">Uber</span>
+              <span class="icon"><i class="material-icons md-18">directions_car</i></span>
+            </div>
+            <div class="row">
+              <span class="status"><i class="material-icons md-18">check</i></span>
+              <span class="date">Jan 23</span>
+              <span class="time">06:30</span>
+              <span class="from">JFK</span>
+              <span class="to low">NRT</span>
+              <span class="title">JAL #604</span>
+              <span class="icon"><i class="material-icons md-18">flight_takeoff</i></span>
+            </div>
+            <div class="row">
+              <span class="status"><i class="material-icons md-18">check</i></span>
+              <span class="date">Jan 24</span>
+              <span class="time">08:30</span>
+              <span class="from low">JFK</span>
+              <span class="to">NRT</span>
+              <span class="title"></span>
+              <span class="icon"><i class="material-icons md-18">flight_land</i></span>
+            </div>
+            <div class="row">
+              <span class="status"><i class="material-icons md-18">check</i></span>
+              <span class="date">Jan 24</span>
+              <span class="time">16:00</span>
+              <span class="title">Shibuya Cerulean Tower</span>
+              <span class="icon"><i class="material-icons md-18">hotel</i></span>
+            </div>
+            <div class="row">
+              <span class="status"><i class="material-icons md-18">check</i></span>
+              <span class="date">Jan 26</span>
+              <span class="time">16:00</span>
+              <span class="from">Tokyo</span>
+              <span class="to">Kyoto</span>
+              <span class="title"></span>
+              <span class="icon"><i class="material-icons md-18">directions_transit</i></span>
+            </div>
+            <div class="row">
+              <span class="status alert" title="Unable to confirm reservation. On wait list."><i class="material-icons md-18">error_outline</i></span>
+              <span class="date">Jan 26</span>
+              <span class="time">20:00</span>
+              <span class="title">Gion Hatanaka</span>
+              <span class="icon"><i class="material-icons md-18">hotel</i></span>
+            </div>
+            <div class="row">
+              <span class="status warning"><i class="material-icons md-18">access_time</i></span>
+              <span class="date">Jan 26</span>
+              <span class="time">21:00</span>
+              <span class="title">Otsuka</span>
+              <span class="icon"><i class="material-icons md-18">restaurant_menu</i></span>
+            </div>
+            <div class="row">
+              <span class="status"><i class="material-icons md-18">check</i></span>
+              <span class="date">Jan 30</span>
+              <span class="time">12:15</span>
+              <span class="from">KAN</span>
+              <span class="to low">JFK</span>
+              <span class="title">JAL #103</span>
+              <span class="icon"><i class="material-icons md-18">flight_takeoff</i></span>
+            </div>
+            <div class="row">
+              <span class="status"><i class="material-icons md-18">check</i></span>
+              <span class="date">Jan 31</span>
+              <span class="time">16:15</span>
+              <span class="from low">KAN</span>
+              <span class="to">JFK</span>
+              <span class="title"></span>
+              <span class="icon"><i class="material-icons md-18">flight_land</i></span>
+            </div>
+          </div>
+          <div class="map-panel" style="display: none;">
+            <img src="img/shibuya.png">
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="header">
+            <h2>Links</h2>
+            <span><i class="material-icons md-18">expand_less</i></span>
+          </div>
+          <div class="section" style="display: none">
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">star</i></span>
+              <span class="title">Tokyo [Wikipedia]</span>
+              <span class="icon"><i class="material-icons md-18">link</i></span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">star_outline</i></span>
+              <span class="title">Noodle shop gets Michelin [Guardian]</span>
+              <span class="icon"><i class="material-icons md-18">link</i></span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">star_outline</i></span>
+              <span class="title">Top 10 Hotels in Tokyo</span>
+              <span class="icon"><i class="material-icons md-18">link</i></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="header">
+            <h2>Tasks</h2>
+            <span><i class="material-icons md-18">expand_less</i></span>
+          </div>
+          <div class="section" style="display: none;">
+            <div class="row">
+              <span class="status alert"><i class="material-icons md-18">error_outline</i></span>
+              <span class="title">Check Amex points for upgrade.</span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">radio_button_unchecked</i></span>
+              <span class="title">Japanese language books.</span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">radio_button_unchecked</i></span>
+              <span class="title">Present for Yoko.</span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">radio_button_unchecked</i></span>
+              <span class="title">Find house sitter.</span>
+            </div>
+            <div class="row">
+              <span class="status"><i class="material-icons md-18">check</i></span>
+              <span class="title">Book hotels.</span>
+            </div>
+            <div class="row">
+              <span class="status"><i class="material-icons md-18">check</i></span>
+              <span class="title">Book flights.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="header">
+            <h2 class="mdl-badge" data-badge="2">Recommendations</h2>
+            <span><i class="material-icons md-18">expand_less</i></span>
+          </div>
+          <div class="section" style="display: none">
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">radio_button_unchecked</i></span>
+              <span class="date">Jan 28</span>
+              <span class="title"><b>Day trip to Nara</b></span>
+              <span class="money"><i class="material-icons md-18">attach_money</i></span>
+              <span class="money"><i class="material-icons md-18">attach_money</i></span>
+              <span class="icon"><i class="material-icons md-18">directions_car</i></span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">radio_button_unchecked</i></span>
+              <span class="date">Jan 29</span>
+              <span class="title"><b>Kinkaku-ji Temple</b></span>
+              <span class="money"><i class="material-icons md-18">attach_money</i></span>
+              <span class="icon"><i class="material-icons md-18 detail-button">photo_camera</i></span>
+            </div>
+            <div class="row bleed details" style="display: none;">
+              <div>
+                <img src="img/kinkakuji.jpeg">
+              </div>
+              <div class="text">
+                One of the most popular buildings in Japan.
+                Kinkaku-ji's history dates to 1397, when the villa was purchased from the Saionji family by Shogun Ashikaga Yoshimitsu.
+              </div>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">radio_button_unchecked</i></span>
+              <span class="date"></span>
+              <span class="title">Japanese for Busy People</span>
+              <span class="money"><i class="material-icons md-18">attach_money</i></span>
+              <span class="icon"><i class="material-icons md-18 detail-button">shopping_cart</i></span>
+            </div>
+            <div class="row bleed details" style="display: none;">
+              <div class="text">Japanese for Busy People is the most popular Japanese language textbook series in the world. With over 20 components including texts, workbooks, CDs, videos and teacher's manuals.<br><b>Buy on Amazon</b> [$14.95]</div>
+            </div>
+            <div class="row cancel">
+              <span class="status"><i class="material-icons md-18">cancel</i></span>
+              <span class="date"></span>
+              <span class="title">Japanese from Zero!</span>
+              <span class="money"><i class="material-icons md-18">attach_money</i></span>
+              <span class="icon"><i class="material-icons md-18">shopping_cart</i></span>
+            </div>
+            <div class="row cancel">
+              <span class="status"><i class="material-icons md-18">cancel</i></span>
+              <span class="date">Jan 29</span>
+              <span class="title">Dinner at Gion Karyo</span>
+              <span class="money alert"><i class="material-icons md-18">attach_money</i></span>
+              <span class="money alert"><i class="material-icons md-18">attach_money</i></span>
+              <span class="money alert"><i class="material-icons md-18">attach_money</i></span>
+              <span class="icon"><i class="material-icons md-18">restaurant_menu</i></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span><i class="material-icons md-18">alarm</i></span>
+          <span class="title"></span>
+          <span><i class="material-icons md-18">share</i></span>
+          <span>&nbsp;&nbsp;</span>
+          <span><i class="material-icons md-18">add_circle</i></span>
+        </div>
+      </div>
+
+      <!--
+        Project
+        -->
+
+      <div class="card mdl-card mdl-shadow--2dp">
+        <div class="header">
+          <i class="material-icons">work</i>
+          <h1>NewCo Project</h1>
+          <i class="material-icons menu">menu</i>
+        </div>
+
+        <div class="panel">
+          <div class="header">
+            <h2>Team</h2>
+            <span><i class="material-icons md-18">expand_less</i></span>
+          </div>
+          <div class="section" style="display: none">
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">accessibility</i></span>
+              <span class="title">Adam</span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">accessibility</i></span>
+              <span class="title">Rich</span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">phone</i></span>
+              <span class="title">Daniel</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="header">
+            <h2>Agenda</h2>
+            <span><i class="material-icons md-18">expand_less</i></span>
+          </div>
+          <div class="section">
+            <div class="row">
+              <span class="status"><i class="material-icons md-18"></i></span>
+              <span class="date">Jan 26</span>
+              <span class="time">13:30</span>
+              <span class="title">99 University</span>
+              <span class="icon"><i class="material-icons md-18">message</i></span>
+            </div>
+            <div class="row">
+              <span class="status"><i class="material-icons md-18">check</i></span>
+              <span class="date">Jan 25</span>
+              <span class="time">12:30</span>
+              <span class="title">Catch-up</span>
+              <span class="icon"><i class="material-icons md-18">phone</i></span>
+            </div>
+            <div class="row">
+              <span class="status"><i class="material-icons md-18">check</i></span>
+              <span class="date">Feb 29</span>
+              <span class="time">12:30</span>
+              <span class="title">Ootoya</span>
+              <span class="icon"><i class="material-icons md-18">restaurant_menu</i></span>
+            </div>
+            <div class="row">
+              <span class="status"><i class="material-icons md-18">check</i></span>
+              <span class="date">Feb 24</span>
+              <span class="time">12:30</span>
+              <span class="title">Natrang One</span>
+              <span class="icon"><i class="material-icons md-18">restaurant_menu</i></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="header">
+            <h2 class="mdl-badge" data-badge="1">Messages</h2>
+            <span><i class="material-icons md-18">expand_less</i></span>
+          </div>
+          <div class="section" style="display:none;">
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">message</i></span>
+              <span class="title"><b>boomerang, slash – Two very relevant...</b></span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">message</i></span>
+              <span class="title">party on – I booked 2 hours. I'm free to start...</span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">message</i></span>
+              <span class="title">use case #2 – We had a great meeting...</span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">message</i></span>
+              <span class="title">Hi guys. I'm excited for you two to meet...</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="header">
+            <h2>Tasks</h2>
+            <span><i class="material-icons md-18">expand_less</i></span>
+          </div>
+          <div class="section" style="display:none;">
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">radio_button_unchecked</i></span>
+              <span class="title">MVP outline</span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">radio_button_unchecked</i></span>
+              <span class="title">Market hypothesis</span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">radio_button_unchecked</i></span>
+              <span class="title">Explore funding network</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="header recommend">
+            <h2 class="mdl-badge" data-badge="3">Recommendations</h2>
+            <span><i class="material-icons md-18">expand_less</i></span>
+          </div>
+          <div class="section" style="display: none">
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">radio_button_unchecked</i></span>
+              <span class="title"><b>Reply to Daniel [5 days]</b></span>
+              <span class="icon"><i class="material-icons md-18">message</i></span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">radio_button_unchecked</i></span>
+              <span class="title">Schedule team meeting</span>
+              <span class="icon"><i class="material-icons md-18">alarm</i></span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">radio_button_unchecked</i></span>
+              <span class="title"><b>Boomerang Calendar Now Schedules...</b></span>
+              <span class="icon"><i class="material-icons md-18">link</i></span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">radio_button_unchecked</i></span>
+              <span class="title">Cortana vs Siri vs Google</span>
+              <span class="icon"><i class="material-icons md-18">link</i></span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">radio_button_unchecked</i></span>
+              <span class="title">Slack, I'm breaking up with you</span>
+              <span class="icon"><i class="material-icons md-18">link</i></span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18 open-button" card="#alex">open_in_new</i></span>
+              <span class="title"><b>Alex Moore, CEO Boomerang</b></span>
+              <span class="icon"><i class="material-icons md-18">accessibility</i></span>
+            </div>
+            <div class="row cancel">
+              <span class="status check"><i class="material-icons md-18">cancel</i></span>
+              <span class="title">10 Start-up Incubators to Watch</span>
+              <span class="icon"><i class="material-icons md-18">link</i></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span><i class="material-icons md-18">alarm</i></span>
+          <span class="title"></span>
+          <span><i class="material-icons md-18">share</i></span>
+          <span>&nbsp;&nbsp;</span>
+          <span><i class="material-icons md-18">add_circle</i></span>
+        </div>
+      </div>
+
+      <!--
+        Contact
+        -->
+
+      <div id="alex" class="card mdl-card mdl-shadow--2dp" style="display: none;">
+        <div class="header">
+          <i class="material-icons">accessibility</i>
+          <h1>Alex Moore</h1>
+          <i class="material-icons menu">menu</i>
+        </div>
+
+        <div class="panel">
+          <div class="header">
+            <h2>Contact</h2>
+            <span><i class="material-icons md-18">expand_less</i></span>
+          </div>
+          <div class="section">
+            <div class="row bleed">
+              <div class="horizontal">
+                <img class="left" src="../img/people/p2.png">
+                <div class="text">
+                  CEO at @boomerang building the future of productivity through email.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="header">
+            <h2>Social Media</h2>
+            <span><i class="material-icons md-18">expand_less</i></span>
+          </div>
+          <div class="section">
+            <div class="row">
+              <span class="status"><img class="social" src="img/linkedin.png"></span>
+              <span class="title">CEO, Boomerang</span>
+            </div>
+            <div class="row">
+              <span class="status"><img class="social" src="img/linkedin.png"></span>
+              <span class="title">Rich &#8594; John Gannon &#8594; Bob Pasker &#8594; Alex</span>
+            </div>
+            <div class="row">
+              <span class="status"><img class="social" src="img/linkedin.png"></span>
+              <span class="title">Adam &#8594; Matt Hartman &#8594; Alex</span>
+            </div>
+            <div class="row">
+              <span class="status"><img class="social" src="img/linkedin.png"></span>
+              <span class="title">MIT 2001</span>
+            </div>
+            <div class="row">
+              <span class="status"><img class="social" src="img/crunchbase.png"></span>
+              <span class="fixed">Boomerang Calendar is a smart calendar assistant for Gmail.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="header">
+            <h2>Twitter</h2>
+            <span><i class="material-icons md-18">expand_less</i></span>
+          </div>
+          <div class="section">
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">message</i></span>
+              <span class="title">Boomerang hit 1 million active users in Chrome...</span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">message</i></span>
+              <span class="title">How email productivity can help make life...</span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">message</i></span>
+              <span class="title">One way to boost your MAU numbers...</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="header">
+            <h2>Github</h2>
+            <span><i class="material-icons md-18">expand_less</i></span>
+          </div>
+          <div class="section" style="display: none;">
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">library_books</i></span>
+              <span class="wide">f7b5135</span>
+              <span class="title">Fixed widget suck issue...</span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">library_books</i></span>
+              <span class="wide">d234525</span>
+              <span class="title">Oath2 access for Gmail...</span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">library_books</i></span>
+              <span class="wide">ad8f734</span>
+              <span class="title">Initial Android skeletal app...</span>
+            </div>
+            <div class="row">
+              <span class="status check"><i class="material-icons md-18">library_books</i></span>
+              <span class="wide">12ea8d9</span>
+              <span class="title">Initial commit.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span><i class="material-icons md-18">alarm</i></span>
+          <span class="title"></span>
+          <span><i class="material-icons md-18">share</i></span>
+          <span>&nbsp;&nbsp;</span>
+          <span><i class="material-icons md-18">add_circle</i></span>
+        </div>
+      </div>
+
+      <!--
+        New
+        -->
+
+      <div id="new" class="card mdl-card mdl-shadow--2dp" style="display: none;">
+        <div class="header">
+          <i class="material-icons">create</i>
+          <select>
+            <option>TYPE</option>
+            <option value="" disabled="disabled">────</option>
+            <option value="trip">Trip</option>
+            <option value="project">Project</option>
+            <option value="contact">Contact</option>
+            <option value="idea">Idea</option>
+          </select>
+          <input type="text" size="15" placeholder="Title">
+          <i class="material-icons menu">menu</i>
+        </div>
+
+        <div class="panel">
+          <div class="header">
+            <h2>Details</h2>
+            <span><i class="material-icons md-18">expand_less</i></span>
+          </div>
+          <div class="section">
+            <div class="row">
+              <span class="title"><input type="text"></span>
+            </div>
+          </div>
+        </div>
+
+        <div id="new-project" style="display: none;">
+          <div class="panel">
+            <div class="header">
+              <h2>Team</h2>
+              <span><i class="material-icons md-18">expand_less</i></span>
+            </div>
+            <div class="section">
+              <div class="row">
+                <span class="status check"><i class="material-icons md-18">accessibility</i></span>
+                <span class="title">Rich</span>
+              </div>
+              <div class="row">
+                <span class="status check"><i class="material-icons md-18">accessibility</i></span>
+                <span class="title"><input type="text" class="person"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="header">
+              <h2>Links</h2>
+              <span><i class="material-icons md-18">expand_less</i></span>
+            </div>
+            <div class="section">
+              <div class="row">
+                <span class="title"><input type="text"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="new-trip" style="display: none;">
+          <div class="panel">
+            <div class="header">
+              <h2>People</h2>
+              <span><i class="material-icons md-18">expand_less</i></span>
+            </div>
+            <div class="section">
+              <div class="row">
+                <span class="status check"><i class="material-icons md-18">accessibility</i></span>
+                <span class="title">Rich</span>
+              </div>
+              <div class="row">
+                <span class="status check"><i class="material-icons md-18">accessibility</i></span>
+                <span class="title"><input type="text" class="person"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="header">
+              <h2>Itinerary</h2>
+              <span><i class="material-icons md-18">expand_less</i></span>
+            </div>
+            <div class="section">
+              <div class="row">
+                <span class="title"><input type="text"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="header">
+              <h2>Tasks</h2>
+              <span><i class="material-icons md-18">expand_less</i></span>
+            </div>
+            <div class="section">
+              <div class="row">
+                <span class="title"><input type="text"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span><i class="material-icons md-18">alarm</i></span>
+          <span class="title"></span>
+          <span><i class="material-icons md-18">share</i></span>
+          <span>&nbsp;&nbsp;</span>
+          <span><i class="material-icons md-18">add_circle</i></span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="add">
+    <i class="material-icons md-36">add_circle</i>
+  </div>
+
+  <div id="logo">
+    <img src="img/nexus.png">
+    <span>neXus</span>
+  </div>
+
+  <div id="notes">
+    <h1>Features</h1>
+    <ul>
+      <li>Alerts</li>
+      <li>Itinerary Map</li>
+      <li>Syncs with mail, calendar, contacts, LinkedIn, Crunchbase, corporate SQL database (via bots)</li>
+      <li>Recommendations (by bots):</li>
+      <ul>
+        <li>Links</li>
+        <li>Products</li>
+        <li>Reminders (e.g., reply to email)</li>
+        <li>New people (network discovery)</li>
+      </ul>
+      <li>Share cards with team, managers, clients (different people see different views; replaces web sites)</li>
+      <li>Infers context (place, time, phone call, companions)</li>
+      <li>Infers dependencies (e.g., late train misses restaurant reservation)</li>
+      <li>Mobile, Chrome App, Dashboard, Voice</li>
+    </ul>
+  </div>
+
+  <div id="meta"></div>
+</body>
+</html>

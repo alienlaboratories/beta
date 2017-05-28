@@ -81,7 +81,7 @@ const baseConfig = {
           path.resolve(__dirname, '../client/src'),
           path.resolve(__dirname, '../core/src'),
           path.resolve(__dirname, '../services/src'),
-          path.resolve(__dirname, '../util/src'),
+          path.resolve(__dirname, '../util/src')
         ],
         options: {
           cacheDirectory: './dist/babel-cache/'
@@ -147,9 +147,10 @@ const srvConfig = webpackMerge(baseConfig, {
     // Otherwise __dirname === '/'
     __dirname: false,
 
+    // TODO(burdon): Remove?
     // https://webpack.js.org/configuration/node
     console: false,
-    // fs:  'empty',    // TODO(burdon): ???
+    fs:  'empty',
     net: 'empty',
     tls: 'empty'
   },
@@ -211,6 +212,7 @@ const webConfig = webpackMerge(baseConfig, {
 
     // Main app.
     web: [
+      'babel-polyfill',
       path.resolve(baseConfig.context, 'src/client/web_app.js')
     ],
 

@@ -8,7 +8,7 @@ import { Link } from 'react-router';
 import PropTypes from 'prop-types';
 
 import { DomUtil, TypeUtil } from 'alien-util';
-import { ID } from 'alien-core';
+import { Const, ID } from 'alien-core';
 
 import { AppDefs } from '../../../common/defs';
 
@@ -101,7 +101,7 @@ export class LayoutComponent extends React.Component {
       let sidePanel = <SidePanel typeRegistry={ typeRegistry }/>;
 
       let content;
-      let showFinder = finder && (platform !== AppDefs.PLATFORM.WEB || search.text);
+      let showFinder = finder && (platform !== Const.PLATFORM.WEB || search.text);
       if (showFinder) {
         if (children) {
           content = (
@@ -125,7 +125,7 @@ export class LayoutComponent extends React.Component {
         if (group.bucket !== viewer.user.id) {
           return (
             <li key={ group.id }>
-              <Link to={ Path.canvas(ID.toGlobalId('Group', group.id)) }>{ group.title }</Link>
+              <Link to={ Path.canvas(ID.key(group)) }>{ group.title }</Link>
             </li>
           );
         }
@@ -138,7 +138,7 @@ export class LayoutComponent extends React.Component {
           <div className={ DomUtil.className('ux-main-layout', 'ux-column', 'app-layout-' + platform, className) }>
 
             {/* Header */}
-            { platform !== AppDefs.PLATFORM.CRX &&
+            { platform !== Const.PLATFORM.CRX &&
             <div className="ux-header ux-row">
               <div className="ux-row ux-expand">
                 <SidebarToggle sidebar={ () => this.refs.sidebar }/>
@@ -149,7 +149,7 @@ export class LayoutComponent extends React.Component {
                   { links }
 
                   <li>
-                    <a target="ALIEN_PROFILE" href="/user/profile">{ _.get(viewer, 'user.title') }</a>
+                    <a target="ALIEN_PROFILE" href="/profile">{ _.get(viewer, 'user.title') }</a>
                   </li>
                   <li>
                     <a href="/user/logout">Logout</a>
@@ -166,7 +166,7 @@ export class LayoutComponent extends React.Component {
             <div className="ux-columns">
 
               {/* Sidebar */}
-              { platform !== AppDefs.PLATFORM.CRX &&
+              { platform !== Const.PLATFORM.CRX &&
               <Sidebar ref="sidebar">
                 { sidePanel }
               </Sidebar>

@@ -20,11 +20,11 @@ done
 
 ROOT=`pwd`
 
-export APP_SERVER_ASSETS_DIR="${ROOT}/dist"
-export APP_SERVER_CONF_DIR="${ROOT}/../../conf"
-export APP_SERVER_DATA_DIR="${ROOT}/../../data"
-export APP_SERVER_PUBLIC_DIR="${ROOT}/src/server/public"
-export APP_SERVER_VIEWS_DIR="${ROOT}/src/server/views"
+export ALIEN_SERVER_ASSETS_DIR="${ROOT}/dist"
+export ALIEN_SERVER_CONF_DIR="${ROOT}/../../conf"
+export ALIEN_SERVER_DATA_DIR="${ROOT}/../../data"
+export ALIEN_SERVER_PUBLIC_DIR="${ROOT}/src/server/public"
+export ALIEN_SERVER_VIEWS_DIR="${ROOT}/src/server/views"
 
 set -e
 set -x

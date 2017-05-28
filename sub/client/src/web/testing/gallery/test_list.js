@@ -20,7 +20,7 @@ export default class TestList extends React.Component {
 
   static ItemEditor = (item, list) => (
     <ListItemEditor item={ item }>
-      <ListItem.Icon icon="check_box_outline_blank"/>
+      <ListItem.Icon icon="`"/>
       <ListItem.Edit field="title"/>
       <ListItem.EditorButtons/>
     </ListItemEditor>

@@ -59,17 +59,17 @@ ADD src/server/public       $HOME/app/public
 ADD src/server/views        $HOME/app/views
 
 # Required for OAuth callback.
-ENV APP_SERVER_URL="https://beta.robotik.io"
+ENV ALIEN_SERVER_URL="https://beta.robotik.io"
 
 ENV ALIEN_CONFIG='alienlabs-beta'
 ENV ALIEN_CONFIG_FIREBASE='firebase/alienlabs-beta'
 ENV ALIEN_CONFIG_GOOGLE='google/alienlabs-beta'
 
-ENV APP_SERVER_ASSETS_DIR="$HOME/app/dist"
-ENV APP_SERVER_CONF_DIR="$HOME/app/conf"
-ENV APP_SERVER_DATA_DIR="$HOME/app/data"
-ENV APP_SERVER_PUBLIC_DIR="$HOME/app/public"
-ENV APP_SERVER_VIEWS_DIR="$HOME/app/views"
+ENV ALIEN_SERVER_ASSETS_DIR="$HOME/app/dist"
+ENV ALIEN_SERVER_CONF_DIR="$HOME/app/conf"
+ENV ALIEN_SERVER_DATA_DIR="$HOME/app/data"
+ENV ALIEN_SERVER_PUBLIC_DIR="$HOME/app/public"
+ENV ALIEN_SERVER_VIEWS_DIR="$HOME/app/views"
 
 EXPOSE $PORT
 

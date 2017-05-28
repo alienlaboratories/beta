@@ -5,3 +5,5 @@
 export * from './src/util/logger';
 
 export * from './src/router';
+export * from './src/resolvers';
+export * from './src/schema';

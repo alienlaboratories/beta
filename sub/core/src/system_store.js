@@ -76,6 +76,7 @@ export class SystemStore extends DelegateItemStore {
         }
       }
     }).then(items => {
+      console.assert(items.length == 1);
       return items[0];
     });
   }

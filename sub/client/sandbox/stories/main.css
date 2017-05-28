@@ -1,0 +1,285 @@
+/*
+ * (c) 2016, Alien Laboratories.
+ */
+
+/*
+ * Material
+ */
+
+/* Rules for sizing the icon. */
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
+
+/* Rules for using icons as black on a light background. */
+.material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
+.material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+
+/* Rules for using icons as white on a dark background. */
+.material-icons.md-light { color: rgba(255, 255, 255, 1); }
+.material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+
+.card .mdl-badge[data-badge]:after {
+  background-color: darkred;
+  font-size: 11px;
+  margin-left: 1em;
+  width: 16px;
+  height: 16px;
+  top: 0;
+  right: 0;
+}
+
+/*
+ *
+ */
+
+body {
+  margin: 0;
+  background-color: #F5F5F5;
+}
+
+h1, h2, h3 {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
+h1 {
+  font-size: 24px;
+}
+h2 {
+  font-size: 16px;
+}
+
+/*
+ *
+ */
+
+#meta {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  background-color: #CCC;
+  padding: 4px;
+  font-size: small;
+  font-family: monospace;
+}
+
+#notes {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  padding: 4px;
+  background-color: lightgoldenrodyellow;
+  -webkit-box-shadow: #CCC 2px 2px 2px;
+  width: 300px;
+}
+#notes h1 {
+  font-size: small;
+}
+#notes ul {
+  margin: 0;
+  list-style-type: square;
+  -webkit-padding-start: 20px;
+}
+#notes li {
+  font-size: small;
+  line-height: 1.1;
+}
+
+#add {
+  position: absolute;
+  right: 10px;
+  top: 2em;
+  color: darkred;
+  cursor: pointer;
+}
+
+#logo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 20px;
+  font-family: 'Play', sans-serif;
+  color: darkslategray;
+}
+#logo img {
+  width: 28px;
+}
+#logo span {
+  position: relative;
+  left: -2px;
+  top: 1px;
+}
+
+/*
+ *
+ */
+
+.container {
+  display: flex;
+  justify-content: center;
+}
+
+.cards {
+  margin-top: 1em;
+  display: flex;
+  align-items: flex-start;
+  __flex-direction: column;
+}
+
+/*
+ *
+ */
+
+.spacer {
+  width: 40px;
+}
+
+.card {
+  margin: 1em;
+  min-height: 0;
+}
+
+.card .header {
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  background-color: lightsteelblue;
+  display: flex;
+  justify-content: space-between;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.card .footer {
+  background-color: lightsteelblue;
+  padding-top: 4px;
+  padding-left: 4px;
+  padding-right: 4px;
+  font-size: x-small;
+  display: flex;
+  justify-content: space-between;
+  color: darkslategray;
+}
+.card .footer i { }
+.card .footer > span.title { flex-grow: 1; }
+
+.card .panel .header {
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: #EEE;
+  border-bottom: 1px solid lightgray;
+  height: 16px;
+  cursor: pointer;
+}
+.card .panel .header {
+}
+.card .panel .header h2 { flex-grow: 1; margin-right: 6px; }
+
+.card .header select {
+  border: none;
+  outline: none;
+  padding: 0;
+  margin: 0;
+  background-color: transparent;
+}
+
+.card .header input {
+  background: transparent;
+  outline: none;
+  border: none;
+  border-bottom: 1px solid darkslateblue;
+  font-size: x-large;
+}
+
+.card .panel .section input {
+  width: 100%;
+  outline: none;
+  border: none;
+  border-bottom: 1px solid lightgray;
+}
+.card ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  color: gray;
+}
+
+/*
+ *
+ */
+
+.card .row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 2px 4px 0px 4px;
+}
+.card .row.bleed {
+  display: block;
+  padding: 0;
+}
+.card .row.bleed .horizontal {
+  display: flex;
+  flex-direction: row;
+}
+.card .row.bleed div.text {
+  padding: 4px;
+  font-size: small;
+  margin-bottom: .5em;
+}
+.card .row.bleed img {
+  object-fit: none;
+  object-position: center;
+  height: 150px;
+  width: 100%;
+}
+.card .row.bleed img.left {
+  object-fit: inherit;
+  object-position: center;
+  height: 100px;
+  width: 100px;
+}
+
+.card .row.cancel * {
+  color: #AAA !important;
+}
+.card .row > span {
+  font-size: small;
+}
+.card .row .low {
+  color: #BBB;
+}
+.card .row .warning {
+  color: orange !important;
+  cursor: pointer;
+}
+.card .row .alert {
+  color: darkred !important;
+  cursor: pointer;
+}
+.card .row .check {
+  color: #999 !important;
+  cursor: pointer;
+}
+.card .row > span.status  { width: 30px; text-align: left; color: green; }
+.card .row > span.date    { width: 45px; text-align: right; color: darkblue; padding-right: 6px; }
+.card .row > span.time    { width: 30px; color: darkblue; margin-right: 1em; }
+.card .row > span.from    { width: 50px; }
+.card .row > span.to      { width: 50px; }
+.card .row > span.wide    { width: 80px; }
+.card .row > span.title   { flex-grow: 1; }
+.card .row > span.money   { width: 10px; text-align: right; color: green; }
+.card .row > span.icon    { cursor: pointer; text-align: right; color: lightslategrey; margin-left: 1em; }
+
+.card .row > span.fixed   { flex-grow: 1; width: 200px; }
+
+.card .row img.social     { width: 16px; height: 16px; }
+
+.card .row .title span    { font-size: x-small; }
+
+.card .row input {
+  font-size: 14px;
+}
+
+.card .map-panel {
+  border-top: 1px solid lightgray;
+}

@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { compose, graphql } from 'react-apollo';
 
 import { Logger } from 'alien-util';
-import { ID, Fragments, Matcher } from 'alien-core';
+import { Fragments, Matcher } from 'alien-core';
 
 import { AppAction } from '../common/reducers';
 
@@ -90,11 +90,11 @@ export class Connector {
       // Map properties to query.
       // http://dev.apollodata.com/react/queries.html#graphql-options
       options: (props) => {
-        let { itemId } = props;
+        let { itemKey:key } = props;
 
         return {
           variables: {
-            itemId
+            key
           }
         };
       },
@@ -106,7 +106,7 @@ export class Connector {
         let item = _.get(data, path);
 
         if (!loading && !item) {
-          console.warn('Invalid item: ' + JSON.stringify(ID.fromGlobalId(ownProps.itemId)));
+          console.warn('Invalid item: ' + JSON.stringify(ownProps.key));
         }
 
         return {

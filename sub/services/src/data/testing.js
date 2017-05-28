@@ -5,8 +5,8 @@
 import _ from 'lodash';
 
 import { Logger } from 'alien-util';
-import { Database, ID, MutationUtil, Randomizer, Transforms } from 'alien-core';
-import { Enum } from 'alien-client';
+import { Database, Enum, ID, MutationUtil, Transforms } from 'alien-core';
+import { Randomizer } from 'alien-core/testing';
 
 const logger = Logger.get('testing');
 
@@ -136,7 +136,7 @@ export class TestGenerator {
     // Add project to group.
     'Project': (item, context) => {
       return {
-        itemId: ID.toGlobalId('Group', item.group),
+        key: ID.key({ type: 'Group', id: item.group }),
         mutations: [
           MutationUtil.createSetMutation('projects', 'id', item.id)
         ]
@@ -147,7 +147,7 @@ export class TestGenerator {
     'Task': (item, context) => {
       if (item.project) {
         return {
-          itemId: ID.toGlobalId('Project', item.project),
+          key: ID.key({ type: 'Project', id: item.project }),
           mutations: [
             MutationUtil.createSetMutation('tasks', 'id', item.id)
           ]
@@ -195,8 +195,8 @@ export class TestGenerator {
                   // TODO(burdon): Add default label for private project.
                   // TODO(burdon): Auto-provision project when creating a group.
 
-                  .then(() =>
-                    this.generateItems(context, 'Project', 1))
+                  // .then(() =>
+                  //   this.generateItems(context, 'Project', 1))
 
                   .then(() =>
                     this.generateItems(context, 'Task', this._randomizer.chance.natural({ min: 10, max: 20 })))
@@ -236,10 +236,10 @@ export class TestGenerator {
 
             // Load and update items.
             return Promise.all(_.each(itemMutations, itemMutation => {
-              let { type, id:itemId } = ID.fromGlobalId(itemMutation.itemId);
+              let { type, id } = itemMutation.key;
 
               let itemStore = getStore(type);
-              return itemStore.getItem(context, type, itemId).then(item => {
+              return itemStore.getItem(context, type, id).then(item => {
                 console.assert(item);
 
                 Transforms.applyObjectMutations(item, itemMutation.mutations);

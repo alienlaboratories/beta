@@ -12,7 +12,7 @@ export class Task {
    * @param data Task data.
    * @returns {Promise}
    */
-  execTask(data) {
+  async execTask(data) {
     throw new Error('Not implemented');
   }
 }

@@ -1,0 +1,54 @@
+{
+  "items": {
+
+    "system": [
+      {
+        "type": "Group",
+        "id": "G-1",
+        "title": "Group 1"
+      },
+      {
+        "type": "User",
+        "id": "tester",
+        "displayName": "Test User"
+      }
+    ],
+
+    "user": [
+      {
+        "bucket": "G-1",
+        "type": "Project",
+        "id": "P-1",
+        "title": "Default Project",
+        "labels": ["_default"],
+        "group": "G-1",
+        "tasks": ["T-1", "T-2", "T-3"]
+      },
+
+      {
+        "bucket": "G-1",
+        "type": "Task",
+        "id": "T-1",
+        "title": "Task 1",
+        "owner": "tester",
+        "project": "P-1"
+      },
+      {
+        "bucket": "G-1",
+        "type": "Task",
+        "id": "T-2",
+        "title": "Task 2",
+        "owner": "tester",
+        "project": "P-1"
+      },
+      {
+        "bucket": "G-1",
+        "type": "Task",
+        "id": "T-3",
+        "title": "Task 3",
+        "owner": "tester",
+        "project": "P-1"
+      }
+    ]
+  }
+}

@@ -3,9 +3,8 @@
 //
 
 import { Logger } from 'alien-util';
-import { AuthUtil } from 'alien-core';
+import { AuthUtil, Const } from 'alien-core';
 
-import { AppDefs } from '../../common/defs';
 import { NetUtil } from '../util/net';
 
 const logger = Logger.get('client');
@@ -24,7 +23,7 @@ export class ConnectionManager {
   static setClientHeader(headers, clientId) {
     console.assert(_.isString(clientId), 'Invalid client ID.');
     return _.assign(headers, {
-      [AppDefs.HEADER.CLIENT_ID]: clientId
+      [Const.HEADER.CLIENT_ID]: clientId
     });
   }
 
@@ -105,7 +104,7 @@ export class ConnectionManager {
       ConnectionManager.setClientHeader(headers, clientId);
     } else {
       // Web client should have ID.
-      console.assert(platform !== AppDefs.PLATFORM.WEB);
+      console.assert(platform !== Const.PLATFORM.WEB);
     }
 
     let request = { platform, messageToken };

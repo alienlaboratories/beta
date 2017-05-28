@@ -18,8 +18,8 @@ import { Fragments } from './fragments';
 // TODO(burdon): Return updated mutations (e.g., ID replaced with object) and store in batch.update.
 
 export const UpsertItemsMutation = gql`
-  mutation UpsertItemsMutation($mutations: [ItemMutationInput]!) {
-    upsertItems(mutations: $mutations) {
+  mutation UpsertItemsMutation($itemMutations: [ItemMutationInput]!) {
+    upsertItems(itemMutations: $itemMutations) {
       ...ItemFragment
       ...ContactTasksFragment
       ...TaskFragment
@@ -44,29 +44,29 @@ export const UpsertItemsMutationPath = // 'upsertItems'
  */
 export class MutationUtil {
 
+  static DEF_ITEM_KEYS = {
+    title:          'string',
+    email:          'string',
+    thumbnailUrl:   'string'
+  };
+
   /**
    * Create mutations to clone the given item.
    *
-   * @param {string} bucket
    * @param {Item} item
+   * @param {[{ field:type }]} keys to clone.
    * @return {[Mutation]}
    */
-  static cloneItem(bucket, item) {
-    console.assert(bucket && item);
+  static cloneItem(item, keys=MutationUtil.DEF_ITEM_KEYS) {
+    console.assert(item && keys);
+    let mutations = [];
 
-    let mutations = [
-      MutationUtil.createFieldMutation('bucket', 'string', bucket)
-    ];
-
-    // TODO(burdon): Introspect type map.
-    mutations.push(MutationUtil.createFieldMutation('title', 'string', item.title));
-
-    if (item.email) {
-      mutations.push(MutationUtil.createFieldMutation('email', 'string', item.email));
-    }
-    if (item.thumbnailUrl) {
-      mutations.push(MutationUtil.createFieldMutation('thumbnailUrl', 'string', item.thumbnailUrl));
-    }
+    _.each(keys, (type, key) => {
+      let value = item[key];
+      if (value) {
+        mutations.push(MutationUtil.createFieldMutation(key, type, value));
+      }
+    });
 
     return mutations;
   }
@@ -179,7 +179,7 @@ export class Mutator {
 
   /**
    * @param idGenerator
-   * @param mutate Function provided by apollo.
+   * @param {function} mutate Provided by apollo.
    * @param config
    * @param analytics
    */

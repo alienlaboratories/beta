@@ -10,6 +10,12 @@
     "react"
   ],
 
+  "plugins": [
+
+    // http://babeljs.io/docs/plugins/transform-async-to-generator
+    "transform-async-to-generator"
+  ],
+
   "env": {
     "hot": {
       "plugins": [

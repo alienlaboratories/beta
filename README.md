@@ -1,14 +1,57 @@
-# Beta
+# Alien Beta
 
-## Getting Started.
+## Getting Started
+
+### Development Tools
+
+| ----------- | --------------------------------------------------------------------------- |
+| `yarn`      | Node package manager (replaces `npm`)                                       |
+| `lerna`     | Monorepo workspace manager (to be deprecated by `yarn`)                     |
+| `webpack`   | Build JS assets                                                             |
+| `jest`      | Client/server test framework (uses `jasmine`; replaces `mocha`, `karma`)    |
+| `grunt`     | Misc. build tools.                                                          |
+
+
+NOTE: `lerna` is deprecated; `yarn` may subsume capabilities:
+  - https://github.com/lerna/lerna/issues/408
+  - https://github.com/yarnpkg/yarn/issues/3294
+  - https://github.com/yarnpkg/yarn/issues/2863
+    - https://github.com/yarnpkg/rfcs/pull/34
+
+
+### Cold start
 
 ~~~~
-  ./tools/eng/
-    init.sh         Configure all sub modules.
-    setup.sh        Install all tools.
-    test.sh         Run all unit tests.
-    update.sh       Update deps in all modules.
+git clone git@github.com:alienlabs/beta.git
+
+cd beta
+
+./tools/install_tools.sh
+
+lerna bootstrap
 ~~~~
+
+### Running tests
+
+~~~~
+lerna run test
+~~~~
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## TODO
 

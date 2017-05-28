@@ -15,11 +15,11 @@ import session from 'express-session';
 import uuid from 'uuid';
 
 import { ExpressUtil, HttpError, HttpUtil, Logger } from 'alien-util';
-import { AuthUtil, Database, IdGenerator, Matcher, MemoryItemStore, SystemStore } from 'alien-core';
+import { AuthUtil, Const, Database, IdGenerator, Matcher, MemoryItemStore, SystemStore } from 'alien-core';
 import { TestItemStore } from 'alien-core/testing';
 import { AppDefs } from 'alien-client';
 import { apiRouter } from 'alien-api';
-import { Loader, TestGenerator } from 'alien-services';
+import { hasJwtHeader, Loader, TestGenerator } from 'alien-services';
 
 import {
   getIdToken,
@@ -54,8 +54,7 @@ import { clientRouter, ClientManager } from './router/client';
 import { hotRouter } from './router/hot';
 import { loggingRouter } from './router/log';
 
-import { Const } from '../common/defs';
-
+import META from './meta';
 import ENV from './env';
 
 const logger = Logger.get('server');
@@ -158,7 +157,7 @@ export class WebServer {
     //
 
     // Default login.
-    this._googleAuthProvider = new GoogleOAuthProvider(_.get(this._config, 'google'), ENV.APP_SERVER_URL);
+    this._googleAuthProvider = new GoogleOAuthProvider(_.get(this._config, 'google'), ENV.ALIEN_SERVER_URL);
 
     this._database
       .registerQueryProcessor(new GoogleDriveQueryProcessor(this._googleAuthProvider));
@@ -219,9 +218,9 @@ export class WebServer {
     logger.log('initMiddleware');
 
     // https://expressjs.com/en/starter/static-files.html
-    this._app.use(favicon(path.join(ENV.APP_SERVER_PUBLIC_DIR, 'favicon.ico')));
+    this._app.use(favicon(path.join(ENV.ALIEN_SERVER_PUBLIC_DIR, 'favicon.ico')));
 
-    this._app.use(express.static(ENV.APP_SERVER_PUBLIC_DIR));
+    this._app.use(express.static(ENV.ALIEN_SERVER_PUBLIC_DIR));
 
     this._app.use(bodyParser.urlencoded({ extended: false }));
     this._app.use(bodyParser.json());
@@ -261,7 +260,7 @@ export class WebServer {
       global: (key) => {
         return _.get({
           env: __ENV__,
-          version: Const.APP_VERSION
+          version: META.APP_VERSION
         }, key);
       },
 
@@ -272,8 +271,8 @@ export class WebServer {
     });
 
     this._app.engine('handlebars', handlebars({
-      layoutsDir: path.join(ENV.APP_SERVER_VIEWS_DIR, '/layouts'),
-      partialsDir: path.join(ENV.APP_SERVER_VIEWS_DIR, '/partials'),
+      layoutsDir: path.join(ENV.ALIEN_SERVER_VIEWS_DIR, '/layouts'),
+      partialsDir: path.join(ENV.ALIEN_SERVER_VIEWS_DIR, '/partials'),
       defaultLayout: 'main',
       helpers,
       partials: {
@@ -282,7 +281,7 @@ export class WebServer {
     }));
 
     this._app.set('view engine', 'handlebars');
-    this._app.set('views', ENV.APP_SERVER_VIEWS_DIR);
+    this._app.set('views', ENV.ALIEN_SERVER_VIEWS_DIR);
   }
 
   /**
@@ -309,7 +308,7 @@ export class WebServer {
     this._app.use(AppDefs.APP_PATH, appRouter(this._config, this._clientManager, {
 
       // Webpack bundles.
-      assets: ENV.APP_SERVER_ASSETS_DIR
+      assets: ENV.ALIEN_SERVER_ASSETS_DIR
     }));
   }
 
@@ -320,6 +319,9 @@ export class WebServer {
 
     // Register the API router.
     this._app.use('/api', apiRouter(this._database, {
+
+      // Auth function for routes.
+      authCheck: hasJwtHeader,
 
       // API request.
       graphql: '/graphql',
@@ -348,7 +350,7 @@ export class WebServer {
           credentials: user.credentials,
 
           // TODO(burdon): Why is this needed?
-          clientId: req.headers[AppDefs.HEADER.CLIENT_ID]
+          clientId: req.headers[Const.HEADER.CLIENT_ID]
         };
 
         if (!userId) {
@@ -416,7 +418,7 @@ export class WebServer {
     logger.log('initAdmin');
 
     // Status.
-    this._app.get('/status', (req, res, next) => {
+    this._app.get('/status', (req, res) => {
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify({
         env: __ENV__,
@@ -474,7 +476,7 @@ export class WebServer {
     this._app.get(AppDefs.GRAPHIQL_PATH, isAuthenticated(), (req, res) => {
       let headers = {};
       AuthUtil.setAuthHeader(headers, getIdToken(req.user));
-      headers[AppDefs.HEADER.CLIENT_ID] = req.query.clientId;
+      headers[Const.HEADER.CLIENT_ID] = req.query.clientId;
       res.render('testing/graphiql', {
         config: {
           graphql: AppDefs.GRAPHQL_PATH,
@@ -549,9 +551,9 @@ export class WebServer {
     let loader = new Loader(this._database);
     return Promise.all([
       // TODO(burdon): Testing only?
-      loader.parse(JSON.parse(fs.readFileSync(path.join(ENV.APP_SERVER_DATA_DIR, 'accounts.json'), 'utf8')),
+      loader.parse(JSON.parse(fs.readFileSync(path.join(ENV.ALIEN_SERVER_DATA_DIR, 'accounts.json'), 'utf8')),
         Database.NAMESPACE.SYSTEM, /^(Group)\.(.+)\.(.+)$/),
-      loader.parse(JSON.parse(fs.readFileSync(path.join(ENV.APP_SERVER_DATA_DIR, 'folders.json'), 'utf8')),
+      loader.parse(JSON.parse(fs.readFileSync(path.join(ENV.ALIEN_SERVER_DATA_DIR, 'folders.json'), 'utf8')),
         Database.NAMESPACE.SETTINGS, /^(Folder)\.(.+)$/)
     ]).then(() => {
       logger.log('Initializing groups...');

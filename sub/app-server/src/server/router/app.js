@@ -1,14 +1,15 @@
-//
+//`
 // Copyright 2017 Alien Labs.
 //
 
 import _ from 'lodash';
 import express from 'express';
 
+import { Const } from 'alien-core';
 import { AppDefs } from 'alien-client';
 import { getUserSession, isAuthenticated } from 'alien-services';
 
-import { Const } from '../../common/defs';
+import META from '../meta';
 
 /**
  * Sets-up serving the app (and related assets).
@@ -67,7 +68,7 @@ export const appRouter = (config, clientManager, options) => {
 
     // Create the client.
     // TODO(burdon): Client should register after startup? (might store ID -- esp. if has worker, etc.)
-    clientManager.create(user.id, AppDefs.PLATFORM.WEB).then(client => {
+    clientManager.create(user.id, Const.PLATFORM.WEB).then(client => {
       console.assert(client);
 
       //
@@ -82,7 +83,7 @@ export const appRouter = (config, clientManager, options) => {
         query: req.query,
 
         app: {
-          version: Const.APP_VERSION
+          version: META.APP_VERSION
         },
 
         // DOM root element.
