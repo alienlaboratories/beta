@@ -258,6 +258,10 @@ export class Batch {
        */
       update: (proxy, { data }) => {
         logger.log('Batch.mutate.update', data);
+        if (_.isEmpty(this._itemMutations)) {
+          logger.warn('Empty batch: ' + JSON.stringify(data));
+          return;
+        }
 
         // TODO(burdon): Move Transforms.applyObjectMutations (from above) here.
 
@@ -326,7 +330,6 @@ export class Batch {
         //   data: d2
         // });
       }
-
     }).then(({ data }) => {
       // Called when on network response (not optimistic response).
       logger.log('Commit', TypeUtil.stringify(data));

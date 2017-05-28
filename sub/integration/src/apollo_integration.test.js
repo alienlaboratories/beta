@@ -18,31 +18,42 @@ Logger.setLevel({}, Logger.Level.warn);
 
 //
 // End-to-end Apollo tests.
+// NOTE: Does not depent on react (react-apollo).
 //
 
-// TODO(burdon): Batch mutations (return nothing).
-// TODO(burdon): Use schema/fragment defintions directly (maintain separation for sanity testing).
+// TODO(burdon): upsertItems returns mutations (server might update them; version numbers, etc.)
+// TODO(burdon): Registry of fragments (1 per type) to update on mutations.
+// TODO(burdon): Transforms object: configure client/server: client sets { __typename, id }.
+// TODO(burdon): MutationUtil.createIdMutation(key); { type, id }
+// TODO(burdon): Test react graphql update in client tests (not here).
+// TODO(burdon): Move fragments to alien-api.
+// TODO(burdon): Implment local network interface for main app.
+// TODO(burdon): Version numbers (inc. on server).
 
 // TODO(burdon): Subscriptions (onMutation)? Make future proof. For now, invalidate and requery).
 // http://dev.apollodata.com/react/subscriptions.html
 
-// TODO(burdon): Version numbers (inc. on server).
-// TODO(burdon): Implment local network interface for main app.
+// TODO(burdon): Update issues: (fragmentMatcher strings; version skew).
+// https://github.com/apollographql/apollo-client/issues/1741 [burdon]
+// https://github.com/apollographql/apollo-client/issues/1708 [burdon]
+// https://github.com/apollographql/react-apollo/issues/386
 
 //
+// TODO(burdon): Update API fragments and use here (maintain independent fragment testing also).
 // http://graphql.org/learn/queries/#fragments
 // http://graphql.org/learn/queries/#inline-fragments
 //
 
-// TODO(burdon): Test fragments; e.g., partial updates (i.e., check updates all queries).
-// - define "thin" fragments for all types: incl. Item meta directly (id, type, title) and non-vectors.
-// - apply mutations in reducers for each query (traverse previousResult and apply)
-//   - need objects for IDs.
-
-// TODO(burdon): Update issues (fragment matcher from schema).
-// https://github.com/apollographql/apollo-client/issues/1741 [burdon]
-// https://github.com/apollographql/apollo-client/issues/1708 [burdon]
-// https://github.com/apollographql/react-apollo/issues/386
+const ItemMutation = gql`
+  mutation ItemMutation($namespace: String, $itemMutations: [ItemMutationInput]!) {
+    upsertItems(namespace: $namespace, itemMutations: $itemMutations) {
+      bucket
+      type
+      id 
+      title 
+    }
+  }
+`;
 
 const ItemFragment = gql`
   fragment ItemFragment on Item {
@@ -61,6 +72,31 @@ const TaskFragment = gql`
   }
 
   ${ItemFragment}
+`;
+
+const ProjectFragment = gql`
+  fragment ProjectFragment on Project {
+    ...ItemFragment
+    
+    tasks {
+      id
+    }
+  }
+
+  ${ItemFragment}
+`;
+
+const ProjectDeepFragment = gql`
+  fragment ProjectDeepFragment on Project {
+    ...ItemFragment
+    
+    tasks {
+      ...TaskFragment
+    }
+  }
+
+  ${ItemFragment}
+  ${TaskFragment}
 `;
 
 const ViewerQuery = gql`
@@ -121,18 +157,6 @@ const TaskQuery = gql`
   }
   
   ${TaskFragment}
-`;
-
-// TODO(burdon): Remove return items.
-const ItemMutation = gql`
-  mutation ItemMutation($namespace: String, $itemMutations: [ItemMutationInput]!) {
-    upsertItems(namespace: $namespace, itemMutations: $itemMutations) {
-      bucket
-      type
-      id 
-      title 
-    }
-  }
 `;
 
 describe('End-to-end Apollo-GraphQL Resolver:', () => {
@@ -344,7 +368,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
 
     const projectKey = { bucket, type: 'Project', id: 'P-1' };
 
-    // Query project.
+    // Query Project.
     let projectResult = await client.query({
       query: ProjectQuery,
       variables: {
@@ -393,6 +417,72 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
   });
 
   //
+  // Mutaiton to create Task and insert into Project.
+  //
+  test('Insert into Project.', async () => {
+
+    const projectKey = { bucket, type: 'Project', id: 'P-1' };
+    const title = 'New Task';
+
+    // Query Project.
+    let { data: { item:project }} = await client.query({
+      query: ProjectQuery,
+      variables: {
+        key: projectKey
+      }
+    });
+
+    // Create Task.
+    let task = {
+      __typename: 'Task',
+      bucket: project.bucket,
+      type: 'Task',
+      id: 'T-4',
+      title: title,
+      status: 1
+    };
+
+    // Write Task to cache.
+    client.writeFragment({
+      id: ID.dataIdFromObject(task),
+      fragment: TaskFragment,
+      fragmentName: 'TaskFragment',
+      data: task
+    });
+
+    // Add to Project.
+    let mutatedProject = TypeUtil.clone(project);
+    mutatedProject.tasks.push(task);
+
+    // TODO(burdon): Also mutate existing Task.
+
+    // Write Project to cache.
+    client.writeFragment({
+      id: ID.dataIdFromObject(project),
+      fragment: ProjectFragment,
+      fragmentName: 'ProjectFragment',
+      data: mutatedProject
+    });
+
+    // Read from cache.
+    let cachedProject = client.readFragment({
+      id: ID.dataIdFromObject(project),
+      fragment: ProjectFragment,
+      fragmentName: 'ProjectFragment'
+    });
+    expect(cachedProject.tasks.length).toEqual(project.tasks.length + 1);
+
+    // Read different fragment (check also updated).
+    cachedProject = client.readFragment({
+      id: ID.dataIdFromObject(project),
+      fragment: ProjectDeepFragment,
+      fragmentName: 'ProjectDeepFragment'
+    });
+    expect(cachedProject.tasks.length).toEqual(project.tasks.length + 1);
+    expect(cachedProject.tasks[cachedProject.tasks.length - 1].title).toEqual(title);
+  });
+
+  //
   // Batch API.
   //
   test('Batch mutations.', async () => {
@@ -411,8 +501,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
       });
     };
 
-    // TODO(burdon): Test null batch just gives warning (no error).
     let batch = new Batch(idGenerator, mutate, bucket);
-    // return batch.commit();
+    return batch.commit();
   });
 });
