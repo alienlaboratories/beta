@@ -32,6 +32,9 @@
     "redux": "^3.6.0",
     "uuid": "^3.0.1"
   },
+  "peerDependencies": {
+    "graphql": "^0.10.1"
+  },
   "jest": {
     "verbose": false,
     "transformIgnorePatterns": [

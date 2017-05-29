@@ -17,7 +17,7 @@ import update from 'immutability-helper';
 
 import { Logger, TypeUtil } from 'alien-util';
 import { Batch, Fragments, IdGenerator, ItemUtil, MutationUtil } from 'alien-core';
-import { ITEM_TYPES, UpsertItemsMutation, UpsertItemsMutationName } from 'alien-core';
+import { ITEM_TYPES, BatchMutation, BatchMutationName } from 'alien-core';
 
 import { createFragmentMatcher } from '../../../util/apollo_tools';
 import { createNetworkInterfaceWithAuth, LocalNetworkInterface } from '../../../testing/apollo_testing';
@@ -301,7 +301,7 @@ const OptionsComponentWithRedux = connect(mapStateToProps, mapDispatchToProps)(O
 
 const SearchReducer = (path, options={}) => (previousResult, action, variables) => {
   if (action.type === 'APOLLO_MUTATION_RESULT' &&
-    action.operationName === UpsertItemsMutationName && options.reducer) {
+    action.operationName === BatchMutationName && options.reducer) {
 
     // NOTE: The reducer isn't necessary for mutations that return full responses (with ID/links, etc.)
     // It is required for search results.
@@ -424,7 +424,7 @@ const ListComponentWithApollo = compose(
   }),
 
   // http://dev.apollodata.com/react/mutations.html
-  graphql(UpsertItemsMutation, {
+  graphql(BatchMutation, {
 
     options: {
 

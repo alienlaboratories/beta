@@ -63,7 +63,6 @@ input KeyInput {
 # https://dev-blog.apollodata.com/new-features-in-graphql-batch-defer-stream-live-and-subscribe-7585d0c28b07
 #===================================================================================================
 
-
 #===================================================================================================
 # Core.
 # TODO(burdon): Factor out to alien-core.
@@ -282,7 +281,6 @@ type Board {
 
 #===================================================================================================
 # Mutations.
-# NOTE: The namespace is provided in the resolver context.
 #===================================================================================================
 
 input ItemMutationInput {
@@ -295,8 +293,8 @@ input ItemMutationInput {
   mutations: [ObjectMutationInput]!
 }
 
-type ItemMutationResponse {
+type BatchMutationResponse {
 
-  # TODO(burdon): Sequence numbers of each Item?
-  status: Int!
+  # TODO(burdon): Respond with updated mutations (requires types not inputs).
+  items: [Item]!
 }

@@ -17,9 +17,9 @@ import { Fragments } from './fragments';
 
 // TODO(burdon): Return updated mutations (e.g., ID replaced with object) and store in batch.update.
 
-export const UpsertItemsMutation = gql`
-  mutation UpsertItemsMutation($itemMutations: [ItemMutationInput]!) {
-    upsertItems(itemMutations: $itemMutations) {
+export const BatchMutation = gql`
+  mutation BatchMutation($itemMutations: [ItemMutationInput]!) {
+    batchMutation(itemMutations: $itemMutations) {
       ...ItemFragment
       ...ContactTasksFragment
       ...TaskFragment
@@ -33,11 +33,11 @@ export const UpsertItemsMutation = gql`
   ${Fragments.ProjectBoardFragment}
 `;
 
-export const UpsertItemsMutationName = // 'UpsertItemsMutation'
-  _.get(UpsertItemsMutation, 'definitions[0].name.value');
+export const BatchMutationName = // 'BatchMutation'
+  _.get(BatchMutation, 'definitions[0].name.value');
 
-export const UpsertItemsMutationPath = // 'upsertItems'
-  _.get(UpsertItemsMutation, 'definitions[0].selectionSet.selections[0].name.value');
+export const BatchMutationPath = // 'batchMutation'
+  _.get(BatchMutation, 'definitions[0].selectionSet.selections[0].name.value');
 
 /**
  * Utils to create mutations.
@@ -155,7 +155,7 @@ export class Mutator {
    * @return Standard mutation wrapper supplied to redux's combine() method.
    */
   static graphql() {
-    return graphql(UpsertItemsMutation, {
+    return graphql(BatchMutation, {
       withRef: true,
 
       options: {

@@ -69,9 +69,11 @@ describe('GraphQL Resolvers:', () => {
     };
 
     let query = `
-      mutation UpsertItemsMutation($itemMutations: [ItemMutationInput]!) {
-        upsertItems(itemMutations: $itemMutations) {
-          id
+      mutation BatchMutation($itemMutations: [ItemMutationInput]!) {
+        batchMutation(itemMutations: $itemMutations) {
+          items {
+            id
+          }
         }  
       }
     `;

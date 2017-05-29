@@ -47,13 +47,16 @@ test('Create item.', (done) => {
 
 test('Create and insert (with optimistic responses).', (done) => {
 
+  // TODO(burdon): Opt respomnse.
+
   function mutator(options) {
     return new Promise((resolve, reject) => {
-      let { upsertItems } = _.get(options, 'optimisticResponse');
-      expect(upsertItems).toHaveLength(2);
+      let { batchMutation } = _.get(options, 'optimisticResponse');
+      expect(batchMutation).not.toBeUndefined();
+      expect(batchMutation.items).toHaveLength(2);
 
       // Check parent has been patched with the inserted item.
-      expect(_.get(upsertItems[0], 'id')).toEqual(_.get(upsertItems[1], 'tasks[0].id'));
+      expect(_.get(batchMutation[0], 'id')).toEqual(_.get(batchMutation[1], 'tasks[0].id'));
       done();
     });
   }

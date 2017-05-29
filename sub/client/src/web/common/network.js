@@ -6,7 +6,7 @@ import { print } from 'graphql/language/printer';
 import { createNetworkInterface } from 'apollo-client';
 
 import { HttpUtil, TypeUtil, Logger } from 'alien-util';
-import { AuthUtil, Const, ItemStore, UpsertItemsMutationName } from 'alien-core';
+import { AuthUtil, Const, ItemStore, BatchMutationName } from 'alien-core';
 
 import { ConnectionManager } from './client';
 
@@ -365,7 +365,7 @@ export class CachingNetworkInterface { // extends NetworkInterface {
         // TODO(burdon): Determine namespace from item when creating mutator.
 
         // Mutations.
-        case UpsertItemsMutationName: {
+        case BatchMutationName: {
           let { namespace, mutations } = variables;
           if (namespace === itemStore.namespace) {
             logger.info('Local mutations: ' + TypeUtil.stringify(mutations));

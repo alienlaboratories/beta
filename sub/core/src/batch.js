@@ -8,7 +8,7 @@ import { Logger, TypeUtil } from 'alien-util';
 
 import { Database } from './database';
 import { ID } from './id';
-import { MutationUtil, UpsertItemsMutationName } from './mutations';
+import { MutationUtil, BatchMutationName } from './mutations';
 import { FragmentsMap } from './schema';
 import { Transforms } from './transforms';
 
@@ -147,10 +147,14 @@ export class Batch {
       // http://dev.apollodata.com/react/optimistic-ui.html#optimistic-basics
       // http://dev.apollodata.com/react/cache-updates.html
       optimisticResponse = {
-        __typename: UpsertItemsMutationName,
+        __typename: BatchMutationName,
 
         // Add hint for batch.update.
         optimistic: true,
+
+        batchMutation: {
+          items: _.map(this._itemMutations, itemMutation => itemMutation.key)
+        }
       };
     }
 
@@ -162,7 +166,7 @@ export class Batch {
     logger.log('Batch:', TypeUtil.stringify(this._itemMutations));
     return this._mutate({
 
-      // RootMutation.upsertItems([ItemMutationInput]!)
+      // RootMutation.batchMutation([ItemMutationInput]!)
       variables: {
         itemMutations: this._itemMutations
       },
@@ -188,8 +192,9 @@ export class Batch {
        * @param {DataProxy} proxy http://dev.apollodata.com/core/apollo-client-api.html#DataProxy
        * @param {Object} data Mutation result.
        */
+      // TODO(burdon): Factor out update method.
       update: (proxy, { data }) => {
-        logger.log('Batch.mutate.update', data);
+        logger.log('Batch.mutate.update', JSON.stringify(data));
         if (_.isEmpty(this._itemMutations)) {
           logger.warn('Empty batch: ' + JSON.stringify(data));
           return;
@@ -216,7 +221,7 @@ export class Batch {
             });
 
             if (!cachedItem) {
-              cachedItem = {__typename: key.type, ...key};
+              cachedItem = {__typename: key.type, version: 0, ...key};
             }
 
             //

@@ -21,8 +21,6 @@ Logger.setLevel({}, Logger.Level.warn);
 // NOTE: Does not depent on react (react-apollo).
 //
 
-// TODO(burdon): upsertItems returns mutations (server might update them; version numbers, etc.)
-// TODO(burdon): Registry of fragments (1 per type) to update on mutations.
 // TODO(burdon): Transforms object: configure client/server: client sets { __typename, id }.
 // TODO(burdon): MutationUtil.createIdMutation(key); { type, id }
 // TODO(burdon): Test react graphql update in client tests (not here).
@@ -46,11 +44,13 @@ Logger.setLevel({}, Logger.Level.warn);
 
 const ItemMutation = gql`
   mutation ItemMutation($namespace: String, $itemMutations: [ItemMutationInput]!) {
-    upsertItems(namespace: $namespace, itemMutations: $itemMutations) {
-      bucket
-      type
-      id 
-      title 
+    batchMutation(namespace: $namespace, itemMutations: $itemMutations) {
+      items {
+        bucket
+        type
+        id
+        version
+      }
     }
   }
 `;
@@ -60,6 +60,7 @@ const ItemFragment = gql`
     bucket
     type
     id 
+    version
     title
   }
 `;
@@ -247,7 +248,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     let items = _.get(searchResult, 'data.search.items');
     expect(items).toBeTruthy();
 
-    // Query item.
+    // Query item from cache.
     // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient\.query
     let itemResult = await client.query({
       query: ItemQuery,
@@ -280,8 +281,8 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
       }
     });
 
-    let upsertItem = _.get(mutationResult, 'data.upsertItems[0]');
-    expect(upsertItem.title).toEqual(title);
+    let { data: { batchMutation } } = mutationResult;
+    expect(batchMutation.items.length).toEqual(1);
 
     // Get cached item directly from store.
     // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.readQuery
@@ -292,7 +293,8 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
       }
     });
 
-    expect(cachedItem.title).toEqual(upsertItem.title);
+    // TODO(burdon): Test versions.
+    expect(cachedItem.id).toEqual(batchMutation.items[0].id);
   });
 
   //
@@ -445,6 +447,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
       bucket: project.bucket,
       type: 'Task',
       id: 'T-4',
+      version: 0,           // TODO(burdon): By default.
       title: title,
       status: 1
     };
@@ -460,8 +463,6 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     // Add to Project.
     let mutatedProject = TypeUtil.clone(project);
     mutatedProject.tasks.push(task);
-
-    // TODO(burdon): Also mutate existing Task.
 
     // Write Project to cache.
     client.writeFragment({
@@ -524,11 +525,15 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
       });
 
       let storeItem = client.store.getState().apollo.data[ID.dataIdFromObject(task)];
-      expect(cachedTask).toEqual(storeItem);
-
-      // TODO(burdon): Test query.
-      // TODO(burdon): Still need reducer for queries (e.g., Project/Task).
-      // TODO(burdon): Handle error if create doesn't set all required fields.
+      expect(storeItem).toEqual(cachedTask);
     });
   });
+
+  //
+  // Batch add Task to Project.
+  //
+  // TODO(burdon): Test query.
+  // TODO(burdon): Still need reducer for queries (e.g., Project/Task).
+  // TODO(burdon): Handle error if create doesn't set all required fields.
+
 });

@@ -39,6 +39,16 @@ export class Resolvers {
     return concatenateTypeDefs([ Framework, Schema ]);
   }
 
+  //
+  // TODO(burdon): Better wrapper.
+  //
+
+  static DefaultItem = {
+    version: (obj, args, context) => {
+      return obj.version || 0;
+    }
+  };
+
   /**
    * GraphQL Resolvers.
    * http://dev.apollodata.com/tools/graphql-tools/resolvers.html#Resolver-map
@@ -111,7 +121,7 @@ export class Resolvers {
       // field: (obj, args, context, info) => {null|[]|Promise|scalar|Object} result
       //
 
-      Group: {
+      Group: _.assign({}, Resolvers.DefaultItem, {
 
         members: (obj, args, context) => {
           return database.getItemStore(Database.NAMESPACE.SYSTEM).getItems(context, 'User', obj.members);
@@ -129,9 +139,9 @@ export class Resolvers {
 
           return database.getQueryProcessor(Database.NAMESPACE.USER).queryItems(context, obj, filter);
         }
-      },
+      }),
 
-      User: {
+      User: _.assign({}, Resolvers.DefaultItem, {
 
         title: (obj) => {
           if (!obj.displayName) {
@@ -151,9 +161,9 @@ export class Resolvers {
           // TODO(madadam): Different interface to get SystemStore. getGroup() is not a method of ItemStore interface.
           return database.getItemStore(Database.NAMESPACE.SYSTEM).getGroups(obj.id);
         }
-      },
+      }),
 
-      Project: {
+      Project: _.assign({}, Resolvers.DefaultItem, {
 
         boards: (obj, args, context) => {
           return _.map(_.get(obj, 'boards'), board => ({
@@ -183,9 +193,9 @@ export class Resolvers {
             return database.getItemStore(Database.NAMESPACE.USER).getItems(context, 'Contact', obj.contacts);
           }
         }
-      },
+      }),
 
-      Task: {
+      Task: _.assign({}, Resolvers.DefaultItem, {
 
         status: (obj, args, context) => {
           return obj.status || 0;
@@ -215,9 +225,9 @@ export class Resolvers {
             return database.getItemStore(Database.NAMESPACE.SYSTEM).getItem(context, 'User', obj.assignee);
           }
         }
-      },
+      }),
 
-      Contact: {
+      Contact: _.assign({}, Resolvers.DefaultItem, {
 
         tasks: (obj, args, context) => {
           if (obj.tasks) {
@@ -259,7 +269,7 @@ export class Resolvers {
               });
           }
         }
-      },
+      }),
 
       //
       // Root Viewer.
@@ -327,7 +337,7 @@ export class Resolvers {
 
       RootMutation: {
 
-        upsertItems: (obj, args, context) => {
+        batchMutation: (obj, args, context) => {
           Resolvers.checkAuthentication(context);
 
           // TODO(burdon): Enforce bucket.
@@ -345,7 +355,17 @@ export class Resolvers {
 
               // TODO(burdon): Move mutation notifications to Notifier/QueryRegistry.
               database.fireMutationNotification(context, itemMutations, items);
+
               return items;
+            })
+
+            //
+            // Response.
+            //
+            .then(items => {
+              return {
+                items
+              };
             });
         }
       }
