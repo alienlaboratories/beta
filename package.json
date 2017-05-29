@@ -14,6 +14,7 @@
     "eslint-plugin-react": "^7.0.1",
     "lodash": "^4.17.4"
   },
+  "eslintConfig": "eslintrc.yml",
   "scripts": {
     "bootstrap": "./scripts/bootstrap.sh"
   }

@@ -58,7 +58,7 @@ test('Create and insert (with optimistic responses).', (done) => {
     });
   }
 
-  new Batch(idGenerator, mutator, bucket, true)
+  new Batch(idGenerator, mutator, bucket, null, true)
     .createItem('Task', [
       MutationUtil.createFieldMutation('title', 'string', 'Test')
     ], 'task')

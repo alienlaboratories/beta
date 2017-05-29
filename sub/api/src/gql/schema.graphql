@@ -343,24 +343,6 @@ type RootQuery {
 # NOTE: The namespace is provided in the resolver context.
 #===================================================================================================
 
-# TODO(burdon): Move to framework.
-
-input ItemMutationInput {
-
-  # Item to mutate.
-  # TODO(burdon): Set key and bucket here (not in mutation).
-  key: KeyInput!
-
-  # Array of generic mutations.
-  mutations: [ObjectMutationInput]!
-}
-
-type ItemMutationResponse {
-
-  # TODO(burdon): Sequence numbers of each Item?
-  status: Int!
-}
-
 type RootMutation {
 
   # TODO(burdon): Rename itemMutations.

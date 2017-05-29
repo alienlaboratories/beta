@@ -67,7 +67,7 @@
       "nodemon => babel-node: runs the server with auto-rebuild (via babel) on change.",
       "start => runs the server with hot module replacement (server not updated)."
     ],
-    "lint": "eslint -c ../../.eslintrc.yml ./src",
+    "lint": "eslint -c ../../eslintrc.yml ./src",
     "test": "jest --silent",
     "webpack": "webpack --watch",
     "webpack-server": "webpack --config webpack.config.js",

@@ -53,7 +53,7 @@
     ]
   },
   "scripts": {
-    "lint": "eslint -c ../../.eslintrc.yml ./src",
+    "lint": "eslint -c ../../eslintrc.yml ./src",
     "test": "jest --silent --testNamePattern='^((?!Integration).)*$'",
     "all-tests": "jest --verbose",
     "admin": "babel-node src/admin.js"

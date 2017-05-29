@@ -199,6 +199,6 @@ export class Mutator {
   batch(bucket) {
     console.assert(bucket, 'Invalid bucket.');
     let optimistic = _.get(this._config, 'options.optimisticResponse');
-    return new Batch(this._idGenerator, this._mutate, bucket, optimistic);
+    return new Batch(this._idGenerator, this._mutate, bucket, null, optimistic);
   }
 }

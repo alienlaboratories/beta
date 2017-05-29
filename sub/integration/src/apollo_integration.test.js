@@ -7,7 +7,7 @@ import gql from 'graphql-tag';
 import ApolloClient from 'apollo-client';
 
 import { Logger, TypeUtil } from 'alien-util';
-import { Batch, ID, IdGenerator, MutationUtil, Transforms } from 'alien-core';
+import { Batch, FragmentsMap, ID, IdGenerator, MutationUtil, Transforms } from 'alien-core';
 import { DatabaseUtil, TestData } from 'alien-core/testing';
 import { SchemaUtil } from 'alien-api/testing';
 import { createFragmentMatcher } from 'alien-client';
@@ -158,6 +158,13 @@ const TaskQuery = gql`
   
   ${TaskFragment}
 `;
+
+const fragments = new FragmentsMap()
+  .add(ItemFragment)
+  .add(ProjectFragment)
+  .add(ProjectDeepFragment)
+  .add(TaskFragment);
+
 
 describe('End-to-end Apollo-GraphQL Resolver:', () => {
 
@@ -320,14 +327,14 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
       client.writeFragment({
         id: ID.dataIdFromObject(taskKey),
         fragment: TaskFragment,
-        fragmentName: 'TaskFragment',
+        fragmentName: FragmentsMap.getFragmentName(TaskFragment),
         data: mutatedItem
       });
 
       let taskFragment = client.readFragment({
         id: ID.dataIdFromObject(taskKey),
         fragment: TaskFragment,
-        fragmentName: 'TaskFragment'
+        fragmentName: FragmentsMap.getFragmentName(TaskFragment)
       });
 
       // Only updates the fields named in the fragment (i.e., status).
@@ -390,7 +397,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     client.writeFragment({
       id: ID.dataIdFromObject(task),
       fragment: TaskFragment,
-      fragmentName: 'TaskFragment',
+      fragmentName: FragmentsMap.getFragmentName(TaskFragment),
       data: mutatedTask
     });
 
@@ -398,7 +405,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     let cachedTask = client.readFragment({
       id: ID.dataIdFromObject(task),
       fragment: TaskFragment,
-      fragmentName: 'TaskFragment'
+      fragmentName: FragmentsMap.getFragmentName(TaskFragment)
     });
     expect(cachedTask.title).toEqual(title);
 
@@ -446,7 +453,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     client.writeFragment({
       id: ID.dataIdFromObject(task),
       fragment: TaskFragment,
-      fragmentName: 'TaskFragment',
+      fragmentName: FragmentsMap.getFragmentName(TaskFragment),
       data: task
     });
 
@@ -460,7 +467,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     client.writeFragment({
       id: ID.dataIdFromObject(project),
       fragment: ProjectFragment,
-      fragmentName: 'ProjectFragment',
+      fragmentName: FragmentsMap.getFragmentName(ProjectFragment),
       data: mutatedProject
     });
 
@@ -468,7 +475,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     let cachedProject = client.readFragment({
       id: ID.dataIdFromObject(project),
       fragment: ProjectFragment,
-      fragmentName: 'ProjectFragment'
+      fragmentName: FragmentsMap.getFragmentName(ProjectFragment)
     });
     expect(cachedProject.tasks.length).toEqual(project.tasks.length + 1);
 
@@ -476,7 +483,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     cachedProject = client.readFragment({
       id: ID.dataIdFromObject(project),
       fragment: ProjectDeepFragment,
-      fragmentName: 'ProjectDeepFragment'
+      fragmentName: FragmentsMap.getFragmentName(ProjectDeepFragment)
     });
     expect(cachedProject.tasks.length).toEqual(project.tasks.length + 1);
     expect(cachedProject.tasks[cachedProject.tasks.length - 1].title).toEqual(title);
@@ -501,7 +508,27 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
       });
     };
 
-    let batch = new Batch(idGenerator, mutate, bucket);
-    return batch.commit();
+    let batch = new Batch(idGenerator, mutate, bucket, fragments)
+      .createItem('Task', [
+        MutationUtil.createFieldMutation('title', 'string', 'XXXXX'),
+        MutationUtil.createFieldMutation('status', 'int', 0)
+      ], 'new_task');
+
+    return batch.commit().then(({ batch, error }) => {
+      let task = batch.refs['new_task'];
+
+      let cachedTask = client.readFragment({
+        id: ID.dataIdFromObject(task),
+        fragment: TaskFragment,
+        fragmentName: FragmentsMap.getFragmentName(TaskFragment)
+      });
+
+      let storeItem = client.store.getState().apollo.data[ID.dataIdFromObject(task)];
+      expect(cachedTask).toEqual(storeItem);
+
+      // TODO(burdon): Test query.
+      // TODO(burdon): Still need reducer for queries (e.g., Project/Task).
+      // TODO(burdon): Handle error if create doesn't set all required fields.
+    });
   });
 });

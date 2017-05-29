@@ -2,6 +2,8 @@
 // Copyright 2017 Alien Labs.
 //
 
+// TODO(burdon): MOVE TO API.
+
 import gql from 'graphql-tag';
 
 // TODO(burdon): Move to sub/api (client deps).

@@ -444,7 +444,7 @@ const ListComponentWithApollo = compose(
        * @returns {Batch}
        */
       createBatch: (bucket) => {
-        return new Batch(idGenerator, mutate, bucket, ownProps.options.optimisticResponse);
+        return new Batch(idGenerator, mutate, bucket, null, ownProps.options.optimisticResponse);
       }
     })
   })
