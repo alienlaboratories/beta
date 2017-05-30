@@ -37,12 +37,12 @@ const CreateTask = (mutator, user, parent, mutations) => {
   return mutator
     .batch(parent.project.bucket)
     .createItem('Task', _.concat(mutations, [
-      MutationUtil.createFieldMutation('project', 'id',   parent.project.id),
-      MutationUtil.createFieldMutation('owner',   'id',   user.id),
+      MutationUtil.createFieldMutation('project', 'id',   ID.key(parent.project)),
+      MutationUtil.createFieldMutation('owner',   'id',   ID.key(user)),
       MutationUtil.createFieldMutation('status',  'int',  Enum.TASK_LEVEL.UNSTARTED),
     ]), 'task')
     .updateItem(parent, [
-      ({ task }) => MutationUtil.createSetMutation('tasks', 'id', task.id)
+      ({ task }) => MutationUtil.createSetMutation('tasks', 'id', ID.key(task))
     ]);
 };
 
@@ -252,7 +252,7 @@ class TaskCanvasComponent extends React.Component {
     let assigneeId = _.get(this.state, 'assignee');
     let currentAssigneeId = _.get(item, 'assignee.id');
     if (assigneeId && assigneeId !== currentAssigneeId) {
-      mutations.push(MutationUtil.createFieldMutation('assignee', 'id', assigneeId));
+      mutations.push(MutationUtil.createFieldMutation('assignee', 'id', { type: 'User', id: assigneeId }));
     } else if (!assigneeId && currentAssigneeId) {
       mutations.push(MutationUtil.createFieldMutation('assignee'));
     }

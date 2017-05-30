@@ -80,15 +80,15 @@ input KeyInput {
 input ValueInput {
   null:       Boolean
 
+  key:        KeyInput
+
   int:        Int
   float:      Float
   string:     String
   boolean:    Boolean
 
-  id:         ID
-  timestamp:  Timestamp
-
   date:       Date
+  timestamp:  Timestamp
 
   values:     [ValueInput]
 
@@ -202,7 +202,7 @@ input FilterInput {
   bucket: String
 
   # OR
-  ids: [ID]
+  ids: [ID]                 # TODO(burdon): Key?
   fkeys: [String]
 
   # MUST
@@ -295,6 +295,7 @@ input ItemMutationInput {
 
 type BatchMutationResponse {
 
+  # NOTE: Don't return {Item} objects since these will be inserted into the Apollo cache.
   # TODO(burdon): Respond with updated mutations (requires types not inputs).
-  items: [Item]!
+  keys: [Key]!
 }

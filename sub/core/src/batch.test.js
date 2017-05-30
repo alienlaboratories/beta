@@ -5,7 +5,7 @@
 import _ from 'lodash';
 
 import { Batch } from './batch';
-import { IdGenerator } from './id';
+import { ID, IdGenerator } from './id';
 import { MutationUtil } from './mutations';
 
 const bucket = 'Group-1';
@@ -66,7 +66,7 @@ test('Create and insert (with optimistic responses).', (done) => {
       MutationUtil.createFieldMutation('title', 'string', 'Test')
     ], 'task')
     .updateItem({ id: 'P-1', type: 'Project' }, [
-      ({ task }) => MutationUtil.createSetMutation('tasks', 'id', task.id)
+      ({ task }) => MutationUtil.createSetMutation('tasks', 'id', ID.key(task))
     ])
     .commit();
 });

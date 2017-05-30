@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { Fragments, MutationUtil } from 'alien-core';
+import { ID, Fragments, MutationUtil } from 'alien-core';
 
 import { ReactUtil } from '../../util/react';
 
@@ -82,23 +82,23 @@ export class ContactCard extends React.Component {
 
         // New task.
         .createItem('Task', _.concat(mutations, [
-          MutationUtil.createFieldMutation('project', 'id', project.id),
-          MutationUtil.createFieldMutation('owner',   'id', user.id),
-          assignee && MutationUtil.createFieldMutation('assignee', 'id', assignee.id)
+          MutationUtil.createFieldMutation('project', 'id', ID.key(project)),
+          MutationUtil.createFieldMutation('owner',   'id', ID.key(user)),
+          assignee && MutationUtil.createFieldMutation('assignee', 'id', ID.key(assignee))
         ]), 'task')
 
         // Update contact.
         // TODO(burdon): Bidirectional links?
         .updateItem(contact, [
-          ({ task }) => MutationUtil.createSetMutation('tasks', 'id', task.id)
+          ({ task }) => MutationUtil.createSetMutation('tasks', 'id', ID.key(task))
         ], 'contact')
 
         // Parent project.
         .updateItem(project, [
-          ({ task }) => MutationUtil.createSetMutation('tasks', 'id', task.id),
+          ({ task }) => MutationUtil.createSetMutation('tasks', 'id', ID.key(task)),
 
           // NOTE: Named since ID may have changed due to cloning.
-          ({ contact }) => MutationUtil.createSetMutation('contacts', 'id', contact.id)
+          ({ contact }) => MutationUtil.createSetMutation('contacts', 'id', ID.key(contact))
         ])
 
         .commit();

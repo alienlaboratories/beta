@@ -138,7 +138,7 @@ export class TestGenerator {
       return {
         key: ID.key({ type: 'Group', id: item.group }),
         mutations: [
-          MutationUtil.createSetMutation('projects', 'id', item.id)
+          MutationUtil.createSetMutation('projects', 'id', ID.key(item))
         ]
       };
     },
@@ -149,7 +149,7 @@ export class TestGenerator {
         return {
           key: ID.key({ type: 'Project', id: item.project }),
           mutations: [
-            MutationUtil.createSetMutation('tasks', 'id', item.id)
+            MutationUtil.createSetMutation('tasks', 'id', ID.key(item))
           ]
         };
       }
@@ -242,7 +242,7 @@ export class TestGenerator {
               return itemStore.getItem(context, type, id).then(item => {
                 console.assert(item);
 
-                Transforms.applyObjectMutations(item, itemMutation.mutations);
+                Transforms.applyObjectMutations({}, item, itemMutation.mutations);
                 return itemStore.upsertItem(context, item);
               });
             }));

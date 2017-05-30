@@ -8,7 +8,12 @@ import { Kind } from 'graphql';
 import { concatenateTypeDefs } from 'graphql-tools';
 
 import { Logger, HttpError, TypeUtil } from 'alien-util';
-import { Database, ItemStore } from 'alien-core';
+import { Database, ID, ItemStore } from 'alien-core';
+
+//
+// WARNING: GQL fles may be cached by babel-node/jest
+// BABEL_DISABLE_CACHE=1 and/or jest --no-cache to troubleshoot.
+//
 
 import Framework from './gql/framework.graphql';
 import Schema from './gql/schema.graphql';
@@ -364,7 +369,7 @@ export class Resolvers {
             //
             .then(items => {
               return {
-                items
+                keys: _.map(items, item  => ID.key(item))
               };
             });
         }

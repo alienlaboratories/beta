@@ -14,7 +14,7 @@ test('Apply object mutation.', () => {
     value: { string: 'Alien' }
   }];
 
-  let result = Transforms.applyObjectMutations(object, mutations);
+  let result = Transforms.applyObjectMutations({}, object, mutations);
   expect(_.get(result, 'title')).toEqual('Alien');
 });
 
@@ -27,7 +27,7 @@ test('Apply object mutation to remove field.', () => {
     field: 'title'
   }];
 
-  let result = Transforms.applyObjectMutations(object, mutations);
+  let result = Transforms.applyObjectMutations({}, object, mutations);
   expect(_.get(result, 'title')).toEqual(undefined);
 });
 
@@ -46,7 +46,7 @@ test('Apply nested object mutation.', () => {
     }
   }];
 
-  let result = Transforms.applyObjectMutations(object, mutations);
+  let result = Transforms.applyObjectMutations({}, object, mutations);
   expect(_.get(result, 'foo.bar')).toEqual('X');
 });
 
@@ -83,7 +83,7 @@ test('Apply multiple object mutations.', () => {
     }
   }];
 
-  let result = Transforms.applyObjectMutations(object, mutations);
+  let result = Transforms.applyObjectMutations({}, object, mutations);
   expect(_.get(result, 'foo.bar.x.listId')).toEqual('a');
   expect(_.get(result, 'foo.bar.x.order')).toEqual(0.5);
 });
@@ -106,7 +106,7 @@ test('Apply set mutations.', () => {
     }
   ];
 
-  let result = Transforms.applyObjectMutations(object, mutations);
+  let result = Transforms.applyObjectMutations({}, object, mutations);
   expect(_.get(result, 'labels').length).toEqual(2);
   expect(_.findIndex(_.get(result, 'labels'), 'red')).toEqual(-1);
   expect(_.indexOf(_.get(result, 'labels'), 'green')).not.toEqual(-1);
@@ -131,7 +131,7 @@ test('Apply array mutations.', () => {
     }
   ];
 
-  let result = Transforms.applyObjectMutations(object, mutations);
+  let result = Transforms.applyObjectMutations({}, object, mutations);
   expect(_.get(result, 'scores').length).toEqual(4);
 });
 
@@ -209,7 +209,7 @@ test('Apply map mutations.', () => {
     }
   ];
 
-  let result = Transforms.applyObjectMutations(object, mutations);
+  let result = Transforms.applyObjectMutations({}, object, mutations);
 
   expect(_.get(_.find(_.get(result, 'colors'), color => color.alias === 'red'), 'labels')).toHaveLength(4);
   expect(_.get(_.find(_.get(result, 'colors'), color => color.alias === 'green'), 'labels')).toHaveLength(2);

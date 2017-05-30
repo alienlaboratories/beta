@@ -26,6 +26,7 @@ export class SchemaUtil {
 //    resolverValidationOptions: {},
 
       // Schema defs.
+      // WARNING: babel caches these fles (use jest --no-cache to troubleshoot).
       typeDefs: Resolvers.typeDefs,
 
       // Resolvers.

@@ -38,7 +38,6 @@ export function createNetworkInterfaceWithAuth(config={}) {
   }).use(middleware);
 }
 
-
 /**
  * Test Apollo Client NetworkInterface.
  */

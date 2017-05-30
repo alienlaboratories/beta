@@ -16,7 +16,7 @@ import { graphql, ApolloProvider } from 'react-apollo';
 import update from 'immutability-helper';
 
 import { Logger, TypeUtil } from 'alien-util';
-import { Batch, Fragments, IdGenerator, ItemUtil, MutationUtil } from 'alien-core';
+import { Batch, Fragments, ID, IdGenerator, ItemUtil, MutationUtil } from 'alien-core';
 import { ITEM_TYPES, BatchMutation, BatchMutationName } from 'alien-core';
 
 import { createFragmentMatcher } from '../../../util/apollo_tools';
@@ -105,7 +105,7 @@ class ListComponent extends React.Component {
 
     createBatch(bucket)
       .updateItem(project, [
-        MutationUtil.createSetMutation('tasks', 'id', item.id, false)
+        MutationUtil.createSetMutation('tasks', 'id', ID.key(item), false)
       ])
       .commit();
   }
@@ -121,11 +121,11 @@ class ListComponent extends React.Component {
 
       createBatch(bucket)
         .createItem('Task', [
-          MutationUtil.createFieldMutation('owner', 'id', userId),
+          MutationUtil.createFieldMutation('owner', 'id', { type: 'User', id: userId }),
           MutationUtil.createFieldMutation('title', 'string', text)
         ], 'task')
         .updateItem(project, [
-          ({ task }) => MutationUtil.createSetMutation('tasks', 'id', task.id)
+          ({ task }) => MutationUtil.createSetMutation('tasks', 'id', ID.key(task))
         ])
         .commit();
 

@@ -60,7 +60,7 @@ export default class TestList extends React.Component {
 
   handleItemUpdate(item, mutations) {
     if (item) {
-      Transforms.applyObjectMutations(item, mutations);
+      Transforms.applyObjectMutations({}, item, mutations);
 
       this.forceUpdate();
     } else {
@@ -69,7 +69,7 @@ export default class TestList extends React.Component {
         type: 'Test'
       };
 
-      Transforms.applyObjectMutations(item, mutations);
+      Transforms.applyObjectMutations({}, item, mutations);
       let items = this.state.items;
       items.push(item);
 

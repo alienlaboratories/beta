@@ -7,26 +7,21 @@ import gql from 'graphql-tag';
 import ApolloClient from 'apollo-client';
 
 import { Logger, TypeUtil } from 'alien-util';
-import { Batch, FragmentsMap, ID, IdGenerator, MutationUtil, Transforms } from 'alien-core';
+import { Batch, BatchMutation, FragmentsMap, ID, IdGenerator, MutationUtil, Transforms } from 'alien-core';
 import { DatabaseUtil, TestData } from 'alien-core/testing';
 import { SchemaUtil } from 'alien-api/testing';
 import { createFragmentMatcher } from 'alien-client';
 import { LocalNetworkInterface } from 'alien-client/testing';
 import TEST_DATA from 'alien-core/src/testing/data/data.json';
 
-Logger.setLevel({}, Logger.Level.warn);
+Logger.setLevel({ test: Logger.Level.log }, Logger.Level.warn);
+
+const logger = Logger.get('test');
 
 //
 // End-to-end Apollo tests.
 // NOTE: Does not depent on react (react-apollo).
 //
-
-// TODO(burdon): Transforms object: configure client/server: client sets { __typename, id }.
-// TODO(burdon): MutationUtil.createIdMutation(key); { type, id }
-// TODO(burdon): Test react graphql update in client tests (not here).
-// TODO(burdon): Move fragments to alien-api.
-// TODO(burdon): Implment local network interface for main app.
-// TODO(burdon): Version numbers (inc. on server).
 
 // TODO(burdon): Subscriptions (onMutation)? Make future proof. For now, invalidate and requery).
 // http://dev.apollodata.com/react/subscriptions.html
@@ -41,19 +36,6 @@ Logger.setLevel({}, Logger.Level.warn);
 // http://graphql.org/learn/queries/#fragments
 // http://graphql.org/learn/queries/#inline-fragments
 //
-
-const ItemMutation = gql`
-  mutation ItemMutation($namespace: String, $itemMutations: [ItemMutationInput]!) {
-    batchMutation(namespace: $namespace, itemMutations: $itemMutations) {
-      items {
-        bucket
-        type
-        id
-        version
-      }
-    }
-  }
-`;
 
 const ItemFragment = gql`
   fragment ItemFragment on Item {
@@ -87,8 +69,8 @@ const ProjectFragment = gql`
   ${ItemFragment}
 `;
 
-const ProjectDeepFragment = gql`
-  fragment ProjectDeepFragment on Project {
+const ProjectTasksFragment = gql`
+  fragment ProjectTasksFragment on Project {
     ...ItemFragment
     
     tasks {
@@ -126,18 +108,11 @@ const SearchQuery = gql`
 const ProjectQuery = gql`
   query ProjectQuery($key: KeyInput!) { 
     item(key: $key) { 
-      ...ItemFragment
-      
-      ... on Project {
-        tasks {
-        ...TaskFragment
-        }
-      }
+      ...ProjectTasksFragment
     } 
   }
 
-  ${ItemFragment}
-  ${TaskFragment}
+  ${ProjectTasksFragment}
 `;
 
 const ItemQuery = gql`
@@ -162,18 +137,41 @@ const TaskQuery = gql`
 
 const fragments = new FragmentsMap()
   .add(ItemFragment)
-  .add(ProjectFragment)
-  .add(ProjectDeepFragment)
+//.add(ProjectFragment)
+  .add(ProjectTasksFragment)
   .add(TaskFragment);
 
 
 describe('End-to-end Apollo-GraphQL Resolver:', () => {
 
+  const idGenerator = new IdGenerator();
+
   const testData = new TestData(TEST_DATA);
 
   const bucket = testData.context.buckets[0];
 
+  function getStoreData(client) {
+    // The store field is not defined until the first query.
+    return client.store && client.store.getState()['apollo'].data || {};
+  }
+
+  // Wrap mutate method.
+  // NOTE: Avoids dependency on (apollo-react) graphql. Wraps mutate method from options.
+  // http://dev.apollodata.com/react/api-graphql.html
+  // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.mutate
+  const mutate = (client) => ({ variables, optimisticResponse, update }) => {
+    logger.trace('Store =', JSON.stringify(getStoreData(client), null, 2));
+
+    return client.mutate({
+      mutation: BatchMutation,
+      variables,
+      optimisticResponse,
+      update
+    });
+  };
+
   let client;
+
   let networkInterface;
 
   //
@@ -263,7 +261,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     // Mutate item.
     const title = 'Updated Task';
     let mutationResult = await client.mutate({
-      mutation: ItemMutation,
+      mutation: BatchMutation,
       variables: {
         itemMutations: [
           {
@@ -282,7 +280,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     });
 
     let { data: { batchMutation } } = mutationResult;
-    expect(batchMutation.items.length).toEqual(1);
+    expect(batchMutation.keys.length).toEqual(1);
 
     // Get cached item directly from store.
     // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.readQuery
@@ -294,7 +292,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     });
 
     // TODO(burdon): Test versions.
-    expect(cachedItem.id).toEqual(batchMutation.items[0].id);
+    expect(cachedItem.id).toEqual(batchMutation.keys[0].id);
   });
 
   //
@@ -315,7 +313,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
       });
 
       // Change fields (clone item since it's immutable).
-      mutatedItem = Transforms.applyObjectMutations(TypeUtil.clone(item), [
+      mutatedItem = Transforms.applyObjectMutations({}, TypeUtil.clone(item), [
         MutationUtil.createFieldMutation('title', 'string', title),
         MutationUtil.createFieldMutation('status', 'int', 1)
       ]);
@@ -390,7 +388,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
 
     // Change fields (clone item since it's immutable).
     const title = 'Updated Task';
-    let mutatedTask = Transforms.applyObjectMutations(TypeUtil.clone(task), [
+    let mutatedTask = Transforms.applyObjectMutations({}, TypeUtil.clone(task), [
       MutationUtil.createFieldMutation('title', 'string', title),
       MutationUtil.createFieldMutation('status', 'int', 1)
     ]);
@@ -447,7 +445,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
       bucket: project.bucket,
       type: 'Task',
       id: 'T-4',
-      version: 0,           // TODO(burdon): By default.
+      version: 0,
       title: title,
       status: 1
     };
@@ -483,8 +481,8 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     // Read different fragment (check also updated).
     cachedProject = client.readFragment({
       id: ID.dataIdFromObject(project),
-      fragment: ProjectDeepFragment,
-      fragmentName: FragmentsMap.getFragmentName(ProjectDeepFragment)
+      fragment: ProjectTasksFragment,
+      fragmentName: FragmentsMap.getFragmentName(ProjectTasksFragment)
     });
     expect(cachedProject.tasks.length).toEqual(project.tasks.length + 1);
     expect(cachedProject.tasks[cachedProject.tasks.length - 1].title).toEqual(title);
@@ -493,47 +491,78 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
   //
   // Batch API.
   //
-  test('Batch mutations.', async () => {
+  test('Batch create item.', async () => {
 
-    const idGenerator = new IdGenerator();
-
-    // NOTE: Avoids dependency on (apollo-react) graphql. Wraps mutate method from options.
-    // http://dev.apollodata.com/react/api-graphql.html
-    // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.mutate
-    const mutate = ({ variables, optimisticResponse, update }) => {
-      return client.mutate({
-        mutation: ItemMutation,
-        variables,
-        optimisticResponse,
-        update
-      });
-    };
-
-    let batch = new Batch(idGenerator, mutate, bucket, fragments)
+    let batch = new Batch(idGenerator, mutate(client), bucket, fragments)
       .createItem('Task', [
-        MutationUtil.createFieldMutation('title', 'string', 'XXXXX'),
+        MutationUtil.createFieldMutation('title', 'string', 'New Task'),
         MutationUtil.createFieldMutation('status', 'int', 0)
-      ], 'new_task');
+      ], 'task');
 
     return batch.commit().then(({ batch, error }) => {
-      let task = batch.refs['new_task'];
+      let taskId = ID.dataIdFromObject(batch.refs['task']);
 
+      // Read from cache (should have been updated by batch).
       let cachedTask = client.readFragment({
-        id: ID.dataIdFromObject(task),
+        id: taskId,
         fragment: TaskFragment,
         fragmentName: FragmentsMap.getFragmentName(TaskFragment)
       });
 
-      let storeItem = client.store.getState().apollo.data[ID.dataIdFromObject(task)];
+      let storeItem = getStoreData(client)[taskId];
       expect(storeItem).toEqual(cachedTask);
     });
   });
 
   //
   // Batch add Task to Project.
-  //
-  // TODO(burdon): Test query.
-  // TODO(burdon): Still need reducer for queries (e.g., Project/Task).
   // TODO(burdon): Handle error if create doesn't set all required fields.
+  // TODO(burdon): Test react graphql update in client tests (not here).
+  // TODO(burdon): Move fragments to alien-api.
+  // TODO(burdon): Implment local network interface for main app.
+  // TODO(burdon): Version numbers (inc. on server).
+  //
+  test('Batch create and insert item.', async () => {
 
+    // Query for existing Project.
+    let { data: { item:project } } = await client.query({
+      query: ProjectQuery,
+      variables: {
+        key: ID.key({ bucket, type: 'Project', id: 'P-1' })
+      }
+    });
+
+    let cachedProject = client.readFragment({
+      id: ID.dataIdFromObject(project),
+      fragment: ProjectTasksFragment,
+      fragmentName: FragmentsMap.getFragmentName(ProjectTasksFragment)
+    });
+
+    // Sanity check cache is consistent.
+    expect(cachedProject.tasks.length).toEqual(project.tasks.length);
+
+    // Create task and add to project.
+    let batch = new Batch(idGenerator, mutate(client), bucket, fragments)
+      .createItem('Task', [
+        MutationUtil.createFieldMutation('title', 'string', 'New Task'),
+        MutationUtil.createFieldMutation('status', 'int', 0)
+      ], 'task')
+      .updateItem(project, [
+        ({ task }) => MutationUtil.createSetMutation('tasks', 'key', ID.key(task))
+      ]);
+
+    return batch.commit().then(({ batch, error }) => {
+      let taskId = ID.dataIdFromObject(batch.refs['task']);
+
+      let cachedProject = client.readFragment({
+        id: ID.dataIdFromObject(project),
+        fragment: ProjectTasksFragment,
+        fragmentName: FragmentsMap.getFragmentName(ProjectTasksFragment)
+      });
+
+      // Check task was appended.
+      expect(cachedProject.tasks.length).toEqual(project.tasks.length + 1);
+      expect(ID.dataIdFromObject(cachedProject.tasks[cachedProject.tasks.length - 1])).toEqual(taskId);
+    });
+  });
 });

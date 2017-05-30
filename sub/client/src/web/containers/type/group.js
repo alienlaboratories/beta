@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { Fragments, MutationUtil } from 'alien-core';
+import { ID, Fragments, MutationUtil } from 'alien-core';
 
 import { ReactUtil } from '../../util/react';
 
@@ -53,7 +53,7 @@ class GroupCanvasComponent extends React.Component {
       mutator
         .batch(group.id)
         .createItem('Project', _.concat(mutations, [
-          MutationUtil.createFieldMutation('group', 'id', group.id)
+          MutationUtil.createFieldMutation('group', 'id', ID.key(group))
         ]))
         .commit();
     }

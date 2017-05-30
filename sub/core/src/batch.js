@@ -30,7 +30,7 @@ export class Batch {
    *
    *   .updateItem({ id: 'P-1', type: 'Project' }, [
    *     MutationUtil.createSetMutation('labels', 'string', 'foo')
-   *     ({ task }) => MutationUtil.createSetMutation('tasks', 'id', task.id)
+   *     ({ task }) => MutationUtil.createSetMutation('tasks', 'id', ID.key(task))
    *   ])
    *
    *   .commit();
@@ -86,7 +86,7 @@ export class Batch {
 
     let id = this._idGenerator.createId();
     let key = { bucket: this._bucket, type, id };
-    let item = { __typename: type, ...key };
+    let item = { __typename: type, ...key, verson: 0 };
     this._items.set(id, item);
 
     this._itemMutations.push({
@@ -153,7 +153,7 @@ export class Batch {
         optimistic: true,
 
         batchMutation: {
-          items: _.map(this._itemMutations, itemMutation => itemMutation.key)
+          keys: _.map(this._itemMutations, itemMutation => itemMutation.key)
         }
       };
     }
@@ -201,12 +201,11 @@ export class Batch {
         }
 
         // Process mutations.
-        // TODO(burdon): Use actual results.
-
+        // TODO(burdon): Use actual mutatons returned from optimisticResponse and server..
         _.each(this._itemMutations, itemMutation => {
           let { key, mutations } = itemMutation;
-          console.log('Key', JSON.stringify(key));
 
+          // Apply to each fragment.
           _.each(this._fragments.getFragments(key.type), fragment => {
             let fragmentName = FragmentsMap.getFragmentName(fragment);
 
@@ -215,13 +214,14 @@ export class Batch {
             // http://dev.apollodata.com/core/apollo-client-api.html#DataProxy.readFragment
             //
             let cachedItem = proxy.readFragment({
-              id: ID.dataIdFromObject(key),
+              id: ID.dataIdFromObject({ __typename: key.type, id: key.id }),
               fragment,
               fragmentName
             });
 
+            // TODO(burdon): Assert if update.
             if (!cachedItem) {
-              cachedItem = {__typename: key.type, version: 0, ...key};
+              cachedItem = {__typename: key.type, ...key, version: 0 };
             }
 
             //
@@ -229,7 +229,7 @@ export class Batch {
             //
 
             // Apply mutations.
-            let mutatedItem = Transforms.applyObjectMutations(TypeUtil.clone(cachedItem), mutations);
+            let mutatedItem = Transforms.applyObjectMutations({ client: true }, TypeUtil.clone(cachedItem), mutations);
 
             // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.writeFragment
             proxy.writeFragment({
