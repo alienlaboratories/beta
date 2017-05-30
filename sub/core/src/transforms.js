@@ -170,7 +170,7 @@ export class Transforms {
       if (mutation.add === false) {
         _.pullAllBy(set, [value], 'id');
       } else {
-        set = _.union(set, [{ __typename: value.type, ...value }]);
+        set = _.unionBy(set, [{ __typename: value.type, ...value }], 'id');
       }
 
       return set;

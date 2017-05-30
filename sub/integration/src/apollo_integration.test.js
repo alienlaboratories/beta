@@ -137,7 +137,7 @@ const TaskQuery = gql`
 
 const fragments = new FragmentsMap()
   .add(ItemFragment)
-//.add(ProjectFragment)
+  .add(ProjectFragment)
   .add(ProjectTasksFragment)
   .add(TaskFragment);
 
