@@ -10,8 +10,9 @@ import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 
 import { ErrorUtil, Logger } from 'alien-util';
 
-import { SchemaUtil } from './schema';
-import { graphqlLogger } from './util/logger';
+import { SchemaUtil } from '../schema';
+
+import { graphqlLogger } from './logger';
 
 const logger = Logger.get('gql');
 

@@ -7,7 +7,8 @@ import PropTypes from 'prop-types';
 import { compose } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { ID, Fragments, MutationUtil } from 'alien-core';
+import { ID, MutationUtil } from 'alien-core';
+import { Fragments } from 'alien-api';
 
 import { ReactUtil } from '../../util/react';
 
@@ -331,13 +332,11 @@ export class ContactCanvasComponent extends React.Component {
 const ContactQuery = gql`
   query ContactQuery($key: KeyInput!) {
     item(key: $key) {
-      ...ItemFragment
-      ...ContactTasksFragment
+      ...ContactFragment
     }
   }
 
-  ${Fragments.ItemFragment}
-  ${Fragments.ContactTasksFragment}
+  ${Fragments.ContactFragment}
 `;
 
 export const ContactCanvas = compose(

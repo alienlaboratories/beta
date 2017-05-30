@@ -5,8 +5,9 @@
 import _ from 'lodash';
 
 import { Logger } from 'alien-util';
-import { Database, Enum, ID, MutationUtil, Transforms } from 'alien-core';
+import { Database, ID, MutationUtil, Transforms } from 'alien-core';
 import { Randomizer } from 'alien-core/testing';
+import { Enum } from 'alien-api';
 
 const logger = Logger.get('testing');
 

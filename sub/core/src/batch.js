@@ -143,6 +143,7 @@ export class Batch {
     if (this._optimistic) {
 
       // Create the response (GraphQL mutation API).
+      // NOTE: __typename is required to avoid warnings.
       // http://dev.apollodata.com/react/mutations.html#optimistic-ui
       // http://dev.apollodata.com/react/optimistic-ui.html#optimistic-basics
       // http://dev.apollodata.com/react/cache-updates.html
@@ -152,7 +153,7 @@ export class Batch {
           // TODO(burdon): Use def.
           __typename: 'BatchMutationResponse',
 
-          keys: _.map(this._itemMutations, itemMutation => ({ ...itemMutation.key }))
+          keys: _.map(this._itemMutations, itemMutation => ({ __typename: 'Key', ...itemMutation.key }))
         },
 
         // Add hint for batch.update.
@@ -253,15 +254,17 @@ export class Batch {
 
         let mutatedItem = Transforms.applyObjectMutations({ client: true }, TypeUtil.clone(cachedItem), mutations);
 
-        // TODO(burdon): Suppress warnings for fields not included in fragment.
-        // TODO(burdon): Why do these exist (since read from fragment above).
         // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.writeFragment
+        console.log('[[[', JSON.stringify(cachedItem));
         proxy.writeFragment({
           id: ID.createStoreId(mutatedItem),
           fragment,
           fragmentName,
           data: mutatedItem
         });
+        console.log(']]]', JSON.stringify(mutatedItem));
+        // TODO(burdon): Async? Logged after here. "Missing field { version title status }"
+        // TODO(burdon): npm link apollo-client and change warning before filing issue.
 
         //
         // Check updated.

@@ -9,7 +9,7 @@ import ApolloClient from 'apollo-client';
 import { Logger, TypeUtil } from 'alien-util';
 import { Batch, BatchMutation, FragmentsMap, ID, IdGenerator, MutationUtil, Transforms } from 'alien-core';
 import { DatabaseUtil, TestData } from 'alien-core/testing';
-import { SchemaUtil } from 'alien-api/testing';
+import { SchemaUtil } from 'alien-api';
 import { createFragmentMatcher } from 'alien-client';
 import { LocalNetworkInterface } from 'alien-client/testing';
 import TEST_DATA from 'alien-core/src/testing/data/data.json';
@@ -579,3 +579,5 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     });
   });
 });
+
+// TODO(burdon): Test read/write fragments with missing field warnings.

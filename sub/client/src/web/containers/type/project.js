@@ -9,7 +9,8 @@ import { connect } from 'react-redux';
 import gql from 'graphql-tag';
 
 import { DomUtil } from 'alien-util';
-import { Enum, Fragments, ID, MutationUtil } from 'alien-core';
+import { ID, MutationUtil } from 'alien-core';
+import { Enum, Fragments } from 'alien-api';
 
 import { ReactUtil } from '../../util/react';
 import { connectWithRef } from '../../util/redux';
@@ -493,13 +494,10 @@ const ProjectBoardQuery = gql`
       ...ItemFragment
 
       ... on Project {
-        ...ProjectBoardFragment
 
         group {
           members {
-            type
-            id
-            title
+            ...ItemFragment
           }
         }
 
@@ -511,11 +509,13 @@ const ProjectBoardQuery = gql`
           }
         }
       
+        # TODO(burdon): Not part of Project.
         contacts {
-          ...ItemFragment
           ...ContactFragment
         }
       }
+
+      ...ProjectBoardFragment
     }
   }
 

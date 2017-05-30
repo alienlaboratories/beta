@@ -8,7 +8,8 @@ import { connect } from 'react-redux';
 import { compose, graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { Const, Fragments, IdGenerator, QueryParser } from 'alien-core';
+import { Const, IdGenerator, QueryParser } from 'alien-core';
+import { Fragments } from 'alien-api';
 
 import { ReactUtil } from '../util/react';
 import { SubscriptionWrapper } from '../util/subscriptions';
@@ -107,19 +108,17 @@ const FoldersQuery = gql`
   }
 `;
 
-// TODO(burdon): Add Projects query.
+// TODO(burdon): Same fragments as search. Defer loading of other types.
 const ContextQuery = gql`
   query ContextQuery($filter: FilterInput!) {
     contextSearch: search(filter: $filter) {
       items {
         ...ItemFragment
-        ...ContactTasksFragment
       }
     }
   }
 
   ${Fragments.ItemFragment}
-  ${Fragments.ContactTasksFragment}
 `;
 
 const mapStateToProps = (state, ownProps) => {

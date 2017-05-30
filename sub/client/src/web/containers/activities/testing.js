@@ -6,7 +6,7 @@ import React from 'react';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
-//import { Fragments } from 'alien-core';
+//import { Fragments } from 'alien-api';
 
 import { ReactUtil } from '../../util/react';
 

@@ -7,8 +7,9 @@ import { connect } from 'react-redux';
 import { compose, graphql } from 'react-apollo';
 
 import { Logger } from 'alien-util';
-import { Fragments, Matcher } from 'alien-core';
+import { Matcher } from 'alien-core';
 
+import { ViewerQuery } from '../common/activity';
 import { AppAction } from '../common/reducers';
 
 const logger = Logger.get('connector');
@@ -24,7 +25,7 @@ const mapStateToProps = (state, ownProps) => {
 
   // Get from cache.
   const { viewer } = client.readQuery({
-    query: Fragments.ViewerQuery
+    query: ViewerQuery
   });
 
   let userId = _.get(viewer, 'context.user.id');

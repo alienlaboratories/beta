@@ -8,7 +8,8 @@ import { compose, graphql } from 'react-apollo';
 import { Link } from 'react-router';
 import gql from 'graphql-tag';
 
-import { ID, Enum, Fragments, MutationUtil } from 'alien-core';
+import { ID, MutationUtil } from 'alien-core';
+import { Enum, Fragments } from 'alien-api';
 
 import { ReactUtil } from '../../util/react';
 
@@ -386,7 +387,6 @@ const MembersPicker = compose(
 const TaskQuery = gql`
   query TaskQuery($key: KeyInput!) {
     item(key: $key) {
-      ...ItemFragment
       ...TaskFragment
       
       # TODO(burdon): Possible bug (TaskFragment includes title, but sub tasks field also needs it).
@@ -398,14 +398,12 @@ const TaskQuery = gql`
         }
 
         tasks {
-          ...ItemFragment
           ...TaskFragment
         }
       }
     }
   }
 
-  ${Fragments.ItemFragment}
   ${Fragments.TaskFragment}  
 `;
 

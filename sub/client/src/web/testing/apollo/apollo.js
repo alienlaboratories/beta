@@ -17,7 +17,8 @@ import update from 'immutability-helper';
 
 import { Logger, TypeUtil } from 'alien-util';
 import { Batch, FragmentsMap, ID, IdGenerator, MutationUtil } from 'alien-core';
-import { ITEM_TYPES, BatchMutation, BatchMutationName } from 'alien-core';
+import { BatchMutation, BatchMutationName } from 'alien-core';
+import { ITEM_TYPES } from 'alien-api';
 
 import { createFragmentMatcher } from '../../../util/apollo_tools';
 import { createNetworkInterfaceWithAuth, LocalNetworkInterface } from '../../../testing/apollo_testing';
@@ -582,7 +583,7 @@ export class App {
     }
 
     this._client = new ApolloClient({
-      addTypename: true,
+      addTypename: true,                          // For fragment matching.
       dataIdFromObject: ID.dataIdFromObject,
 
       fragmentMatcher,
@@ -602,10 +603,9 @@ export class App {
 
       options: {
         debug: true,
-        networkDelay: false,
-        optimisticResponse: false,
-        reducer: false,
-        verbose: false,
+        networkDelay: true,
+        optimisticResponse: true,
+        reducer: false
       }
     };
 

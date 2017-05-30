@@ -7,7 +7,8 @@ import PropTypes from 'prop-types';
 import { compose } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { ID, Fragments, MutationUtil } from 'alien-core';
+import { ID, MutationUtil } from 'alien-core';
+import { Fragments } from 'alien-api';
 
 import { ReactUtil } from '../../util/react';
 
@@ -124,12 +125,10 @@ const GroupReducer = (matcher, context, previousResult, updatedItem) => {
 const GroupQuery = gql`  
   query GroupQuery($key: KeyInput!) {
     item(key: $key) {
-      ...ItemFragment
       ...GroupFragment
     }
   }
 
-  ${Fragments.ItemFragment}
   ${Fragments.GroupFragment}  
 `;
 

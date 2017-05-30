@@ -4,7 +4,7 @@
 
 import ReactDOM from 'react-dom';
 
-import { SchemaUtil } from 'alien-api/testing';
+import { SchemaUtil } from 'alien-api';
 import { Logger, TypeUtil } from 'alien-util';
 import { DatabaseUtil, TestData } from 'alien-core/testing';
 import TEST_DATA from 'alien-core/src/testing/data/data.json';
