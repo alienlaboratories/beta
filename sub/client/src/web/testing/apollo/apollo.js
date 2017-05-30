@@ -113,20 +113,14 @@ class ListComponent extends React.Component {
   render() {
     return ReactUtil.render(this, () => {
       let { project } = this.props;
+      let { title, tasks } = project;
+
       this.count++;
-
-      // TODO(burdon): Why is this needed?
-      if (!project) {
-        logger.warn('Null project.');
-        return <div/>;
-      }
-
-      let items = project.tasks;
 
       return (
         <div className="test-component">
 
-          <h3>{ project.title }</h3>
+          <h3>{ title }</h3>
 
           <div className="test-header">
             <TextBox ref="INPUT_NEW"/>
@@ -136,11 +130,11 @@ class ListComponent extends React.Component {
           <div className="test-body">
             <div className="test-list">
 
-              {_.map(items, item => (
-                <div className="test-list-item" key={ item.id }>
-                  <TextBox ref={ 'INPUT/' + item.id } value={ item.title }/>
-                  <i className="material-icons" onClick={ this.handleDelete.bind(this, item) }>cancel</i>
-                  <i className="material-icons" onClick={ this.handleUpdate.bind(this, item) }>save</i>
+              {_.map(tasks, task => (
+                <div className="test-list-item" key={ task.id }>
+                  <TextBox ref={ 'INPUT/' + task.id } value={ task.title }/>
+                  <i className="material-icons" onClick={ this.handleDelete.bind(this, task) }>cancel</i>
+                  <i className="material-icons" onClick={ this.handleUpdate.bind(this, task) }>save</i>
                 </div>
               ))}
 
@@ -162,21 +156,17 @@ class SimpleListComponent extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { project, items } = this.props;
-
-      if (!project) {
-        logger.warn('Null project.');
-        return <div/>;
-      }
+      let { project } = this.props;
+      let { title, tasks } = project;
 
       return (
         <div className="test-component">
-          <h3>{ project.title }</h3>
+          <h3>{ title }</h3>
 
           <div className="test-body">
-            {_.map(items, item => (
-              <div key={ item.id }>
-                <div title={ item.id }>{ item.title }</div>
+            {_.map(tasks, task => (
+              <div key={ task.id }>
+                <div title={ task.id }>{ task.title }</div>
               </div>
             ))}
           </div>
