@@ -5,7 +5,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { syncHistoryWithStore, routerMiddleware, routerReducer } from 'react-router-redux';
-import { IntrospectionFragmentMatcher } from 'react-apollo';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import ReduxThunk from 'redux-thunk';
 import reduceReducers from 'reduce-reducers';
@@ -17,8 +16,10 @@ import {
 } from 'alien-util';
 
 import {
-  ID, IdGenerator, Matcher, QueryParser, QueryRegistry
+  ITEM_TYPES, ID, IdGenerator, Matcher, QueryParser, QueryRegistry
 } from 'alien-core';
+
+import { createFragmentMatcher} from '../../util/apollo_tools';
 
 import { Analytics } from './analytics';
 import { ContextManager } from './context';
@@ -137,26 +138,6 @@ export class BaseApp {
   initApollo() {
     console.assert(this.networkInterface);
 
-    // NOTE: List Item types from schema.
-    const ITEM_TYPES = [
-      'User', 'Group', 'Contact', 'Document', 'Event', 'Folder', 'Message', 'Place', 'Project', 'Task'
-    ];
-
-    // http://dev.apollodata.com/react/initialization.html#fragment-matcher
-    const fragmentMatcher = new IntrospectionFragmentMatcher({
-      introspectionQueryResultData: {
-        __schema: {
-          types: [
-            {
-              kind: 'INTERFACE',
-              name: 'Item',
-              possibleTypes: _.map(ITEM_TYPES, type => ({ name: type }))
-            }
-          ],
-        },
-      }
-    });
-
     //
     // http://dev.apollodata.com/react/initialization.html
     // http://dev.apollodata.com/core/apollo-client-api.html#apollo-client
@@ -172,7 +153,8 @@ export class BaseApp {
 
       // Support validation for fragments of interfaces.
       // Otherwise: WARNING: heuristic fragment matching going on!
-      fragmentMatcher,
+      // http://dev.apollodata.com/react/initialization.html#fragment-matcher
+      fragmentMatcher: createFragmentMatcher(ITEM_TYPES),
 
       // TODO(burdon): Need to update reducers to accept multiple results.
       // https://dev-blog.apollodata.com/query-batching-in-apollo-63acfd859862
@@ -202,7 +184,6 @@ export class BaseApp {
       //       console.log('#####################<><><><><><>#', args);
       //
       //       // toIdValue(dataIdFromObject({ __typename: 'book', id: args['id'] })),
-      //
       //
       //       return {
       //         type: 'id',

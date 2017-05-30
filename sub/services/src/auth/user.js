@@ -6,6 +6,8 @@ import express from 'express';
 
 import { HttpUtil } from 'alien-util';
 
+import { JwtUtil } from './jwt';
+
 /**
  * Manage authentication.
  */
@@ -85,6 +87,20 @@ export const loginRouter = (userManager, oauthRegistry, systemStore, options) =>
       redirectType: 'jsonp',
       callback
     }));
+  });
+
+  //
+  // Request (JWT) id_token (e.g., from CLI).
+  //
+  router.post('/get_id_token', (req, res) => {
+    let { credentials } = req.body;
+
+    loginAuthProvider.getUserProfile(credentials).then(userProfile => {
+      systemStore.getUserByEmail(userProfile.email).then(user => {
+        let { token } = JwtUtil.createToken(user.id);
+        res.send({ email: userProfile.email, token });
+      });
+    });
   });
 
   return router;

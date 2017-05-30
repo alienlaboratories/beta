@@ -1,0 +1,34 @@
+{
+  "name": "alien-cli",
+  "version": "0.0.1",
+  "description": "Alien CLI.",
+  "license": "UNLICENSED",
+  "repository": "https://github.com/alienlabs/beta/tree/master/sub/cli",
+  "bin": {
+    "alien": "./bin/alien.sh"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1"
+  },
+  "dependencies": {
+    "alien-core": "0.0.1",
+    "alien-services": "0.0.1",
+    "alien-util": "0.0.1",
+    "argparse": "^1.0.9",
+    "google-cli-auth": "^0.0.1",
+    "node-yaml": "^3.1.0"
+  },
+  "jest": {
+    "verbose": false,
+    "transformIgnorePatterns": [
+      "/node_modules/(?!alien-)"
+    ]
+  },
+  "scripts": {
+    "lint": "eslint -c ../../.eslintrc.yml ./src",
+    "test": "jest --silent",
+    "start": "babel-node ./index.js"
+  }
+}

@@ -9,7 +9,7 @@ import _ from 'lodash';
  *
  * Formats and parses structured keys.
  *
- * Example: new Key('I:{{type}}:{{itemId}}').toKey({ type: 'User', itemId: '123' });
+ * Example: new Key('I:{{type}}:{{id}}').toKey({ type: 'User', id: '123' });
  */
 export class Key {
 
@@ -23,7 +23,7 @@ export class Key {
     this._pattern = pattern;
 
     // Create the parser.
-    // E.g., 'I:{{type}}:{{itemId}}' => 'I:(.+):(.+)'
+    // E.g., 'I:{{type}}:{{id}}' => 'I:(.+):(.+)'
     this._parser = new RegExp(pattern.replace(/\{\{.+?\}\}/g, '(.+)'));
   }
 

@@ -6,8 +6,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Logger } from 'alien-util';
-
-import { AppDefs } from '../../../common/defs';
+import { Const } from 'alien-core';
 
 import { ReactUtil } from '../../util/react';
 import { Navbar } from '../../components/navbar';
@@ -52,7 +51,7 @@ class FinderActivity extends React.Component {
 
       let content = null;
       let platform = _.get(config, 'app.platform');
-      if (platform !== AppDefs.PLATFORM.MOBILE && platform !== AppDefs.PLATFORM.CRX) {
+      if (platform !== Const.PLATFORM.MOBILE && platform !== Const.PLATFORM.CRX) {
         content = <div/>;
       }
 

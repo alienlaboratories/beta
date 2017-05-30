@@ -20,8 +20,7 @@ const logger = Logger.get('db');
  *   - The "user" Namespace stores all first-party user data.
  *   - Other Namespaces (e.g., "google") store third-party data (which is synced externall and may be joined).
  *
- * - The canonical Global Item ID is "[namespace]/type/itemId".
- *   - See ID.toGlobalId and ID.fromGlobalId
+ * - The canonical Global Item ID is "[namespace]/[bucket]/type/id".
  *   - The default namespace is "user" and is omitted.
  *   - Global IDs are used for permalinks.
  *   - The local ItemId is globally unique within the namespace (i.e., the type is a hint for GQL Item resolution).

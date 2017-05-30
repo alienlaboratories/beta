@@ -163,7 +163,7 @@ module.exports = (grunt) => {
   //
 
   grunt.registerTask('default',   ['build']);
-  grunt.registerTask('build',     ['clean', 'webpack']);
-  grunt.registerTask('pack-crx',  ['build-crx', 'crx:robotik', 'compress:crx']);
+  grunt.registerTask('build',     ['clean', 'webpack', 'build-crx']);
   grunt.registerTask('build-crx', ['webpack:crx', 'convert:yml2json', 'copy:crx']);
+  grunt.registerTask('pack-crx',  ['build-crx', 'crx:robotik', 'compress:crx']);
 };

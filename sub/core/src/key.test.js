@@ -7,9 +7,9 @@ import _ from 'lodash';
 import { Key } from './key';
 
 test('Create and parse key.', () => {
-  const KEY = new Key('I:{{type}}:{{itemId}}');
+  const KEY = new Key('I:{{type}}:{{id}}');
 
-  let args = { type: 'User', itemId: '123' };
+  let args = { type: 'User', id: '123' };
 
   let key = KEY.toKey(args);
   expect(key).toEqual('I:User:123');
@@ -19,7 +19,7 @@ test('Create and parse key.', () => {
 });
 
 test('Create wildcard key.', () => {
-  const KEY = new Key('I:{{type}}:{{itemId}}');
+  const KEY = new Key('I:{{type}}:{{id}}');
 
   expect(KEY.toKey()).toEqual('I:*:*');
   expect(KEY.toKey({ type: 'User' })).toEqual('I:User:*');

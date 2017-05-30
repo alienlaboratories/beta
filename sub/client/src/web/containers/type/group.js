@@ -122,8 +122,8 @@ const GroupReducer = (matcher, context, previousResult, updatedItem) => {
 */
 
 const GroupQuery = gql`  
-  query GroupQuery($itemId: ID!) {
-    item(itemId: $itemId) {
+  query GroupQuery($key: KeyInput!) {
+    item(key: $key) {
       ...ItemFragment
       ...GroupFragment
     }

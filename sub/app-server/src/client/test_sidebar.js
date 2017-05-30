@@ -5,7 +5,7 @@
 import _ from 'lodash';
 
 import { Logger } from 'alien-util';
-import { AppDefs } from 'alien-client';
+import { Const } from 'alien-core';
 
 import { TestSidebarApp } from 'alien-client/crx/sidebar_test';
 
@@ -17,7 +17,7 @@ const logger = Logger.get('sidebar-test');
 const config = _.defaultsDeep(window.config, {
   debug: true,
   app: {
-    platform: AppDefs.PLATFORM.CRX
+    platform: Const.PLATFORM.CRX
   }
 });
 

@@ -95,8 +95,8 @@ class UserCanvasComponent extends React.Component {
 //-------------------------------------------------------------------------------------------------
 
 const UserQuery = gql`
-  query UserQuery($itemId: ID!) {
-    item(itemId: $itemId) {
+  query UserQuery($key: KeyInput!) {
+    item(key: $key) {
       ...ItemFragment
       ...UserFragment
     }

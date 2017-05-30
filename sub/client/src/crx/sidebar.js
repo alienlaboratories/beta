@@ -3,6 +3,7 @@
 //
 
 import { HttpUtil, KeyListener } from 'alien-util';
+import { Const } from 'alien-core';
 
 import { KeyCodes } from './common';
 
@@ -24,7 +25,7 @@ const config = _.merge({
   env: 'development',
 
   app: {
-    platform: AppDefs.PLATFORM.CRX,
+    platform: Const.PLATFORM.CRX,
     name: AppDefs.APP_NAME
   }
 }, HttpUtil.parseUrlParams());

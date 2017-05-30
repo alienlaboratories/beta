@@ -7,12 +7,10 @@ import express from 'express';
 
 import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 // import { GraphQLError, BREAK } from 'graphql';
-import { makeExecutableSchema } from 'graphql-tools';
 
 import { ErrorUtil, Logger } from 'alien-util';
-import { hasJwtHeader } from 'alien-services';
 
-import { Resolvers } from './resolvers';
+import { SchemaUtil } from './schema';
 import { graphqlLogger } from './util/logger';
 
 const logger = Logger.get('gql');
@@ -26,7 +24,8 @@ const logger = Logger.get('gql');
  * @param database
  * @param options
  * {
- *   contextProvider: {function(request)}
+ *   {function} authCheck
+ *   {function(request)} contextProvider
  * }
  *
  * @returns {Router}
@@ -38,24 +37,7 @@ export const apiRouter = (database, options) => {
     graphql: '/graphql'
   });
 
-  // http://dev.apollodata.com/tools/graphql-tools/generate-schema.html#makeExecutableSchema
-  const schema = makeExecutableSchema({
-
-    // Schema defs.
-    typeDefs: Resolvers.typeDefs,
-
-    // Resolvers.
-    resolvers: Resolvers.getResolvers(database),
-
-    // Log resolver errors (formatError returns message to client).
-    // https://github.com/apollographql/graphql-tools/issues/291
-    // https://github.com/graphql/graphql-js/pull/402
-    logger: {
-      log: (error) => {
-        logger.error('GraphQL Schema Error: ' + error);
-      }
-    }
-  });
+  const schema = SchemaUtil.createSchema(database);
 
   let router = express.Router();
 
@@ -72,7 +54,7 @@ export const apiRouter = (database, options) => {
   // Which is subtlely different from the graphql implementation:
   // https://github.com/graphql/express-graphql
   //
-  router.post(options.graphql, hasJwtHeader(), graphqlExpress(req => {
+  router.post(options.graphql, options.authCheck(), graphqlExpress(req => {
     const startTime = Date.now();
 
     //

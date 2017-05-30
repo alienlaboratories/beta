@@ -58,8 +58,8 @@ export class Application extends React.Component {
               * /project/xxx
               * /project/board/xxx
              */}
-            <Route path={ Path.route(['type', 'itemId']) } component={ CanvasActivity }/>
-            <Route path={ Path.route(['type', 'canvas', 'itemId']) } component={ CanvasActivity }/>
+            <Route path={ Path.route(['type', 'key']) } component={ CanvasActivity }/>
+            <Route path={ Path.route(['type', 'canvas', 'key']) } component={ CanvasActivity }/>
 
             {/*
               * Catch.

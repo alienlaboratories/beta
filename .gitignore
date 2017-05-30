@@ -6,6 +6,8 @@
 
 *.sw[opn]
 
+*.log
+
 node_modules/
 npm-debug.log*
 .nyc_output/

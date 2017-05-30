@@ -71,12 +71,13 @@ export class ItemStore extends QueryProcessor {
    *
    * @param context
    * @param type
-   * @param itemId
+   * @param id
    * @return {Promise<Item>} Item or null.
    */
-  getItem(context, type, itemId) {
-    console.assert(itemId, 'Invalid ID: ' + itemId);
-    return this.getItems(context, type, [itemId]).then(items => items[0]);
+  // TODO(burdon): Key.
+  getItem(context, type, id) {
+    console.assert(type && id, 'Invalid ID: ' + id);
+    return this.getItems(context, type, [id]).then(items => items[0]);
   }
 
   /**
@@ -96,6 +97,7 @@ export class ItemStore extends QueryProcessor {
    * @param itemIds
    * @return {Promise<[Item]>} Retrieved items or [].
    */
+  // TODO(burdon): Keys.
   getItems(context, type, itemIds=[]) {
     throw new Error('Not implemented');
   }
@@ -123,21 +125,22 @@ export class ItemStore extends QueryProcessor {
 
     // TODO(burdon): Get items in batch.
     return Promise.all(_.map(itemMutations, itemMutation => {
-      let { itemId, mutations } = itemMutation;
-      let { type, id:localId } = ID.fromGlobalId(itemId);
+      let { key, mutations } = itemMutation;
+      let { bucket, type, id } = key;
 
       //
       // Get and update item.
       // TODO(burdon): Relies on getItem to return {} for not found.
       //
-      return itemStore.getItem(context, type, localId).then(item => {
+      return itemStore.getItem(context, type, id).then(item => {
 
         // If not found (i.e., insert).
         // TODO(burdon): Check this is an insert (not a miss due to a bug); use version?
         if (!item) {
           item = {
-            id: localId,
-            type: type
+            bucket,
+            type,
+            id
           };
         }
 

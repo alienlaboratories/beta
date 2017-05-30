@@ -5,16 +5,15 @@
 import _ from 'lodash';
 import google from 'googleapis';
 import Gmail from 'node-gmail-api';
-import addrs from 'email-addresses';
 
-import { ErrorUtil, Logger } from 'alien-util';
+import { Database } from 'alien-core';
+import { ErrorUtil, Logger, TypeUtil } from 'alien-util';
 
+import { DataUtil } from '../../util/data';
 import { OAuthServiceProvider } from '../service';
-import { GoogleApiUtil } from './google_api';
 
-_.mixin({
-  email: email => _.pick(addrs.parseOneAddress(email), 'name', 'address')
-});
+import { GoogleSyncer } from './sync';
+import { GoogleApiUtil } from './util';
 
 const NAMESPACE = 'google.com/mail';
 
@@ -53,10 +52,10 @@ export class GoogleMailClient {
 
         let to = _.chain(payload.headers)
           .filter(header => header.name === 'To')
-          .map(i => _.email(i.value))
+          .map(i => DataUtil.parseEmail(i.value))
           .value();
 
-        let from = _.email(_.find(payload.headers, header => header.name === 'From').value);
+        let from = DataUtil.parseEmail(_.find(payload.headers, header => header.name === 'From').value);
 
         let subject = _.find(payload.headers, header => header.name === 'Subject').value;
 
@@ -173,5 +172,86 @@ export class GoogleMailServiceProvider extends OAuthServiceProvider {
       title: 'Gmail',
       class: 'service-google-mail'
     };
+  }
+}
+
+/**
+ * Google Mail Syncer.
+ */
+export class GoogleMailSyncer extends GoogleSyncer {
+
+  constructor(config, database) {
+    super(config, database);
+
+    // Gmail client.
+    this._client = new GoogleMailClient();
+  }
+
+  async _doSync(user, authClient) {
+
+    // TODO(burdon): Store and user sync point.
+    let query = 'label:UNREAD';
+
+    //
+    // Retrieve messages.
+    //
+    logger.log('Syncing: ' + user.email);
+    let messages = await this._client.list(authClient, query, 10);
+    logger.log(`Results[${user.email}/${query}]:`,
+      TypeUtil.stringify(_.map(messages, result => _.pick(result, 'from', 'title')), 2));
+    if (_.isEmpty(messages)) {
+      return;
+    }
+
+    // Build map of senders.
+    let messagesBySender = new Map();
+    _.each(messages, message => {
+      TypeUtil.defaultMap(messagesBySender, message.from.address, Array).push(message);
+    });
+    logger.log('Senders:', JSON.stringify(Array.from(messagesBySender.keys())));
+
+    //
+    // TODO(burdon): Need design for default groups.
+    // Get the default group.
+    //
+    let groups = await this._database.getQueryProcessor(Database.NAMESPACE.SYSTEM).getGroups(user.id);
+    let group = groups[0];
+
+    // Create the request context.
+    let context = { buckets: [group.id] };
+    logger.log('Context:', JSON.stringify(context));
+
+    // TODO(burdon): Get only Contacts that match From email address.
+    let filter = { type: 'Contact' };
+    let contacts = await this._database.getQueryProcessor(Database.NAMESPACE.USER).queryItems(context, {}, filter);
+    logger.log('Contacts:', TypeUtil.stringify(contacts));
+
+    //
+    // Create list of items (Contacts and Messages) to upsert.
+    //
+    let items = [];
+    _.each(contacts, contact => {
+      let messages = messagesBySender.get(contact.email);
+      if (!_.isEmpty(messages)) {
+        // Add messages to contact.
+        contact.messages = _.map(messages, message => {
+          // TODO(burdon): Which bucket should this belong to?
+          message.bucket = group.id;
+          items.push(message);
+          return message.id;
+        });
+
+        // TODO(burdon): Add to schema.
+        items.push(contact);
+      }
+    });
+
+    //
+    // Upsert the items.
+    //
+
+    if (!_.isEmpty(items)) {
+      return this._database.getItemStore(Database.NAMESPACE.USER).upsertItems(context, items);
+    }
   }
 }

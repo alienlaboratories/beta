@@ -40,50 +40,63 @@ export class ID {
    * @returns {*}
    */
   // TODO(burdon): This is the default behavior so not necessary.
-  // TODO(burdon): See toIdValue.
   // http://dev.apollodata.com/react/cache-updates.html#cacheRedirect
   static dataIdFromObject(obj) {
     if (obj.__typename && obj.id) {
-      return obj.__typename + '/' + obj.id;
+      return obj.__typename + ':' + obj.id;
     }
 
+    // TODO(burdon): Document why (e.g., determin if Object?)
     return null;
   }
 
-  /**
-   * Converts a global ID.
-   * @param globalId
-   * @returns {{type: *, id: *}}
-   */
-  static fromGlobalId(globalId) {
-    console.assert(_.isString(globalId));
-    let parts = atob(globalId).match(/(.+)\/(.+)/);
-    console.assert(parts.length === 3, 'Invalid ID:', globalId);
-    return {
-      type: parts[1],
-      id: parts[2]
-    };
+  // TODO(burdon): KeyUtil.
+
+  static key(item) {
+    console.assert(item && item.type && item.id, 'Invalid item: ' + JSON.stringify(item));
+    return _.pick(item, 'namespace', 'bucket', 'type', 'id');
+  }
+
+  static keyEqual(key1, key2) {
+    return _.isEqual(key1, key2);
+  }
+
+  static keyToString(key) {
+    console.assert(key && key.type && key.id);
+    let parts = [ key.type, key.id ];
+    if (key.bucket) {
+      parts.unshift(key.bucket);
+    }
+
+    return _.join(parts, '/');
+  }
+
+  static stringToKey(str) {
+    let parts = str.split('/');
+    let id = parts.pop();
+    let type = parts.pop();
+    let bucket = parts.pop();
+    return ID.key({
+      bucket, type, id
+    });
   }
 
   /**
-   * Converts a local ID and type.
-   * @param {string} type
-   * @param {string} localId
+   * Encodes the key as a base64 string that can be used as a parmalink.
+   * @param { [bucket], type, id } key
    * @returns {string}
    */
-  static toGlobalId(type, localId) {
-    console.assert(_.isString(type) && _.isString(localId));
-    return btoa(type + '/' + localId);
+  static encodeKey(key) {
+    return btoa(ID.keyToString(key));
   }
 
   /**
-   * Returns the global ID of the item.
-   * @param item
-   * @return {string}
+   * Decodes the encoded key.
+   * @param str
+   * @returns {Key}
    */
-  static getGlobalId(item) {
-    console.assert(item && item.type && item.id, 'Invalid item: ' + JSON.stringify(item));
-    return ID.toGlobalId(item.type, item.id);
+  static decodeKey(str) {
+    return ID.stringToKey(atob(str));
   }
 
   /**
@@ -91,6 +104,7 @@ export class ID {
    * @param item
    * @return {string} or null if the foreign key cannot be created.
    */
+  // TODO(burdon): Use Key type in schema.
   static getForeignKey(item) {
     if (item && item.namespace && item.id) {
       return item.namespace + '/' + item.id;

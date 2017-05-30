@@ -9,7 +9,7 @@ import { ErrorUtil, Logger } from 'alien-util';
 import { ItemStore, QueryProcessor } from 'alien-core';
 
 import { OAuthServiceProvider } from '../service';
-import { GoogleApiUtil } from './google_api';
+import { GoogleApiUtil } from './util';
 
 const NAMESPACE = 'google.com/drive';
 

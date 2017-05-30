@@ -51,16 +51,17 @@ export class Path {
 
   /**
    * Creates a URL for the given canvas.
-   * @param itemId  Global ID.
+   * @param {Key} key
    * @param canvas
    * @return {string}
    */
-  static canvas(itemId, canvas=undefined) {
-    let { type } = ID.fromGlobalId(itemId);
+  static canvas(key, canvas=undefined) {
+    console.assert(key && key.id && key.type);
+    let type = key.type.toLowerCase();
     if (canvas) {
-      return `${Path.ROOT}/${type.toLowerCase()}/${canvas}/${itemId}`;
+      return `${Path.ROOT}/${type}/${canvas}/${ID.encodeKey(key)}`;
     } else {
-      return `${Path.ROOT}/${type.toLowerCase()}/${itemId}`;
+      return `${Path.ROOT}/${type}/${ID.encodeKey(key)}`;
     }
   }
 }
@@ -88,13 +89,13 @@ export class Navigator {
     this.dispatch(goForward());
   }
 
+  // TODO(burdon): Standardize usage.
   push(path) {
     this.dispatch(push(path));
   }
 
-  // TODO(burdon): Standardize usage.
   pushCanvas(item) {
-    this.push(Path.canvas(ID.toGlobalId(item.type, item.id)));
+    this.push(Path.canvas(ID.key(item)));
   }
 }
 
@@ -113,10 +114,7 @@ export class WindowNavigator {
   push() {}
 
   pushCanvas(item) {
-    let path = this._serverProvider.value + Path.canvas(ID.toGlobalId(item.type, item.id));
-
-    console.log('::::', path);
-
-//    window.open(path, 'ALIEN');
+    let path = this._serverProvider.value + Path.canvas(ID.key(item));
+    window.open(path, 'ALIEN');
   }
 }

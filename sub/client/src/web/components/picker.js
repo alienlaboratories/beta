@@ -187,7 +187,7 @@ export class Picker extends React.Component {
                  onKeyDown={ this.handleTextKeyDown.bind(this) }
                  onFocusChange={ this.handleTextFocusChange.bind(this) }/>
 
-        <div ref="popup" className="ux-picker-popup" style={{ 'display': showPopup ? 'block' : 'none' }}>
+        <div ref="popup" className="ux-picker-popup" style={{ display: showPopup ? 'block' : 'none' }}>
           <div>
             { rows }
           </div>

@@ -9,9 +9,7 @@ import { connect } from 'react-redux';
 import gql from 'graphql-tag';
 
 import { DomUtil } from 'alien-util';
-import { Fragments, ID, MutationUtil } from 'alien-core';
-
-import { Enum } from '../../../common/defs';
+import { Enum, Fragments, ID, MutationUtil } from 'alien-core';
 
 import { ReactUtil } from '../../util/react';
 import { connectWithRef } from '../../util/redux';
@@ -48,7 +46,7 @@ export class ProjectCard extends React.Component {
   }
 
   handleItemSelect(item) {
-    this.context.navigator.push(Path.canvas(ID.getGlobalId(item)));
+    this.context.navigator.push(Path.canvas(ID.key(item)));
   }
 
   handleItemUpdate(item, mutations) {
@@ -130,7 +128,6 @@ class ProjectBoardCanvasComponent extends React.Component {
 
       onCreateMutations: (bucket, userId, column) => {
         return [
-          MutationUtil.createFieldMutation('bucket', 'string', bucket),
           MutationUtil.createFieldMutation('status', 'int', column.value)
         ];
       },
@@ -174,9 +171,7 @@ class ProjectBoardCanvasComponent extends React.Component {
       },
 
       onCreateMutations: (bucket, userId, column) => {
-        let mutations = [
-          MutationUtil.createFieldMutation('bucket', 'string', bucket)
-        ];
+        let mutations = [];
 
         // TODO(burdon): Optimistic concurrency fail (need to patch from cache).
         if (column.id !== ProjectBoardCanvasComponent.COLUMN_ICEBOX) {
@@ -225,7 +220,7 @@ class ProjectBoardCanvasComponent extends React.Component {
 
       onCreateMutations: (bucket, userId, column) => {
         return [
-          // TODO(burdon): Currently overwritten.
+          // TODO(burdon): Bucket should be same for entire batch?
           // TODO(burdon): Should used user's group.
           MutationUtil.createFieldMutation('bucket', 'string', userId)
         ];
@@ -324,7 +319,7 @@ class ProjectBoardCanvasComponent extends React.Component {
   }
 
   handleItemSelect(item) {
-    this.context.navigator.push(Path.canvas(ID.getGlobalId(item)));
+    this.context.navigator.push(Path.canvas(ID.key(item)));
   }
 
   handleItemUpdate(item, mutations, column) {
@@ -493,8 +488,8 @@ export class ProjectCanvasToolbarComponent extends React.Component {
 //-------------------------------------------------------------------------------------------------
 
 const ProjectBoardQuery = gql`
-  query ProjectBoardQuery($itemId: ID!) {
-    item(itemId: $itemId) {
+  query ProjectBoardQuery($key: KeyInput!) {
+    item(key: $key) {
       ...ItemFragment
 
       ... on Project {

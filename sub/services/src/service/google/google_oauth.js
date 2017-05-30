@@ -59,8 +59,8 @@ export class GoogleOAuthProvider extends OAuthProvider {
 
     // https://github.com/google/google-api-nodejs-client/#oauth2-client
     let authClient = new google.auth.OAuth2(
-      config.clientId,
-      config.clientSecret,
+      _.get(config, 'web.clientId'),
+      _.get(config, 'web.clientSecret'),
       callback
     );
 
@@ -73,6 +73,8 @@ export class GoogleOAuthProvider extends OAuthProvider {
 
   /**
    * Refreshes the access_token if the refresh_token is set.
+   * https://github.com/google/google-api-nodejs-client/#manually-refreshing-access-token
+   *
    * @param {google.auth.OAuth2} authClient
    * @returns {Promise.<{tokens}>}
    */
@@ -88,8 +90,26 @@ export class GoogleOAuthProvider extends OAuthProvider {
     });
   }
 
-  constructor(config, callbackUrl) {
-    super('google', callbackUrl);
+  static getUserProfile(authClient) {
+    return new Promise((resolve, reject) => {
+      // TODO(burdon): Factor out.
+      // https://developers.google.com/+/web/api/rest
+      let plus = google.plus('v1');
+      plus.people.get({
+        userId: 'me',
+        auth: authClient
+      }, (error, profile) => {
+        if (error) {
+          reject(new Error(error));
+        } else {
+          resolve(OAuthProvider.getCanonicalUserProfile(profile));
+        }
+      });
+    });
+  }
+
+  constructor(config, serverUrl) {
+    super('google', serverUrl);
 
     // Contains OAuth registration.
     this._config = config;
@@ -146,8 +166,8 @@ export class GoogleOAuthProvider extends OAuthProvider {
     // https://github.com/jaredhanson/passport-google-oauth
     // https://github.com/jaredhanson/passport-google-oauth2
     return new GoogleStrategy({
-      clientID:       this._config.clientId,
-      clientSecret:   this._config.clientSecret,
+      clientID:       _.get(this._config, 'web.clientId'),
+      clientSecret:   _.get(this._config, 'web.clientSecret'),
       callbackURL:    this._callbackUrl
     }, loginCallback);
   }
@@ -183,24 +203,8 @@ export class GoogleOAuthProvider extends OAuthProvider {
 
   getUserProfile(credentials) {
     console.assert(credentials);
-
-    return new Promise((resolve, reject) => {
-      let authClient = this.createAuthClient(credentials);
-
-      // TODO(burdon): Factor out.
-      // https://developers.google.com/+/web/api/rest
-      let plus = google.plus('v1');
-      plus.people.get({
-        userId: 'me',
-        auth: authClient
-      }, (error, profile) => {
-        if (error) {
-          throw new Error(error);
-        }
-
-        resolve(OAuthProvider.getCanonicalUserProfile(profile));
-      });
-    });
+    let authClient = this.createAuthClient(credentials);
+    return GoogleOAuthProvider.getUserProfile(authClient);
   }
 
   revokeCredentials(credentials) {

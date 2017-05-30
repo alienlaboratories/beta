@@ -4,27 +4,25 @@
 
 import _ from 'lodash';
 import React from 'react';
+import gql from 'graphql-tag';
 import { connect } from 'react-redux';
 import { Router, Route } from 'react-router';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import { hashHistory } from 'react-router';
 import { routerMiddleware, routerReducer } from 'react-router-redux';
-import { graphql, ApolloProvider, IntrospectionFragmentMatcher } from 'react-apollo';
 import ApolloClient from 'apollo-client';
-import { createNetworkInterface } from 'apollo-client';
+import { graphql, ApolloProvider } from 'react-apollo';
 import update from 'immutability-helper';
 
 import { Logger, TypeUtil } from 'alien-util';
-import { AuthDefs, Batch, IdGenerator, ItemUtil, MutationUtil } from 'alien-core';
+import { Batch, Fragments, IdGenerator, ItemUtil, MutationUtil } from 'alien-core';
+import { ITEM_TYPES, UpsertItemsMutation, UpsertItemsMutationName } from 'alien-core';
+
+import { createFragmentMatcher } from '../../../util/apollo_tools';
+import { createNetworkInterfaceWithAuth, LocalNetworkInterface } from '../../../testing/apollo_testing';
 
 import { ReactUtil } from '../../util/index';
-
-//import { UpsertItemsMutation, UpsertItemsMutationName } from 'alien-core';
-import { UpsertItemsMutation, UpsertItemsMutationName } from './common';
-
-import { ProjectsQuery, ProjectsQueryName } from './common';
-import { TestingNetworkInterface } from './testing';
 
 import './apollo.less';
 
@@ -42,19 +40,6 @@ const ProjectFilter = {
     }
   }
 };
-
-// TODO(burdon): Subscriptions.
-// TODO(burdon): Version numbers (inc. on server).
-
-// TODO(burdon): Minimal GQL explorer app? D3?
-// TODO(burdon): Remove local/global ID (encode only for URIs). change API to require type/ID (create Reference type)
-
-// TODO(burdon): Document effect of just returning IDs for mutation (e.g., cache doesn't update field even if opt).
-// TODO(burdon): Try this on main app and/or context setting to return IDs only (rather than object lookup).
-// TODO(burdon): Is is necessary to return any information from the mutation (can opt result alone update store).
-
-// TODO(burdon): Create ideas board for the following (and folder for grabs from movies, etc.)
-// TODO(burdon): Canvas/stickies/lightboard; drag live cards. cards interact with surface. UX will drive product. Make it cool. Kumiko
 
 //-------------------------------------------------------------------------------------------------
 // React Components.
@@ -163,6 +148,12 @@ class ListComponent extends React.Component {
       this.count++;
 
       logger.log('RootComponent.render', _.size(items));
+      console.log('####', this.props);
+
+      if (!project) {
+        logger.warn('Null project.');
+        return <div/>;
+      }
 
       return (
         <div className="test-component">
@@ -209,6 +200,11 @@ class SimpleListComponent extends React.Component {
   render() {
     return ReactUtil.render(this, () => {
       let { project, items } = this.props;
+
+      if (!project) {
+        logger.warn('Null project.');
+        return <div/>;
+      }
 
       return (
         <div className="test-component">
@@ -323,6 +319,44 @@ const SearchReducer = (path, options={}) => (previousResult, action, variables) 
 };
 
 //-------------------------------------------------------------------------------------------------
+// GQL Queries and Mutations.
+//-------------------------------------------------------------------------------------------------
+
+export const SearchQuery = gql`
+  query SearchQuery($filter: FilterInput) {
+    search(filter: $filter) {
+      items {
+        ...ItemFragment
+        id
+        title
+
+        ... on Project {
+          group {
+            id
+            title
+          }
+
+          tasks {
+            ...ItemFragment
+
+            id
+            type
+            title                 # TODO(burdon): Breaks if missing.
+
+            ...TaskFragment
+          }
+        }
+      }
+    }
+  }
+  
+  ${Fragments.ItemFragment}
+  ${Fragments.TaskFragment}
+`;
+
+export const SearchQueryName = _.get(SearchQuery, 'definitions[0].name.value');
+
+//-------------------------------------------------------------------------------------------------
 // Apollo Container.
 // http://dev.apollodata.com/react/api-queries.html
 //-------------------------------------------------------------------------------------------------
@@ -340,14 +374,14 @@ const ListComponentWithApollo = compose(
   }),
 
   // http://dev.apollodata.com/react/queries.html
-  graphql(ProjectsQuery, {
+  graphql(SearchQuery, {
 
     // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
 
     // http://dev.apollodata.com/react/queries.html#graphql-options
     options: (props) => {
       let { options } = props;
-      logger.log('graphql.options:', ProjectsQueryName);
+      logger.log('graphql.options:', SearchQueryName);
 
       return {
         variables: {
@@ -368,7 +402,7 @@ const ListComponentWithApollo = compose(
     // http://dev.apollodata.com/react/queries.html#graphql-props-option
     props: ({ ownProps, data }) => {
       let { errors, loading, search } = data;
-      logger.log('graphql.props:', ProjectsQueryName, loading ? 'loading...' : TypeUtil.stringify(search));
+      logger.log('graphql.props:', SearchQueryName, loading ? 'loading...' : TypeUtil.stringify(search));
 
       let project = _.get(search, 'items[0]');
       let items = _.get(project, 'tasks');
@@ -420,7 +454,7 @@ const ListComponentWithApollo = compose(
 const SimpleListComponentWithApollo = compose(
 
   // http://dev.apollodata.com/react/queries.html
-  graphql(ProjectsQuery, {
+  graphql(SearchQuery, {
 
     options: (props) => {
       return {
@@ -513,94 +547,54 @@ export class App {
   constructor(config={}) {
     console.assert(config);
     this._config = config;
+
+    _.defaultsDeep(window, {
+      alien: {
+        app: this
+      }
+    });
   }
 
   init() {
     logger.log('Initializing...');
-    return this.initNetwork().then(() => {
-      this.postInit();
-      return this;
-    });
+
+    this.initClient();
+    this.initStore();
+
+    return Promise.resolve(this);
   }
 
-  initNetwork() {
-    switch (_.get(this._config, 'query.network')) {
+  /**
+   * Init Apollo.
+   */
+  initClient() {
+    let { schema, context } = _.get(this._config, 'testing');
 
-      case 'testing': {
-        this._networkInterface = new TestingNetworkInterface(() => AppState(this._store.getState()));
-        return this._networkInterface.init();
-      }
+    let networkInterface;
+    let fragmentMatcher;
 
-      default: {
-        this._networkInterface = createNetworkInterface({
-          uri: _.get(this._config, 'graphql')
-        }).use([
-          {
-            // http://dev.apollodata.com/core/network.html#networkInterfaceMiddleware
-            applyMiddleware: ({ options }, next) => {
-
-              // Set the Auth header.
-              options.headers = _.assign(options.headers, {
-                'Authorization': AuthDefs.JWT_SCHEME + ' ' + _.get(this._config, 'credentials.id_token')
-              });
-
-              next();
-            }
-          }
-        ]);
-
-        return Promise.resolve();
-      }
+    if (schema) {
+      networkInterface = new LocalNetworkInterface(schema, context);
+      fragmentMatcher = createFragmentMatcher(schema);
+    } else {
+      networkInterface = createNetworkInterfaceWithAuth(this._config);
+      fragmentMatcher = createFragmentMatcher(ITEM_TYPES);
     }
+
+    this._client = new ApolloClient({
+      networkInterface,
+      fragmentMatcher,
+
+      addTypename: true,                                        // TODO(burdon): ???
+
+      dataIdFromObject: item => item.type + ':' + item.id,
+    });
   }
 
-  postInit() {
-
-    //
-    // Apollo.
-    // https://github.com/apollographql/apollo-client
-    //
-
-    // http://dev.apollodata.com/core/apollo-client-api.html#apollo-client
-    this._client = new ApolloClient({
-
-      // By default, Apollo identifies objects based on two properties: The __typename and an ID field, either id or _id.
-      // TODO(burdon): Factor out.
-      // Cache normalization (allows for automatic updates to all queries following mutations).
-      // Requires mutatied items to include __typename attributes.
-      // http://dev.apollodata.com/react/cache-updates.html
-      // TODO(burdon): Replace to/from global ID.
-      // Access via client.dataIdFromObject(item) => Task:xxx
-      // addTypename: true,
-      // dataIdFromObject: (obj) => {
-      //   console.assert(obj.__typename && obj.id);
-      //   return obj.__typename + '/' + obj.id;
-      // },
-
-      // http://dev.apollodata.com/react/initialization.html#fragment-matcher
-      fragmentMatcher: new IntrospectionFragmentMatcher({
-        introspectionQueryResultData: {
-          __schema: {
-            types: [
-              {
-                kind: 'INTERFACE',
-                name: 'Item',
-                possibleTypes: ['Project', 'Task']
-              }
-            ],
-          },
-        }
-      }),
-
-      // http://dev.apollodata.com/core/network.html#NetworkInterface
-      // https://github.com/apollographql/apollo-client/blob/master/src/transport/networkInterface.ts
-      networkInterface: this._networkInterface
-    });
-
-    //
-    // Redux.
-    // TODO(burdon): Add Rethunk.
-    //
+  /**
+   * Init Redux.
+   */
+  initStore() {
 
     // Initial options.
     let initialState = {
