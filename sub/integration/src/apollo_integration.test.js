@@ -23,12 +23,18 @@ const logger = Logger.get('test');
 // NOTE: Does not depent on react (react-apollo).
 //
 
+// TODO(burdon): Handle error if create doesn't set all required fields.
+// TODO(burdon): Test react graphql update in client tests (not here).
+// TODO(burdon): Move fragments to alien-api.
+// TODO(burdon): Implment local network interface for main app.
+// TODO(burdon): Version numbers (inc. on server).
+
 // TODO(burdon): Subscriptions (onMutation)? Make future proof. For now, invalidate and requery).
 // http://dev.apollodata.com/react/subscriptions.html
 
 // TODO(burdon): Update issues: (fragmentMatcher strings; version skew).
-// https://github.com/apollographql/apollo-client/issues/1741 [burdon]
-// https://github.com/apollographql/apollo-client/issues/1708 [burdon]
+// https://github.com/apollographql/apollo-client/issues/1741 [burdon] Resolved
+// https://github.com/apollographql/apollo-client/issues/1708 [burdon] Resolved
 // https://github.com/apollographql/react-apollo/issues/386
 
 //
@@ -516,19 +522,16 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
 
   //
   // Batch add Task to Project.
-  // TODO(burdon): Handle error if create doesn't set all required fields.
-  // TODO(burdon): Test react graphql update in client tests (not here).
-  // TODO(burdon): Move fragments to alien-api.
-  // TODO(burdon): Implment local network interface for main app.
-  // TODO(burdon): Version numbers (inc. on server).
   //
   test('Batch create and insert item.', async () => {
+
+    const projectKey = ID.key({ bucket, type: 'Project', id: 'P-1' });
 
     // Query for existing Project.
     let { data: { item:project } } = await client.query({
       query: ProjectQuery,
       variables: {
-        key: ID.key({ bucket, type: 'Project', id: 'P-1' })
+        key: projectKey
       }
     });
 
@@ -554,15 +557,25 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     return batch.commit().then(({ batch, error }) => {
       let taskId = ID.dataIdFromObject(batch.refs['task']);
 
+      // Get cache Project and check Tasks were added.
       let cachedProject = client.readFragment({
         id: ID.dataIdFromObject(project),
         fragment: ProjectTasksFragment,
         fragmentName: FragmentsMap.getFragmentName(ProjectTasksFragment)
       });
 
-      // Check task was appended.
       expect(cachedProject.tasks.length).toEqual(project.tasks.length + 1);
       expect(ID.dataIdFromObject(cachedProject.tasks[cachedProject.tasks.length - 1])).toEqual(taskId);
+
+      // Test query returns the correct Tasks.
+      let { item:updatedProject } = client.readQuery({
+        query: ProjectQuery,
+        variables: {
+          key: projectKey
+        }
+      });
+
+      expect(updatedProject.tasks.length).toEqual(project.tasks.length + 1);
     });
   });
 });

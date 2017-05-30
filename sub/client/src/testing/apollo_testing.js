@@ -7,7 +7,7 @@ import { graphql } from 'graphql';
 import { print } from 'graphql/language/printer';
 import { createNetworkInterface } from 'apollo-client';
 
-import { Async, Logger, TypeUtil } from 'alien-util';
+import { Async, Logger } from 'alien-util';
 import { AuthDefs } from 'alien-core';
 
 const logger = Logger.get('testing');
@@ -85,7 +85,7 @@ export class LocalNetworkInterface {
     let { networkDelay=0 } = _.isFunction(this._options) ? this._options() : this._options;
 
     let requestCount = ++this._requestCount;
-    logger.info(`REQ[${operationName}:${requestCount}]`, variables && TypeUtil.stringify(variables) || {});
+    logger.info(`REQ[${operationName}:${requestCount}]`, variables && JSON.stringify(variables, null, 2) || {});
 
     let root = {};
 
@@ -93,7 +93,7 @@ export class LocalNetworkInterface {
 
       // https://github.com/graphql/graphql-js/blob/master/src/graphql.js
       return graphql(this._schema, print(query), root, this._context, variables, operationName).then(result => {
-        logger.info(`RES[${operationName}:${requestCount}]`, TypeUtil.stringify(result));
+        logger.info(`RES[${operationName}:${requestCount}]`, JSON.stringify(result, null, 2));
         if (result.errors) {
           logger.error(result.errors[0]);
           throw new Error(result.errors[0]);

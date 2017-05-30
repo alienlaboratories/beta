@@ -369,7 +369,7 @@ export class Resolvers {
             //
             .then(items => {
               return {
-                keys: _.map(items, item  => ID.key(item))
+                keys: _.map(items, item => ID.key(item))
               };
             });
         }

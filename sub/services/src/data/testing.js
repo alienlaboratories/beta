@@ -138,7 +138,7 @@ export class TestGenerator {
       return {
         key: ID.key({ type: 'Group', id: item.group }),
         mutations: [
-          MutationUtil.createSetMutation('projects', 'id', ID.key(item))
+          MutationUtil.createSetMutation('projects', 'key', ID.key(item))
         ]
       };
     },
@@ -149,7 +149,7 @@ export class TestGenerator {
         return {
           key: ID.key({ type: 'Project', id: item.project }),
           mutations: [
-            MutationUtil.createSetMutation('tasks', 'id', ID.key(item))
+            MutationUtil.createSetMutation('tasks', 'key', ID.key(item))
           ]
         };
       }

@@ -90,6 +90,10 @@ export class TextBox extends React.Component {
     });
   }
 
+  clear() {
+    this.value = '';
+  }
+
   focus() {
     this.refs.input && this.refs.input.focus();
   }
@@ -137,7 +141,7 @@ export class TextBox extends React.Component {
       // ESCAPE
       case 27: {
         this.setState({
-          readOnly: true,
+          readOnly: this.props.clickToEdit,
           value: this.props.value
         }, () => {
           this.props.onCancel && this.props.onCancel(this.props.value, event);

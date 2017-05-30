@@ -175,7 +175,7 @@ class ProjectBoardCanvasComponent extends React.Component {
 
         // TODO(burdon): Optimistic concurrency fail (need to patch from cache).
         if (column.id !== ProjectBoardCanvasComponent.COLUMN_ICEBOX) {
-          mutations.push(MutationUtil.createFieldMutation('assignee', 'id', { type: 'User', id: column.value }));
+          mutations.push(MutationUtil.createFieldMutation('assignee', 'key', { type: 'User', id: column.value }));
         }
 
         return mutations;
@@ -186,7 +186,7 @@ class ProjectBoardCanvasComponent extends React.Component {
           return (column.id === ProjectBoardCanvasComponent.COLUMN_ICEBOX) ? [
             MutationUtil.createFieldMutation('assignee') // Set null.
           ] : [
-            MutationUtil.createFieldMutation('assignee', 'id', { type: 'User', id: column.value })
+            MutationUtil.createFieldMutation('assignee', 'key', { type: 'User', id: column.value })
           ];
         }
       }
@@ -333,12 +333,12 @@ class ProjectBoardCanvasComponent extends React.Component {
         .batch(project.bucket)
         .createItem('Task', [
           this.boardAdapter.onCreateMutations(project.bucket, user.id, column),
-          MutationUtil.createFieldMutation('owner', 'id', ID.key(user)),
-          MutationUtil.createFieldMutation('project', 'id', ID.key(project)),
+          MutationUtil.createFieldMutation('owner', 'key', ID.key(user)),
+          MutationUtil.createFieldMutation('project', 'key', ID.key(project)),
           mutations
         ], 'task')
         .updateItem(project, [
-          ({ task }) => MutationUtil.createSetMutation('tasks', 'id', ID.key(task))
+          ({ task }) => MutationUtil.createSetMutation('tasks', 'key', ID.key(task))
         ])
         .commit();
     }

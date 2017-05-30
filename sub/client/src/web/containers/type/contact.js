@@ -82,23 +82,23 @@ export class ContactCard extends React.Component {
 
         // New task.
         .createItem('Task', _.concat(mutations, [
-          MutationUtil.createFieldMutation('project', 'id', ID.key(project)),
-          MutationUtil.createFieldMutation('owner',   'id', ID.key(user)),
-          assignee && MutationUtil.createFieldMutation('assignee', 'id', ID.key(assignee))
+          MutationUtil.createFieldMutation('project', 'key', ID.key(project)),
+          MutationUtil.createFieldMutation('owner',   'key', ID.key(user)),
+          assignee && MutationUtil.createFieldMutation('assignee', 'key', ID.key(assignee))
         ]), 'task')
 
         // Update contact.
         // TODO(burdon): Bidirectional links?
         .updateItem(contact, [
-          ({ task }) => MutationUtil.createSetMutation('tasks', 'id', ID.key(task))
+          ({ task }) => MutationUtil.createSetMutation('tasks', 'key', ID.key(task))
         ], 'contact')
 
         // Parent project.
         .updateItem(project, [
-          ({ task }) => MutationUtil.createSetMutation('tasks', 'id', ID.key(task)),
+          ({ task }) => MutationUtil.createSetMutation('tasks', 'key', ID.key(task)),
 
           // NOTE: Named since ID may have changed due to cloning.
-          ({ contact }) => MutationUtil.createSetMutation('contacts', 'id', ID.key(contact))
+          ({ contact }) => MutationUtil.createSetMutation('contacts', 'key', ID.key(contact))
         ])
 
         .commit();

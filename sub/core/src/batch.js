@@ -8,7 +8,7 @@ import { Logger, TypeUtil } from 'alien-util';
 
 import { Database } from './database';
 import { ID } from './id';
-import { MutationUtil, BatchMutationName } from './mutations';
+import { MutationUtil } from './mutations';
 import { FragmentsMap } from './schema';
 import { Transforms } from './transforms';
 
@@ -30,7 +30,7 @@ export class Batch {
    *
    *   .updateItem({ id: 'P-1', type: 'Project' }, [
    *     MutationUtil.createSetMutation('labels', 'string', 'foo')
-   *     ({ task }) => MutationUtil.createSetMutation('tasks', 'id', ID.key(task))
+   *     ({ task }) => MutationUtil.createSetMutation('tasks', 'key', ID.key(task))
    *   ])
    *
    *   .commit();
@@ -147,14 +147,16 @@ export class Batch {
       // http://dev.apollodata.com/react/optimistic-ui.html#optimistic-basics
       // http://dev.apollodata.com/react/cache-updates.html
       optimisticResponse = {
-        __typename: BatchMutationName,
+        batchMutation: {
+
+          // TODO(burdon): Use def.
+          __typename: 'BatchMutationResponse',
+
+          keys: _.map(this._itemMutations, itemMutation => ({ __typename: 'X', ...itemMutation.key }))
+        },
 
         // Add hint for batch.update.
-        optimistic: true,
-
-        batchMutation: {
-          keys: _.map(this._itemMutations, itemMutation => itemMutation.key)
-        }
+        optimistic: true
       };
     }
 
@@ -166,94 +168,20 @@ export class Batch {
     logger.log('Batch:', TypeUtil.stringify(this._itemMutations));
     return this._mutate({
 
+      // TODO(burdon): refetchQueries
+      // TODO(burdon): updateQueries
+
       // RootMutation.batchMutation([ItemMutationInput]!)
       variables: {
         itemMutations: this._itemMutations
       },
 
+      // http://dev.apollodata.com/react/optimistic-ui.html
       optimisticResponse,
 
-      // TODO(burdon): refetchQueries
-      // TODO(burdon): updateQueries
-
-      /**
-       * Updates the cache.
-       * By default the cache is updates items that match ApolloClient.dataIdFromObject.
-       * This method allows for the update of cached queries (and replaces deprecated reducers).
-       *
-       * Called for both optimistic and network mutation response.
-       * Once immediately after client.mutate with the optimisticResponse.
-       * After the network response the optimistic changes are rolled back and update called with the actual data.
-       *
-       * http://dev.apollodata.com/react/cache-updates.html#directAccess
-       * http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
-       * http://dev.apollodata.com/core/read-and-write.html#updating-the-cache-after-a-mutation
-       *
-       * @param {DataProxy} proxy http://dev.apollodata.com/core/apollo-client-api.html#DataProxy
-       * @param {Object} data Mutation result.
-       */
-      // TODO(burdon): Factor out update method.
+      // http://dev.apollodata.com/core/read-and-write.html#updating-the-cache-after-a-mutation
       update: (proxy, { data }) => {
-        logger.log('Batch.mutate.update', JSON.stringify(data));
-        if (_.isEmpty(this._itemMutations)) {
-          logger.warn('Empty batch: ' + JSON.stringify(data));
-          return;
-        }
-
-        // Process mutations.
-        // TODO(burdon): Use actual mutatons returned from optimisticResponse and server..
-        _.each(this._itemMutations, itemMutation => {
-          let { key, mutations } = itemMutation;
-
-          // Apply to each fragment.
-          _.each(this._fragments.getFragments(key.type), fragment => {
-            let fragmentName = FragmentsMap.getFragmentName(fragment);
-
-            //
-            // Read currently cached item (if exists).
-            // http://dev.apollodata.com/core/apollo-client-api.html#DataProxy.readFragment
-            //
-            let cachedItem = proxy.readFragment({
-              id: ID.dataIdFromObject({ __typename: key.type, id: key.id }),
-              fragment,
-              fragmentName
-            });
-
-            // TODO(burdon): Assert if update.
-            if (!cachedItem) {
-              cachedItem = {__typename: key.type, ...key, version: 0 };
-            }
-
-            //
-            // Update cache.
-            //
-
-            // Apply mutations.
-            let mutatedItem = Transforms.applyObjectMutations({ client: true }, TypeUtil.clone(cachedItem), mutations);
-
-            // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.writeFragment
-            proxy.writeFragment({
-              id: ID.dataIdFromObject(cachedItem),
-              fragment,
-              fragmentName,
-              data: mutatedItem
-            });
-
-            //
-            // Check updated.
-            //
-
-            cachedItem = proxy.readFragment({
-              id: ID.dataIdFromObject(cachedItem),
-              fragment,
-              fragmentName
-            });
-
-            let storeItem = proxy.data[ID.dataIdFromObject(cachedItem)];
-            console.assert(cachedItem && storeItem);
-            console.assert(cachedItem.id === storeItem.id);
-          });
-        });
+        this._doUpdate(proxy, data);
       }
     }).then(({ data }) => {
       // Called when on network response (not optimistic response).
@@ -262,6 +190,92 @@ export class Batch {
     }).catch(err => {
       logger.error(err);
       return { batch:this, error: err };
+    });
+  }
+
+  /**
+   * Updates the cache.
+   * By default the cache is updates items that match ApolloClient.dataIdFromObject.
+   * This method allows for the update of cached queries (and replaces deprecated reducers).
+   *
+   * Called for both optimistic and network mutation response.
+   * Once immediately after client.mutate with the optimisticResponse.
+   * After the network response the optimistic changes are rolled back and update called with the actual data.
+   *
+   * http://dev.apollodata.com/react/cache-updates.html#directAccess
+   * http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
+   * http://dev.apollodata.com/core/read-and-write.html#updating-the-cache-after-a-mutation
+   *
+   * @param {DataProxy} proxy http://dev.apollodata.com/core/apollo-client-api.html#DataProxy
+   * @param {Object} data Mutation result.
+   */
+  _doUpdate(proxy, data) {
+    logger.log('Batch.mutate.update', JSON.stringify(data));
+    if (_.isEmpty(this._itemMutations)) {
+      logger.warn('Empty batch: ' + JSON.stringify(data));
+      return;
+    }
+
+    if (!this._fragments) {
+      logger.warn('No fragments defined.');
+      return;
+    }
+
+    // Process mutations.
+    // TODO(burdon): Use actual mutations returned from optimisticResponse and server..
+    _.each(this._itemMutations, itemMutation => {
+      let { key, mutations } = itemMutation;
+
+      // Apply to each fragment.
+      _.each(this._fragments.getFragments(key.type), fragment => {
+        let fragmentName = FragmentsMap.getFragmentName(fragment);
+
+        //
+        // Read currently cached item (if exists).
+        // http://dev.apollodata.com/core/apollo-client-api.html#DataProxy.readFragment
+        //
+        let cachedItem = proxy.readFragment({
+          id: ID.dataIdFromObject({ __typename: key.type, id: key.id }),
+          fragment,
+          fragmentName
+        });
+
+        // TODO(burdon): Assert if update.
+        if (!cachedItem) {
+          cachedItem = {__typename: key.type, ...key, version: 0 };
+        }
+
+        //
+        // Update cache.
+        //
+
+        // Apply mutations.
+        let mutatedItem = Transforms.applyObjectMutations({ client: true }, TypeUtil.clone(cachedItem), mutations);
+
+        // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.writeFragment
+        console.log('<<<===', JSON.stringify(mutatedItem));
+        proxy.writeFragment({
+          id: ID.dataIdFromObject(mutatedItem),
+          fragment,
+          fragmentName,
+          data: mutatedItem
+        });
+        console.log('>>>');
+
+        //
+        // Check updated.
+        //
+
+        cachedItem = proxy.readFragment({
+          id: ID.dataIdFromObject(cachedItem),
+          fragment,
+          fragmentName
+        });
+
+        let storeItem = proxy.data[ID.dataIdFromObject(cachedItem)];
+        console.assert(cachedItem && storeItem);
+        console.assert(cachedItem.id === storeItem.id);
+      });
     });
   }
 

@@ -53,7 +53,7 @@ class GroupCanvasComponent extends React.Component {
       mutator
         .batch(group.id)
         .createItem('Project', _.concat(mutations, [
-          MutationUtil.createFieldMutation('group', 'id', ID.key(group))
+          MutationUtil.createFieldMutation('group', 'key', ID.key(group))
         ]))
         .commit();
     }
