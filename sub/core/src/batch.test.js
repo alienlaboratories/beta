@@ -45,6 +45,7 @@ test('Create item.', (done) => {
     .commit();
 });
 
+
 test('Create and insert (with optimistic responses).', (done) => {
 
   // TODO(burdon): Opt respomnse.
@@ -53,7 +54,7 @@ test('Create and insert (with optimistic responses).', (done) => {
     return new Promise((resolve, reject) => {
       let { batchMutation } = _.get(options, 'optimisticResponse');
       expect(batchMutation).not.toBeUndefined();
-      expect(batchMutation.items).toHaveLength(2);
+      expect(batchMutation.keys).toHaveLength(2);
 
       // Check parent has been patched with the inserted item.
       expect(_.get(batchMutation[0], 'id')).toEqual(_.get(batchMutation[1], 'tasks[0].id'));

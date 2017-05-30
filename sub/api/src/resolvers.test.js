@@ -71,7 +71,7 @@ describe('GraphQL Resolvers:', () => {
     let query = `
       mutation BatchMutation($itemMutations: [ItemMutationInput]!) {
         batchMutation(itemMutations: $itemMutations) {
-          items {
+          keys {
             id
           }
         }  

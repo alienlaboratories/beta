@@ -284,7 +284,7 @@ export class Matcher {
   }
 
   // NOTE: See ValueInput in schema.
-  static SCALARS = ['timestamp', 'date', 'int', 'float', 'string', 'boolean'];
+  static SCALARS = ['id', 'timestamp', 'date', 'int', 'float', 'string', 'boolean'];
 
   static scalarValue(inputValue) {
     let value = undefined;
