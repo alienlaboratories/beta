@@ -49,6 +49,7 @@ export class ID {
       return;
     }
 
+    // TODO(burdon): Test matches Item types (see fragment matcher).
     // Determine if cachable object.
     // NOTE: Other objects return __typename so this isn't reliable.
     if (obj.__typename && obj.id) {

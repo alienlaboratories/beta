@@ -193,7 +193,7 @@ class OptionsComponent extends React.Component {
 
   render() {
     let { options={} } = this.props;
-    let { optimisticResponse, networkDelay } = options;
+    let { debug, optimisticResponse, networkDelay } = options;
 
     return (
       <div className="test-component">
@@ -206,7 +206,13 @@ class OptionsComponent extends React.Component {
         <div>
           <label>
             <input type="checkbox" onChange={ this.handleOptionsUpdate.bind(this, 'networkDelay') }
-                   checked={ networkDelay }/> Network Delay.
+                   checked={ networkDelay }/> Network delay.
+          </label>
+        </div>
+        <div>
+          <label>
+            <input type="checkbox" onChange={ this.handleOptionsUpdate.bind(this, 'debug') }
+                   checked={ debug }/> Debug logging.
           </label>
         </div>
       </div>
@@ -595,6 +601,7 @@ export class App {
       config: this._config,
 
       options: {
+        debug: true,
         networkDelay: false,
         optimisticResponse: false,
         reducer: false,

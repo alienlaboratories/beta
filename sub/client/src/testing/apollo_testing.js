@@ -7,7 +7,7 @@ import { graphql } from 'graphql';
 import { print } from 'graphql/language/printer';
 import { createNetworkInterface } from 'apollo-client';
 
-import { Async, Logger } from 'alien-util';
+import { Async, Logger, TypeUtil } from 'alien-util';
 import { AuthDefs } from 'alien-core';
 
 const logger = Logger.get('testing');
@@ -80,20 +80,23 @@ export class LocalNetworkInterface {
     if (!operationName) {
       operationName = _.get(query, 'definitions[0].name.value');
     }
-    logger.log('Query:', operationName);
 
-    let { networkDelay=0 } = _.isFunction(this._options) ? this._options() : this._options;
+    let { debug, networkDelay=0 } = _.isFunction(this._options) ? this._options() : this._options;
+
+    let stringify = debug ?
+      (value) => JSON.stringify(value || {}, null, 2) :
+      (value) => TypeUtil.stringify(value || {});
 
     let requestCount = ++this._requestCount;
-    logger.info(`REQ[${operationName}:${requestCount}]`, variables && JSON.stringify(variables, null, 2) || {});
 
-    let root = {};
-
+    logger.info(`REQ[${operationName}:${requestCount}]`, stringify(variables));
     return Async.timeout(networkDelay).then(() => {
+
+      let root = {};
 
       // https://github.com/graphql/graphql-js/blob/master/src/graphql.js
       return graphql(this._schema, print(query), root, this._context, variables, operationName).then(result => {
-        logger.info(`RES[${operationName}:${requestCount}]`, JSON.stringify(result, null, 2));
+        logger.info(`RES[${operationName}:${requestCount}]`, stringify(result));
         if (result.errors) {
           logger.error(result.errors[0]);
           throw new Error(result.errors[0]);
