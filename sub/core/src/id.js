@@ -34,7 +34,8 @@ export class ID {
 
   /**
    * ID for Apollo Cache Normalization (i.e., creating a GUID for the Store's index).
-   * "id" is a custom field defined by our framework.
+   *
+   * DO NOT CALL THIS METHOD DRECTLY.
    *
    * http://dev.apollodata.com/react/cache-updates.html#cacheRedirect
    * http://dev.apollodata.com/react/cache-updates.html#dataIdFromObject
@@ -43,19 +44,24 @@ export class ID {
    */
   static dataIdFromObject(obj) {
 
-    // TODO(burdon): STRAGE EFFECT IF type != typename.
     // TODO(burdon): Don't return keys as top-level object (since id confused). Or return nothing from mutation.
+    if (obj.__typename === 'Key') {
+      return;
+    }
 
     // Determine if cachable object.
     // NOTE: Other objects return __typename so this isn't reliable.
     if (obj.__typename && obj.id) {
-//  if (obj.type === obj.__typename) {
-      console.assert(obj.id);
-//    return obj.type + ':' + obj.id;
-      return obj.__typename + ':' + obj.id;
-    }
+      console.assert(!obj.type || obj.type === obj.__typename,
+        'Type mismatch:', JSON.stringify(_.pick(obj, '__typename', 'type')));
 
-    return null;
+      return ID.createStoreId({ type: obj.__typename, id: obj.id });
+    }
+  }
+
+  static createStoreId(obj) {
+    console.assert(obj.type && obj.id, 'Invalid key:', obj);
+    return obj.type + ':' + obj.id;
   }
 
   static key(item) {

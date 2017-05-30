@@ -152,7 +152,7 @@ export class Batch {
           // TODO(burdon): Use def.
           __typename: 'BatchMutationResponse',
 
-          keys: _.map(this._itemMutations, itemMutation => ({ __typename: 'X', ...itemMutation.key }))
+          keys: _.map(this._itemMutations, itemMutation => ({ ...itemMutation.key }))
         },
 
         // Add hint for batch.update.
@@ -235,7 +235,7 @@ export class Batch {
         // http://dev.apollodata.com/core/apollo-client-api.html#DataProxy.readFragment
         //
         let cachedItem = proxy.readFragment({
-          id: ID.dataIdFromObject({ __typename: key.type, id: key.id }),
+          id: ID.createStoreId(key),
           fragment,
           fragmentName
         });
@@ -250,29 +250,30 @@ export class Batch {
         //
 
         // Apply mutations.
+
         let mutatedItem = Transforms.applyObjectMutations({ client: true }, TypeUtil.clone(cachedItem), mutations);
 
+        // TODO(burdon): Suppress warnings for fields not included in fragment.
+        // TODO(burdon): Why do these exist (since read from fragment above).
         // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.writeFragment
-        console.log('<<<===', JSON.stringify(mutatedItem));
         proxy.writeFragment({
-          id: ID.dataIdFromObject(mutatedItem),
+          id: ID.createStoreId(mutatedItem),
           fragment,
           fragmentName,
           data: mutatedItem
         });
-        console.log('>>>');
 
         //
         // Check updated.
         //
 
         cachedItem = proxy.readFragment({
-          id: ID.dataIdFromObject(cachedItem),
+          id: ID.createStoreId(cachedItem),
           fragment,
           fragmentName
         });
 
-        let storeItem = proxy.data[ID.dataIdFromObject(cachedItem)];
+        let storeItem = proxy.data[ID.createStoreId(cachedItem)];
         console.assert(cachedItem && storeItem);
         console.assert(cachedItem.id === storeItem.id);
       });

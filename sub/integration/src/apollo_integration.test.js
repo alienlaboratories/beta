@@ -331,14 +331,14 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
       // Update item in cache.
       // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.writeFragment
       client.writeFragment({
-        id: ID.dataIdFromObject(taskKey),
+        id: ID.createStoreId(taskKey),
         fragment: TaskFragment,
         fragmentName: FragmentsMap.getFragmentName(TaskFragment),
         data: mutatedItem
       });
 
       let taskFragment = client.readFragment({
-        id: ID.dataIdFromObject(taskKey),
+        id: ID.createStoreId(taskKey),
         fragment: TaskFragment,
         fragmentName: FragmentsMap.getFragmentName(TaskFragment)
       });
@@ -401,7 +401,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
 
     // Write mutated Task to cache.
     client.writeFragment({
-      id: ID.dataIdFromObject(task),
+      id: ID.createStoreId(task),
       fragment: TaskFragment,
       fragmentName: FragmentsMap.getFragmentName(TaskFragment),
       data: mutatedTask
@@ -409,7 +409,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
 
     // Read Task from cache.
     let cachedTask = client.readFragment({
-      id: ID.dataIdFromObject(task),
+      id: ID.createStoreId(task),
       fragment: TaskFragment,
       fragmentName: FragmentsMap.getFragmentName(TaskFragment)
     });
@@ -458,7 +458,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
 
     // Write Task to cache.
     client.writeFragment({
-      id: ID.dataIdFromObject(task),
+      id: ID.createStoreId(task),
       fragment: TaskFragment,
       fragmentName: FragmentsMap.getFragmentName(TaskFragment),
       data: task
@@ -470,7 +470,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
 
     // Write Project to cache.
     client.writeFragment({
-      id: ID.dataIdFromObject(project),
+      id: ID.createStoreId(project),
       fragment: ProjectFragment,
       fragmentName: FragmentsMap.getFragmentName(ProjectFragment),
       data: mutatedProject
@@ -478,7 +478,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
 
     // Read from cache.
     let cachedProject = client.readFragment({
-      id: ID.dataIdFromObject(project),
+      id: ID.createStoreId(project),
       fragment: ProjectFragment,
       fragmentName: FragmentsMap.getFragmentName(ProjectFragment)
     });
@@ -486,7 +486,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
 
     // Read different fragment (check also updated).
     cachedProject = client.readFragment({
-      id: ID.dataIdFromObject(project),
+      id: ID.createStoreId(project),
       fragment: ProjectTasksFragment,
       fragmentName: FragmentsMap.getFragmentName(ProjectTasksFragment)
     });
@@ -506,7 +506,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
       ], 'task');
 
     return batch.commit().then(({ batch, error }) => {
-      let taskId = ID.dataIdFromObject(batch.refs['task']);
+      let taskId = ID.createStoreId(batch.refs['task']);
 
       // Read from cache (should have been updated by batch).
       let cachedTask = client.readFragment({
@@ -536,7 +536,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     });
 
     let cachedProject = client.readFragment({
-      id: ID.dataIdFromObject(project),
+      id: ID.createStoreId(project),
       fragment: ProjectTasksFragment,
       fragmentName: FragmentsMap.getFragmentName(ProjectTasksFragment)
     });
@@ -555,17 +555,17 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
       ]);
 
     return batch.commit().then(({ batch, error }) => {
-      let taskId = ID.dataIdFromObject(batch.refs['task']);
+      let taskId = ID.createStoreId(batch.refs['task']);
 
       // Get cache Project and check Tasks were added.
       let cachedProject = client.readFragment({
-        id: ID.dataIdFromObject(project),
+        id: ID.createStoreId(project),
         fragment: ProjectTasksFragment,
         fragmentName: FragmentsMap.getFragmentName(ProjectTasksFragment)
       });
 
       expect(cachedProject.tasks.length).toEqual(project.tasks.length + 1);
-      expect(ID.dataIdFromObject(cachedProject.tasks[cachedProject.tasks.length - 1])).toEqual(taskId);
+      expect(ID.createStoreId(cachedProject.tasks[cachedProject.tasks.length - 1])).toEqual(taskId);
 
       // Test query returns the correct Tasks.
       let { item:updatedProject } = client.readQuery({

@@ -368,6 +368,7 @@ export class Resolvers {
             // Response.
             //
             .then(items => {
+              // TODO(burdon): Don't return keys at top-level (confused with items).
               return {
                 keys: _.map(items, item => ID.key(item))
               };
