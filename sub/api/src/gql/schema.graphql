@@ -22,7 +22,7 @@ interface Item {
   bucket: ID                  # ID of User or Group (null for system item).
   type: String!
   id: ID!
-  seq: Int
+  version: Int!               # TODO(burdon): Version or monotonic sequence number?
 
   # TODO(burdon): Multiple foreign keys (e.g., emails, linkedin).
   fkey: String                # Opaque foreign key (i.e., not Key).
@@ -45,7 +45,7 @@ type User implements Item {
   bucket: ID
   type: String!
   id: ID!
-  seq: Int
+  version: Int!
   fkey: String
   alias: String
   created: Timestamp!
@@ -73,7 +73,7 @@ type Group implements Item {
   bucket: ID
   type: String!
   id: ID!
-  seq: Int
+  version: Int!
   fkey: String
   alias: String
   created: Timestamp!
@@ -98,7 +98,7 @@ type Contact implements Item {
   bucket: ID
   type: String!
   id: ID!
-  seq: Int
+  version: Int!
   fkey: String
   alias: String
   created: Timestamp!
@@ -122,7 +122,7 @@ type Document implements Item {
   bucket: ID
   type: String!
   id: ID!
-  seq: Int
+  version: Int!
   fkey: String
   alias: String
   created: Timestamp!
@@ -142,7 +142,7 @@ type Event implements Item {
   bucket: ID
   type: String!
   id: ID!
-  seq: Int
+  version: Int!
   fkey: String
   alias: String
   created: Timestamp!
@@ -162,7 +162,7 @@ type Folder implements Item {
   bucket: ID
   type: String!
   id: ID!
-  seq: Int
+  version: Int!
   fkey: String
   alias: String
   created: Timestamp!
@@ -182,7 +182,7 @@ type Location implements Item {
   bucket: ID
   type: String!
   id: ID!
-  seq: Int
+  version: Int!
   fkey: String
   alias: String
   created: Timestamp!
@@ -199,7 +199,7 @@ type Message implements Item {
   bucket: ID
   type: String!
   id: ID!
-  seq: Int
+  version: Int!
   fkey: String
   alias: String
   created: Timestamp!
@@ -218,7 +218,7 @@ type Project implements Item {
   bucket: ID
   type: String!
   id: ID!
-  seq: Int
+  version: Int!
   fkey: String
   alias: String
   created: Timestamp!
@@ -246,7 +246,7 @@ type Task implements Item {
   bucket: ID
   type: String!
   id: ID!
-  seq: Int
+  version: Int!
   fkey: String
   alias: String
   created: Timestamp!
@@ -334,7 +334,6 @@ type RootQuery {
   item(key: KeyInput!): Item!
 
   # Search.
-  # TODO(burdon): Rename items.
   search(filter: FilterInput): SearchResult!
 }
 
@@ -343,29 +342,10 @@ type RootQuery {
 # NOTE: The namespace is provided in the resolver context.
 #===================================================================================================
 
-# TODO(burdon): Move to framework.
-
-input ItemMutationInput {
-
-  # Item to mutate.
-  # TODO(burdon): Set key and bucket here (not in mutation).
-  key: KeyInput!
-
-  # Array of generic mutations.
-  mutations: [ObjectMutationInput]!
-}
-
-type ItemMutationResponse {
-
-  # TODO(burdon): Sequence numbers of each Item?
-  status: Int!
-}
-
 type RootMutation {
 
-  # TODO(burdon): Rename itemMutations.
-  # TODO(burdon): Return status and or mutation diffs (client should perform mutations directly).
-  upsertItems(namespace: String, itemMutations: [ItemMutationInput]!): [Item]!
+  # TODO(burdon): Set bucket?
+  batchMutation(namespace: String, itemMutations: [ItemMutationInput]!): BatchMutationResponse!
 }
 
 #===================================================================================================

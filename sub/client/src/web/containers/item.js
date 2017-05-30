@@ -5,7 +5,7 @@
 import { compose } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { Fragments } from 'alien-core';
+import { Fragments } from 'alien-api';
 
 import { ItemCanvasHeaderComponent } from '../components/item';
 

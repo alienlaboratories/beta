@@ -16,11 +16,14 @@ import { graphql, ApolloProvider } from 'react-apollo';
 import update from 'immutability-helper';
 
 import { Logger, TypeUtil } from 'alien-util';
-import { Batch, Fragments, IdGenerator, ItemUtil, MutationUtil } from 'alien-core';
-import { ITEM_TYPES, UpsertItemsMutation, UpsertItemsMutationName } from 'alien-core';
+import { Batch, FragmentsMap, ID, IdGenerator, MutationUtil } from 'alien-core';
+import { BatchMutation, BatchMutationName } from 'alien-core';
+import { ITEM_TYPES } from 'alien-api';
 
 import { createFragmentMatcher } from '../../../util/apollo_tools';
 import { createNetworkInterfaceWithAuth, LocalNetworkInterface } from '../../../testing/apollo_testing';
+
+import { TextBox } from '../../components/textbox';
 
 import { ReactUtil } from '../../util/index';
 
@@ -49,45 +52,53 @@ class ListComponent extends React.Component {
 
   count = 0;
 
-  constructor() {
-    super(...arguments);
-
-    this.state = {
-      text: '',
-      items: _.map(this.props.items, item => _.cloneDeep(item))
-    };
+  handleRefetch() {
+    this.props.refetch();
   }
 
-  // TODO(burdon): Dispatch redux action.
+  handleInsert(event) {
+    let { config, project, createBatch } = this.props;
+    let bucket = _.get(project, 'group.id');
 
-  componentWillReceiveProps(nextProps) {
-//  logger.log('componentWillReceiveProps:', TypeUtil.stringify(nextProps));
-    this.setState({
-      items: _.map(nextProps.items, item => _.cloneDeep(item))
-    });
-  }
+    let text = this.refs['INPUT_NEW'].value;
+    if (text) {
+      // TODO(burdon): For item creation (per-type validation).
+      let userId = _.get(config, 'userProfile.id');
+      console.assert(userId);
 
-  handleTextChange(event) {
-    let { items } = this.state;
-    let itemMap = ItemUtil.createItemMap(items);
-    let itemId = $(event.target).attr('data');
-    let item = itemMap.get(itemId);
+      createBatch(bucket)
+        .createItem('Task', [
+          MutationUtil.createFieldMutation('owner', 'key', { type: 'User', id: userId }),
+          MutationUtil.createFieldMutation('title', 'string', text),
+          MutationUtil.createFieldMutation('status', 'int', 0)
+        ], 'task')
+        .updateItem(project, [
+          ({ task }) => MutationUtil.createSetMutation('tasks', 'key', ID.key(task))
+        ])
+        .commit();
 
-    if (item) {
-      item.title = event.target.value;
-      this.forceUpdate();
-    } else {
-      this.setState({
-        text: event.target.value
-      });
+      this.refs['INPUT_NEW'].clear();
     }
+
+    this.refs['INPUT_NEW'].focus();
+  }
+
+  handleDelete(item, event) {
+    let { project, createBatch } = this.props;
+    let bucket = _.get(project, 'group.id');
+
+    createBatch(bucket)
+      .updateItem(project, [
+        MutationUtil.createSetMutation('tasks', 'key', ID.key(item), false)
+      ])
+      .commit();
   }
 
   handleUpdate(item, event) {
     let { project, createBatch } = this.props;
     let bucket = _.get(project, 'group.id');
     let input = this.refs['INPUT/' + item.id];
-    let text = $(input).val();
+    let text = input.value;
     if (text) {
       createBatch(bucket)
         .updateItem(item, [
@@ -99,84 +110,31 @@ class ListComponent extends React.Component {
     input.focus();
   }
 
-  handleDelete(item, event) {
-    let { project, createBatch } = this.props;
-    let bucket = _.get(project, 'group.id');
-
-    createBatch(bucket)
-      .updateItem(project, [
-        MutationUtil.createSetMutation('tasks', 'id', item.id, false)
-      ])
-      .commit();
-  }
-
-  handleInsert(event) {
-    let { config, project, createBatch } = this.props;
-    let { text } = this.state;
-    let bucket = _.get(project, 'group.id');
-    if (text) {
-      // TODO(burdon): For item creation (per-type validation).
-      let userId = _.get(config, 'userProfile.id');
-      console.assert(userId);
-
-      createBatch(bucket)
-        .createItem('Task', [
-          MutationUtil.createFieldMutation('owner', 'id', userId),
-          MutationUtil.createFieldMutation('title', 'string', text)
-        ], 'task')
-        .updateItem(project, [
-          ({ task }) => MutationUtil.createSetMutation('tasks', 'id', task.id)
-        ])
-        .commit();
-
-      this.setState({
-        text: ''
-      });
-    }
-
-    this.refs['INPUT_NEW'].focus();
-  }
-
-  handleRefetch() {
-    this.props.refetch();
-  }
-
   render() {
     return ReactUtil.render(this, () => {
       let { project } = this.props;
-      let { items, text } = this.state;
+      let { title, tasks } = project;
+
       this.count++;
-
-      logger.log('RootComponent.render', _.size(items));
-      console.log('####', this.props);
-
-      if (!project) {
-        logger.warn('Null project.');
-        return <div/>;
-      }
 
       return (
         <div className="test-component">
 
-          <h3>{ project.title }</h3>
+          <h3>{ title }</h3>
 
           <div className="test-header">
-            <input ref="INPUT_NEW" type="text" value={ text } autoFocus={ true } spellCheck={ false }
-                   onChange={ this.handleTextChange.bind(this) }/>
-
+            <TextBox ref="INPUT_NEW"/>
             <i className="material-icons" onClick={ this.handleInsert.bind(this) }>add</i>
           </div>
 
           <div className="test-body">
             <div className="test-list">
 
-              {_.map(items, item => (
-                <div className="test-list-item" key={ item.id }>
-                  <input ref={ 'INPUT/' + item.id } type="text" data={ item.id } value={ item.title } spellCheck={ false }
-                         onChange={ this.handleTextChange.bind(this) }/>
-
-                  <i className="material-icons" onClick={ this.handleDelete.bind(this, item) }>cancel</i>
-                  <i className="material-icons" onClick={ this.handleUpdate.bind(this, item) }>save</i>
+              {_.map(tasks, task => (
+                <div className="test-list-item" key={ task.id }>
+                  <TextBox ref={ 'INPUT/' + task.id } value={ task.title }/>
+                  <i className="material-icons" onClick={ this.handleDelete.bind(this, task) }>cancel</i>
+                  <i className="material-icons" onClick={ this.handleUpdate.bind(this, task) }>save</i>
                 </div>
               ))}
 
@@ -185,7 +143,6 @@ class ListComponent extends React.Component {
 
           <div className="test-footer">
             <div className="test-expand">Render: #{ this.count }</div>
-            <button>Reset</button>
             <button onClick={ this.handleRefetch.bind(this) }>Refetch</button>
           </div>
 
@@ -199,21 +156,17 @@ class SimpleListComponent extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { project, items } = this.props;
-
-      if (!project) {
-        logger.warn('Null project.');
-        return <div/>;
-      }
+      let { project } = this.props;
+      let { title, tasks } = project;
 
       return (
         <div className="test-component">
-          <h3>{ project.title }</h3>
+          <h3>{ title }</h3>
 
           <div className="test-body">
-            {_.map(items, item => (
-              <div key={ item.id }>
-                <div title={ item.id }>{ item.title }</div>
+            {_.map(tasks, task => (
+              <div key={ task.id }>
+                <div title={ task.id }>{ task.title }</div>
               </div>
             ))}
           </div>
@@ -231,7 +184,7 @@ class OptionsComponent extends React.Component {
 
   render() {
     let { options={} } = this.props;
-    let { optimisticResponse, networkDelay } = options;
+    let { debug, optimisticResponse, networkDelay } = options;
 
     return (
       <div className="test-component">
@@ -244,7 +197,13 @@ class OptionsComponent extends React.Component {
         <div>
           <label>
             <input type="checkbox" onChange={ this.handleOptionsUpdate.bind(this, 'networkDelay') }
-                   checked={ networkDelay }/> Network Delay.
+                   checked={ networkDelay }/> Network delay.
+          </label>
+        </div>
+        <div>
+          <label>
+            <input type="checkbox" onChange={ this.handleOptionsUpdate.bind(this, 'debug') }
+                   checked={ debug }/> Debug logging.
           </label>
         </div>
       </div>
@@ -301,7 +260,7 @@ const OptionsComponentWithRedux = connect(mapStateToProps, mapDispatchToProps)(O
 
 const SearchReducer = (path, options={}) => (previousResult, action, variables) => {
   if (action.type === 'APOLLO_MUTATION_RESULT' &&
-    action.operationName === UpsertItemsMutationName && options.reducer) {
+    action.operationName === BatchMutationName) {
 
     // NOTE: The reducer isn't necessary for mutations that return full responses (with ID/links, etc.)
     // It is required for search results.
@@ -322,36 +281,59 @@ const SearchReducer = (path, options={}) => (previousResult, action, variables) 
 // GQL Queries and Mutations.
 //-------------------------------------------------------------------------------------------------
 
+const ItemFragment = gql`
+  fragment ItemFragment on Item {
+    bucket
+    type
+    id 
+    version
+    title
+  }
+`;
+
+const TaskFragment = gql`
+  fragment TaskFragment on Task {
+    ...ItemFragment
+
+    status
+  }
+
+  ${ItemFragment}
+`;
+
+const ProjectFragment = gql`
+  fragment ProjectFragment on Project {
+    ...ItemFragment
+
+    group {
+      ...ItemFragment
+    }
+    
+    tasks {
+      ...TaskFragment
+    }
+  }
+
+  ${ItemFragment}
+  ${TaskFragment}
+`;
+
+const fragments = new FragmentsMap()
+  .add(ItemFragment)
+  .add(ProjectFragment)
+  .add(TaskFragment);
+
 export const SearchQuery = gql`
   query SearchQuery($filter: FilterInput) {
     search(filter: $filter) {
       items {
-        ...ItemFragment
-        id
-        title
-
-        ... on Project {
-          group {
-            id
-            title
-          }
-
-          tasks {
-            ...ItemFragment
-
-            id
-            type
-            title                 # TODO(burdon): Breaks if missing.
-
-            ...TaskFragment
-          }
-        }
+        ...ProjectFragment
       }
     }
   }
-  
-  ${Fragments.ItemFragment}
-  ${Fragments.TaskFragment}
+
+  ${ItemFragment}
+  ${ProjectFragment}
 `;
 
 export const SearchQueryName = _.get(SearchQuery, 'definitions[0].name.value');
@@ -383,6 +365,11 @@ const ListComponentWithApollo = compose(
       let { options } = props;
       logger.log('graphql.options:', SearchQueryName);
 
+      let reducer;
+      if (options.reducer) {
+        reducer = SearchReducer('search.items');
+      }
+
       return {
         variables: {
           filter: ProjectFilter
@@ -392,7 +379,7 @@ const ListComponentWithApollo = compose(
 //      fetchPolicy: 'network-only',
 
         // http://dev.apollodata.com/react/cache-updates.html#resultReducers
-        reducer: SearchReducer('search.items', options)
+        reducer
       };
     },
 
@@ -424,7 +411,7 @@ const ListComponentWithApollo = compose(
   }),
 
   // http://dev.apollodata.com/react/mutations.html
-  graphql(UpsertItemsMutation, {
+  graphql(BatchMutation, {
 
     options: {
 
@@ -444,7 +431,7 @@ const ListComponentWithApollo = compose(
        * @returns {Batch}
        */
       createBatch: (bucket) => {
-        return new Batch(idGenerator, mutate, bucket, ownProps.options.optimisticResponse);
+        return new Batch(idGenerator, mutate, bucket, fragments, ownProps.options.optimisticResponse);
       }
     })
   })
@@ -570,24 +557,27 @@ export class App {
   initClient() {
     let { schema, context } = _.get(this._config, 'testing');
 
-    let networkInterface;
     let fragmentMatcher;
+    let networkInterface;
 
     if (schema) {
-      networkInterface = new LocalNetworkInterface(schema, context);
       fragmentMatcher = createFragmentMatcher(schema);
+      networkInterface = new LocalNetworkInterface(schema, context, () => {
+        let options = _.assign({}, this._store.getState()[APP_NAMESPACE].options);
+        options.networkDelay = options.networkDelay ? 2000 : 0;
+        return options;
+      });
     } else {
-      networkInterface = createNetworkInterfaceWithAuth(this._config);
       fragmentMatcher = createFragmentMatcher(ITEM_TYPES);
+      networkInterface = createNetworkInterfaceWithAuth(this._config);
     }
 
     this._client = new ApolloClient({
-      networkInterface,
+      addTypename: true,                          // For fragment matching.
+      dataIdFromObject: ID.dataIdFromObject,
+
       fragmentMatcher,
-
-      addTypename: true,                                        // TODO(burdon): ???
-
-      dataIdFromObject: item => item.type + ':' + item.id,
+      networkInterface
     });
   }
 
@@ -602,9 +592,10 @@ export class App {
       config: this._config,
 
       options: {
-        reducer: false,
+        debug: true,
+        networkDelay: true,
         optimisticResponse: true,
-        networkDelay: true
+        reducer: false
       }
     };
 
@@ -614,6 +605,8 @@ export class App {
       apollo: this._client.reducer(),
       [APP_NAMESPACE]: AppReducer(initialState)
     });
+
+    this._history = hashHistory;
 
     const enhancers = compose(
       applyMiddleware(thunk),
@@ -636,7 +629,7 @@ export class App {
   get root() {
     return (
       <ApolloProvider client={ this._client } store={ this._store }>
-        <Router history={ hashHistory }>
+        <Router history={ this._history }>
           <Route path="/" component={ RootComponent }/>
         </Router>
       </ApolloProvider>

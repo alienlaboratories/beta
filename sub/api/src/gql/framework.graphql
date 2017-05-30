@@ -2,7 +2,7 @@
 # Copyright 2017 Alien Labs.
 #
 
-# TODO(burdon): Move to core (with Item and Mutation def).
+# TODO(burdon): Move to core.
 
 #
 # http://graphql.org/learn/schema
@@ -63,7 +63,6 @@ input KeyInput {
 # https://dev-blog.apollodata.com/new-features-in-graphql-batch-defer-stream-live-and-subscribe-7585d0c28b07
 #===================================================================================================
 
-
 #===================================================================================================
 # Core.
 # TODO(burdon): Factor out to alien-core.
@@ -81,15 +80,15 @@ input KeyInput {
 input ValueInput {
   null:       Boolean
 
+  key:        KeyInput
+
   int:        Int
   float:      Float
   string:     String
   boolean:    Boolean
 
-  id:         ID
-  timestamp:  Timestamp
-
   date:       Date
+  timestamp:  Timestamp
 
   values:     [ValueInput]
 
@@ -203,7 +202,7 @@ input FilterInput {
   bucket: String
 
   # OR
-  ids: [ID]
+  ids: [ID]                 # TODO(burdon): Key?
   fkeys: [String]
 
   # MUST
@@ -278,4 +277,25 @@ type Board {
   title: String!
   columns: [BoardColumn]
   itemMeta: [ListItemMeta]    # Map of ID x meta values (i.e., map).
+}
+
+#===================================================================================================
+# Mutations.
+#===================================================================================================
+
+input ItemMutationInput {
+
+  # Item to mutate.
+  # TODO(burdon): Set key and bucket here (not in mutation).
+  key: KeyInput!
+
+  # Array of generic mutations.
+  mutations: [ObjectMutationInput]!
+}
+
+type BatchMutationResponse {
+
+  # NOTE: Don't return {Item} objects since these will be inserted into the Apollo cache.
+  # TODO(burdon): Respond with updated mutations (requires types not inputs).
+  keys: [Key]!
 }

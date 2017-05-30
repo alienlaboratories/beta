@@ -7,7 +7,8 @@ import PropTypes from 'prop-types';
 import { compose } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { Fragments, MutationUtil } from 'alien-core';
+import { ID, MutationUtil } from 'alien-core';
+import { Fragments } from 'alien-api';
 
 import { ReactUtil } from '../../util/react';
 
@@ -82,23 +83,23 @@ export class ContactCard extends React.Component {
 
         // New task.
         .createItem('Task', _.concat(mutations, [
-          MutationUtil.createFieldMutation('project', 'id', project.id),
-          MutationUtil.createFieldMutation('owner',   'id', user.id),
-          assignee && MutationUtil.createFieldMutation('assignee', 'id', assignee.id)
+          MutationUtil.createFieldMutation('project', 'key', ID.key(project)),
+          MutationUtil.createFieldMutation('owner',   'key', ID.key(user)),
+          assignee && MutationUtil.createFieldMutation('assignee', 'key', ID.key(assignee))
         ]), 'task')
 
         // Update contact.
         // TODO(burdon): Bidirectional links?
         .updateItem(contact, [
-          ({ task }) => MutationUtil.createSetMutation('tasks', 'id', task.id)
+          ({ task }) => MutationUtil.createSetMutation('tasks', 'key', ID.key(task))
         ], 'contact')
 
         // Parent project.
         .updateItem(project, [
-          ({ task }) => MutationUtil.createSetMutation('tasks', 'id', task.id),
+          ({ task }) => MutationUtil.createSetMutation('tasks', 'key', ID.key(task)),
 
           // NOTE: Named since ID may have changed due to cloning.
-          ({ contact }) => MutationUtil.createSetMutation('contacts', 'id', contact.id)
+          ({ contact }) => MutationUtil.createSetMutation('contacts', 'key', ID.key(contact))
         ])
 
         .commit();
@@ -331,13 +332,11 @@ export class ContactCanvasComponent extends React.Component {
 const ContactQuery = gql`
   query ContactQuery($key: KeyInput!) {
     item(key: $key) {
-      ...ItemFragment
-      ...ContactTasksFragment
+      ...ContactFragment
     }
   }
 
-  ${Fragments.ItemFragment}
-  ${Fragments.ContactTasksFragment}
+  ${Fragments.ContactFragment}
 `;
 
 export const ContactCanvas = compose(

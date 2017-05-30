@@ -2,12 +2,14 @@
 // Copyright 2017 Alien Labs.
 //
 
+import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, graphql } from 'react-apollo';
 
 import { EventHandler, PropertyProvider } from 'alien-util';
-import { Const, IdGenerator, Mutator, QueryRegistry, Fragments } from 'alien-core';
+import { Const, IdGenerator, Mutator, QueryRegistry } from 'alien-core';
+import { Fragments } from 'alien-api';
 
 import { Analytics } from './analytics';
 import { ContextManager } from './context';
@@ -79,6 +81,27 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
 // HOC.
 //-------------------------------------------------------------------------------------------------
 
+export const ViewerQuery = gql`
+  query ViewerQuery {
+
+    viewer {
+      user {
+        ...ItemFragment
+      }
+
+      groups {
+        ...ItemFragment
+
+        projects {
+          ...ItemFragment
+        }
+      }
+    }
+  }
+
+  ${Fragments.ItemFragment}
+`;
+
 /**
  * Activity helper.
  * Activities are top-level components that set-up the context.
@@ -100,7 +123,7 @@ export class Activity {
       Mutator.graphql(),
 
       // Apollo viewer query.
-      graphql(Fragments.ViewerQuery, {
+      graphql(ViewerQuery, {
         props: ({ ownProps, data }) => {
           return _.pick(data, ['errors', 'loading', 'viewer']);
         }

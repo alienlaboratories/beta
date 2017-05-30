@@ -7,7 +7,8 @@ import PropTypes from 'prop-types';
 import { compose } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { Fragments, MutationUtil } from 'alien-core';
+import { ID, MutationUtil } from 'alien-core';
+import { Fragments } from 'alien-api';
 
 import { ReactUtil } from '../../util/react';
 
@@ -53,7 +54,7 @@ class GroupCanvasComponent extends React.Component {
       mutator
         .batch(group.id)
         .createItem('Project', _.concat(mutations, [
-          MutationUtil.createFieldMutation('group', 'id', group.id)
+          MutationUtil.createFieldMutation('group', 'key', ID.key(group))
         ]))
         .commit();
     }
@@ -124,12 +125,10 @@ const GroupReducer = (matcher, context, previousResult, updatedItem) => {
 const GroupQuery = gql`  
   query GroupQuery($key: KeyInput!) {
     item(key: $key) {
-      ...ItemFragment
       ...GroupFragment
     }
   }
 
-  ${Fragments.ItemFragment}
   ${Fragments.GroupFragment}  
 `;
 

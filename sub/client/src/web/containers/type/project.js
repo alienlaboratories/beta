@@ -9,7 +9,8 @@ import { connect } from 'react-redux';
 import gql from 'graphql-tag';
 
 import { DomUtil } from 'alien-util';
-import { Enum, Fragments, ID, MutationUtil } from 'alien-core';
+import { ID, MutationUtil } from 'alien-core';
+import { Enum, Fragments } from 'alien-api';
 
 import { ReactUtil } from '../../util/react';
 import { connectWithRef } from '../../util/redux';
@@ -175,7 +176,7 @@ class ProjectBoardCanvasComponent extends React.Component {
 
         // TODO(burdon): Optimistic concurrency fail (need to patch from cache).
         if (column.id !== ProjectBoardCanvasComponent.COLUMN_ICEBOX) {
-          mutations.push(MutationUtil.createFieldMutation('assignee', 'id', column.value));
+          mutations.push(MutationUtil.createFieldMutation('assignee', 'key', { type: 'User', id: column.value }));
         }
 
         return mutations;
@@ -186,7 +187,7 @@ class ProjectBoardCanvasComponent extends React.Component {
           return (column.id === ProjectBoardCanvasComponent.COLUMN_ICEBOX) ? [
             MutationUtil.createFieldMutation('assignee') // Set null.
           ] : [
-            MutationUtil.createFieldMutation('assignee', 'id', column.value)
+            MutationUtil.createFieldMutation('assignee', 'key', { type: 'User', id: column.value })
           ];
         }
       }
@@ -333,12 +334,12 @@ class ProjectBoardCanvasComponent extends React.Component {
         .batch(project.bucket)
         .createItem('Task', [
           this.boardAdapter.onCreateMutations(project.bucket, user.id, column),
-          MutationUtil.createFieldMutation('owner', 'id', user.id),
-          MutationUtil.createFieldMutation('project', 'id', project.id),
+          MutationUtil.createFieldMutation('owner', 'key', ID.key(user)),
+          MutationUtil.createFieldMutation('project', 'key', ID.key(project)),
           mutations
         ], 'task')
         .updateItem(project, [
-          ({ task }) => MutationUtil.createSetMutation('tasks', 'id', task.id)
+          ({ task }) => MutationUtil.createSetMutation('tasks', 'key', ID.key(task))
         ])
         .commit();
     }
@@ -493,13 +494,10 @@ const ProjectBoardQuery = gql`
       ...ItemFragment
 
       ... on Project {
-        ...ProjectBoardFragment
 
         group {
           members {
-            type
-            id
-            title
+            ...ItemFragment
           }
         }
 
@@ -511,11 +509,13 @@ const ProjectBoardQuery = gql`
           }
         }
       
+        # TODO(burdon): Not part of Project.
         contacts {
-          ...ItemFragment
           ...ContactFragment
         }
       }
+
+      ...ProjectBoardFragment
     }
   }
 

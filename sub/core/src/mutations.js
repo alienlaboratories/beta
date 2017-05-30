@@ -7,37 +7,24 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { Batch } from './batch';
-import { Fragments } from './fragments';
 
-// TODO(burdon): Project board fragment shouldn't return all items.
-// TODO(madadam): Think more about "thin vs fat" fragments for the generic mutation.
-// Since we're using a single generic mutation type, it has to be configured to retrieve
-// any data needed by any component, including detailed nested objects (e.g. ContactTaskFragment).
-// Unclear if there's a material downside to this, but it feels wrong.
-
-// TODO(burdon): Return updated mutations (e.g., ID replaced with object) and store in batch.update.
-
-export const UpsertItemsMutation = gql`
-  mutation UpsertItemsMutation($itemMutations: [ItemMutationInput]!) {
-    upsertItems(itemMutations: $itemMutations) {
-      ...ItemFragment
-      ...ContactTasksFragment
-      ...TaskFragment
-      ...ProjectBoardFragment
+export const BatchMutation = gql`
+  mutation BatchMutation($itemMutations: [ItemMutationInput]!) {
+    batchMutation(itemMutations: $itemMutations) {
+      keys {
+        bucket
+        type
+        id
+      }
     }
   }
-
-  ${Fragments.ItemFragment}
-  ${Fragments.ContactTasksFragment}
-  ${Fragments.TaskFragment}
-  ${Fragments.ProjectBoardFragment}
 `;
 
-export const UpsertItemsMutationName = // 'UpsertItemsMutation'
-  _.get(UpsertItemsMutation, 'definitions[0].name.value');
+export const BatchMutationName = // 'BatchMutation'
+  _.get(BatchMutation, 'definitions[0].name.value');
 
-export const UpsertItemsMutationPath = // 'upsertItems'
-  _.get(UpsertItemsMutation, 'definitions[0].selectionSet.selections[0].name.value');
+export const BatchMutationPath = // 'batchMutation'
+  _.get(BatchMutation, 'definitions[0].selectionSet.selections[0].name.value');
 
 /**
  * Utils to create mutations.
@@ -103,13 +90,19 @@ export class MutationUtil {
    * @param value If null, then set null value.
    * @returns {Mutation}
    */
-  static createFieldMutation(field, type=null, value=null) {
+  static createFieldMutation(field, type=undefined, value=undefined) {
     console.assert(field);
+
+    if (_.isNil(value)) {
+      type = 'null';
+      value = true;
+    } else {
+      console.assert(type);
+    }
+
     return {
       field,
-      value: !type || _.isNil(value) ? {
-        null: true
-      } : {
+      value: {
         [type]: value
       }
     };
@@ -155,7 +148,7 @@ export class Mutator {
    * @return Standard mutation wrapper supplied to redux's combine() method.
    */
   static graphql() {
-    return graphql(UpsertItemsMutation, {
+    return graphql(BatchMutation, {
       withRef: true,
 
       options: {
@@ -199,6 +192,6 @@ export class Mutator {
   batch(bucket) {
     console.assert(bucket, 'Invalid bucket.');
     let optimistic = _.get(this._config, 'options.optimisticResponse');
-    return new Batch(this._idGenerator, this._mutate, bucket, optimistic);
+    return new Batch(this._idGenerator, this._mutate, bucket, null, optimistic);
   }
 }

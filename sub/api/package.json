@@ -30,7 +30,6 @@
     "express": "^4.15.2",
     "graphql": "^0.10.1",
     "graphql-server-express": "^0.7.1",
-    "graphql-subscriptions": "^0.3.1",
     "graphql-tag": "^2.2.0",
     "graphql-tools": "^0.11.0",
     "immutability-helper": "^2.2.0",
@@ -38,14 +37,18 @@
     "moment": "^2.18.1",
     "node-yaml": "^3.0.3"
   },
+  "peerDependencies": {
+    "graphql": "^0.10.1"
+  },
   "jest": {
     "verbose": false,
+    "cacheDirectory": "/tmp/jest",
     "transformIgnorePatterns": [
       "/node_modules/(?!alien-)"
     ]
   },
   "scripts": {
-    "lint": "eslint -c ../../.eslintrc.yml ./src",
+    "lint": "eslint -c ../../eslintrc.yml ./src",
     "test": "jest --silent",
     "update-schema": "BABEL_DISABLE_CACHE=1 babel-node ./tools/babel/update_schema.js"
   }

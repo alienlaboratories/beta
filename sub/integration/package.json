@@ -32,12 +32,13 @@
   },
   "jest": {
     "verbose": false,
+    "cacheDirectory": "/tmp/jest",
     "transformIgnorePatterns": [
       "/node_modules/(?!alien-)"
     ]
   },
   "scripts": {
-    "lint": "eslint -c ../../.eslintrc.yml ./src",
+    "lint": "eslint -c ../../eslintrc.yml ./src",
     "test": "jest --silent"
   }
 }

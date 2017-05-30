@@ -6,7 +6,7 @@ import { print } from 'graphql/language/printer';
 import { createNetworkInterface } from 'apollo-client';
 
 import { HttpUtil, TypeUtil, Logger } from 'alien-util';
-import { AuthUtil, Const, ItemStore, UpsertItemsMutationName } from 'alien-core';
+import { AuthUtil, Const, ItemStore, BatchMutationName } from 'alien-core';
 
 import { ConnectionManager } from './client';
 
@@ -46,10 +46,9 @@ export class NetworkManager {
   /**
    * Initializes the network manager.
    * May be called multiple times -- e.g., after config has changed.
-   * @param {ItemStore} localItemStore
    * @returns {NetworkManager}
    */
-  init(localItemStore=undefined) {
+  init() {
 
     // Reset stats.
     this._requestCount = 0;
@@ -225,15 +224,9 @@ export class NetworkManager {
     }
 
     // Create HTTPFetchNetworkInterface
-    let networkInterface = createNetworkInterface({ uri: this._config.graphql })
+    this._networkInterface  = createNetworkInterface({ uri: this._config.graphql })
       .use(middleware)
       .useAfter(afterware);
-
-    if (localItemStore) {
-      this._networkInterface = CachingNetworkInterface.createNetworkInterface(localItemStore, networkInterface);
-    } else {
-      this._networkInterface = networkInterface;
-    }
 
     return this;
   }
@@ -330,76 +323,5 @@ export class ChromeNetworkInterface { // extends NetworkInterface {
       this._eventHandler && this._eventHandler.emit({ type: 'network.in' });
       return gqlResponse;
     });
-  }
-}
-
-/**
- * Implements caching layer for NetworkInterface.
- */
-export class CachingNetworkInterface { // extends NetworkInterface {
-
-  // TODO(burdon): Currently just intercepts local namespace. Should join results from server for other NS.
-
-  // TODO(burdon): Extend NetworkInterface.
-  // https://github.com/apollographql/apollo-client/issues/1403
-  // https://github.com/apollographql/apollo-client/blob/master/src/transport/networkInterface.ts
-
-  /**
-   * Monkey patch existing interface.
-   * @param itemStore
-   * @param networkInterface
-   * @returns {*}
-   */
-  static createNetworkInterface(itemStore, networkInterface) {
-    console.assert(itemStore && networkInterface);
-
-    let originalQuery = networkInterface.query.bind(networkInterface);
-
-    // ExecutionResult { data, errors }
-    // https://github.com/graphql/graphql-js/blob/master/src/execution/execute.js
-    networkInterface.query = (request) => {
-      let { operationName, variables={} } = request;
-
-      switch (operationName) {
-
-        // TODO(burdon): Determine namespace from item when creating mutator.
-
-        // Mutations.
-        case UpsertItemsMutationName: {
-          let { namespace, mutations } = variables;
-          if (namespace === itemStore.namespace) {
-            logger.info('Local mutations: ' + TypeUtil.stringify(mutations));
-            return ItemStore.applyMutations(itemStore, {}, mutations).then(items => ({
-              data: {
-                items: items
-              }
-            }));
-          }
-          break;
-        }
-
-        // Queries.
-        // TODO(burdon): Plugin or generalize queries (like mutations).
-        default: {
-          let { filter } = variables;
-          if (filter) {
-            let { namespace } = filter;
-            if (namespace === itemStore.namespace) {
-              logger.info('Local query: ' + TypeUtil.stringify(filter));
-              return itemStore.queryItems({}, {}, filter).then(items => ({
-                data: {
-                  search: items
-                }
-              }));
-            }
-          }
-          break;
-        }
-      }
-
-      return originalQuery(request);
-    };
-
-    return networkInterface;
   }
 }

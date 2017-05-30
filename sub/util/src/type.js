@@ -56,6 +56,7 @@ export class TypeUtil {
   /**
    * Concise stringify.
    */
+  // TODO(burdon): Options (e.g., depth).
   static stringify(json, indent=0, verbose=false) {
     let str = JSON.stringify(json, (key, value) => {
       if (_.isArray(value) && !verbose) {

@@ -6,7 +6,7 @@ import React from 'react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
-import { Fragments } from 'alien-core';
+import { Fragments } from 'alien-api';
 
 import { List, ListItem } from '../components/list';
 
@@ -78,36 +78,16 @@ export const DebugListItemRenderer = (item) => {
 // Basic List.
 //-------------------------------------------------------------------------------------------------
 
-// TODO(burdon): Fragments for grouping.
-
-const BasicItemFragment = gql`
-  fragment BasicItemFragment on Item {
-    namespace
-    bucket
-    type
-    id
-
-    fkey
-
-    labels
-    title
-      
-    ...DocumentFragment
-  }
-
-  ${Fragments.DocumentFragment}
-`;
-
 const BasicSearchQuery = gql`
   query BasicSearchQuery($filter: FilterInput) {
     search(filter: $filter) {
       items {
-        ...BasicItemFragment
+        ...ItemFragment
       }
     }
   }
 
-  ${BasicItemFragment}
+  ${Fragments.ItemFragment}
 `;
 
 export const BasicSearchList = Connector.connect(Connector.searchQuery(BasicSearchQuery))(SubscriptionWrapper(List));
@@ -116,36 +96,11 @@ export const BasicSearchList = Connector.connect(Connector.searchQuery(BasicSear
 // Card List.
 //-------------------------------------------------------------------------------------------------
 
-/**
- * Contains all fragments (since any card may be rendered).
- */
-const CardItemFragment = gql`
-  fragment CardItemFragment on Item {
-    ...ItemFragment
-    ...ContactFragment
-    ...DocumentFragment
-    ...ProjectFragment
-    ...TaskFragment
-  }
-
-  ${Fragments.ItemFragment}
-  ${Fragments.ContactFragment}
-  ${Fragments.DocumentFragment}
-  ${Fragments.ProjectFragment}
-  ${Fragments.TaskFragment}
-`;
-
 const CardSearchQuery = gql`
   query CardSearchQuery($filter: FilterInput) {
     search(filter: $filter) {
       items {
-        ...CardItemFragment
-
-        ... on Task {
-          tasks {
-            ...TaskFragment
-          }
-        }
+        ...ItemMetaFragment
       }
       
       groupedItems {
@@ -158,7 +113,7 @@ const CardSearchQuery = gql`
     }
   }
 
-  ${CardItemFragment}
+  ${Fragments.ItemMetaFragment}
 `;
 
 export const CardSearchList = Connector.connect(Connector.searchQuery(CardSearchQuery))(SubscriptionWrapper(List));

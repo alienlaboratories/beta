@@ -22,8 +22,6 @@
     <orderEntry type="library" name="express-DefinitelyTyped" level="application" />
     <orderEntry type="library" name="graphql-DefinitelyTyped" level="application" />
     <orderEntry type="library" name="Chrome Extenions" level="application" />
-    <orderEntry type="library" name="aws-lambda-DefinitelyTyped" level="application" />
-    <orderEntry type="library" name="react-DefinitelyTyped" level="application" />
   </component>
   <component name="TestRunnerService">
     <option name="PROJECT_TEST_RUNNER" value="Unittests" />

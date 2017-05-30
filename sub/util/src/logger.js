@@ -8,6 +8,7 @@ import moment from 'moment';
 import { TypeUtil } from './type';
 
 const Level = {
+  trace:  0,
   log:    1,
   debug:  1,
   info:   2,
@@ -132,6 +133,10 @@ export class Logger {
 
   get level() {
     return _.get(singleton(), this._name, _.get(singleton(), '*', Logger.debug));
+  }
+
+  get trace() {
+    return (this.level > Level.trace) ? Logger.noop : this._log;
   }
 
   get log() {

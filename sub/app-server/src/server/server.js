@@ -18,7 +18,7 @@ import { ExpressUtil, HttpError, HttpUtil, Logger } from 'alien-util';
 import { AuthUtil, Const, Database, IdGenerator, Matcher, MemoryItemStore, SystemStore } from 'alien-core';
 import { TestItemStore } from 'alien-core/testing';
 import { AppDefs } from 'alien-client';
-import { apiRouter } from 'alien-api';
+import { apiRouter } from 'alien-api/server';
 import { hasJwtHeader, Loader, TestGenerator } from 'alien-services';
 
 import {

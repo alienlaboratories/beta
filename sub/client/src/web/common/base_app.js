@@ -11,13 +11,9 @@ import reduceReducers from 'reduce-reducers';
 import ApolloClient from 'apollo-client';
 import moment from 'moment';
 
-import {
-  ErrorUtil, EventHandler, Logger, Injector, TypeUtil
-} from 'alien-util';
-
-import {
-  ITEM_TYPES, ID, IdGenerator, Matcher, QueryParser, QueryRegistry
-} from 'alien-core';
+import { ErrorUtil, EventHandler, Logger, Injector, TypeUtil } from 'alien-util';
+import { ID, IdGenerator, Matcher, QueryParser, QueryRegistry } from 'alien-core';
+import { ITEM_TYPES } from 'alien-api';
 
 import { createFragmentMatcher} from '../../util/apollo_tools';
 

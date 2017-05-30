@@ -284,7 +284,6 @@ export class Matcher {
   }
 
   // NOTE: See ValueInput in schema.
-  // TODO(burdon): Move to SchemaUtil.
   static SCALARS = ['id', 'timestamp', 'date', 'int', 'float', 'string', 'boolean'];
 
   static scalarValue(inputValue) {

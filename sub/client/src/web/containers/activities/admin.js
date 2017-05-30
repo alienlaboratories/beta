@@ -6,7 +6,7 @@ import React from 'react';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { Fragments } from 'alien-core';
+import { Fragments } from 'alien-api';
 
 import { ReactUtil } from '../../util/react';
 import { Activity } from '../../common/activity';
@@ -108,17 +108,11 @@ const AdminQuery = gql`
   query AdminQuery($groupFilter: FilterInput) { 
     search(filter: $groupFilter) {
       items {
-        ...ItemFragment
         ...GroupFragment
-
-        ... on Group {
-          whitelist
-        }
       }
     }
   }
 
-  ${Fragments.ItemFragment}
   ${Fragments.GroupFragment}
 `;
 

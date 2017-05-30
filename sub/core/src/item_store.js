@@ -147,7 +147,7 @@ export class ItemStore extends QueryProcessor {
         //
         // Apply mutations.
         //
-        return Transforms.applyObjectMutations(item, mutations);
+        return Transforms.applyObjectMutations({}, item, mutations);
       });
     }))
 

@@ -8,7 +8,8 @@ import { compose, graphql } from 'react-apollo';
 import { Link } from 'react-router';
 import gql from 'graphql-tag';
 
-import { ID, Enum, Fragments, MutationUtil } from 'alien-core';
+import { ID, MutationUtil } from 'alien-core';
+import { Enum, Fragments } from 'alien-api';
 
 import { ReactUtil } from '../../util/react';
 
@@ -37,12 +38,12 @@ const CreateTask = (mutator, user, parent, mutations) => {
   return mutator
     .batch(parent.project.bucket)
     .createItem('Task', _.concat(mutations, [
-      MutationUtil.createFieldMutation('project', 'id',   parent.project.id),
-      MutationUtil.createFieldMutation('owner',   'id',   user.id),
+      MutationUtil.createFieldMutation('project', 'key',   ID.key(parent.project)),
+      MutationUtil.createFieldMutation('owner',   'key',   ID.key(user)),
       MutationUtil.createFieldMutation('status',  'int',  Enum.TASK_LEVEL.UNSTARTED),
     ]), 'task')
     .updateItem(parent, [
-      ({ task }) => MutationUtil.createSetMutation('tasks', 'id', task.id)
+      ({ task }) => MutationUtil.createSetMutation('tasks', 'key', ID.key(task))
     ]);
 };
 
@@ -252,7 +253,7 @@ class TaskCanvasComponent extends React.Component {
     let assigneeId = _.get(this.state, 'assignee');
     let currentAssigneeId = _.get(item, 'assignee.id');
     if (assigneeId && assigneeId !== currentAssigneeId) {
-      mutations.push(MutationUtil.createFieldMutation('assignee', 'id', assigneeId));
+      mutations.push(MutationUtil.createFieldMutation('assignee', 'key', { type: 'User', id: assigneeId }));
     } else if (!assigneeId && currentAssigneeId) {
       mutations.push(MutationUtil.createFieldMutation('assignee'));
     }
@@ -386,7 +387,6 @@ const MembersPicker = compose(
 const TaskQuery = gql`
   query TaskQuery($key: KeyInput!) {
     item(key: $key) {
-      ...ItemFragment
       ...TaskFragment
       
       # TODO(burdon): Possible bug (TaskFragment includes title, but sub tasks field also needs it).
@@ -398,14 +398,12 @@ const TaskQuery = gql`
         }
 
         tasks {
-          ...ItemFragment
           ...TaskFragment
         }
       }
     }
   }
 
-  ${Fragments.ItemFragment}
   ${Fragments.TaskFragment}  
 `;
 
