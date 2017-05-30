@@ -5,12 +5,13 @@
       <excludeFolder url="file://$MODULE_DIR$/sub/api/dist" />
       <excludeFolder url="file://$MODULE_DIR$/sub/api/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/sub/app-server/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/sub/app-server/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/sub/client/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/sub/client/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/sub/core/dist" />
       <excludeFolder url="file://$MODULE_DIR$/sub/scheduler/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/sub/services/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/sub/util/dist" />
-      <excludeFolder url="file://$MODULE_DIR$/sub/web-server/dist" />
       <excludeFolder url="file://$MODULE_DIR$/sub/web-server/node_modules" />
     </content>
     <orderEntry type="inheritedJdk" />
@@ -22,6 +23,8 @@
     <orderEntry type="library" name="express-DefinitelyTyped" level="application" />
     <orderEntry type="library" name="graphql-DefinitelyTyped" level="application" />
     <orderEntry type="library" name="Chrome Extenions" level="application" />
+    <orderEntry type="library" name="aws-lambda-DefinitelyTyped" level="application" />
+    <orderEntry type="library" name="react-DefinitelyTyped" level="application" />
   </component>
   <component name="TestRunnerService">
     <option name="PROJECT_TEST_RUNNER" value="Unittests" />

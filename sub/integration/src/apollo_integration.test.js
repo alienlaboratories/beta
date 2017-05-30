@@ -100,7 +100,7 @@ const ViewerQuery = gql`
 `;
 
 const SearchQuery = gql`
-  query SearchQuery($filter: FilterInput!) { 
+  query SearchQuery($filter: FilterInput!) {
     search(filter: $filter) { 
       items {
         ...TaskFragment
