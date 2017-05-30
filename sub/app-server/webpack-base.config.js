@@ -218,39 +218,47 @@ const webConfig = webpackMerge(baseConfig, {
 
     // Main app with HMR.
     // web_hot: [
-    //   path.resolve(baseConfig.context, 'src/client/web_app.js'),
+    //   'babel-polyfill',
     //
     //   // BABEL_NODE=hot NODE_ENV=hot
     //   'webpack/hot/dev-server',
     //   'webpack-hot-middleware/client'
+    //
+    //   path.resolve(baseConfig.context, 'src/client/web_app.js'),
     // ],
 
     // GraphiQL test console.
     graphiql: [
+      'babel-polyfill',
       path.resolve(baseConfig.context, 'src/client/graphiql.js')
     ],
 
     // Web site (incl. CSS)
     site: [
+      'babel-polyfill',
       path.resolve(baseConfig.context, 'src/client/site.js')
     ],
 
     // Test HMR.
     test_hot: [
-      path.resolve(baseConfig.context, 'src/client/test_hot.js'),
+      'babel-polyfill',
 
       // BABEL_NODE=hot NODE_ENV=hot
       'webpack/hot/dev-server',
-      'webpack-hot-middleware/client'
+      'webpack-hot-middleware/client',
+
+      path.resolve(baseConfig.context, 'src/client/test_hot.js'),
     ],
 
     // Test end-to-end Apollo stack.
     test_apollo: [
+      'babel-polyfill',
       path.resolve(baseConfig.context, 'src/client/test_apollo.js')
     ],
 
     // Test CRX sidebar.
     test_sidebar: [
+      'babel-polyfill',
       path.resolve(baseConfig.context, 'src/client/test_sidebar.js')
     ],
   },

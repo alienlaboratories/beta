@@ -555,7 +555,7 @@ export class App {
    * Init Apollo.
    */
   initClient() {
-    let { schema, context } = _.get(this._config, 'testing');
+    let { schema, context } = _.get(this._config, 'testing', {});
 
     let fragmentMatcher;
     let networkInterface;
@@ -592,7 +592,7 @@ export class App {
       config: this._config,
 
       options: {
-        debug: true,
+        debug: false,
         networkDelay: true,
         optimisticResponse: true,
         reducer: false
