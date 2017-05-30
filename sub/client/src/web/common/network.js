@@ -6,7 +6,7 @@ import { print } from 'graphql/language/printer';
 import { createNetworkInterface } from 'apollo-client';
 
 import { HttpUtil, TypeUtil, Logger } from 'alien-util';
-import { AuthUtil, Const, ItemStore, BatchMutationName } from 'alien-core';
+import { AuthUtil, Const } from 'alien-core';
 
 import { ConnectionManager } from './client';
 
@@ -202,15 +202,9 @@ export class NetworkManager {
     // https://github.com/apollographql/apollo-client/blob/master/src/transport/networkInterface.ts
     //
 
-    // TODO(burdon): Configure batching via options.
-    // https://github.com/apollostack/core-docs/blob/master/source/network.md#query-batching
-
-    // TODO(burdon): Testing (mockNetworkInterface).
-    // https://github.com/apollographql/apollo-client/blob/a86acf25df5eaf0fdaab264fd16c2ed22657e65c/test/customResolvers.ts
-
     let middleware = [
       addHeaders,
-      fixFetchMoreBug,
+      fixFetchMoreBug,      // TODO(burdon): Remove.
       logRequest
     ];
 
@@ -223,8 +217,17 @@ export class NetworkManager {
       middleware.push(delayRequest());
     }
 
+    // TODO(burdon): Batching (change middleware).
+    // http://dev.apollodata.com/core/network.html#query-batching
+
+    // http://dev.apollodata.com/core/network.html#network-interfaces
+    let options = {
+      uri: this._config.graphql,
+      batchInterval: 10
+    };
+
     // Create HTTPFetchNetworkInterface
-    this._networkInterface  = createNetworkInterface({ uri: this._config.graphql })
+    this._networkInterface = createNetworkInterface(options)
       .use(middleware)
       .useAfter(afterware);
 

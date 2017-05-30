@@ -143,22 +143,20 @@ export class BaseApp {
 
     this._client = new ApolloClient({
 
+      // Adds __typename to results.
+      addTypename: true,
+
       // http://dev.apollodata.com/react/cache-updates.html
       dataIdFromObject: ID.dataIdFromObject,
-      addTypename: true,
 
       // Support validation for fragments of interfaces.
       // Otherwise: WARNING: heuristic fragment matching going on!
       // http://dev.apollodata.com/react/initialization.html#fragment-matcher
       fragmentMatcher: createFragmentMatcher(ITEM_TYPES),
 
-      // TODO(burdon): Need to update reducers to accept multiple results.
-      // https://dev-blog.apollodata.com/query-batching-in-apollo-63acfd859862
-//    shouldBatch: true,
-
       // Map identical queries to the same request.
       // http://dev.apollodata.com/core/network.html#query-deduplication
-//    queryDeduplication: true,
+      queryDeduplication: true,
 
       // http://dev.apollodata.com/core/network.html
       networkInterface: this.networkInterface,
@@ -176,11 +174,7 @@ export class BaseApp {
       // customResolvers: {
       //   RootQuery: {                // Root query type name.
       //     item: (_, args) => {
-      //
-      //       console.log('#####################<><><><><><>#', args);
-      //
       //       // toIdValue(dataIdFromObject({ __typename: 'book', id: args['id'] })),
-      //
       //       return {
       //         type: 'id',
       //         id: args['itemId']    // GraphQL query-soecific.

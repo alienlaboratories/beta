@@ -6,16 +6,10 @@ import React from 'react';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
-//import { Fragments } from 'alien-api';
-
 import { ReactUtil } from '../../util/react';
 
 import { Activity } from '../../common/activity';
-import { Card } from '../../components/card';
-import { List } from '../../components/list';
 import { Navbar } from '../../components/navbar';
-
-import { Layout } from './layout';
 
 /**
  * Testing Activity.
@@ -23,71 +17,38 @@ import { Layout } from './layout';
  */
 class TestingActivity extends React.Component {
 
+  // TODO(burdon): Extend base class.
+
   static childContextTypes = Activity.childContextTypes;
 
   getChildContext() {
     return Activity.getChildContext(this.props);
   }
 
-  state = {
-    listType: 'card'
-  };
-
-  onAddItem() {
-    this.refs.list.addItem();
-  }
-
-  onChangeView(listType) {
-    this.setState({
-      listType
-    });
-  }
-
-  onItemUpdate(item) {
-    console.log('Save: %s', JSON.stringify(item));
-  }
-
   render() {
     return ReactUtil.render(this, () => {
-      let { viewer, typeRegistry, items } = this.props;
-      let { listType } = this.state;
-
-      // TODO(burdon): Viewer null initially (Activity query not yet satisfied -- need to declare below?)
+      let { viewer, typeRegistry } = this.props;
       if (!viewer) {
-        console.warn('Viewer not loaded.');
+        return;
       }
 
-      let itemRenderer = null;
-      switch (listType) {
-        case 'card': {
-          itemRenderer = Card.ItemRenderer(typeRegistry);
-          break;
-        }
-      }
-
-      let navbar = (
-        <Navbar>
-          <div className="ux-toolbar">
-            <div>
-              <i className="ux-icon ux-icon-action"
-                 onClick={ this.onAddItem.bind(this, 'list') }>add</i>
-              <i className="ux-icon ux-icon-action"
-                 onClick={ this.onChangeView.bind(this, 'list') }>view_list</i>
-              <i className="ux-icon ux-icon-action"
-                 onClick={ this.onChangeView.bind(this, 'card') }>view_module</i>
-            </div>
-          </div>
-        </Navbar>
-      );
+      // let navbar = (
+      //   <Navbar>
+      //     <div className="ux-toolbar">
+      //       <div>
+      //         <i className="ux-icon ux-icon-action"
+      //            onClick={ this.onAddItem.bind(this, 'list') }>add</i>
+      //         <i className="ux-icon ux-icon-action"
+      //            onClick={ this.onChangeView.bind(this, 'list') }>view_list</i>
+      //         <i className="ux-icon ux-icon-action"
+      //            onClick={ this.onChangeView.bind(this, 'card') }>view_module</i>
+      //       </div>
+      //     </div>
+      //   </Navbar>
+      // );
 
       return (
-        <Layout viewer={ viewer } navbar={ navbar }>
-          <List ref="list"
-                highlight={ false }
-                items={ items }
-                itemRenderer={ itemRenderer }
-                onItemUpdate={ this.onItemUpdate.bind(this) }/>
-        </Layout>
+        <div>Testing</div>
       );
     });
   }
@@ -97,34 +58,10 @@ class TestingActivity extends React.Component {
 // HOC.
 //-------------------------------------------------------------------------------------------------
 
-/*
-const TestQuery = gql`
-  query TestQuery($filter: FilterInput) {
-    search(filter: $filter) {
-      items {
-        ...ItemFragment
-        ...ContactFragment
-        ...TaskFragment
-
-        ... on Task {
-          tasks {
-            ...TaskFragment
-          }
-        }
-      }
-    }
-  }
-
-  ${Fragments.ItemFragment}
-  ${Fragments.ContactFragment}
-  ${Fragments.TaskFragment}
-`;
-*/
-
 //
 // Tasks are merged (i.e., status + assigee); sub Tasks of Project are isolated with separate/munged "project/task" IDs.
 //
-const TestMergedItemsQuery = gql`
+const TestQuery = gql`
   query TestQuery {
     search: search(filter: { type: "Task", expr: { field: "status", value: { int: 1 } } }) {
       items {
@@ -137,40 +74,12 @@ const TestMergedItemsQuery = gql`
         }
       }
     }
-
-    searchX: search(filter: { type: "Task" }) {
-      items {
-        id
-        type
-        title
-
-        ... on Task {
-          assignee {
-            title
-          }
-        }
-      }
-    }
-    
-    searchY: search(filter: { type: "Project" }) {
-      items {
-        id
-        type
-        title
-
-        ... on Project {
-          tasks {
-            title
-          }
-        }
-      }
-    }
   }  
 `;
 
 export default Activity.compose(
 
-  graphql(TestMergedItemsQuery, {
+  graphql(TestQuery, {
     options: (props) => ({
       variables: {
         filter: { type: 'Task' }

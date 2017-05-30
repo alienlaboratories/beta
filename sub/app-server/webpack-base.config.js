@@ -227,16 +227,10 @@ const webConfig = webpackMerge(baseConfig, {
     //   path.resolve(baseConfig.context, 'src/client/web_app.js'),
     // ],
 
-    // GraphiQL test console.
-    graphiql: [
+    // Main app.
+    test_app: [
       'babel-polyfill',
-      path.resolve(baseConfig.context, 'src/client/graphiql.js')
-    ],
-
-    // Web site (incl. CSS)
-    site: [
-      'babel-polyfill',
-      path.resolve(baseConfig.context, 'src/client/site.js')
+      path.resolve(baseConfig.context, 'src/client/test_app.js')
     ],
 
     // Test HMR.
@@ -260,6 +254,18 @@ const webConfig = webpackMerge(baseConfig, {
     test_sidebar: [
       'babel-polyfill',
       path.resolve(baseConfig.context, 'src/client/test_sidebar.js')
+    ],
+
+    // GraphiQL test console.
+    graphiql: [
+      'babel-polyfill',
+      path.resolve(baseConfig.context, 'src/client/graphiql.js')
+    ],
+
+    // Web site (incl. CSS)
+    site: [
+      'babel-polyfill',
+      path.resolve(baseConfig.context, 'src/client/site.js')
     ],
   },
 
