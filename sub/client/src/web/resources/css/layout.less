@@ -17,6 +17,13 @@
   right: 0;
 }
 
+//
+// Containers
+//
+// Rules:
+// Padding is always explicit (i.e., assume containers have no padding).
+//
+
 .ux-row {
   display: flex;
   flex-direction: row;
@@ -35,6 +42,7 @@
 .ux-grow {
   display: flex;
   flex-grow: 1;
+  overflow: hidden;
 }
 
 .ux-noshrink {
@@ -46,22 +54,70 @@
   justify-content: center;
 }
 
-.ux-debug {
-  overflow: hidden;
-}
-
 //
-// Containers
+// Panels
+//
+// <div class="ux-panel">
+//   <div class="ux-padding">
+//     <span>Content</span>
+//   </div>
+// </div>
 //
 
 .ux-panel {
-  display: flex;
+  .ux-column;
 
   color: @ux-panel-color;
   background-color: @ux-panel-background;
 
-  > .ux-section.ux-padding {
-    padding: @ux-section-padding;
+  .ux-padding {
+    padding: @ux-panel-padding;
+  }
+}
+
+//
+// Toolbar
+// <div class="ux-toolbar">
+//   <div class="ux-grow">
+//     <TextBox class="ux-grow"/>
+//   <div/>
+//   <div>
+//     <i class="ux-icon"/>
+//     <i class="ux-icon"/>
+//   </div>
+// </div>
+//
+
+.ux-toolbar {
+  .ux-row;
+  .ux-grow;
+  .ux-noshrink;
+
+  justify-content: space-between;
+  align-items: center;
+
+  // Tool groups are padded.
+  > * {
+    margin: 0 2px;
+    &:first-child {
+      margin-left: 0;
+    }
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  // Controls within tool groups are padded.
+  > div {
+    > * {
+      margin: 0 2px;
+      &:first-child {
+        margin-left: 0;
+      }
+      &:last-child {
+        margin-right: 0;
+      }
+    }
   }
 }
 
@@ -71,7 +127,7 @@
 // NOTE: Scrolling requires display:flex in all ancestors.
 // https://css-tricks.com/almanac/properties/s/scrollbar
 //
-// <div class="ux-scroll-container">
+// <div class="ux-scroll-container ux-column">
 //   <div>...</div>
 // </div>
 //
@@ -83,42 +139,23 @@
     flex-grow: 1;
     flex-shrink: 0;
   }
-}
-.ux-scroll-container.ux-column {
-  overflow-x: hidden;
-  overflow-y: scroll;
-}
-.ux-scroll-container.ux-row {
-  overflow-x: scroll;
-  overflow-y: hidden;
-}
-.ux-scroll-container::-webkit-scrollbar {
-  width: @ux-scrollbar-width;
-  height: @ux-scrollbar-height;
-}
-.ux-scroll-container::-webkit-scrollbar-thumb {
-  background-color: @ux-scrollbar-color;
-}
 
-//
-// Toolbar
-//
+  &.ux-column {
+    overflow-x: hidden;
+    overflow-y: scroll;
+  }
 
-.ux-toolbar {
-  .ux-row;
-  .ux-grow;
-  .ux-noshrink;
+  &.ux-row {
+    overflow-x: scroll;
+    overflow-y: hidden;
+  }
 
-  justify-content: space-between;
-  align-items: center;
-}
+  &::-webkit-scrollbar {
+    width: @ux-scrollbar-width;
+    height: @ux-scrollbar-height;
+  }
 
-.ux-toolbar > .ux-icon {
-  margin: 0 4px;
-}
-.ux-toolbar > .ux-icon:first-child {
-  margin-left: 0;
-}
-.ux-toolbar > .ux-icon:last-child {
-  margin-right: 0;
+  &::-webkit-scrollbar-thumb {
+    background-color: @ux-scrollbar-color;
+  }
 }

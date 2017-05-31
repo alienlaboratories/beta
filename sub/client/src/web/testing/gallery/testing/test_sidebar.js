@@ -4,20 +4,20 @@
 
 import React from 'react';
 
-import { Sidebar, SidebarToggle } from '../../components/sidebar';
+import { Sidebar, SidebarToggle } from '../../../components/sidebar';
 
 /**
  * Test List.
  */
-export default class TestSidebar extends React.Component {
+export class TestSidebar extends React.Component {
 
   render() {
     return (
-      <div className="ux-column ux-grow">
+      <div className="ux-panel ux-grow">
 
         <Sidebar ref="sidebar" autoClose={ false }>
-          <div className="ux-panel ux-column ux-grow">
-            <div className="ux-section ux-padding">
+          <div className="ux-column ux-grow">
+            <div className="ux-padding">
               <div>A</div>
               <div>B</div>
               <div>C</div>
@@ -25,8 +25,8 @@ export default class TestSidebar extends React.Component {
           </div>
         </Sidebar>
 
-        <div className="ux-panel ux-column">
-          <div className="ux-section ux-padding">
+        <div className="ux-panel">
+          <div className="ux-padding">
             <div className="ux-row ux-grow">
               <div className="ux-grow">
                 <h1>Content</h1>

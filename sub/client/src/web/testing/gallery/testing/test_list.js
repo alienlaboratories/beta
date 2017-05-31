@@ -6,12 +6,12 @@ import React from 'react';
 
 import { Transforms } from 'alien-core';
 
-import { List, ListItem, ListItemEditor } from '../../components/list';
+import { List, ListItem, ListItemEditor } from '../../../components/list';
 
 /**
  * Test List.
  */
-export default class TestList extends React.Component {
+export class TestList extends React.Component {
 
   static id = 0;
   static createid() {
@@ -89,13 +89,17 @@ export default class TestList extends React.Component {
     let { item, items } = this.state;
 
     return (
-      <div className="ux-panel ux-column ux-grow">
+      <div className="ux-panel ux-grow">
         <div className="ux-toolbar">
-          <i className="ux-icon ux-icon-action ux-icon-add ux-icon-large" onClick={ this.handleItemAdd.bind(this) }/>
+          <div/>
+          <div>
+            <i className="ux-icon ux-icon-action ux-icon-add ux-icon-large" onClick={ this.handleItemAdd.bind(this) }/>
+          </div>
         </div>
 
-        <div className="ux-scroll-container ux-column ux-grow">
+        <div className="ux-column ux-grow">
           <List ref="list"
+                className="ux-grow"
                 items={ items }
                 itemEditor={ TestList.ItemEditor }
                 itemRenderer={ TestList.ItemRenderer }

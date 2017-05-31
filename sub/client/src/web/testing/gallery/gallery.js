@@ -6,10 +6,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Link, Router, Route, hashHistory } from 'react-router';
 
-import TestBoard from './test_board';
-import TestList from './test_list';
-import TestSidebar from './test_sidebar';
-import TestText from './test_text';
+import { TestBoard, TestCards, TestList, TestSidebar, TestText } from './testing';
 
 import './gallery.less';
 
@@ -18,9 +15,14 @@ import './gallery.less';
 //
 const Components = [
   {
-    id: 'text',
-    name: 'Text',
-    render: () => <TestText/>
+    id: 'board',
+    name: 'Board',
+    render: () => <TestBoard/>
+  },
+  {
+    id: 'cards',
+    name: 'Cards',
+    render: () => <TestCards/>
   },
   {
     id: 'list',
@@ -28,14 +30,14 @@ const Components = [
     render: () => <TestList/>
   },
   {
-    id: 'board',
-    name: 'Board',
-    render: () => <TestBoard/>
-  },
-  {
     id: 'sidebar',
     name: 'Sidebar',
     render: () => <TestSidebar/>
+  },
+  {
+    id: 'text',
+    name: 'Text',
+    render: () => <TestText/>
   }
 ];
 

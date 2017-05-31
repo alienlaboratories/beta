@@ -13,7 +13,7 @@ import { MutationUtil } from 'alien-core';
 import { TextBox } from './textbox';
 import { ItemDragSource, ItemDropTarget, DragOrderModel } from './dnd';
 
-//import './list.less';
+import './list.less';
 
 //
 // Drag and Drop wrappers.
@@ -261,8 +261,6 @@ export class List extends React.Component {
       });
     }
 
-//  console.log('########', _.map(items, item => item.title));
-
     //
     // Sort items by order model.
     //
@@ -361,12 +359,16 @@ export class List extends React.Component {
     // Layout.
     //
 
-    // TODO(burdon): Editor should be in separate div (not part of scroll container).
     let className = DomUtil.className('ux-list', this.props.className, this.props.highlight && 'ux-list-highlight');
+
     return (
       <div className={ className }>
-        { rows }
-        { lastDropTarget }
+        <div className="ux-list-items ux-scroll-container">
+          <div>
+            { rows }
+            { lastDropTarget }
+          </div>
+        </div>
         { editor }
       </div>
     );

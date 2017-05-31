@@ -46,6 +46,7 @@ main {
 
 table {
   table-layout: fixed;
+  border-collapse: collapse;
 }
 
 // Used as a blank.
@@ -67,18 +68,11 @@ h1, h2, h3, h4, h5 {
   margin: 0;
   font-weight: @ux-font-weight;
 }
-h1 {
-  font-size: @ux-font-xlarge;
-}
-h2 {
-  font-size: @ux-font-medium;
-}
-h3 {
-  font-size: @ux-font-small;
-}
-h4 {
-  font-size: @ux-font-xsmall;
-}
+h1 { font-size: @ux-font-xlarge;  }
+h2 { font-size: @ux-font-large;   }
+h3 { font-size: @ux-font-medium;  }
+h4 { font-size: @ux-font-small;   }
+h5 { font-size: @ux-font-xsmall;  }
 
 pre {
   white-space: pre-line;
@@ -93,7 +87,7 @@ ul.ux-inline {
 
   li {
     display: inline;
-    padding: 0 @ux-font-small;
+    padding: 0 6px;
     font-size: @ux-font-small;
   }
   li:first-child {

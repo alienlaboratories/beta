@@ -4,12 +4,12 @@
 
 import React from 'react';
 
-import { TextBox } from '../../components/textbox';
+import { TextBox } from '../../../components/textbox';
 
 /**
  * Test List.
  */
-export default class TestText extends React.Component {
+export class TestText extends React.Component {
 
   static WORDS = [
     'Apple',
@@ -43,11 +43,15 @@ export default class TestText extends React.Component {
 
     return (
       <div className="ux-panel">
-        <div className="ux-section ux-padding">
-          <TextBox autoFocus={ true } value={ text } onCancel={ () => true }/>
+        <div className="ux-toolbar ux-padding">
+          <div className="ux-grow">
+            <TextBox className="ux-grow" autoFocus={ true } value={ text } onCancel={ () => true }/>
+          </div>
 
-          <button onClick={ this.handleRefresh.bind(this) }>Refresh</button>
-          <button onClick={ this.handleChange.bind(this) }>Change</button>
+          <div>
+            <button onClick={ this.handleRefresh.bind(this) }>Refresh</button>
+            <button onClick={ this.handleChange.bind(this) }>Change</button>
+          </div>
         </div>
       </div>
     );

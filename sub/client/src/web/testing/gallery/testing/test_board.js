@@ -4,12 +4,12 @@
 
 import React from 'react';
 
-import { Board } from '../../components/board';
+import { Board } from '../../../components/board';
 
 /**
  * Test board.
  */
-export default class TestBoard extends React.Component {
+export class TestBoard extends React.Component {
 
   // TODO(burdon): Demo with colored items (from MVP graph illustration).
 
@@ -94,7 +94,7 @@ export default class TestBoard extends React.Component {
     let { model } = this.state;
 
     return (
-      <div className="ux-panel ux-column ux-grow">
+      <div className="ux-panel ux-grow">
         <div className="ux-scroll-container ux-row ux-grow">
           <Board items={ model.items }
                  columns={ model.columns }

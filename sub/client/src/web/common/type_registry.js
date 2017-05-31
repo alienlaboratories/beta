@@ -13,7 +13,8 @@ export class TypeRegistry {
    * System singleton.
    * @param types Map of type specs.
    */
-  constructor(types) {
+  constructor(types={}) {
+    console.assert(types);
     this._types = types;
   }
 
