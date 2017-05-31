@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 
 import { DomUtil } from 'alien-util';
 
-//import './sidebar.less';
+import './sidebar.less';
 
 /**
  * Side panel.

@@ -49,7 +49,13 @@ class Layout extends React.Component {
         </main>
 
         <footer>
-          <span>Footer</span>
+          <div className="ux-row ux-grow ux-center">
+            <ul className="ux-inline">
+              <li>(c) Alien Labs</li>
+              <li>Footer</li>
+              <li>Testing</li>
+            </ul>
+          </div>
         </footer>
       </div>
     );

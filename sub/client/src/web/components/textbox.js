@@ -144,7 +144,7 @@ export class TextBox extends React.Component {
           readOnly: this.props.clickToEdit,
           value: this.props.value
         }, () => {
-          this.props.onCancel && this.props.onCancel(this.props.value, event);
+          this.props.onCancel && this.props.onCancel(this.props.value, event) && this.clear();
         });
         break;
       }

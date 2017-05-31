@@ -13,23 +13,29 @@ export default class TestSidebar extends React.Component {
 
   render() {
     return (
-      <div className="ux-column">
+      <div className="ux-column ux-grow">
 
         <Sidebar ref="sidebar" autoClose={ false }>
-          <div>
-            <div>A</div>
-            <div>B</div>
-            <div>C</div>
+          <div className="ux-panel ux-column ux-grow">
+            <div className="ux-section ux-padding">
+              <div>A</div>
+              <div>B</div>
+              <div>C</div>
+            </div>
           </div>
         </Sidebar>
 
-        <div className="test-panel">
-          <div className="ux-bar">
-            <h1>Content</h1>
-            <SidebarToggle sidebar={ () => this.refs.sidebar }/>
+        <div className="ux-panel ux-column">
+          <div className="ux-section ux-padding">
+            <div className="ux-row ux-grow">
+              <div className="ux-grow">
+                <h1>Content</h1>
+              </div>
+
+              <SidebarToggle sidebar={ () => this.refs.sidebar }/>
+            </div>
           </div>
         </div>
-
       </div>
     );
   }

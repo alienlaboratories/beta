@@ -13,7 +13,9 @@ import TestText from './test_text';
 
 import './gallery.less';
 
-
+//
+// Components.
+//
 const Components = [
   {
     id: 'text',
@@ -37,7 +39,9 @@ const Components = [
   }
 ];
 
-
+/**
+ * Gallery.
+ */
 class Gallery extends React.Component {
 
   render() {
@@ -47,16 +51,26 @@ class Gallery extends React.Component {
     let c = _.find(Components, c => c.id === component) || Components[0];
 
     return (
-      <div className="test-panel">
-        <div className="test-header">
+      <div className="ux-fullscreen ux-column">
+        <header>
+          <ul className="ux-inline">
           { _.map(Components, component => (
-            <Link key={ component.id } to={ '/' + component.id }>{ component.name }</Link>
+            <li key={ component.id }>
+              <Link to={ '/' + component.id }>{ component.name }</Link>
+            </li>
           ))}
-        </div>
+          </ul>
+        </header>
 
-        <div className="test-container">
+        <main>
           { c.render() }
-        </div>
+        </main>
+
+        <footer>
+          <ul className="ux-inline">
+            <li>Gallery</li>
+          </ul>
+        </footer>
       </div>
     );
   }

@@ -42,11 +42,13 @@ export default class TestText extends React.Component {
     //
 
     return (
-      <div className="test-content">
-        <TextBox autoFocus={ true } value={ text }/>
+      <div className="ux-panel">
+        <div className="ux-section ux-padding">
+          <TextBox autoFocus={ true } value={ text } onCancel={ () => true }/>
 
-        <button onClick={ this.handleRefresh.bind(this) }>Refresh</button>
-        <button onClick={ this.handleChange.bind(this) }>Change</button>
+          <button onClick={ this.handleRefresh.bind(this) }>Refresh</button>
+          <button onClick={ this.handleChange.bind(this) }>Change</button>
+        </div>
       </div>
     );
   }

@@ -39,7 +39,9 @@ footer {
 
 main {
   display: flex;
+  flex-direction: column;
   flex-grow: 1;
+  overflow: hidden;
 }
 
 table {
@@ -56,9 +58,9 @@ br {
 //
 
 a {
-  color: @ux-color-dark;
-  text-decoration: none;
+  color: @ux-color-link;;
   font-weight: @ux-font-weight;
+  text-decoration: none;
 }
 
 h1, h2, h3, h4, h5 {
@@ -80,6 +82,26 @@ h4 {
 
 pre {
   white-space: pre-line;
+}
+
+ul.ux-inline {
+  list-style-type: none;
+
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+
+  li {
+    display: inline;
+    padding: 0 @ux-font-small;
+    font-size: @ux-font-small;
+  }
+  li:first-child {
+    padding-left: 0;
+  }
+  li:last-child {
+    padding-right: 0;
+  }
 }
 
 //
@@ -124,7 +146,7 @@ button, input {
   border: @ux-control-border;
   font-size: @ux-font-medium;
   margin: 0;
-  padding: 0;
+  padding: 1px 2px;
 }
 
 input, textarea, button, select {

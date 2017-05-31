@@ -94,10 +94,14 @@ export default class TestBoard extends React.Component {
     let { model } = this.state;
 
     return (
-      <Board items={ model.items }
-             columns={ model.columns }
-             columnMapper={ model.columnMapper }
-             onItemDrop={ this.handleDrop.bind(this) }/>
+      <div className="ux-panel ux-column ux-grow">
+        <div className="ux-scroll-container ux-row ux-grow">
+          <Board items={ model.items }
+                 columns={ model.columns }
+                 columnMapper={ model.columnMapper }
+                 onItemDrop={ this.handleDrop.bind(this) }/>
+        </div>
+      </div>
     );
   }
 }

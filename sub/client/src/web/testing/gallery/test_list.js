@@ -89,12 +89,12 @@ export default class TestList extends React.Component {
     let { item, items } = this.state;
 
     return (
-      <div className="ux-column">
-        <div className="ux-bar">
-          <i className="ux-icon ux-icon-action ux-icon-large ux-icon-add" onClick={ this.handleItemAdd.bind(this) }/>
+      <div className="ux-panel ux-column ux-grow">
+        <div className="ux-toolbar">
+          <i className="ux-icon ux-icon-action ux-icon-add ux-icon-large" onClick={ this.handleItemAdd.bind(this) }/>
         </div>
 
-        <div className="ux-grow">
+        <div className="ux-scroll-container ux-column ux-grow">
           <List ref="list"
                 items={ items }
                 itemEditor={ TestList.ItemEditor }
@@ -103,7 +103,7 @@ export default class TestList extends React.Component {
                 onItemSelect={ this.handleItemSelect.bind(this) }/>
         </div>
 
-        <div className="ux-bar">
+        <div className="ux-toolbar">
           <div className="ux-text-nocollapse ux-text-nowrap">{ item && JSON.stringify(item) }</div>
         </div>
       </div>

@@ -11,45 +11,31 @@
   flex-grow: 1;
 
   .ux-board-columns {
-    display: flex;
-    flex-direction: row;
-    flex-grow: 1;
-
-    padding: 0 6px;
+    padding: 4px;
 
     .ux-board-column {
       display: flex;
       flex-direction: column;
 
       margin: 2px;
-      padding: 8px 0;
+      padding: 4px 0;
 
       background-color: #FAFAFA;
       border: 1px solid #E5E5E5;
       border-radius: 4px;
 
-      .ux-board-header {
+      .ux-board-column-header {
+        flex-shrink: 0;
         margin-bottom: 8px;
 
         h2 {
-          padding: 0 8px;
+          padding: 0 4px;
           font-weight: 400;
         }
       }
 
-      .ux-board-list {
-        width: @ux-card-width;
-
-        .ux-card {
-          margin: 4px 0;
-        }
-
-        .ux-drop-target {
-          margin: 0 4px;
-        }
-      }
-
-      .ux-toolbar {
+      .ux-board-column-footer {
+        flex-shrink: 0;
         margin: 8px 8px 0;
       }
     }

@@ -11,7 +11,7 @@ import { DragOrderModel } from './dnd';
 import { DragDropList } from './list';
 import { TextBox } from './textbox';
 
-//import './board.less';
+import './board.less';
 
 /**
  * Board component.
@@ -92,21 +92,23 @@ export class Board extends React.Component {
 
       return (
         <div key={ column.id } className="ux-board-column">
-          <div className="ux-board-header ux-text-noselect">
+          <div className="ux-board-column-header ux-text-noselect">
             <h2>{ column.title }</h2>
           </div>
 
-          <DragDropList className="ux-board-list"
-                        highlight={ false }
-                        data={ column.id }
-                        items={ columnItems }
-                        itemClassName="ux-board-list-item"
-                        itemRenderer={ itemRenderer }
-                        itemOrderModel={ itemOrderModel }
-                        onItemDrop={ this.handleItemDrop.bind(this) }
-                        onItemSelect={ this.handleItemSelect.bind(this) }/>
+          <div className="ux-scroll-container ux-column ux-grow">
+            <DragDropList className="ux-card-list"
+                          highlight={ false }
+                          data={ column.id }
+                          items={ columnItems }
+                          itemClassName="ux-card-list-item"
+                          itemRenderer={ itemRenderer }
+                          itemOrderModel={ itemOrderModel }
+                          onItemDrop={ this.handleItemDrop.bind(this) }
+                          onItemSelect={ this.handleItemSelect.bind(this) }/>
+          </div>
 
-          <div className="ux-toolbar">
+          <div className="ux-board-column-footer">
             <TextBox className="ux-grow"
                      placeholder="Add Card..."
                      onEnter={ this.handleItemCreate.bind(this, column) }/>
@@ -116,8 +118,8 @@ export class Board extends React.Component {
     });
 
     return (
-      <div className="ux-board ux-scroll-container.ux-row">
-        <div className="ux-board-columns">
+      <div className="ux-board">
+        <div className="ux-board-columns ux-row ux-grow">
           { columnsDivs }
         </div>
       </div>
