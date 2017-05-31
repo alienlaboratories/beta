@@ -317,7 +317,7 @@ class TaskCanvasComponent extends React.Component {
 
           <div className="ux-section">
             <div className="ux-section-header ux-row">
-              <h4 className="ux-expand ux-title">Sub Tasks</h4>
+              <h4 className="ux-grow ux-title">Sub Tasks</h4>
               <i className="ux-icon ux-icon-add" onClick={ this.handleTaskAdd.bind(this) }></i>
             </div>
 

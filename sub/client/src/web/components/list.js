@@ -13,7 +13,7 @@ import { MutationUtil } from 'alien-core';
 import { TextBox } from './textbox';
 import { ItemDragSource, ItemDropTarget, DragOrderModel } from './dnd';
 
-import './list.less';
+//import './list.less';
 
 //
 // Drag and Drop wrappers.
@@ -477,7 +477,7 @@ export class ListItem extends React.Component {
     let { item, onItemSelect } = context;
     let { value, select=true } = props;
 
-    let className = DomUtil.className('ux-expand', 'ux-text', select && 'ux-selector');
+    let className = DomUtil.className('ux-grow', 'ux-text', select && 'ux-press');
     let attrs = {};
     if (select) {
       // NOTE: Use onMouseDown instead of onClick (happens before onBlur for focusable components).
@@ -523,7 +523,7 @@ export class ListItem extends React.Component {
 
     return (
       <TextBox ref={ el => (textbox = el) }
-               className="ux-expand"
+               className="ux-grow"
                autoFocus={ true }
                value={ value }
                onEnter={ handleSave }

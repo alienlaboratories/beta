@@ -1,0 +1,98 @@
+//
+// Copyright 2017 Alien Labs.
+//
+
+@import (reference) './ref/mixin.less';
+@import (reference) './ref/material.less';
+@import (reference) './ref/theme.less';
+
+//
+// Icons
+// <i class="ux-icon"></i>
+// TODO(burdon): Use :after pseudo to insert all material-icon types (and remove from React).
+//
+
+.ux-icon {
+  .material-icons;
+  .ux-text-noselect;
+
+  color: @ux-color-medium;
+  cursor: pointer;
+}
+
+i.ux-icon-img {
+  width: 18px;
+  display: flex;
+  justify-content: center;
+}
+
+i.ux-icon.ux-icon-menu:after {
+  content: 'menu';
+}
+
+i.ux-icon.ux-icon-pin {
+  color: cornflowerblue;
+}
+i.ux-icon.ux-icon-pin:after {
+  content: 'label_outline';
+}
+i.ux-icon.ux-icon-pin.ux-selected:after {
+  content: 'label';
+}
+
+i.ux-icon.ux-icon-toggle:after {
+  content: 'keyboard_arrow_down';
+}
+i.ux-icon.ux-icon-toggle.ux-open:after {
+  content: 'keyboard_arrow_up';
+}
+
+i.ux-icon-star {
+  color: @ux-color-star;
+}
+
+i.ux-icon-action {
+  color: #CCC;
+}
+i.ux-icon-action:hover {
+  color: #999;
+}
+
+i.ux-icon-add:after {
+  color: #999;
+  content: 'add';
+}
+i.ux-icon-add:hover:after {
+  color: darkred;
+  content: 'add_circle';
+}
+
+i.ux-icon-edit:after {
+  content: 'edit';
+}
+i.ux-icon-edit:hover {
+  color: darkblue;
+}
+
+i.ux-icon-save:after {
+  content: 'check';
+}
+i.ux-icon-save:hover {
+  color: darkgreen;
+}
+
+i.ux-icon-cancel:after {
+  content: 'cancel';
+}
+i.ux-icon-cancel:hover {
+  color: darkred;
+}
+
+i.ux-icon-error:after {
+  content: 'radio_button_unchecked';
+  color: lightgreen;
+}
+i.ux-icon-error.ux-on:after {
+  content: 'error';
+  color: indianred;
+}

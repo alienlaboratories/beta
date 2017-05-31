@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 
 import { DomUtil, TypeUtil } from 'alien-util';
 
-import './card.less';
+//import './card.less';
 
 /**
  * Card wrapper.
@@ -55,7 +55,7 @@ export class Card extends React.Component {
     return (
       <div className={ className }>
         <div className="ux-card-header">
-          <h1 className="ux-text-noselect ux-selector"
+          <h1 className="ux-text-noselect ux-press"
               onClick={ this.handleSelect.bind(this, item) }>{ title }</h1>
 
           { icon && <i className="ux-icon">{ icon }</i> }

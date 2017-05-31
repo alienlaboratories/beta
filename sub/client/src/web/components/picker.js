@@ -10,7 +10,7 @@ import { DomUtil } from 'alien-util';
 
 import { TextBox } from './textbox';
 
-import './picker.less';
+//import './picker.less';
 
 /**
  * Compact view of an Item.

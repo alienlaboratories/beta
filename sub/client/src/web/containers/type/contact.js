@@ -126,7 +126,7 @@ export class ContactCard extends React.Component {
     return (
       <div key={ assignee.id }>
         <div className="ux-section-header">
-          <h3 className="ux-expand">{ header }</h3>
+          <h3 className="ux-grow">{ header }</h3>
           <i className="ux-icon ux-icon-add" onClick={ this.handleTaskAdd.bind(this, ref) }/>
         </div>
 
@@ -225,7 +225,7 @@ export class ContactCard extends React.Component {
         {/* Messages. */}
         { messages &&
         <div className="ux-section-header">
-          <h3 className="ux-expand">Messages</h3>
+          <h3 className="ux-grow">Messages</h3>
         </div>
         }
         { messages &&
@@ -241,7 +241,7 @@ export class ContactCard extends React.Component {
 
         {/* Private tasks for Contact. */}
         <div className="ux-section-header">
-          <h3 className="ux-expand">Notes</h3>
+          <h3 className="ux-grow">Notes</h3>
           <i className="ux-icon ux-icon-add" onClick={ this.handleTaskAdd.bind(this, 'tasks') }/>
         </div>
         <div className="ux-list-tasks">
@@ -309,7 +309,7 @@ export class ContactCanvasComponent extends React.Component {
 
           <div className="ux-section">
             <div className="ux-section-header ux-row">
-              <h4 className="ux-expand ux-title">Tasks</h4>
+              <h4 className="ux-grow ux-title">Tasks</h4>
             </div>
 
             <List ref="tasks"

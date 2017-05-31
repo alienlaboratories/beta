@@ -43,7 +43,7 @@ export class SearchBar extends React.Component {
     return (
       <div className={ DomUtil.className(className, 'ux-search', 'ux-row') }>
         <TextBox ref="text"
-                 className='ux-expand'
+                 className='ux-grow'
                  autoFocus={ true }
                  placeholder='Search...'
                  value={ value }

@@ -61,7 +61,7 @@ class UserCanvasComponent extends React.Component {
 
           <div className="ux-section">
             <div className="ux-section-header ux-row">
-              <h3 className="ux-expand ux-title">Owner</h3>
+              <h3 className="ux-grow ux-title">Owner</h3>
             </div>
             <List ref="tasks"
                   className="ux-list-tasks"
@@ -74,7 +74,7 @@ class UserCanvasComponent extends React.Component {
 
           <div className="ux-section">
             <div className="ux-section-header ux-row">
-              <h3 className="ux-expand ux-title">Assigned</h3>
+              <h3 className="ux-grow ux-title">Assigned</h3>
             </div>
             <List items={ assigneeTasks }
                   className="ux-list-tasks"

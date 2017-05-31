@@ -11,7 +11,7 @@ import { DragOrderModel } from './dnd';
 import { DragDropList } from './list';
 import { TextBox } from './textbox';
 
-import './board.less';
+//import './board.less';
 
 /**
  * Board component.
@@ -107,7 +107,7 @@ export class Board extends React.Component {
                         onItemSelect={ this.handleItemSelect.bind(this) }/>
 
           <div className="ux-toolbar">
-            <TextBox className="ux-expand"
+            <TextBox className="ux-grow"
                      placeholder="Add Card..."
                      onEnter={ this.handleItemCreate.bind(this, column) }/>
           </div>
@@ -116,11 +116,9 @@ export class Board extends React.Component {
     });
 
     return (
-      <div className="ux-board ux-scroll-container">
-        <div className="ux-scroll-x-panel">
-          <div className="ux-board-columns">
-            { columnsDivs }
-          </div>
+      <div className="ux-board ux-scroll-container.ux-row">
+        <div className="ux-board-columns">
+          { columnsDivs }
         </div>
       </div>
     );

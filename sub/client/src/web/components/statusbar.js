@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 
 import { Async, DomUtil, ErrorUtil } from 'alien-util';
 
-import './statusbar.less';
+//import './statusbar.less';
 
 /**
  * Status bar.
@@ -138,9 +138,9 @@ export class StatusBar extends React.Component {
           <i className="ux-icon ux-icon-action" title="Refresh queries"
              onClick={ this.handleAction.bind(this, 'invalidate_queries') }>refresh</i>
 
-          <i className={ DomUtil.className('app-icon-network-in', 'ux-icon', networkIn && 'ux-icon-on') }></i>
-          <i className={ DomUtil.className('app-icon-network-out', 'ux-icon', networkOut && 'ux-icon-on') }></i>
-          <i className={ DomUtil.className('ux-icon-error', 'ux-icon', error && 'ux-icon-on') }
+          <i className={ DomUtil.className('app-icon-network-in', 'ux-icon', networkIn && 'ux-on') }></i>
+          <i className={ DomUtil.className('app-icon-network-out', 'ux-icon', networkOut && 'ux-on') }></i>
+          <i className={ DomUtil.className('ux-icon-error', 'ux-icon', error && 'ux-on') }
              title={ ErrorUtil.message(error.message) }
              onClick={ this.handleClickError.bind(this, 'error') }></i>
         </div>

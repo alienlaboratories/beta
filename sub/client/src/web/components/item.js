@@ -89,7 +89,7 @@ export class ItemCanvasHeaderComponent extends React.Component {
       let { title } = item;
 
       return (
-        <div className="ux-row ux-expand">
+        <div className="ux-row ux-grow">
 
           <div className="ux-navbar-buttons">
             <div>
@@ -101,9 +101,9 @@ export class ItemCanvasHeaderComponent extends React.Component {
             { toolbar }
           </div>
 
-          <div className="ux-title ux-expand">
+          <div className="ux-title ux-grow">
             <TextBox value={ title }
-                     className="ux-expand"
+                     className="ux-grow"
                      placeholder="Title"
                      notEmpty={ true }
                      clickToEdit={ true }

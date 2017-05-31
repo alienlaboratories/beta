@@ -119,27 +119,27 @@ const web = webpackMerge(baseConfig, {
   // http://localhost:8080/assets/
   entry: {
 
-    test_apollo: [
-      'babel-polyfill',
-      path.resolve(baseConfig.context, 'src/web/testing/apollo/apollo_test_app.js'),
-    ],
+    // TODO(burdon): Separate config.
 
-    /*
-    test_gallery: [
-      'babel-polyfill',
-      path.resolve(baseConfig.context, 'src/web/testing/gallery/gallery.js'),
-    ],
+    // test_apollo: [
+    //   'babel-polyfill',
+    //   path.resolve(baseConfig.context, 'src/web/testing/apollo/apollo_test_app.js'),
+    // ],
+    //
+    // test_gallery: [
+    //   'babel-polyfill',
+    //   path.resolve(baseConfig.context, 'src/web/testing/gallery/gallery.js'),
+    // ],
 
     test_layout: [
       'babel-polyfill',
       path.resolve(baseConfig.context, 'src/web/testing/layout/test_layout.js'),
     ],
 
-    test_router: [
-      'babel-polyfill',
-      path.resolve(baseConfig.context, 'src/web/testing/router/test_router.js'),
-    ]
-    */
+    // test_router: [
+    //   'babel-polyfill',
+    //   path.resolve(baseConfig.context, 'src/web/testing/router/test_router.js'),
+    // ]
   },
 
   output: {

@@ -13,8 +13,6 @@ import AdminActivity from '../containers/activities/admin';
 import CanvasActivity from '../containers/activities/canvas';
 import FinderActivity from '../containers/activities/finder';
 
-import '../resources/css/core.less';
-
 /**
  * The Application must be a pure React component since HOCs may cause the component to be re-rendered,
  * which would trigger a Router warning.

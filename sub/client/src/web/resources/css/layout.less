@@ -2,42 +2,13 @@
 // Copyright 2017 Alien Labs.
 //
 
-@import './theme.less';
+@import (reference) './ref/theme.less';
 
-// TODO(burdon): v2
-/*
-
-.ux-flex          { display: flex; flex-shrink: 0 }
-.ux-flex-row
-.ux-flex-column
-.ux-flex-expand
-
-Panel             semanitcs?
-Container
-Scroll Container
-Header, Body, Footer (how to localize (i.e., body will container card that has a body)
-
-Toolbar
-
-- move "main-layout" etc outside of core (try to remove app specific)
-
-Card
-Section
-
-Use h1 instaed of .title
-
- */
-
-//
-// General Rules:
-// Containers should have not margins or padding.
-//
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Content_sectioning
+// TODO(burdon): header, footer, main, section, nav
 
 .ux-fullscreen {
   display: flex;
-  flex-direction: row;
-  justify-content: center;
-
   position: fixed;
 
   top: 0;
@@ -46,342 +17,84 @@ Use h1 instaed of .title
   right: 0;
 }
 
-.ux-main-layout {
-
-  background-color: white;
-
-  > .ux-header {
-    padding: 0 8px;
-
-    background-color: @ux-header-background;
-    color: @ux-header-color;
-
-    i.ux-icon {
-      margin: 0;
-      font-size: 24px;
-    }
-
-    h1 {
-      margin-left: 8px;
-      font-family: Poiret One, sans-serif;
-    }
-
-    a {
-      color: @ux-header-color;
-    }
-  }
-}
-
-//
-// Panel
-//
-
-.ux-panel {
-  display: flex;
-}
-
-//
-// Canvas
-//
-
-.ux-canvas-container {
-  display: flex;
-  flex-grow: 1;
-}
-
-.ux-canvas {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  overflow: hidden;
-
-  > div > .ux-columns {
-    border-bottom: 1px solid #DDD;
-  }
-
-  .ux-canvas-menu-bar {
-    display: flex;
-    flex-direction: row;
-
-    .ux-bar {
-      padding: 0 6px;
-      border-left: 1px solid #DDD;
-
-      .ux-icon {
-        font-size: @ux-font-large;
-      }
-    }
-  }
-}
-
-//
-// Card
-//
-
-.ux-card-list {
-  background-color: #FAFAFA;
-}
-
-.ux-card {
-  display: flex;
-  flex-direction: column;
-  margin: 4px 8px;
-  padding-bottom: 4px;
-
-  background-color: white;
-  box-shadow: 0 1px 1px #AAA;
-
-  .ux-card-header {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-
-    background-color: gainsboro;
-    padding: 4px;
-
-    h1 {
-      font-size: @ux-font-medium;
-    }
-    h2 {
-      font-size: @ux-font-small;
-    }
-    h3 {
-      font-size: @ux-font-xsmall;
-    }
-
-    .ux-icon {
-      font-size: @ux-font-small;
-    }
-
-    .ux-img-avatar {
-      width: 64px;
-      height: 64px;
-    }
-  }
-
-  .ux-card-section {
-    padding: 4px;
-
-    img {
-      max-width: 80px;
-    }
-  }
-
-  .ux-card-footer {
-    padding: 0 6px 4px 4px;
-
-    .ux-icon-add {
-      float: right;
-    }
-  }
-
-  .ux-section-header {
-    padding: 1px 4px;
-    background-color: #ECEFF1;
-
-    h3 {
-      font-size: @ux-font-xsmall;
-    }
-  }
-}
-
-.ux-card-rounded {
-  border-radius: 2px;
-
-  .ux-card-header {
-    border-top-left-radius: 2px;
-    border-top-right-radius: 2px;
-  }
-
-  .ux-card-body {
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
-  }
-}
-
-//
-// Content section.
-//
-
-.ux-section {
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-
-  margin: 4px 8px;
-  border: 1px solid #DDD;
-  border-radius: 4px;
-}
-.ux-section-header {
+.ux-row {
   display: flex;
   flex-direction: row;
-
-  padding: @ux-section-header-padding;
-
-  background-color: @ux-section-header-background;
-  color: @ux-section-header-color;
-
-  i.ux-icon {
-    color: @ux-section-header-color;
-  }
-
-  .ux-title {
-    padding: 0 2px;
-  }
-}
-.ux-section-header-dark {
-  background-color: @ux-section-header-dark-background;
-  color: @ux-section-header-dark-color;
-}
-.ux-section-body {
-  display: flex;
-  flex-direction: column;
-  padding: 6px;
-}
-
-//
-// Column container.
-//
-
-.ux-columns {
-  display: flex;
-  flex-direction: row;
-  flex-grow: 1;
-
-  overflow-y: hidden;
-  align-items: stretch;
 }
 
 .ux-column {
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-
-  overflow: hidden;
 }
 
-//
-// Row container.
-//
-
-.ux-row {
+.ux-columns {
   display: flex;
   flex-direction: row;
-  flex-shrink: 0;
+}
 
-  overflow-x: hidden;
-  align-items: center;
+.ux-grow {
+  display: flex;
+  flex-grow: 1;
+}
+
+.ux-noshrink {
+  display: flex;
+  flex-shrink: 0;
 }
 
 //
-// Scroll container.
+// Scrollbar
 // NOTE: The outer scroll-container must expand and make the overflow hidden.
 // NOTE: Scrolling requires display:flex in all ancestors.
 // https://css-tricks.com/almanac/properties/s/scrollbar
 //
 // <div class="ux-scroll-container">
-//   <div class="ux-scroll-x-panel"/>
-// <div>
+//   <div>...</div>
+// </div>
 //
 
 .ux-scroll-container {
   display: flex;
-  flex-direction: column;
-  flex-grow: 1;
 
-  overflow: hidden;
+  > div {
+    flex-grow: 1;
+    flex-shrink: 0;
+  }
 }
-
-.ux-scroll-x-panel {
-  display: flex;
-  flex-direction: row;
-  flex-grow: 1;
-
+.ux-scroll-container.ux-column {
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+.ux-scroll-container.ux-row {
   overflow-x: scroll;
   overflow-y: hidden;
 }
-.ux-scroll-x-panel::-webkit-scrollbar {
-  height: 8px;
+.ux-scroll-container::-webkit-scrollbar {
+  width: @ux-scrollbar-width;
+  height: @ux-scrollbar-height;
 }
-.ux-scroll-x-panel::-webkit-scrollbar-thumb {
-  background-color: #666;
+.ux-scroll-container::-webkit-scrollbar-thumb {
+  background-color: @ux-scrollbar-color;
 }
 
 //
-// Toolbars.
+// Toolbar
 //
-
-.ux-bar {
-  display: flex;
-  flex-direction: row;
-  flex-shrink: 0;
-  align-items: center;
-
-  justify-content: space-between;
-}
-
-.ux-navbar {
-  .ux-bar;
-
-  background-color: @ux-navbar-background;
-  color: @ux-navbar-color;
-
-  box-shadow: 0 4px 8px #AAA;
-  z-index: 999;
-
-  // Title editor.
-  .ux-title {
-
-    div.ux-textbox {
-      justify-content: center;
-    }
-
-    input.ux-textbox {
-      margin: 0 16px;
-      border: none;
-      text-align: center;
-
-      background-color: white;
-      border-radius: 4px;
-      padding: 4px;
-    }
-  }
-
-  .ux-navbar-buttons {
-    .ux-text-nowrap;
-
-    display: flex;
-    flex-shrink: 0;
-
-    margin: 0 8px;
-
-    > div {
-      display: flex;
-      justify-content: center;
-      background-color: #78a1c3;
-      padding: 3px;
-      border-radius: 2px;
-
-      .ux-icon {
-        color: royalblue;
-        font-size: @ux-font-medium;
-      }
-
-      .ux-icon.ux-icon-active {
-        color: #013b68;
-      }
-    }
-  }
-}
 
 .ux-toolbar {
-  .ux-bar;
+  .ux-row;
+  .ux-grow;
 
-  > input, button, select {
-    margin-left: @ux-toolbar-padding;
-  }
+  justify-content: space-between;
+  align-items: center;
+}
 
-  > input:first-child, button:first-child, select:first-child {
-    margin-left: 0;
-  }
+.ux-toolbar > .ux-icon {
+  margin: 0 4px;
+}
+.ux-toolbar > .ux-icon:first-child {
+  margin-left: 0;
+}
+.ux-toolbar > .ux-icon:last-child {
+  margin-right: 0;
 }

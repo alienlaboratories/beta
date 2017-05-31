@@ -11,7 +11,7 @@ import { Path } from '../../web/common/path';
 
 import FinderActivity from '../../web/containers/activities/finder';
 
-import '../../web/resources/css/core.less';
+import '../../web/resources/css/app.less';
 
 /**
  * The Application must be a pure React component since HOCs may cause the component to be re-rendered,

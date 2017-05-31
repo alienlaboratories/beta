@@ -156,7 +156,7 @@ export class Canvas extends React.Component {
         <div className="ux-section">
           <div className="ux-section-body">
             <div className="ux-row">
-              <TextArea className="ux-expand ux-noborder ux-font-xsmall" rows="4"
+              <TextArea className="ux-grow ux-noborder ux-font-xsmall" rows="4"
                         placeholder="Notes"
                         value={ _.get(this.state, 'description') }
                         onChange={ this.handlePropertyChange.bind(this, 'description') }/>
@@ -173,7 +173,7 @@ export class Canvas extends React.Component {
         </div>
         }
 
-        <div className="ux-column ux-expand">
+        <div className="ux-column ux-grow">
           { children }
         </div>
       </div>

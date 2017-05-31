@@ -77,14 +77,14 @@ class GroupCanvasComponent extends React.Component {
 
           <div className="ux-section">
             <div className="ux-section-header ux-row">
-              <h4 className="ux-expand ux-title">Members</h4>
+              <h4 className="ux-grow ux-title">Members</h4>
             </div>
             <List items={ members } onItemSelect={ this.handleItemSelect.bind(this) }/>
           </div>
 
           <div className="ux-section">
             <div className="ux-section-header ux-row">
-              <h4 className="ux-expand ux-title">Projects</h4>
+              <h4 className="ux-grow ux-title">Projects</h4>
               <i className="ux-icon ux-icon-add" onClick={ this.handleProjectAdd.bind(this) }></i>
             </div>
             <List ref="projects"

@@ -13,7 +13,7 @@ import React from 'react';
  */
 export const DocumentColumn = (props, context) => {
   return (
-    <a target="ALIEN_OPEN" className="ux-center-row" href={ props.item.url }>
+    <a target="ALIEN_OPEN" href={ props.item.url }>
       <i className="ux-icon">open_in_new</i>
     </a>
   );

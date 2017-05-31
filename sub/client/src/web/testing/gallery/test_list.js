@@ -94,7 +94,7 @@ export default class TestList extends React.Component {
           <i className="ux-icon ux-icon-action ux-icon-large ux-icon-add" onClick={ this.handleItemAdd.bind(this) }/>
         </div>
 
-        <div className="ux-expand">
+        <div className="ux-grow">
           <List ref="list"
                 items={ items }
                 itemEditor={ TestList.ItemEditor }

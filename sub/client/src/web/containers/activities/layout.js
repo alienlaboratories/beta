@@ -140,7 +140,7 @@ export class LayoutComponent extends React.Component {
             {/* Header */}
             { platform !== Const.PLATFORM.CRX &&
             <div className="ux-header ux-row">
-              <div className="ux-row ux-expand">
+              <div className="ux-row ux-grow">
                 <SidebarToggle sidebar={ () => this.refs.sidebar }/>
                 <h1>{ AppDefs.APP_NAME }</h1>
               </div>

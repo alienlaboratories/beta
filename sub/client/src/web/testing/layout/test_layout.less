@@ -2,352 +2,218 @@
 // Copyright 2017 Alien Labs.
 //
 
-// TODO(burdon): First, use consistently across all tests.
-// TODO(burdon): Retrofit ground-up client build (strict components with only top-level containers?)
+@import '../../resources/css/app.less';
 
-// TODO(burdon): Forms (input, button, etc.)
-// TODO(burdon): Images, map, etc.
-// https://www.w3schools.com/tags
-// <header> <main> <footer> <nav> <section>
-
-// TODO(burdon): Clip path (https://css-tricks.com/clipping-masking-css) (for avatar)
-// https://css-tricks.com/crop-top
-
-//
-// - Component's root element has class name (prefex-class-name) and root layout.
-// - Themes must be strictly scoped to allow for nesting.
-// - Tag semantics are local (e.g., <h1> in Card).
-// - Order style rules (layout, fonts, colors, misc).
-// - Style defs for all colors, sizes, padding, etc.
-//
-
-@import (reference) '../../resources/css/material.less';
-
-//
-// HTML
-//
-
-body {
-  margin: 0;
-  overflow: hidden;
-  font-family: @font-family;
-  font-weight: @font-weight;
+header {
+  color: @ux-header-color;
+  background-color: @ux-header-background;
 }
 
-// Used as placeholder for empty components.
-br {
-  display: none;
-}
-
-h1, h2, h3, h4, h5 {
-  margin: 0;
-  padding: 0;
-  font-weight: @font-weight;
+footer {
+  color: @ux-footer-color;
+  background-color: @ux-footer-background;
 }
 
 //
-// Mixin
+// Forms
+// TODO(burdon): Clean-up. Move to layout.
 //
 
-//
-// Layout
-//
-
-.tx-fullscreen {
-  position: fixed;
-
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-
-.tx-column {
+// TODO(burdon): Remove/Rename form?
+.ux-data {
   display: flex;
   flex-direction: column;
+
+  .ux-data-row {
+    margin-bottom: 4px;
+  }
 }
 
-.tx-row {
+// TODO(burdon): Rename ux-control-row?
+.ux-data-row {
   display: flex;
   flex-direction: row;
-}
-
-.tx-grow {
-  display: flex;
-  flex-grow: 1;
-  flex-shrink: 1;
-}
-
-.tx-panel {
-  flex-shrink: 0;
-}
-.tx-panel-blank {
-  background-color: @color-bg-panel-blank;
-}
-.tx-panel-dark {
-  background-color: @color-bg-panel-dark;
-}
-
-.tx-toolbar {
-  .tx-row;
-  .tx-grow;
-  justify-content: space-between;
   align-items: center;
-}
 
-.tx-toolbar > .tx-icon {
-  margin: 0 4px;
-}
-.tx-toolbar > .tx-icon:first-child {
-  margin-left: 0;
-}
-.tx-toolbar > .tx-icon:last-child {
-  margin-right: 0;
-}
+  .ux-data-label {
+    font-size: @ux-font-small;
+    padding-right: 4px;
+    min-width: 100px;
+  }
 
-.tx-header {
-  .tx-panel;
-  .tx-row;
+  .ux-text {
+    .ux-text-nowrap;
 
-  padding: @panel-padding;
-}
+    margin: 1px;                    // Align with inline input (border).
+    padding: 2px 4px;
+  }
 
-.tx-body {
-  .tx-panel;
-  .tx-column;
-  .tx-grow;
-}
+  .ux-text-block {
+    margin: 1px;                    // Align with inline input (border).
+    padding: 2px 4px;
+  }
 
-.tx-footer {
-  .tx-panel;
-  .tx-row;
+  input[type=text] {
+    padding: 2px 4px;
+  }
 
-  padding: @panel-padding;
-}
-
-//
-// Scrollbar
-//
-
-.tx-scroll-container {
-  display: flex;
-
-  > div {
-    flex-grow: 1;
-    flex-shrink: 0;
+  select {
+    padding: 2px 4px;
   }
 }
-.tx-scroll-container.tx-column {
-  overflow-x: hidden;
-  overflow-y: scroll;
-}
-.tx-scroll-container::-webkit-scrollbar {
-  width: 4px;
-  height: 8px;
-}
-.tx-scroll-container::-webkit-scrollbar-thumb {
-  background-color: #333;
-}
-.tx-scroll-container.tx-row {
-  overflow-x: scroll;
-  overflow-y: hidden;
-}
 
 //
-// Components.
+// Elements
 //
 
-.tx-icon {
-  .material-icons;
-  color: @color-fg-medium;
+.ux-tag {
+  margin-left: 4px;
+  padding: 3px 4px;
+  border-radius: 4px;
+  background-color: @ux-color-tag;
+  color: white;
   cursor: pointer;
 }
-
-.tx-icon.tx-icon-menu:after                   { content: 'menu';  }
-.tx-icon.tx-icon-pin                          { color: cornflowerblue; }
-.tx-icon.tx-icon-pin:after                    { content: 'label_outline'; }
-.tx-icon.tx-icon-pin.tx-selected:after        { content: 'label'; }
-.tx-icon.tx-icon-toggle:after                 { content: 'keyboard_arrow_down'; }
-.tx-icon.tx-icon-toggle.tx-open:after         { content: 'keyboard_arrow_up'; }
-
-.tx-image {
-  background-size: cover;
-  background-repeat: no-repeat;
+.ux-tag:first-child {
+  margin-left: 0;
 }
 
-//
-// Theme
-//
-
-@color-bg-banner:               cornflowerblue;
-@color-bg-toolbar:              darkslategray;
-@color-bg-panel:                white;
-@color-bg-panel-dark:           #CCC;
-@color-bg-panel-header:         #F5F5F5;
-@color-bg-panel-blank:          aliceblue;
-
-@color-fg-dark:                 #333;
-@color-fg-medium:               #666;
-@color-fg-light:                #999;
-@color-fg-xlight:               #EEE;
-
-@colot-fg-sub-heading:          cornflowerblue;
-
-@box-shadow:                    1px 2px 3px 0px #999;
-
-@font-family:                   Roboto, sans-serif;
-@font-weight:                   100;
-
-@font-xlarge:                   20px;
-@font-large:                    18px;
-@font-medium:                   16px;
-@font-small:                    14px;
-@font-xsmall:                   12px;
-
-@panel-padding:                 4px;
-@list-padding:                  4px;
-
-@card-width:                    350px;
-@card-margin:                   6px;
-@card-radius:                   2px;
-
-//
-// Style.
-//
-
-.tx-font-xlarge   { font-size: @font-xlarge }
-.tx-font-large    { font-size: @font-large }
-.tx-font-medium   { font-size: @font-medium }
-.tx-font-small    { font-size: @font-small }
-.tx-font-xsmall   { font-size: @font-xsmall }
-
-//
-// Test components.
-//
-
-.tx-layout > .tx-header {
-  background: @color-bg-banner;
-}
-.tx-layout > .tx-footer {
-  background: @color-bg-toolbar;
+.ux-debug {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  font-family: Monaco, monospace;
+  font-size: 10px;
+  color: @ux-color-debug;
 }
 
-.tx-card-deck {
+.ux-error {
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  font-family: Monaco, monospace;
+  font-size: 14px;
+  color: @ux-color-error;
+}
+
+.ux-card-deck {
   display: flex;
   flex-direction: column;
 }
 
-.tx-card {
-  width: @card-width;
+.ux-card {
+  width: @ux-card-width;
 
-  background: @color-bg-panel;
+  color: @ux-panel-color;
+  background: @ux-panel-background;
 
-  > .tx-header {
-    padding: @panel-padding;
-    background-color: @color-bg-panel-header;
+  > .ux-header {
+    padding: @ux-panel-padding;
+    background-color: @ux-panel-header-background;
 
     h1 {
-      font-size: @font-large;
-      color: @color-fg-dark;
+      font-size: @ux-font-large;
+      color: @ux-panel-header-color;
     }
   }
 
-  > .tx-footer {
-    padding: @panel-padding;
-    font-size: @font-xsmall;
-    color: @color-fg-light;
+  > .ux-footer {
+    padding: @ux-panel-padding;
+    font-size: @ux-font-xsmall;
+    color: @ux-color-light;
   }
 
-  > .tx-body {
+  > .ux-main {
 
-    .tx-padding {
-      padding: @panel-padding;
+    .ux-padding {
+      padding: @ux-panel-padding;
     }
 
-    > .tx-card-section {
-      font-size: @font-medium;
-      color: @color-fg-medium;
+    > .ux-card-section {
+      font-size: @ux-font-medium;
+      color: @ux-section-color;
 
-      border-bottom: 1px solid @color-fg-xlight;
+      border-bottom: @ux-section-border;
       padding-bottom: 4px;
 
-      > .tx-card-section-header {
-        .tx-row;
-        padding: @panel-padding;
+      > .ux-card-section-header {
+        .ux-row;
+        padding: @ux-panel-padding;
 
         h2 {
-          .tx-grow;
-          font-size: @font-xsmall;
-          color: @colot-fg-sub-heading;
+          .ux-grow;
+          font-size: @ux-font-xsmall;
+          color: @ux-section-header-color;
           cursor: pointer;
         }
 
-        .tx-icon {
-          font-size: @font-small;
-          color: @color-fg-light;
+        .ux-icon {
+          font-size: @ux-font-small;
+          color: @ux-color-light;
         }
       }
 
-      > .tx-body {
-        > .tx-list {
-          font-size: @font-medium;
+      > .ux-main {
+        > .ux-list {
+          font-size: @ux-font-medium;
         }
       }
     }
-    > div.tx-card-section:last-of-type {
+    > div.ux-card-section:last-of-type {
       border-bottom: none;
     }
   }
 }
 
-.tx-card-deck {
-  .tx-card {
-    margin-bottom: @card-margin;
+.ux-card-deck {
+  .ux-card {
+    margin-bottom: @ux-card-margin;
   }
-  .tx-card:last-child {
+  .ux-card:last-child {
     margin-bottom: 0;
   }
 }
-.tx-card-deck.tx-card-deck-floating {
-  .tx-card {
-    margin: 0 @card-margin @card-margin;
-    border-radius: @card-radius;
-    box-shadow: @box-shadow;
+.ux-card-deck.ux-card-deck-floating {
+  .ux-card {
+    margin: 0 @ux-card-margin @ux-card-margin;
+    border-radius: @ux-card-radius;
+    box-shadow: @ux-box-shadow;
   }
-  .tx-card:first-child {
-    margin-top: @card-margin;
+  .ux-card:first-child {
+    margin-top: @ux-card-margin;
   }
 }
 
-.tx-card {
-  .tx-image.tx-item-avatar {
+.ux-card {
+  .ux-image.ux-item-avatar {
     width: 40px;
     height: 40px;
   }
-  .tx-image.tx-item-map {
+  .ux-image.ux-item-map {
     width: 100%;
     height: 100px;
   }
 }
 
-.tx-list {
-  .tx-column;
+.ux-list {
+  .ux-column;
 
-  .tx-list-item {
-    padding: 0 @list-padding;
+  .ux-list-item {
+    padding: 0 @ux-panel-padding;
     align-items: center;
 
-    .tx-icon {
+    .ux-icon {
       margin: 0 4px;
     }
-    .tx-icon:first-child {
+    .ux-icon:first-child {
       margin-left: 0;
     }
-    .tx-icon:last-child {
+    .ux-icon:last-child {
       margin-right: 0;
     }
   }
-  .tx-list-item:hover {
+  .ux-list-item:hover {
     background-color: #EEE;
   }
 }

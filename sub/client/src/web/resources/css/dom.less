@@ -2,9 +2,8 @@
 // Copyright 2017 Alien Labs.
 //
 
-@import (reference) './mixin.less';
-
-@import './theme.less';
+@import (reference) './ref/mixin.less';
+@import (reference) './ref/theme.less';
 
 //
 // Generic DOM elements.
@@ -25,11 +24,31 @@ body {
   color: @ux-color-dark;
   font-family: @ux-font-family;
   font-size: @ux-font-medium;
-  font-weight: 100;
+  font-weight: @ux-font-weight;
+}
+
+//
+// Layout
+//
+
+header,
+footer {
+  display: flex;
+  flex-shrink: 0;
+}
+
+main {
+  display: flex;
+  flex-grow: 1;
 }
 
 table {
   table-layout: fixed;
+}
+
+// Used as a blank.
+br {
+  display: none;
 }
 
 //
@@ -39,12 +58,12 @@ table {
 a {
   color: @ux-color-dark;
   text-decoration: none;
-  font-weight: 100;
+  font-weight: @ux-font-weight;
 }
 
-h1, h2, h3, h4 {
-  font-weight: 100;
+h1, h2, h3, h4, h5 {
   margin: 0;
+  font-weight: @ux-font-weight;
 }
 h1 {
   font-size: @ux-font-xlarge;
@@ -69,7 +88,7 @@ pre {
 //
 
 //
-// Text
+// Text control.s
 //
 
 input[type=text], textarea {
@@ -81,28 +100,28 @@ input[type=text] {
 
   // Keep same height as other controls (e.g., select).
   border: 1px solid transparent;
-  border-bottom: 1px solid @ux-toolbar-control-border;
+  border-bottom: 1px solid @ux-control-border;
 }
 
 textarea {
   resize: none;
   spellcheck: none;
 
-  border: 1px solid @ux-toolbar-control-border-light;
+  border: 1px solid @ux-control-border;
 }
 textarea::-webkit-scrollbar {
-  width: 4px;
+  width: @ux-scrollbar-width;
 }
 textarea::-webkit-scrollbar-thumb {
-  background-color: #666;
+  background-color: @ux-scrollbar-color;
 }
 
 //
-// Controls
+// Form controls.
 //
 
 button, input {
-  border: @ux-border;
+  border: @ux-control-border;
   font-size: @ux-font-medium;
   margin: 0;
   padding: 0;
@@ -113,29 +132,29 @@ input, textarea, button, select {
 
   font-family: @ux-font-family;
   font-size: @ux-font-medium;
-  font-weight: 100;
+  font-weight: @ux-font-weight;
 
-  border: 1px solid @ux-toolbar-control-border;
+  border: 1px solid @ux-control-border;
 }
 
 button {
-  background-color: @ux-button-background;
+  background-color: @ux-control-background;
   justify-content: center;
 }
 button:hover {
-  background-color: @ux-button-background-hover;
+  background-color: @ux-control-background-hover;
 }
 
 button,
 select {
   .ux-text-noselect;
-  color: @ux-toolbar-control-color;
-  background-color: @ux-toolbar-control-background;
+  color: @ux-control-color;
+  background-color: @ux-control-background;
 }
 
 button:hover,
 select:hover {
-  background-color: @ux-toolbar-control-background-hover;
+  background-color: @ux-control-background-hover;
 }
 
 select {

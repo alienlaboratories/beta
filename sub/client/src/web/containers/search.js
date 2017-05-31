@@ -26,7 +26,7 @@ class SearchPanel extends React.Component {
 
     return (
       <div className="app-search-toolbar">
-        <SearchBar className="ux-expand" value={ search.text } onSearch={ this.handleSearch.bind(this) }/>
+        <SearchBar className="ux-grow" value={ search.text } onSearch={ this.handleSearch.bind(this) }/>
       </div>
     );
   }
