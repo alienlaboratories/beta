@@ -9,6 +9,33 @@ import { DomUtil } from 'alien-util';
 
 import { TextBox } from './textbox';
 
+import './search.less';
+
+/**
+ * Search panel includes search bar and other controls.
+ */
+export class SearchPanel extends React.Component {
+
+  static propTypes = {
+    search: PropTypes.object,
+    onSearch: PropTypes.func.isRequired
+  };
+
+  handleSearch(text) {
+    this.props.onSearch(text);
+  }
+
+  render() {
+    let { search={} } = this.props;
+
+    return (
+      <div className="ux-search-panel ux-panel">
+        <SearchBar className="ux-grow" value={ search.text } onSearch={ this.handleSearch.bind(this) }/>
+      </div>
+    );
+  }
+}
+
 /**
  * Search bar.
  */
@@ -41,7 +68,7 @@ export class SearchBar extends React.Component {
     let { value, className } = this.props;
 
     return (
-      <div className={ DomUtil.className(className, 'ux-search', 'ux-row') }>
+      <div className={ DomUtil.className('ux-searchbar', 'ux-toolbar', className) }>
         <TextBox ref="text"
                  className='ux-grow'
                  autoFocus={ true }
@@ -50,8 +77,8 @@ export class SearchBar extends React.Component {
                  onCancel={ this.handleClear.bind(this) }
                  onChange={ this.handleSearch.bind(this) }/>
 
-        <i className="ux-icon ux-search-icon" onClick={ this.handleSearch.bind(this) }>search</i>
-        <i className="ux-icon ux-search-icon" onClick={ this.handleClear.bind(this) }>clear</i>
+        <i className="ux-icon ux-icon-search" onClick={ this.handleSearch.bind(this) }/>
+        <i className="ux-icon ux-icon-clear" onClick={ this.handleClear.bind(this) }/>
       </div>
     );
   }

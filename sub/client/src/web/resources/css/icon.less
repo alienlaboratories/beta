@@ -20,11 +20,23 @@
   cursor: pointer;
 }
 
+// TODO(burdon): Add to all icons below. Remove explicit declarations.
+i.ux-icon-action {
+  color: #CCC;
+}
+i.ux-icon-action:hover {
+  color: #999;
+}
+
 i.ux-icon-img {
   width: 18px;
   display: flex;
   justify-content: center;
 }
+
+//
+// Types.
+//
 
 i.ux-icon.ux-icon-menu:after {
   content: 'menu';
@@ -51,11 +63,8 @@ i.ux-icon-star {
   color: @ux-color-star;
 }
 
-i.ux-icon-action {
-  color: #CCC;
-}
-i.ux-icon-action:hover {
-  color: #999;
+i.ux-icon-save:after {
+  content: 'save';
 }
 
 i.ux-icon-add:after {
@@ -74,10 +83,10 @@ i.ux-icon-edit:hover {
   color: darkblue;
 }
 
-i.ux-icon-save:after {
+i.ux-icon-ok:after {
   content: 'check';
 }
-i.ux-icon-save:hover {
+i.ux-icon-ok:hover {
   color: darkgreen;
 }
 
@@ -88,6 +97,14 @@ i.ux-icon-cancel:hover {
   color: darkred;
 }
 
+i.ux-icon-search:after {
+  content: 'search';
+}
+
+i.ux-icon-clear:after {
+  content: 'clear';
+}
+
 i.ux-icon-error:after {
   content: 'radio_button_unchecked';
   color: lightgreen;
@@ -96,3 +113,20 @@ i.ux-icon-error.ux-on:after {
   content: 'error';
   color: indianred;
 }
+
+i.ux-icon-network-in:after {
+  content: 'call_received';
+  color: #666;
+}
+i.ux-icon-network-in.ux-on:after {
+  color: orange;
+}
+
+i.ux-icon-network-out:after {
+  content: 'call_made';
+  color: #666;
+}
+i.ux-icon-network-out.ux-on:after {
+  color: lightgreen;
+}
+

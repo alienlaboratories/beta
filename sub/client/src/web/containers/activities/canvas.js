@@ -7,10 +7,9 @@ import PropTypes from 'prop-types';
 
 import { Const, ID } from 'alien-core';
 
-import { ReactUtil } from '../../util';
+import { getWrappedInstance, ReactUtil } from '../../util';
 import { Activity } from '../../common/activity';
 
-import { CanvasContainer } from '../../components/canvas';
 import { Navbar } from '../../components/navbar';
 
 import { ItemCanvasHeader } from '../item';
@@ -47,6 +46,51 @@ class CanvasNavbar extends React.Component {
         <SearchPanel/>
         <ItemCanvasHeader onSave={ onSave } itemKey={ itemKey } toolbar={ toolbar }/>
       </Navbar>
+    );
+  }
+}
+
+/**
+ * Canvas container.
+ *
+ * <CanvasContainer>                    Instantiated by activity with type-specific content.
+ *   <ProjectCanvas>                    Wraps the Canvas element (for consistent layout); provides the mutator.
+ *     <Canvas>
+ *       <div>{ customLayout }</div>
+ *     </Canvas>
+ *   </ProjectCanvas>
+ * </CanvasContainer>
+ *
+ * The container uses the TypeRegistry to obtain the custom canvas HOC.
+ */
+export class CanvasContainer extends React.Component {
+
+  static propTypes = {
+    itemKey: PropTypes.object.isRequired,
+    canvas: PropTypes.string,
+  };
+
+  static contextTypes = {
+    // TODO(burdon): Remove.
+    typeRegistry: PropTypes.object.isRequired
+  };
+
+  save() {
+    let component = getWrappedInstance(this.refs.canvas);
+    component.canvas.save();
+  }
+
+  render() {
+    let { typeRegistry } = this.context;
+    let { itemKey, canvas } = this.props;
+
+    // TODO(burdon): Remove dependency on typeRegistry.
+    let TypeCanvas = typeRegistry.canvas(itemKey.type, canvas);
+
+    return (
+      <div className="ux-canvas-container">
+        <TypeCanvas ref="canvas" itemKey={ itemKey }/>
+      </div>
     );
   }
 }

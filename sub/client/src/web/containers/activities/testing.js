@@ -7,17 +7,19 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
 import { ReactUtil } from '../../util/react';
-
 import { Activity } from '../../common/activity';
-import { Navbar } from '../../components/navbar';
+
+import { SearchListContainer, SearchPanelContainer } from '../../containers';
+
+// TODO(burdon): Remove.
+import '../../resources/css/app.less';
 
 /**
  * Testing Activity.
+ *
  * For experimental features and components.
  */
 class TestingActivity extends React.Component {
-
-  // TODO(burdon): Extend base class.
 
   static childContextTypes = Activity.childContextTypes;
 
@@ -27,28 +29,26 @@ class TestingActivity extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { viewer, typeRegistry } = this.props;
+      let { viewer } = this.props;
       if (!viewer) {
         return;
       }
 
-      // let navbar = (
-      //   <Navbar>
-      //     <div className="ux-toolbar">
-      //       <div>
-      //         <i className="ux-icon ux-icon-action"
-      //            onClick={ this.onAddItem.bind(this, 'list') }>add</i>
-      //         <i className="ux-icon ux-icon-action"
-      //            onClick={ this.onChangeView.bind(this, 'list') }>view_list</i>
-      //         <i className="ux-icon ux-icon-action"
-      //            onClick={ this.onChangeView.bind(this, 'card') }>view_module</i>
-      //       </div>
-      //     </div>
-      //   </Navbar>
-      // );
+      // TODO(burdon): Factor out column. layout.
 
       return (
-        <div>Testing</div>
+        <div className="ux-column">
+
+          {/*TODO(burdon): HOC w/redux actions.*/}
+          {/*<Navbar/>*/}
+
+          <SearchPanelContainer/>
+
+          <SearchListContainer className="ux-grow"/>
+
+          {/*TODO(burdon): HOC w/redux actions.*/}
+          {/*<StatusBar/>*/}
+        </div>
       );
     });
   }
@@ -57,6 +57,8 @@ class TestingActivity extends React.Component {
 //-------------------------------------------------------------------------------------------------
 // HOC.
 //-------------------------------------------------------------------------------------------------
+
+// TODO(burdon): Remove.
 
 //
 // Tasks are merged (i.e., status + assigee); sub Tasks of Project are isolated with separate/munged "project/task" IDs.
@@ -80,6 +82,7 @@ const TestQuery = gql`
 export default Activity.compose(
 
   graphql(TestQuery, {
+
     options: (props) => ({
       variables: {
         filter: { type: 'Task' }

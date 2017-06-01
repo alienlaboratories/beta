@@ -179,7 +179,7 @@ export class LayoutComponent extends React.Component {
             </div>
 
             {/* Debug */}
-            <div className="app-debug-panel-container">
+            <div>
               { debugPanel }
             </div>
 

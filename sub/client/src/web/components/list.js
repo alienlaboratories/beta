@@ -545,7 +545,7 @@ export class ListItem extends React.Component {
 
     return (
       <div>
-        <i className="ux-icon ux-icon-action ux-icon-save" onClick={ handleSave }/>
+        <i className="ux-icon ux-icon-action ux-icon-ok" onClick={ handleSave }/>
         <i className="ux-icon ux-icon-action ux-icon-cancel" onClick={ handleCancel }/>
       </div>
     );

@@ -14,6 +14,8 @@ import TestingActivity from '../containers/activities/testing';
 import '../resources/css/core.less';
 
 /**
+ * Minimal base app for testing/development.
+ *
  * The Application must be a pure React component since HOCs may cause the component to be re-rendered,
  * which would trigger a Router warning.
  *
@@ -39,8 +41,8 @@ export class Application extends React.Component {
         <Router history={ history }>
           {/* v4: <Switch> */}
 
-            <Route exact path={ Path.HOME } component={ TestingActivity }/>
-            <Redirect from="*" to={ Path.HOME }/>
+          <Route exact path={ Path.HOME } component={ TestingActivity }/>
+          <Redirect from="*" to={ Path.HOME }/>
 
           {/* </Switch> */}
         </Router>

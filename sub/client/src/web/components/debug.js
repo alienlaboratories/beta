@@ -5,7 +5,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-//import './debug.less';
+import './debug.less';
 
 /**
  * Debug panel.
@@ -43,32 +43,34 @@ export class DebugPanel extends React.Component {
     // TODO(burdon): Batch Queries, Batch Mutations.
 
     return (
-      <div className="app-debug-panel ux-text-noselect">
-        <h3>Debug Settings</h3>
-        <div>
+      <div className="ux-debug-panel-container">
+        <div className="ux-debug-panel ux-text-noselect">
+          <h3>Debug Settings</h3>
           <div>
-            <label>
-              <input type="checkbox"
-                     onChange={ this.handleOptionChanged.bind(this, 'debugInfo') }
-                     checked={ debugInfo }/> Debug Info</label>
-          </div>
-          <div>
-            <label>
-              <input type="checkbox"
-                     onChange={ this.handleOptionChanged.bind(this, 'optimisticResponse') }
-                     checked={ optimisticResponse }/> Optimistic Responses</label>
-          </div>
-          <div>
-            <label>
-              <input type="checkbox"
-                     onChange={ this.handleOptionChanged.bind(this, 'invalidations') }
-                     checked={ invalidations }/> Invalidations</label>
-          </div>
-          <div>
-            <label>
-              <input type="checkbox"
-                     onChange={ this.handleOptionChanged.bind(this, 'networkDelay') }
-                     checked={ !!networkDelay }/> Network Delay</label>
+            <div>
+              <label>
+                <input type="checkbox"
+                       onChange={ this.handleOptionChanged.bind(this, 'debugInfo') }
+                       checked={ debugInfo }/> Debug Info</label>
+            </div>
+            <div>
+              <label>
+                <input type="checkbox"
+                       onChange={ this.handleOptionChanged.bind(this, 'optimisticResponse') }
+                       checked={ optimisticResponse }/> Optimistic Responses</label>
+            </div>
+            <div>
+              <label>
+                <input type="checkbox"
+                       onChange={ this.handleOptionChanged.bind(this, 'invalidations') }
+                       checked={ invalidations }/> Invalidations</label>
+            </div>
+            <div>
+              <label>
+                <input type="checkbox"
+                       onChange={ this.handleOptionChanged.bind(this, 'networkDelay') }
+                       checked={ !!networkDelay }/> Network Delay</label>
+            </div>
           </div>
         </div>
       </div>

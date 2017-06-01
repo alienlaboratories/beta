@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 
 import { Async, DomUtil, ErrorUtil } from 'alien-util';
 
-//import './statusbar.less';
+import './statusbar.less';
 
 /**
  * Status bar.
@@ -112,7 +112,7 @@ export class StatusBar extends React.Component {
     ];
 
     return (
-      <div className="app-status-toolbar ux-toolbar">
+      <div className="ux-status-bar ux-toolbar">
         <div>
           <i className="ux-icon ux-icon-action" title="Debug info"
              onClick={ this.handleAction.bind(this, 'bug') }>bug_report</i>
@@ -129,7 +129,7 @@ export class StatusBar extends React.Component {
              onClick={ this.showHelp.bind(this) }>live_help</i>
         </div>
 
-        <div className="app-status-info">{ config.app.version }</div>
+        <div className="ux-status-info">{ config.app.version }</div>
 
         <div>
           <i className="ux-icon ux-icon-action" title="Refresh JWT"
@@ -138,11 +138,11 @@ export class StatusBar extends React.Component {
           <i className="ux-icon ux-icon-action" title="Refresh queries"
              onClick={ this.handleAction.bind(this, 'invalidate_queries') }>refresh</i>
 
-          <i className={ DomUtil.className('app-icon-network-in', 'ux-icon', networkIn && 'ux-on') }></i>
-          <i className={ DomUtil.className('app-icon-network-out', 'ux-icon', networkOut && 'ux-on') }></i>
+          <i className={ DomUtil.className('ux-icon-network-in', 'ux-icon', networkIn && 'ux-on') }/>
+          <i className={ DomUtil.className('ux-icon-network-out', 'ux-icon', networkOut && 'ux-on') }/>
           <i className={ DomUtil.className('ux-icon-error', 'ux-icon', error && 'ux-on') }
              title={ ErrorUtil.message(error.message) }
-             onClick={ this.handleClickError.bind(this, 'error') }></i>
+             onClick={ this.handleClickError.bind(this, 'error') }/>
         </div>
       </div>
     );
