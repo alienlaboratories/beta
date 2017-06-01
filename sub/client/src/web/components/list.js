@@ -364,7 +364,7 @@ export class List extends React.Component {
     return (
       <div className={ className }>
         <div className="ux-list-items ux-scroll-container">
-          <div>
+          <div className="ux-column">
             { rows }
             { lastDropTarget }
           </div>

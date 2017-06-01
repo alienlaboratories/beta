@@ -14,10 +14,6 @@ export class Navbar extends React.Component {
   // TODO(burdon): Show hide < > arrows (on mobile).
   // TODO(burdon): Current heading/breadcrumbs (in redux store).
 
-  static contextTypes = {
-    typeRegistry: PropTypes.object.isRequired,
-  };
-
   render() {
     let { children } = this.props;
 

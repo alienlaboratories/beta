@@ -5,8 +5,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { TypeUtil } from 'alien-util';
-import { ID, MutationUtil, QueryRegistry } from 'alien-core';
+import { MutationUtil, QueryRegistry } from 'alien-core';
 
 import { TextArea } from './textarea';
 import { getWrappedInstance } from '../util/react';
@@ -32,6 +31,7 @@ export class CanvasContainer extends React.Component {
   };
 
   static contextTypes = {
+    // TODO(burdon): Remove.
     typeRegistry: PropTypes.object.isRequired
   };
 
@@ -44,6 +44,7 @@ export class CanvasContainer extends React.Component {
     let { typeRegistry } = this.context;
     let { itemKey, canvas } = this.props;
 
+    // TODO(burdon): Remove dependency on typeRegistry.
     let TypeCanvas = typeRegistry.canvas(itemKey.type, canvas);
 
     return (

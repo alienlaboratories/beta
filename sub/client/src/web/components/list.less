@@ -12,42 +12,11 @@
     flex-grow: 1;
     overflow-y: scroll;
   }
-}
 
-/*
-.ux-list {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-
-  // Outer class should expand and overflow:hidden
-  overflow-y: scroll;
-
-  // .ux-list.ux-list-highlight
   &.ux-list-highlight {
     .ux-list-item:hover {
       background-color: @ux-list-highlight;
     }
-  }
-
-  .ux-list-item {
-    padding: 0 4px;
-
-    i.ux-icon-hover {
-      visibility: hidden;
-    }
-  }
-
-  // Only hover icons in rows directly under the list item.
-  // Prevents grandchildren from being activated when grandfather list-item has mouse over.
-  .ux-list-item > .ux-row:hover {
-    i.ux-icon-hover {
-      visibility: visible;
-    }
-  }
-
-  .ux-list-editor { // Undo hover.
-    background-color: transparent !important;
   }
 
   //
@@ -55,17 +24,19 @@
   //
 
   .ux-drag-source {
+
+    &.ux-dragging {
+      display: none;
+    }
+
     > .ux-debug {
       display: none;
       text-align: right;
     }
   }
-  .ux-drag-source.ux-dragging {
-    display: none;
-    background-color: pink;
-  }
 
   .ux-drop-target {
+
     .ux-drop-placeholder {
       height: 0;
 
@@ -74,6 +45,7 @@
       -moz-transition: height 0s;
       transition: height 0s;
 
+      // TODO(burdon): Debug only???
       font-size: 12px;
       font-family: Monaco, monospace;
 
@@ -83,39 +55,36 @@
         color: blue;
       }
     }
-  }
-  .ux-drop-target.ux-active {
-    .ux-drop-placeholder {
+
+    &.ux-active {
+      .ux-drop-placeholder {
+        display: flex;
+        min-height: 40px;
+
+        // Animate open.
+        -webkit-transition: height 0.2s;
+        -moz-transition: height 0.2s;
+        transition: height 0.2s;
+
+        background-color: #EEE;         // TODO(burdon): !!!
+      }
+    }
+
+    &.ux-last {
       display: flex;
-      min-height: 40px;
+      flex-direction: column;
+      flex-grow: 1;
 
-      -webkit-transition: height 0.2s;
-      -moz-transition: height 0.2s;
-      transition: height 0.2s;
+      .ux-drop-placeholder {
+        flex-grow: 1;
 
-      margin: 8px 0;
-      background-color: #EEE;
-      border-radius: 2px;
-    }
-  }
-  .ux-drop-target.ux-last {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
+        background-color: pink;         // TODO(burdon): !!!
 
-    .ux-drop-placeholder {
-      // Show immediately.
-      -webkit-transition: height 0s !important;
-      -moz-transition: height 0s !important;
-      transition: height 0s !important;
+        // Show immediately.
+        -webkit-transition: height 0s !important;
+        -moz-transition: height 0s !important;
+        transition: height 0s !important;
+      }
     }
   }
 }
-
-.ux-list::-webkit-scrollbar {
-  width: 2px;
-}
-.ux-list::-webkit-scrollbar-thumb {
-  background-color: #333;
-}
-*/

@@ -7,39 +7,7 @@ import PropTypes from 'prop-types';
 
 import { DomUtil, TypeUtil } from 'alien-util';
 
-import { List } from './list';
-
 import './card.less';
-
-/**
- * Card deck.
- */
-export class CardDeck extends React.Component {
-
-  static propTypes = {
-    typeRegistry:       PropTypes.object.isRequired,
-    className:          PropTypes.string,
-    items:              PropTypes.arrayOf(PropTypes.object),
-  };
-
-  constructor() {
-    super(...arguments);
-
-    let { typeRegistry } = this.props;
-
-    this._itemRenderer = Card.ItemRenderer(typeRegistry);
-  }
-
-  render() {
-    let { className, items } = this.props;
-
-    return (
-      <List className={ DomUtil.className('ux-card-deck', className) }
-            items={ items }
-            itemRenderer={ this._itemRenderer }/>
-    );
-  }
-}
 
 /**
  * Card wrapper.
@@ -47,12 +15,9 @@ export class CardDeck extends React.Component {
 export class Card extends React.Component {
 
   /**
-   * Render items as cards.
-   * @param typeRegistry
-   * @constructor
+   * Default renderer.
    */
-  static ItemRenderer = (typeRegistry) => (item) => {
-    let Card = typeRegistry.card(item.type);
+  static ItemRenderer = (item) => {
     return <Card item={ item }/>;
   };
 

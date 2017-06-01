@@ -4,11 +4,10 @@
 
 import React from 'react';
 
-import { TypeRegistry } from '../../../common/type_registry';
+import { Card } from '../../../components/card';
+import { List } from '../../../components/list';
 
-import { CardDeck } from '../../../components/card';
-
-import Data from '../data/data.json';
+import Data from '../data/cards.json';
 
 /**
  * Test List.
@@ -17,8 +16,6 @@ export class TestCards extends React.Component {
 
   constructor() {
     super(...arguments);
-
-    this._typeRegistry = new TypeRegistry();
 
     let { items } = Data;
     _.each(items, item => {
@@ -34,7 +31,9 @@ export class TestCards extends React.Component {
     let { items } = this.state;
 
     return (
-      <CardDeck className="ux-grow" typeRegistry={ this._typeRegistry } items={ items }/>
+      <List className="ux-card-deck ux-grow"
+            itemRenderer={ Card.ItemRenderer }
+            items={ items }/>
     );
   }
 }

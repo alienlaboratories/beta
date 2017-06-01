@@ -4,6 +4,7 @@
 
 import React from 'react';
 
+import { Card } from '../../../components/card';
 import { Board } from '../../../components/board';
 
 /**
@@ -11,12 +12,11 @@ import { Board } from '../../../components/board';
  */
 export class TestBoard extends React.Component {
 
-  // TODO(burdon): Demo with colored items (from MVP graph illustration).
-
   constructor() {
     super(...arguments);
 
-    // TODO(burdon): Model base class (with state).
+    // TODO(burdon): Extract to data/board.json. Real data (larger cards).
+
     this.state= {
       model: {
         columns: [
@@ -97,6 +97,7 @@ export class TestBoard extends React.Component {
       <div className="ux-panel ux-grow">
         <div className="ux-scroll-container ux-row ux-grow">
           <Board items={ model.items }
+                 itemRenderer={ Card.ItemRenderer }
                  columns={ model.columns }
                  columnMapper={ model.columnMapper }
                  onItemDrop={ this.handleDrop.bind(this) }/>

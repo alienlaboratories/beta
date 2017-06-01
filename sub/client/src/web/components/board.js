@@ -25,14 +25,14 @@ import './board.less';
 export class Board extends React.Component {
 
   static propTypes = {
-    items: PropTypes.array.isRequired,              // [{ id: {string}, title: {string} }]
-    itemOrderModel: PropTypes.object.isRequired,    // [{DragOrderModel}]
-    itemRenderer: PropTypes.func,
-    columns: PropTypes.array.isRequired,            // [{ id: {string}, title: {string} }]
-    columnMapper: PropTypes.func.isRequired,        // (columns, item) => column.id
-    onItemSelect: PropTypes.func,                   // (item) => {}
-    onItemUpdate: PropTypes.func,                   // (item, mutations) => {}
-    onItemDrop: PropTypes.func                      // (column, item) => {}
+    items:            PropTypes.array.isRequired,       // [{ id: {string}, title: {string} }]
+    itemOrderModel:   PropTypes.object.isRequired,      // [{DragOrderModel}]
+    itemRenderer:     PropTypes.func,
+    columns:          PropTypes.array.isRequired,       // [{ id: {string}, title: {string} }]
+    columnMapper:     PropTypes.func.isRequired,        // (columns, item) => column.id
+    onItemSelect:     PropTypes.func,                   // (item) => {}
+    onItemUpdate:     PropTypes.func,                   // (item, mutations) => {}
+    onItemDrop:       PropTypes.func                    // (column, item) => {}
   };
 
   static defaultProps = {
@@ -97,7 +97,7 @@ export class Board extends React.Component {
           </div>
 
           <div className="ux-scroll-container ux-column ux-grow">
-            <DragDropList className="ux-card-list"
+            <DragDropList className="ux-card-deck ux-grow"
                           highlight={ false }
                           data={ column.id }
                           items={ columnItems }
