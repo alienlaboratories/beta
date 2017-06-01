@@ -41,32 +41,35 @@ export class TestBoard extends React.Component {
           {
             id: 'I-1',
             type: 'Test',
+            label: 'red',
             title: 'Item 1',
-            label: 'red'
+            description: 'Blah blah blah.'
           },
           {
             id: 'I-2',
             type: 'Test',
+            label: 'red',
             title: 'Item 2',
-            label: 'red'
+            description: 'Blah blah blah.'
           },
           {
             id: 'I-3',
             type: 'Test',
+            label: 'red',
             title: 'Item 3',
-            label: 'red'
           },
           {
             id: 'I-4',
             type: 'Test',
+            label: 'green',
             title: 'Item 4',
-            label: 'red'
+            description: 'Blah blah blah.'
           },
           {
             id: 'I-5',
             type: 'Test',
+            label: 'green',
             title: 'Item 5',
-            label: 'green'
           }
         ],
 

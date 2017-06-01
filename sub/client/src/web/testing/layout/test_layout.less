@@ -106,7 +106,7 @@ footer {
   width: @ux-card-width;
 
   color: @ux-panel-color;
-  background: @ux-panel-background;
+  background-color: @ux-panel-background;
 
   > .ux-header {
     padding: @ux-panel-padding;
@@ -164,7 +164,7 @@ footer {
 
 .ux-card-deck {
   .ux-card {
-    margin-bottom: @ux-card-margin;
+    margin-bottom: @ux-card-padding;
   }
   .ux-card:last-child {
     margin-bottom: 0;
@@ -172,12 +172,12 @@ footer {
 }
 .ux-card-deck.ux-card-deck-floating {
   .ux-card {
-    margin: 0 @ux-card-margin @ux-card-margin;
+    margin: 0 @ux-card-padding @ux-card-padding;
     border-radius: @ux-card-radius;
     box-shadow: @ux-box-shadow;
   }
   .ux-card:first-child {
-    margin-top: @ux-card-margin;
+    margin-top: @ux-card-padding;
   }
 }
 

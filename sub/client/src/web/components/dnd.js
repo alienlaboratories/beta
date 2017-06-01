@@ -9,6 +9,12 @@ import { DragSource, DropTarget } from 'react-dnd';
 
 import { DomUtil } from 'alien-util';
 
+//
+// Examples:
+// https://github.com/react-dnd/react-dnd/issues/384
+//
+
+
 /**
  * Drag container wraps the list item.
  *
@@ -28,7 +34,10 @@ class ItemDragContainer extends React.Component {
   };
 
   get height() {
-    return ReactDOM.findDOMNode(this).clientHeight;
+    // NOTE: List items should not define margins (no included in clientHeight).
+    let node = ReactDOM.findDOMNode(this);
+//  let styles = window.getComputedStyle(node);
+    return node.clientHeight;
   }
 
   render() {

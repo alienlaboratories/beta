@@ -100,18 +100,16 @@ export class List extends React.Component {
   };
 
   static defaultProps = {
-    highlight: true,
-
-    itemEditor:   List.DefaultItemEditor,
-    itemRenderer: List.DefaultItemRenderer
+    itemEditor:         List.DefaultItemEditor,
+    itemRenderer:       List.DefaultItemRenderer
   };
 
   state = {
-    itemEditor:   this.props.itemEditor   || List.DefaultItemEditor,
-    itemRenderer: this.props.itemRenderer || List.DefaultItemRenderer,
+    itemEditor:         this.props.itemEditor   || List.DefaultItemEditor,
+    itemRenderer:       this.props.itemRenderer || List.DefaultItemRenderer,
 
-    addItem: false,     // { boolean }
-    editItem: null      // { string:ID }
+    addItem:            false,      // { boolean }
+    editItem:           null        // { string:ID }
   };
 
   getChildContext() {

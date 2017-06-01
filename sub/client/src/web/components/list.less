@@ -11,6 +11,11 @@
     flex-direction: column;
     flex-grow: 1;
     overflow-y: scroll;
+
+    // NOTE: No margins.
+    .ux-list-item {
+      margin: 0;
+    }
   }
 
   &.ux-list-highlight {
@@ -38,16 +43,12 @@
   .ux-drop-target {
 
     .ux-drop-placeholder {
-      height: 0;
+//    height: 0;
 
       // Close quickly.
-      -webkit-transition: height 0s;
-      -moz-transition: height 0s;
-      transition: height 0s;
-
-      // TODO(burdon): Debug only???
-      font-size: 12px;
-      font-family: Monaco, monospace;
+      //-webkit-transition: height 0s;
+      //-moz-transition: height 0s;
+      //transition: height 0s;
 
       > .ux-debug {
         display: none;
@@ -57,33 +58,30 @@
     }
 
     &.ux-active {
+
+      // Height is set by DND from dragging element.
       .ux-drop-placeholder {
-        display: flex;
-        min-height: 40px;
+        background-color: @ux-list-drop-active-background;
 
         // Animate open.
-        -webkit-transition: height 0.2s;
-        -moz-transition: height 0.2s;
-        transition: height 0.2s;
-
-        background-color: #EEE;         // TODO(burdon): !!!
+        //-webkit-transition: height .2s;
+        //-moz-transition: height .2s;
+        //transition: height .2s;
       }
     }
 
     &.ux-last {
       display: flex;
-      flex-direction: column;
       flex-grow: 1;
 
       .ux-drop-placeholder {
+        display: flex;
         flex-grow: 1;
 
-        background-color: pink;         // TODO(burdon): !!!
-
         // Show immediately.
-        -webkit-transition: height 0s !important;
-        -moz-transition: height 0s !important;
-        transition: height 0s !important;
+        //-webkit-transition: height 0s !important;
+        //-moz-transition: height 0s !important;
+        //transition: height 0s !important;
       }
     }
   }

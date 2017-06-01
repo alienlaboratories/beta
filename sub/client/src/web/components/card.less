@@ -6,12 +6,16 @@
 
 .ux-card-deck {
   max-width: @ux-card-width;
-
   background-color: @ux-card-deck-background;
+
+  .ux-list-items {
+    .ux-list-item {
+      padding-bottom: @ux-card-spacing;
+    }
+  }
 
   .ux-card {
     background-color: @ux-panel-background;
-    margin-bottom: 6px;
 
     .ux-card-header {
       display: flex;
