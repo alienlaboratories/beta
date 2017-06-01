@@ -14,10 +14,6 @@ import './statusbar.less';
  */
 export class StatusBar extends React.Component {
 
-  static contextTypes = {
-    config: PropTypes.object.isRequired
-  };
-
   static propTypes = {
     onAction: PropTypes.func.isRequired
   };
@@ -52,9 +48,9 @@ export class StatusBar extends React.Component {
     });
   }
 
+  // TODO(burdon): Factor out listener.
   networkIn() { this.network('networkIn'); }
   networkOut() { this.network('networkOut'); }
-
   network(type) {
     this.setState({
       [type]: true
@@ -75,71 +71,76 @@ export class StatusBar extends React.Component {
     this.error(false);
   }
 
-  showHelp(showHelp=true) {
-    if (showHelp) {
-      window.Intercom('show');
-    } else {
-      window.Intercom('hide');
-    }
-  }
-
   render() {
-    let { config } = this.context;
+    let { children } = this.props;
     let { error, networkIn, networkOut } = this.state;
 
-    // TODO(burdon): Get all links from config.
-    const links = [
+    // TODO(burdon): Break into sections (assemble left/right).
+    // TODO(burdon): Network indicators as separate control.
+    // TODO(burdon): Generalize actions (incl. link action).
+    // TODO(burdon): Get icons/links from props.
+
+    const Action = ({ action }) => {
+      return (
+        <i className="ux-icon ux-icon-action" title={ action.title }
+           onClick={ this.handleAction.bind(this, action) }>{ action.icon }</i>
+      );
+    };
+
+    const leftActions = [
       {
-        href: 'https://console.firebase.google.com/project/alien-dev/database/data',
-        title: 'Firebase',
-        icon: 'cloud_circle'
+        type: 'bug',
+        title: 'Debug info.',
+        icon: 'bug_report'
       },
       {
-        href: '/graphiql',
-        title: 'GraphiQL',
-        icon: 'language'
+        type: 'link',
+        title: 'GraphiQL.',
+        icon: 'language',
+        href: '/graphiql'
       },
       {
-        href: '/admin',
-        title: 'Admin console',
-        icon: 'graphic_eq'
+        type: 'link',
+        title: 'Admin console.',
+        icon: 'graphic_eq',
+        href: '/admin'
       },
       {
-        href: '/profile',
-        title: 'Profile',
-        icon: 'settings'
+        type: 'link',
+        title: 'Account settings.',
+        icon: 'settings',
+        href: '/profile'
       }
     ];
 
+    const rightActions = [
+      {
+        type: 'refresh',
+        title: 'Refresh queries.',
+        icon: 'refresh'
+      }
+    ];
+
+    let id = 0;
+
     return (
-      <div className="ux-status-bar ux-toolbar">
-        <div>
-          <i className="ux-icon ux-icon-action" title="Debug info"
-             onClick={ this.handleAction.bind(this, 'bug') }>bug_report</i>
-
-          {
-            _.map(links, link => (
-            <a key={ link.href } href={ link.href } target="ALIEN_CONSOLE">
-              <i className="ux-icon ux-icon-action" title={ link.title }>{ link.icon }</i>
-            </a>
-            ))
-          }
-
-          <i className="ux-icon ux-icon-action" title="Get help"
-             onClick={ this.showHelp.bind(this) }>live_help</i>
+      <div className="ux-status-bar ux-tool-bar">
+        <div className="ux-icons">
+          { _.map(leftActions, action => <Action key={ ++id } action={ action }/>) }
         </div>
 
-        <div className="ux-status-info">{ config.app.version }</div>
+        <div className="ux-grow ux-center">{ children }</div>
 
-        <div>
-          <i className="ux-icon ux-icon-action" title="Refresh JWT"
-             onClick={ this.handleAction.bind(this, 'refresh_id_token') }>security</i>
+        <div className="ux-icons">
+          { _.map(rightActions, action => <Action key={ ++id } action={ action }/>) }
+        </div>
 
-          <i className="ux-icon ux-icon-action" title="Refresh queries"
-             onClick={ this.handleAction.bind(this, 'invalidate_queries') }>refresh</i>
+        <div className="ux-icons">
+          <i className={ DomUtil.className('ux-icon', 'ux-icon-network-in', networkIn && 'ux-on') }/>
+          <i className={ DomUtil.className('ux-icon', 'ux-icon-network-out', networkOut && 'ux-on') }/>
+        </div>
 
-          <i className={ DomUtil.className('ux-icon-network-in', 'ux-icon', networkIn && 'ux-on') }/>
-          <i className={ DomUtil.className('ux-icon-network-out', 'ux-icon', networkOut && 'ux-on') }/>
+        <div className="ux-icons">
           <i className={ DomUtil.className('ux-icon-error', 'ux-icon', error && 'ux-on') }
              title={ ErrorUtil.message(error.message) }
              onClick={ this.handleClickError.bind(this, 'error') }/>

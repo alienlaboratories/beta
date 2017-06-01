@@ -90,7 +90,7 @@ export class TestList extends React.Component {
 
     return (
       <div className="ux-panel ux-grow">
-        <div className="ux-toolbar">
+        <div className="ux-tool-bar">
           <div/>
           <div>
             <i className="ux-icon ux-icon-action ux-icon-add ux-icon-large" onClick={ this.handleItemAdd.bind(this) }/>
@@ -107,7 +107,7 @@ export class TestList extends React.Component {
                 onItemSelect={ this.handleItemSelect.bind(this) }/>
         </div>
 
-        <div className="ux-toolbar">
+        <div className="ux-tool-bar">
           <div className="ux-text-nocollapse ux-text-nowrap">{ item && JSON.stringify(item) }</div>
         </div>
       </div>

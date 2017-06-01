@@ -11,8 +11,8 @@ import { Activity } from '../../common/activity';
 
 import { SearchListContainer, SearchPanelContainer } from '../../containers';
 
-// TODO(burdon): Remove.
-import '../../resources/css/app.less';
+import { NavBar } from '../../components/navbar';
+import { StatusBar } from '../../components/statusbar';
 
 /**
  * Testing Activity.
@@ -27,27 +27,40 @@ class TestingActivity extends React.Component {
     return Activity.getChildContext(this.props);
   }
 
+  handleAction(action) {
+    console.log(action);
+  }
+
+  // TODO(burdon): Factor out column. layout.
+
   render() {
     return ReactUtil.render(this, () => {
-      let { viewer } = this.props;
+      let { config, viewer, navigator } = this.props;
       if (!viewer) {
         return;
       }
 
-      // TODO(burdon): Factor out column. layout.
+      let version = _.get(config, 'app.version');
 
       return (
-        <div className="ux-column">
+        <div className="ux-fullscreen ux-column">
+          <header>
+            <div className="ux-grow">
+              <h1>Alien</h1>
+            </div>
 
-          {/*TODO(burdon): HOC w/redux actions.*/}
-          {/*<Navbar/>*/}
+            <NavBar navigator={ navigator }/>
+          </header>
 
           <SearchPanelContainer/>
 
           <SearchListContainer className="ux-grow"/>
 
-          {/*TODO(burdon): HOC w/redux actions.*/}
-          {/*<StatusBar/>*/}
+          <footer>
+            <StatusBar onAction={ this.handleAction.bind(this) }>
+              <span className="ux-font-xsmall">{ version }</span>
+            </StatusBar>
+          </footer>
         </div>
       );
     });

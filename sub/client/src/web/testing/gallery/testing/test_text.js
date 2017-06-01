@@ -43,7 +43,7 @@ export class TestText extends React.Component {
 
     return (
       <div className="ux-panel">
-        <div className="ux-toolbar ux-padding">
+        <div className="ux-tool-bar ux-padding">
           <div className="ux-grow">
             <TextBox className="ux-grow" autoFocus={ true } value={ text } onCancel={ () => true }/>
           </div>

@@ -8,46 +8,53 @@ import PropTypes from 'prop-types';
 /**
  * App navigation
  */
-export class Navbar extends React.Component {
+export class NavBar extends React.Component {
+
+  static propTypes = {
+    navigator: PropTypes.object.isRequired,
+  };
 
   // TODO(burdon): Show/hide search view? Search "folder" overlay? (in full screen mode).
   // TODO(burdon): Show hide < > arrows (on mobile).
   // TODO(burdon): Current heading/breadcrumbs (in redux store).
 
   render() {
-    let { children } = this.props;
+    let { navigator, children } = this.props;
 
     return (
-      <nav className="ux-navbar">
+      <nav className="ux-nav-bar">
         <div className="ux-grow">
           { children }
         </div>
 
-        <NavButtons/>
+        <NavButtons navigator={ navigator }/>
       </nav>
     );
   }
 }
 
+/**
+ * Navigation controls.
+ */
 export class NavButtons extends React.Component {
 
-  static contextTypes = {
+  static propTypes = {
     navigator: PropTypes.object.isRequired,
   };
 
   handleBack() {
-    this.context.navigator.goBack();
+    this.props.navigator.goBack();
   }
 
   handleForward() {
-    this.context.navigator.goForward();
+    this.props.navigator.goForward();
   }
 
   render() {
     return (
-      <div className="ux-navbar-buttons">
-        <i className="ux-icon ux-icon-action" onClick={ this.handleBack.bind(this) }>arrow_back</i>
-        <i className="ux-icon ux-icon-action" onClick={ this.handleForward.bind(this) }>arrow_forward</i>
+      <div className="ux-nav-buttons">
+        <i className="ux-icon ux-icon-back" onClick={ this.handleBack.bind(this) }/>
+        <i className="ux-icon ux-icon-forward" onClick={ this.handleForward.bind(this) }/>
       </div>
     );
   }

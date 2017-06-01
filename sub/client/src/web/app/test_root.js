@@ -11,7 +11,7 @@ import { Path } from '../common/path';
 
 import TestingActivity from '../containers/activities/testing';
 
-import '../resources/css/core.less';
+import '../resources/css/app.less';
 
 /**
  * Minimal base app for testing/development.
