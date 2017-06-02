@@ -8,14 +8,15 @@ import { ReactUtil } from '../../util/react';
 import { Actions } from '../../common/actions';
 import { Activity } from '../../common/activity';
 
+import { SidePanelContainer } from '../sidepanel';
+import { SearchListContainer } from '../search_list';
+
 import { Layout } from './layout';
 
 /**
- * Testing Activity.
- *
- * For experimental features and components.
+ * Search Activity.
  */
-class TestingActivity extends React.Component {
+class SearchActivity extends React.Component {
 
   static childContextTypes = Activity.childContextTypes;
 
@@ -31,18 +32,24 @@ class TestingActivity extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { config, eventListener, viewer } = this.props;
+      let { params: { folder='inbox' }, config, eventListener, viewer, navigator, typeRegistry } = this.props;
       if (!viewer) {
         return;
       }
 
+      let navbar = Layout.navbar(_.get(config, 'app.platform'), navigator);
+
+      let sidebar = <SidePanelContainer navigator={ navigator} typeRegistry={ typeRegistry }/>;
+
       return (
         <Layout config={ config }
                 viewer={ viewer }
+                navbar={ navbar }
+                sidebar={ sidebar }
                 eventListener={ eventListener }
                 actions={ this._actions }>
 
-          <h2>Testing</h2>
+          <SearchListContainer className="ux-grow"/>
 
         </Layout>
       );
@@ -54,4 +61,4 @@ class TestingActivity extends React.Component {
 // HOC.
 //-------------------------------------------------------------------------------------------------
 
-export default Activity.compose()(TestingActivity);
+export default Activity.compose()(SearchActivity);

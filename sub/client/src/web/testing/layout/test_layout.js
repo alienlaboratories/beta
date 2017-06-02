@@ -145,7 +145,7 @@ class Card extends React.Component {
     return (
       <div className="ux-card">
         <div className="ux-header">
-          <div className="ux-tool-bar">
+          <div className="ux-toolbar">
             <i className={ DomUtil.className('ux-icon', 'ux-icon-pin', selected && 'ux-selected') }/>
             <h1 className="ux-grow">{ item.title }</h1>
             <i className="ux-icon ux-icon-menu"/>

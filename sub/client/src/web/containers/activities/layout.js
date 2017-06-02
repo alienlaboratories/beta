@@ -18,58 +18,45 @@ import { Sidebar, SidebarToggle } from '../../components/sidebar';
 
 import { SearchPanelContainer } from '../search_panel';
 
-/**
- * Web nav.
- */
-export class WebNavbar {
-
-  render() {
-    return (
-      <NavBar navigator={ navigator }>
-        <div>
-          <SearchPanelContainer className="ux-grow"/>
-        </div>
-      </NavBar>
-    );
-  }
-}
-
-/**
- * Mobile nav.
- */
-export class MobileNavbar {
-
-  render() {
-    return (
-      <NavBar>
-        <SearchPanelContainer className="ux-grow"/>
-      </NavBar>
-    );
-  }
-}
+import './layout.less';
 
 /**
  * Main column layout.
  */
 export class Layout extends React.Component {
 
+  static WebNavbar = ({ navigator, children }) => (
+    <NavBar navigator={ navigator }>
+      <div className="ux-web-search-panel">
+        <SearchPanelContainer/>
+      </div>
+
+      <div className="ux-grow">
+        { children }
+      </div>
+    </NavBar>
+  );
+
+  static MobileNavbar = () => (
+    <NavBar>
+      <SearchPanelContainer className="ux-grow"/>
+    </NavBar>
+  );
+
+  // TODO(burdon): Use classes directly.
   static navbar(platform, navigator) {
     switch (platform) {
       case Const.PLATFORM.WEB: {
         return (
-          <NavBar navigator={ navigator }>
-            <div>
-              <SearchPanelContainer className="ux-grow"/>
-            </div>
-          </NavBar>
+          <Layout.WebNavbar navigator={ navigator }/>
         );
       }
 
+      case Const.PLATFORM.CRX:
+      case Const.PLATFORM.MOBILE:
       default: {
         return (
-          <NavBar>
-            <SearchPanelContainer className="ux-grow"/>
-          </NavBar>
+          <Layout.MobileNavbar/>
         );
       }
     }
@@ -93,7 +80,7 @@ export class Layout extends React.Component {
     let debugPanel = <DebugPanel/>;
 
     return (
-      <div className="ux-fullscreen ux-column">
+      <div className="ux-fullscreen ux-layout ux-column">
 
         {/*
           * Header

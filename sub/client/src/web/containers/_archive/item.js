@@ -73,13 +73,13 @@ export class ItemCanvasHeaderComponent extends React.Component {
       return (
         <div className="ux-row ux-grow">
 
-          <div className="ux-nav-bar-buttons">
+          <div className="ux-navbar-buttons">
             <div>
               <i className="ux-icon-save" onClick={ this.handleSave.bind(this) }/>
             </div>
           </div>
 
-          <div className="ux-nav-bar-buttons">
+          <div className="ux-navbar-buttons">
             { toolbar }
           </div>
 

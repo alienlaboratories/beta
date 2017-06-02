@@ -1,0 +1,48 @@
+//
+// Copyright 2017 Minder Labs.
+//
+
+@import (reference) '../../resources/css/ref/theme';
+
+.ux-layout {
+
+  header {
+    color: @ux-header-color;
+    background-color: @ux-header-background;
+
+    > div {
+      padding: 2px;
+
+      i.ux-icon-sidebar-toggle {
+        font-size: 24px;
+        color: @ux-header-color;
+      }
+
+      ul {
+        padding: 0 4px;
+
+        li a {
+          color: @ux-header-color;
+        }
+      }
+    }
+
+    nav.ux-navbar {
+      color: @ux-navbar-color;
+      background-color: @ux-navbar-background;
+
+      .ux-web-search-panel {
+        width: @ux-card-width;
+        padding: 6px;
+      }
+
+      .ux-nav-buttons {
+        padding: 0 4px;
+
+        i.ux-icon {
+          color: @ux-navbar-color;
+        }
+      }
+    }
+  }
+}

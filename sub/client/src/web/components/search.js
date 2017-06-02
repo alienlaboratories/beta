@@ -69,7 +69,9 @@ export class SearchBar extends React.Component {
     let { value, className } = this.props;
 
     return (
-      <div className={ DomUtil.className('ux-searchbar', 'ux-tool-bar', className) }>
+      <div className={ DomUtil.className('ux-searchbar', 'ux-toolbar', className) }>
+        <i className="ux-icon ux-icon-search" onClick={ this.handleSearch.bind(this) }/>
+
         <TextBox ref="text"
                  className='ux-grow'
                  autoFocus={ true }
@@ -78,10 +80,7 @@ export class SearchBar extends React.Component {
                  onCancel={ this.handleClear.bind(this) }
                  onChange={ this.handleSearch.bind(this) }/>
 
-        <div className="ux-icons">
-          <i className="ux-icon ux-icon-search" onClick={ this.handleSearch.bind(this) }/>
-          <i className="ux-icon ux-icon-clear" onClick={ this.handleClear.bind(this) }/>
-        </div>
+        <i className="ux-icon ux-icon-clear" onClick={ this.handleClear.bind(this) }/>
       </div>
     );
   }

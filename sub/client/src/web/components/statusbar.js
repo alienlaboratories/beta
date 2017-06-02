@@ -36,7 +36,7 @@ export class StatusBar extends React.Component {
 
     let id = 0;
     return (
-      <div className="ux-status-bar ux-tool-bar">
+      <div className="ux-status-bar ux-toolbar">
         <div className="ux-icons">
           { _.map(actions.debug, action => <Action key={ ++id } action={ action }/>) }
         </div>
@@ -98,8 +98,8 @@ class NetworkIndicator extends React.Component {
     // Cancel timers to avoid setState on unmounted component.
     // JS Error: Warning: setState(...): Can only update a mounted or mounting component.
     // https://facebook.github.io/react/blog/2015/12/16/ismounted-antipattern.html
-    this._timer.in();
-    this._timer.out();
+    this._timer.send();
+    this._timer.recv();
   }
 
   render() {

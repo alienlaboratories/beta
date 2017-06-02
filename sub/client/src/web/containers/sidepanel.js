@@ -40,7 +40,7 @@ class SidePanel extends React.Component {
 
   onSelect(item) {
     let { alias, link } = item;
-    this.context.navigator.push(link || (alias && Path.folder(alias)) || Path.canvas(ID.key(item)));
+    this.props.navigator.push(link || (alias && Path.folder(alias)) || Path.canvas(ID.key(item)));
   }
 
   render() {

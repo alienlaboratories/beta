@@ -28,7 +28,7 @@ export class TestSidebar extends React.Component {
         <div className="ux-panel ux-column ux-grow">
 
           <div>
-            <div className="ux-tool-bar">
+            <div className="ux-toolbar">
               <h1>Sidebar</h1>
               <SidebarToggle sidebar={ () => this.refs.sidebar }/>
             </div>

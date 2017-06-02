@@ -18,10 +18,8 @@ export class NavBar extends React.Component {
     let { navigator, children } = this.props;
 
     return (
-      <nav className="ux-nav-bar ux-tool-bar">
-        <div className="ux-grow">
-          { children }
-        </div>
+      <nav className="ux-navbar ux-toolbar">
+        { children }
 
         { navigator &&
         <NavButtons navigator={ navigator }/>

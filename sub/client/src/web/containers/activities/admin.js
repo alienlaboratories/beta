@@ -8,14 +8,15 @@ import { ReactUtil } from '../../util/react';
 import { Actions } from '../../common/actions';
 import { Activity } from '../../common/activity';
 
+import { SidePanelContainer } from '../sidepanel';
+import { SearchListContainer } from '../search_list';
+
 import { Layout } from './layout';
 
 /**
- * Testing Activity.
- *
- * For experimental features and components.
+ * Admin Activity.
  */
-class TestingActivity extends React.Component {
+class AdminActivity extends React.Component {
 
   static childContextTypes = Activity.childContextTypes;
 
@@ -31,18 +32,21 @@ class TestingActivity extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { config, eventListener, viewer } = this.props;
+      let { config, eventListener, viewer, navigator, typeRegistry } = this.props;
       if (!viewer) {
         return;
       }
 
+      let sidebar = <SidePanelContainer navigator={ navigator} typeRegistry={ typeRegistry }/>;
+
       return (
         <Layout config={ config }
                 viewer={ viewer }
+                sidebar={ sidebar }
                 eventListener={ eventListener }
                 actions={ this._actions }>
 
-          <h2>Testing</h2>
+          <SearchListContainer className="ux-grow"/>
 
         </Layout>
       );
@@ -54,4 +58,4 @@ class TestingActivity extends React.Component {
 // HOC.
 //-------------------------------------------------------------------------------------------------
 
-export default Activity.compose()(TestingActivity);
+export default Activity.compose()(AdminActivity);
