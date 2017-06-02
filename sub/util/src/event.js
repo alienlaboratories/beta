@@ -10,8 +10,7 @@ const logger = Logger.get('event');
 /**
  * Injectable event handler.
  */
-// TODO(burdon): Rename EventListener.
-export class EventHandler {
+export class EventListener {
 
   constructor() {
     // Map of callbacks by ID (so can be revoked).

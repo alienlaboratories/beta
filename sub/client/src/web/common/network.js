@@ -23,14 +23,14 @@ export class NetworkManager {
    * @param {object }config
    * @param {AuthManager} authManager
    * @param {ConnectionManager} connectionManager
-   * @param {EventHandler} eventHandler
+   * @param {EventListener} eventListener
    */
-  constructor(config, authManager, connectionManager, eventHandler) {
-    console.assert(config && authManager && connectionManager && eventHandler);
+  constructor(config, authManager, connectionManager, eventListener) {
+    console.assert(config && authManager && connectionManager && eventListener);
     this._config = config;
     this._authManager = authManager;
     this._connectionManager = connectionManager;
-    this._eventHandler = eventHandler;
+    this._eventListener = eventListener;
 
     // Log and match request/reponses.
     this._requestCount = 0;
@@ -136,7 +136,7 @@ export class NetworkManager {
         });
 
         this._logger.logRequest(requestId, request, options.headers);
-        this._eventHandler.emit({ type: 'network.out' });
+        this._eventListener.emit({ type: 'network.out' });
         next();
       }
     };
@@ -162,7 +162,7 @@ export class NetworkManager {
         // Error handler.
         const onError = errors => {
           this._logger.logErrors(requestId, errors);
-          this._eventHandler.emit({
+          this._eventListener.emit({
             type: 'error',
             message: NetworkLogger.stringify(errors)
           });
@@ -306,12 +306,12 @@ export class ChromeNetworkInterface { // extends NetworkInterface {
    * Creates the network interface with the given Chrome channel (to the BG page).
    *
    * @param channel
-   * @param eventHandler
+   * @param eventListener
    */
-  constructor(channel, eventHandler=undefined) {
+  constructor(channel, eventListener=undefined) {
     console.assert(channel);
     this._channel = channel;
-    this._eventHandler = eventHandler;
+    this._eventListener = eventListener;
   }
 
   /**
@@ -321,9 +321,9 @@ export class ChromeNetworkInterface { // extends NetworkInterface {
    * @return {Promise<GraphQLResult>}
    */
   query(gqlRequest) {
-    this._eventHandler && this._eventHandler.emit({ type: 'network.out' });
+    this._eventListener && this._eventListener.emit({ type: 'network.out' });
     return this._channel.postMessage(gqlRequest, true).then(gqlResponse => {
-      this._eventHandler && this._eventHandler.emit({ type: 'network.in' });
+      this._eventListener && this._eventListener.emit({ type: 'network.in' });
       return gqlResponse;
     });
   }

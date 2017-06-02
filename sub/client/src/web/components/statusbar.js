@@ -15,70 +15,17 @@ import './statusbar.less';
 export class StatusBar extends React.Component {
 
   static propTypes = {
+    eventListener: PropTypes.object.isRequired,
+    actions: PropTypes.array.isRequired,
     onAction: PropTypes.func.isRequired
   };
-
-  constructor() {
-    super(...arguments);
-
-    this._timer = {
-      networkIn: Async.delay(750),
-      networkOut: Async.delay(500)
-    };
-
-    this.state = {
-      error: false,
-      networkIn: false,
-      networkOut: false
-    };
-  }
-
-  componentWillUnmount() {
-    // TODO(burdon): Statusbar should be part of outer component (so isn't rerenderes on nav).
-    // Cancel timers to avoid setState on unmounted component.
-    // JS Error: Warning: setState(...): Can only update a mounted or mounting component.
-    // https://facebook.github.io/react/blog/2015/12/16/ismounted-antipattern.html
-    this._timer.networkIn();
-    this._timer.networkOut();
-  }
-
-  error(error) {
-    this.setState({
-      error
-    });
-  }
-
-  // TODO(burdon): Factor out listener.
-  networkIn() { this.network('networkIn'); }
-  networkOut() { this.network('networkOut'); }
-  network(type) {
-    this.setState({
-      [type]: true
-    });
-
-    this._timer[[type]](() => {
-      this.setState({
-        [type]: false
-      });
-    });
-  }
 
   handleAction(icon) {
     this.props.onAction(icon);
   }
 
-  handleClickError() {
-    this.error(false);
-  }
-
   render() {
-    let { children } = this.props;
-    let { error, networkIn, networkOut } = this.state;
-
-    // TODO(burdon): Break into sections (assemble left/right).
-    // TODO(burdon): Network indicators as separate control.
-    // TODO(burdon): Generalize actions (incl. link action).
-    // TODO(burdon): Get icons/links from props.
+    let { eventListener, actions, children } = this.props;
 
     const Action = ({ action }) => {
       return (
@@ -87,64 +34,121 @@ export class StatusBar extends React.Component {
       );
     };
 
-    const leftActions = [
-      {
-        type: 'bug',
-        title: 'Debug info.',
-        icon: 'bug_report'
-      },
-      {
-        type: 'link',
-        title: 'GraphiQL.',
-        icon: 'language',
-        href: '/graphiql'
-      },
-      {
-        type: 'link',
-        title: 'Admin console.',
-        icon: 'graphic_eq',
-        href: '/admin'
-      },
-      {
-        type: 'link',
-        title: 'Account settings.',
-        icon: 'settings',
-        href: '/profile'
-      }
-    ];
-
-    const rightActions = [
-      {
-        type: 'refresh',
-        title: 'Refresh queries.',
-        icon: 'refresh'
-      }
-    ];
-
     let id = 0;
-
     return (
       <div className="ux-status-bar ux-tool-bar">
         <div className="ux-icons">
-          { _.map(leftActions, action => <Action key={ ++id } action={ action }/>) }
+          { _.map(actions.left, action => <Action key={ ++id } action={ action }/>) }
         </div>
 
         <div className="ux-grow ux-center">{ children }</div>
 
         <div className="ux-icons">
-          { _.map(rightActions, action => <Action key={ ++id } action={ action }/>) }
+          { _.map(actions.right, action => <Action key={ ++id } action={ action }/>) }
         </div>
 
-        <div className="ux-icons">
-          <i className={ DomUtil.className('ux-icon', 'ux-icon-network-in', networkIn && 'ux-on') }/>
-          <i className={ DomUtil.className('ux-icon', 'ux-icon-network-out', networkOut && 'ux-on') }/>
-        </div>
+        <NetworkIndicator eventListener={ eventListener }/>
 
-        <div className="ux-icons">
-          <i className={ DomUtil.className('ux-icon-error', 'ux-icon', error && 'ux-on') }
-             title={ ErrorUtil.message(error.message) }
-             onClick={ this.handleClickError.bind(this, 'error') }/>
-        </div>
+        <ErrorIndicator eventListener={ eventListener }/>
+      </div>
+    );
+  }
+}
+
+/**
+ * Network indicator.
+ */
+class NetworkIndicator extends React.Component {
+
+  static propTypes = {
+    eventListener: PropTypes.object.isRequired
+  };
+
+  state = {
+    in: false,
+    out: false
+  };
+
+  constructor() {
+    super(...arguments);
+
+    this._timer = {
+      in: Async.delay(750),
+      out: Async.delay(500)
+    };
+
+    const trigger = (type) => {
+      this.setState({
+        [type]: true
+      });
+
+      this._timer[[type]](() => {
+        this.setState({
+          [type]: false
+        });
+      });
+    };
+
+    this.props.eventListener
+      .listen('network.in',   event => { trigger('in'); })
+      .listen('network.out',  event => { trigger('out'); });
+  }
+
+  componentWillUnmount() {
+    // Cancel timers to avoid setState on unmounted component.
+    // JS Error: Warning: setState(...): Can only update a mounted or mounting component.
+    // https://facebook.github.io/react/blog/2015/12/16/ismounted-antipattern.html
+    this._timer.networkIn();
+    this._timer.networkOut();
+  }
+
+  render() {
+    let { networkIn, networkOut } = this.state;
+
+    return (
+      <div className="ux-icons">
+        <i className={ DomUtil.className('ux-icon', 'ux-icon-network-in', networkIn && 'ux-on') }/>
+        <i className={ DomUtil.className('ux-icon', 'ux-icon-network-out', networkOut && 'ux-on') }/>
+      </div>
+    );
+  }
+}
+
+/**
+ * Cancellable error indicator.
+ */
+class ErrorIndicator extends React.Component {
+
+  static propTypes = {
+    eventListener: PropTypes.object.isRequired
+  };
+
+  state = {
+    error: {}
+  };
+
+  constructor() {
+    super(...arguments);
+
+    this.props.eventListener.listen('error', event => {
+      this.setState({
+        error: event.error
+      });
+    });
+  }
+
+  handleReset() {
+    this.setState({ error: {} });
+  }
+
+  render() {
+    let { error } = this.state;
+
+    return (
+      <div className="ux-icons">
+        <i className={ DomUtil.className('ux-icon-error', 'ux-icon', error && 'ux-on') }
+           title={ ErrorUtil.message(error.message) || '' }
+           onClick={ this.handleReset.bind(this) }/>
       </div>
     );
   }

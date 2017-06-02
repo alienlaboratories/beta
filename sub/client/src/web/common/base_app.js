@@ -11,7 +11,7 @@ import reduceReducers from 'reduce-reducers';
 import ApolloClient from 'apollo-client';
 import moment from 'moment';
 
-import { ErrorUtil, EventHandler, Logger, Injector, TypeUtil } from 'alien-util';
+import { ErrorUtil, EventListener, Logger, Injector, TypeUtil } from 'alien-util';
 import { ID, IdGenerator, Matcher, QueryParser, QueryRegistry } from 'alien-core';
 import { ITEM_TYPES } from 'alien-api';
 
@@ -37,7 +37,7 @@ export class BaseApp {
     this._initialized = false;
 
     // Event bus propagates events (e.g., error messages) to components.
-    this._eventHandler = new EventHandler();
+    this._eventListener = new EventListener();
 
     // TODO(burdon): Experimental (replace with Apollo directives).
     // Manages Apollo query subscriptions.
@@ -65,7 +65,7 @@ export class BaseApp {
   onError(error) {
     logger.error(error);
     let message = ErrorUtil.message(error);
-    this._eventHandler.emit({
+    this._eventListener.emit({
       type: 'error',
       message: message
     });
@@ -114,7 +114,7 @@ export class BaseApp {
       Injector.provide(new Matcher()),
       Injector.provide(new QueryParser()),
       Injector.provide(new ContextManager(idGenerator)),
-      Injector.provide(this._eventHandler),
+      Injector.provide(this._eventListener),
       Injector.provide(this._queryRegistry)
     ], this.providers);
 

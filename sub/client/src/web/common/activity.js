@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, graphql } from 'react-apollo';
 
-import { EventHandler, PropertyProvider } from 'alien-util';
+import { EventListener, PropertyProvider } from 'alien-util';
 import { Const, IdGenerator, Mutator, QueryRegistry } from 'alien-core';
 import { Fragments } from 'alien-api';
 
@@ -35,7 +35,7 @@ const mapStateToProps = (state, ownProps) => {
   let analytics       = injector.get(Analytics.INJECTOR_KEY);
   let typeRegistry    = injector.get(TypeRegistry);
   let queryRegistry   = injector.get(QueryRegistry);
-  let eventHandler    = injector.get(EventHandler);
+  let eventListener    = injector.get(EventListener);
   let contextManager  = injector.get(ContextManager);
   let idGenerator     = injector.get(IdGenerator);
 
@@ -50,7 +50,7 @@ const mapStateToProps = (state, ownProps) => {
     analytics,
     typeRegistry,
     queryRegistry,
-    eventHandler,
+    eventListener,
     contextManager,
     navigator,
 
@@ -142,7 +142,7 @@ export class Activity {
     analytics:        PropTypes.object,
     typeRegistry:     PropTypes.object,
     queryRegistry:    PropTypes.object,
-    eventHandler:     PropTypes.object,
+    eventListener:    PropTypes.object,
     contextManager:   PropTypes.object,
     navigator:        PropTypes.object,
 
@@ -156,7 +156,7 @@ export class Activity {
       analytics,
       typeRegistry,
       queryRegistry,
-      eventHandler,
+      eventListener,
       contextManager,
       navigator,
 
@@ -168,7 +168,7 @@ export class Activity {
     console.assert(analytics);
     console.assert(typeRegistry);
     console.assert(queryRegistry);
-    console.assert(eventHandler);
+    console.assert(eventListener);
     console.assert(contextManager);
     console.assert(navigator);
     console.assert(mutator);
@@ -178,7 +178,7 @@ export class Activity {
       analytics,
       typeRegistry,
       queryRegistry,
-      eventHandler,
+      eventListener,
       contextManager,
       navigator,
 

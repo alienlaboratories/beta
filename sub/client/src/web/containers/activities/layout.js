@@ -35,7 +35,7 @@ export class LayoutComponent extends React.Component {
     config: PropTypes.object.isRequired,
     typeRegistry: PropTypes.object.isRequired,
     queryRegistry: PropTypes.object.isRequired,
-    eventHandler: PropTypes.object.isRequired,
+    eventListener: PropTypes.object.isRequired,
 
     viewer: PropTypes.object
   };
@@ -49,7 +49,7 @@ export class LayoutComponent extends React.Component {
   constructor() {
     super(...arguments);
 
-    this.context.eventHandler
+    this.context.eventListener
       .listen('error',        event => { this.refs.status && this.refs.status.error(event); })
       .listen('network.in',   event => { this.refs.status && this.refs.status.networkIn(); })
       .listen('network.out',  event => { this.refs.status && this.refs.status.networkOut(); });

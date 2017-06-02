@@ -35,10 +35,47 @@ class TestingActivity extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { config, viewer, navigator } = this.props;
+      let { config, eventListener, viewer, navigator } = this.props;
       if (!viewer) {
         return;
       }
+
+      // TODO(burdon): Factor out (specialize by app).
+      const actions = {
+        left: [
+          {
+            type: 'bug',
+            title: 'Debug info.',
+            icon: 'bug_report'
+          },
+          {
+            type: 'link',
+            title: 'GraphiQL.',
+            icon: 'language',
+            href: '/graphiql'
+          },
+          {
+            type: 'link',
+            title: 'Admin console.',
+            icon: 'graphic_eq',
+            href: '/admin'
+          },
+          {
+            type: 'link',
+            title: 'Account settings.',
+            icon: 'settings',
+            href: '/profile'
+          }
+        ],
+
+        right: [
+          {
+            type: 'refresh',
+            title: 'Refresh queries.',
+            icon: 'refresh'
+          }
+        ]
+      };
 
       let version = _.get(config, 'app.version');
 
@@ -57,7 +94,7 @@ class TestingActivity extends React.Component {
           <SearchListContainer className="ux-grow"/>
 
           <footer>
-            <StatusBar onAction={ this.handleAction.bind(this) }>
+            <StatusBar eventListener={ eventListener } actions={ actions } onAction={ this.handleAction.bind(this) }>
               <span className="ux-font-xsmall">{ version }</span>
             </StatusBar>
           </footer>

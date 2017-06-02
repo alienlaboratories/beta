@@ -116,7 +116,7 @@ export class SidebarApp extends BaseApp {
 
     // Proxy to BG page.
     this._networkInterface = new ChromeNetworkInterface(
-      new ChromeMessageChannel(ChromeNetworkInterface.CHANNEL, this._router), this._eventHandler);
+      new ChromeMessageChannel(ChromeNetworkInterface.CHANNEL, this._router), this._eventListener);
   }
 
   postInit() {
