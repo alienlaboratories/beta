@@ -45,7 +45,7 @@ export class DebugPanel extends React.Component {
     return (
       <div className="ux-debug-panel-container">
         <div className="ux-debug-panel ux-text-noselect">
-          <h3>Debug Settings</h3>
+          <h4>Debug Settings</h4>
           <div>
             <div>
               <label>

@@ -5,14 +5,17 @@
 @import (reference) '../resources/css/ref/theme.less';
 
 .ux-sidebar {
+  position: relative;
 
   .ux-sidebar-drawer {
     display: flex;
     position: absolute;
-    box-sizing: border-box;
+    top: 0;
+    bottom: 0;
     width: @ux-sidebar-width;
+
+    box-sizing: border-box;
     overflow: hidden;
-    height: 100%;
 
     background-color: whitesmoke;
     border-right: 1px solid transparent;
@@ -35,11 +38,12 @@
         border: none;
       }
     }
-  }
-  .ux-sidebar-drawer.ux-open {
-    -webkit-transform: translateX(0);
 
-    border-right: 1px solid gray;
-    box-shadow: @ux-box-shadow;
+    &.ux-open {
+      -webkit-transform: translateX(0);
+
+      border-right: 1px solid gray;
+      box-shadow: @ux-box-shadow;
+    }
   }
 }

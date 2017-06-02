@@ -72,6 +72,8 @@ export class ErrorUtil {
   /**
    * Node-specific catch-all.
    *
+   * NOTE: This doesn't catch Apollo errors.
+   *
    * @param root For node, provide process global; For DOM provide window.
    * @param {function} callback (error) => {}.
    */
@@ -90,7 +92,7 @@ export class ErrorUtil {
         callback(error || messageOrEvent);
 
         // NOTE: Return true to stop propagation.
-//        return true;
+//      return true;
       };
 
       // https://developer.mozilla.org/en-US/docs/Web/Events/unhandledrejection

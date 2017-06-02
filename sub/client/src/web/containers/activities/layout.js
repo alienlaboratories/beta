@@ -1,211 +1,186 @@
 //
-// Copyright 2017 Alien Labs.
+// Copyright 2017 Minder Labs.
 //
 
 import React from 'react';
-import { connect } from 'react-redux';
-import { Link } from 'react-router';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router';
 
-import { DomUtil, TypeUtil } from 'alien-util';
 import { Const, ID } from 'alien-core';
 
+import { Path } from '../../common/path';
 import { AppDefs } from '../../../common/defs';
 
-import { AppAction } from '../../common/reducers';
-import { Path } from '../../common/path';
-
-import { NetUtil } from '../../util/net';
-import { ReactUtil } from '../../util/react';
-
 import { DebugPanel } from '../../components/debug';
-import { Sidebar, SidebarToggle } from '../../components/sidebar';
+import { NavBar } from '../../components/navbar';
 import { StatusBar } from '../../components/statusbar';
+import { Sidebar, SidebarToggle } from '../../components/sidebar';
 
-import SidePanel from '../sidepanel';
-
-import './layout.less';
+import { SearchPanelContainer } from '../search_panel';
 
 /**
- * Layout for all containers.
+ * Web nav.
  */
-export class LayoutComponent extends React.Component {
+export class WebNavbar {
 
-  static contextTypes = {
-    config: PropTypes.object.isRequired,
-    typeRegistry: PropTypes.object.isRequired,
-    queryRegistry: PropTypes.object.isRequired,
-    eventListener: PropTypes.object.isRequired,
-
-    viewer: PropTypes.object
-  };
-
-  static propTypes = {
-    navbar: PropTypes.object.isRequired,
-    finder: PropTypes.object,
-    className: PropTypes.string
-  };
-
-  constructor() {
-    super(...arguments);
-
-    this.context.eventListener
-      .listen('error',        event => { this.refs.status && this.refs.status.error(event); })
-      .listen('network.in',   event => { this.refs.status && this.refs.status.networkIn(); })
-      .listen('network.out',  event => { this.refs.status && this.refs.status.networkOut(); });
+  render() {
+    return (
+      <NavBar navigator={ navigator }>
+        <div>
+          <SearchPanelContainer className="ux-grow"/>
+        </div>
+      </NavBar>
+    );
   }
+}
 
-  // TODO(burdon): Dispatch to ActionHandler (Toolbar introspects to show buttons).
-  handleToolbarAction(action) {
-    let { config } = this.context;
+/**
+ * Mobile nav.
+ */
+export class MobileNavbar {
 
-    switch (action) {
+  render() {
+    return (
+      <NavBar>
+        <SearchPanelContainer className="ux-grow"/>
+      </NavBar>
+    );
+  }
+}
 
-      // Debug info.
-      case 'bug': {
-        this.props.toggleDebugPanel();
-        break;
+/**
+ * Main column layout.
+ */
+export class Layout extends React.Component {
+
+  static navbar(platform, navigator) {
+    switch (platform) {
+      case Const.PLATFORM.WEB: {
+        return (
+          <NavBar navigator={ navigator }>
+            <div>
+              <SearchPanelContainer className="ux-grow"/>
+            </div>
+          </NavBar>
+        );
       }
 
-      // Refresh JWT.
-      case 'refresh_id_token': {
-        // TODO(burdon): Dispatch to ActionHandler (callback to set config (and timer)). Redux?
-        // https://medium.com/javascript-and-opinions/redux-side-effects-and-you-66f2e0842fc3
-        // http://stackoverflow.com/questions/35411423/how-to-dispatch-a-redux-action-with-a-timeout/35415559#35415559
-        if (_.get(config, 'app.platform') === 'CRX') {
-          console.warn('Invalid for CRX.');
-          break;
-        }
-
-        NetUtil.getJson('/user/refresh_id_token', {}, {}, true).then(result => {
-          _.assign(config, { credentials: _.get(result, 'credentials') });
-          console.log('Updated credentials: ' + TypeUtil.stringify(config.credentials, 2));
-        });
-        break;
-      }
-
-      // Refresh queries.
-      case 'invalidate_queries': {
-        this.context.queryRegistry.invalidate();
-        break;
+      default: {
+        return (
+          <NavBar>
+            <SearchPanelContainer className="ux-grow"/>
+          </NavBar>
+        );
       }
     }
   }
 
+  static propTypes = {
+    config:         PropTypes.object.isRequired,
+    viewer:         PropTypes.object.isRequired,
+    eventListener:  PropTypes.object.isRequired,
+    actions:        PropTypes.object.isRequired,
+    navbar:         PropTypes.object,
+    sidebar:        PropTypes.object
+  };
+
   render() {
-    return ReactUtil.render(this, () => {
-      let { config, typeRegistry, viewer={} } = this.context;
-      let { debug, navbar, finder, search, children, className } = this.props;
-      let platform = _.get(config, 'app.platform');
+    let { config, viewer, eventListener, actions, navbar, sidebar, children } = this.props;
 
-      let sidePanel = <SidePanel typeRegistry={ typeRegistry }/>;
+    let title = AppDefs.APP_NAME;
+    let version = _.get(config, 'app.version');
 
-      let content;
-      let showFinder = finder && (platform !== Const.PLATFORM.WEB || search.text);
-      if (showFinder) {
-        if (children) {
-          content = (
-            <div className="app-layout-finder ux-columns">
-              { finder }
+    let debugPanel = <DebugPanel/>;
 
-              <div className="ux-column">
-                { children }
-              </div>
-            </div>
-          );
-        } else {
-          content = finder;
-        }
-      } else {
-        content = children;
-      }
+    return (
+      <div className="ux-fullscreen ux-column">
 
-      let links = _.compact(_.map(viewer.groups, group => {
-        // Don't show private group.
-        if (group.bucket !== viewer.user.id) {
-          return (
-            <li key={ group.id }>
-              <Link to={ Path.canvas(ID.key(group)) }>{ group.title }</Link>
-            </li>
-          );
-        }
-      }));
-
-      let debugPanel = debug.showPanel && <DebugPanel/>;
-
-      return (
-        <div className="ux-fullscreen">
-          <div className={ DomUtil.className('ux-main-layout', 'ux-column', 'app-layout-' + platform, className) }>
-
-            {/* Header */}
-            { platform !== Const.PLATFORM.CRX &&
-            <div className="ux-header ux-row">
-              <div className="ux-row ux-grow">
-                <SidebarToggle sidebar={ () => this.refs.sidebar }/>
-                <h1>{ AppDefs.APP_NAME }</h1>
-              </div>
-              <div>
-                <ul className="ux-inline">
-                  { links }
-
-                  <li>
-                    <a target="ALIEN_PROFILE" href="/profile">{ _.get(viewer, 'user.title') }</a>
-                  </li>
-                  <li>
-                    <a href="/user/logout">Logout</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
+        {/*
+          * Header
+          */}
+        <header className="ux-column">
+          <div className="ux-row ux-grow">
+            { sidebar &&
+            <SidebarToggle sidebar={ () => this.refs.sidebar }/>
             }
 
-            {/* Navbar */}
-            { navbar }
-
-            {/* Main Layout */}
-            <div className="ux-columns">
-
-              {/* Sidebar */}
-              { platform !== Const.PLATFORM.CRX &&
-              <Sidebar ref="sidebar">
-                { sidePanel }
-              </Sidebar>
-              }
-
-              {/* Main Content */}
-              <div className="app-layout ux-column">
-                { content }
-              </div>
+            <div className="ux-grow">
+              <h1>{ title }</h1>
             </div>
 
-            {/* Debug */}
-            <div>
-              { debugPanel }
-            </div>
-
-            {/* Footer */}
-            <div className="app-footer">
-              <StatusBar ref="status" onAction={ this.handleToolbarAction.bind(this) }/>
-            </div>
+            <Links viewer={ viewer }/>
           </div>
+
+          { navbar }
+        </header>
+
+        {/*
+          * Main
+          * TODO(burdon): Option for sidebar to shove over display (e.g., like Inbox, mobile, etc.)
+          */}
+        <main className="ux-row">
+          { sidebar &&
+          <Sidebar ref="sidebar">
+            { sidebar }
+          </Sidebar>
+          }
+
+          { children }
+        </main>
+
+        {/* Debug */}
+        <div>
+          { debugPanel }
         </div>
-      );
-    });
+
+        {/*
+          * Footer
+          */}
+        <footer>
+          <StatusBar eventListener={ eventListener } actions={ actions }>
+            <span className="ux-font-xsmall ux-text-noselect">{ version }</span>
+          </StatusBar>
+        </footer>
+
+      </div>
+    );
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
-  let { debug, search } = AppAction.getState(state);
-  return {
-    debug,
-    search
-  };
-};
+/**
+ * Header links.
+ */
+class Links extends React.Component {
 
-const mapDispatchToProps = (dispatch, ownProps) => {
-  return {
-    toggleDebugPanel: () => { dispatch(AppAction.toggleDebugPanel()); }
+  static propTypes = {
+    viewer: PropTypes.object.isRequired,
   };
-};
 
-export const Layout = connect(mapStateToProps, mapDispatchToProps)(LayoutComponent);
+  render() {
+    let { viewer } = this.props;
+
+    let links = _.compact(_.map(viewer.groups, group => {
+      // Don't show private group.
+      if (group.bucket !== viewer.user.id) {
+        return (
+          <li key={ group.id }>
+            <Link to={ Path.canvas(ID.key(group)) }>{ group.title }</Link>
+          </li>
+        );
+      }
+    }));
+
+    return (
+      <ul className="ux-inline">
+        { links }
+
+        <li>
+          <a target="ALIEN_PROFILE" href="/profile">{ _.get(viewer, 'user.title') }</a>
+        </li>
+        <li>
+          <a href="/user/logout">Logout</a>
+        </li>
+      </ul>
+    );
+  }
+}

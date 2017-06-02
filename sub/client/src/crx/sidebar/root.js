@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 
 import { Path } from '../../web/common/path';
 
-import FinderActivity from '../../web/containers/activities/finder';
+// import FinderActivity from '../../web/containers/activities/finder';
 
 import '../../web/resources/css/app.less';
 
@@ -35,7 +35,7 @@ export class Application extends React.Component {
       <ApolloProvider client={ client } store={ store }>
         <Router history={ history }>
 
-          <Route path={ Path.route(['folder']) } component={ FinderActivity }/>
+          {/*<Route path={ Path.route(['folder']) } component={ FinderActivity }/>*/}
           <Redirect from='*' to={ Path.HOME }/>
 
         </Router>

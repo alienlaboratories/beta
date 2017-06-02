@@ -8,7 +8,6 @@ import { compose } from 'react-apollo';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { TypeUtil } from 'alien-util';
 import { ID } from 'alien-core';
 
 import { SubscriptionWrapper } from '../util/subscriptions';
@@ -35,11 +34,8 @@ class SidePanel extends React.Component {
   };
 
   static propTypes = {
+    navigator: PropTypes.object.isRequired,
     typeRegistry: PropTypes.object.isRequired
-  };
-
-  static contextTypes = {
-    navigator: PropTypes.object.isRequired
   };
 
   onSelect(item) {
@@ -134,7 +130,7 @@ const SidebarQuery = gql`
   }
 `;
 
-export default compose(
+export const SidePanelContainer = compose(
 
   // Query.
   graphql(SidebarQuery, {

@@ -16,21 +16,21 @@ export class StatusBar extends React.Component {
 
   static propTypes = {
     eventListener: PropTypes.object.isRequired,
-    actions: PropTypes.array.isRequired,
-    onAction: PropTypes.func.isRequired
+    actions: PropTypes.object.isRequired,
   };
-
-  handleAction(icon) {
-    this.props.onAction(icon);
-  }
 
   render() {
     let { eventListener, actions, children } = this.props;
 
     const Action = ({ action }) => {
+      function handleAction() {
+        console.assert(action.handler);
+        action.handler(action);
+      }
+
       return (
         <i className="ux-icon ux-icon-action" title={ action.title }
-           onClick={ this.handleAction.bind(this, action) }>{ action.icon }</i>
+           onClick={ handleAction }>{ action.icon }</i>
       );
     };
 
@@ -38,13 +38,13 @@ export class StatusBar extends React.Component {
     return (
       <div className="ux-status-bar ux-tool-bar">
         <div className="ux-icons">
-          { _.map(actions.left, action => <Action key={ ++id } action={ action }/>) }
+          { _.map(actions.debug, action => <Action key={ ++id } action={ action }/>) }
         </div>
 
         <div className="ux-grow ux-center">{ children }</div>
 
         <div className="ux-icons">
-          { _.map(actions.right, action => <Action key={ ++id } action={ action }/>) }
+          { _.map(actions.runtime, action => <Action key={ ++id } action={ action }/>) }
         </div>
 
         <NetworkIndicator eventListener={ eventListener }/>
@@ -65,16 +65,16 @@ class NetworkIndicator extends React.Component {
   };
 
   state = {
-    in: false,
-    out: false
+    send: false,
+    recv: false
   };
 
   constructor() {
     super(...arguments);
 
     this._timer = {
-      in: Async.delay(750),
-      out: Async.delay(500)
+      send: Async.delay(750),
+      recv: Async.delay(500)
     };
 
     const trigger = (type) => {
@@ -90,25 +90,25 @@ class NetworkIndicator extends React.Component {
     };
 
     this.props.eventListener
-      .listen('network.in',   event => { trigger('in'); })
-      .listen('network.out',  event => { trigger('out'); });
+      .listen('network.send', event => { trigger('send'); })
+      .listen('network.recv', event => { trigger('recv'); });
   }
 
   componentWillUnmount() {
     // Cancel timers to avoid setState on unmounted component.
     // JS Error: Warning: setState(...): Can only update a mounted or mounting component.
     // https://facebook.github.io/react/blog/2015/12/16/ismounted-antipattern.html
-    this._timer.networkIn();
-    this._timer.networkOut();
+    this._timer.in();
+    this._timer.out();
   }
 
   render() {
-    let { networkIn, networkOut } = this.state;
+    let { send, recv } = this.state;
 
     return (
       <div className="ux-icons">
-        <i className={ DomUtil.className('ux-icon', 'ux-icon-network-in', networkIn && 'ux-on') }/>
-        <i className={ DomUtil.className('ux-icon', 'ux-icon-network-out', networkOut && 'ux-on') }/>
+        <i className={ DomUtil.className('ux-icon', 'ux-icon-network-recv', recv && 'ux-on') }/>
+        <i className={ DomUtil.className('ux-icon', 'ux-icon-network-send', send && 'ux-on') }/>
       </div>
     );
   }
@@ -124,7 +124,7 @@ class ErrorIndicator extends React.Component {
   };
 
   state = {
-    error: {}
+    error: null
   };
 
   constructor() {
@@ -138,7 +138,7 @@ class ErrorIndicator extends React.Component {
   }
 
   handleReset() {
-    this.setState({ error: {} });
+    this.setState({ error: null });
   }
 
   render() {
@@ -147,7 +147,7 @@ class ErrorIndicator extends React.Component {
     return (
       <div className="ux-icons">
         <i className={ DomUtil.className('ux-icon-error', 'ux-icon', error && 'ux-on') }
-           title={ ErrorUtil.message(error.message) || '' }
+           title={ ErrorUtil.message(error) || '' }
            onClick={ this.handleReset.bind(this) }/>
       </div>
     );

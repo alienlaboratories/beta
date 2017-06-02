@@ -17,8 +17,9 @@ import './search.less';
 export class SearchPanel extends React.Component {
 
   static propTypes = {
-    search: PropTypes.object,
-    onSearch: PropTypes.func.isRequired
+    className:  PropTypes.string,
+    search:     PropTypes.object,
+    onSearch:   PropTypes.func.isRequired
   };
 
   handleSearch(text) {
@@ -26,10 +27,10 @@ export class SearchPanel extends React.Component {
   }
 
   render() {
-    let { search={} } = this.props;
+    let { className, search={} } = this.props;
 
     return (
-      <div className="ux-search-panel ux-panel">
+      <div className={ DomUtil.className('ux-search-panel', 'ux-panel', className) }>
         <SearchBar className="ux-grow" value={ search.text } onSearch={ this.handleSearch.bind(this) }/>
       </div>
     );

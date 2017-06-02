@@ -91,7 +91,7 @@ class BackgroundApp {
       logger.error(error);
       this._eventListener.emit({
         type: 'error',
-        message: ErrorUtil.message(error)
+        error
       });
     });
 

@@ -136,7 +136,7 @@ export class NetworkManager {
         });
 
         this._logger.logRequest(requestId, request, options.headers);
-        this._eventListener.emit({ type: 'network.out' });
+        this._eventListener.emit({ type: 'network.send' });
         next();
       }
     };
@@ -164,7 +164,9 @@ export class NetworkManager {
           this._logger.logErrors(requestId, errors);
           this._eventListener.emit({
             type: 'error',
-            message: NetworkLogger.stringify(errors)
+            error: {
+              message: NetworkLogger.stringify(errors)
+            }
           });
         };
 
@@ -174,6 +176,7 @@ export class NetworkManager {
               onError(payload.errors);
             } else {
               this._logger.logResponse(requestId, payload);
+              this._eventListener.emit({ type: 'network.recv' });
             }
           });
         } else {
@@ -227,9 +230,22 @@ export class NetworkManager {
     };
 
     // Create HTTPFetchNetworkInterface
-    this._networkInterface = createNetworkInterface(options)
+    let networkInterface = createNetworkInterface(options)
       .use(middleware)
       .useAfter(afterware);
+
+    // Error handling.
+    this._networkInterface = {
+      query: request => networkInterface.query(request)
+        .catch(error => {
+          this._eventListener.emit({
+            type: 'error',
+            error
+          });
+
+          throw error;
+        })
+    };
 
     return this;
   }
@@ -321,9 +337,10 @@ export class ChromeNetworkInterface { // extends NetworkInterface {
    * @return {Promise<GraphQLResult>}
    */
   query(gqlRequest) {
-    this._eventListener && this._eventListener.emit({ type: 'network.out' });
+    this._eventListener && this._eventListener.emit({ type: 'network.send' });
+    // TODO(burdon): Catch errors.
     return this._channel.postMessage(gqlRequest, true).then(gqlResponse => {
-      this._eventListener && this._eventListener.emit({ type: 'network.in' });
+      this._eventListener && this._eventListener.emit({ type: 'network.recv' });
       return gqlResponse;
     });
   }

@@ -14,6 +14,8 @@ import { AppAction } from '../common/reducers';
 
 const logger = Logger.get('connector');
 
+// TODO(burdon): Move back to containers (don't obfuscate).
+
 //-------------------------------------------------------------------------------------------------
 // Query HOC utils.
 //-------------------------------------------------------------------------------------------------

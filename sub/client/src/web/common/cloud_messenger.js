@@ -75,7 +75,7 @@ class CloudMessenger {
    */
   fireMessage(data) {
     logger.info('Received: ' + JSON.stringify(data));
-    this._eventListener.emit({ type: 'network.in' });
+    this._eventListener.emit({ type: 'network.recv' });
 
     // Ignore invalidations from self.
     if (_.get(this._config, 'registration.clientId') !== data.senderId || data.force) {

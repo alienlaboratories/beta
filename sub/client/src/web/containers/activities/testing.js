@@ -3,16 +3,15 @@
 //
 
 import React from 'react';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
 
 import { ReactUtil } from '../../util/react';
+import { Actions } from '../../common/actions';
 import { Activity } from '../../common/activity';
 
-import { SearchListContainer, SearchPanelContainer } from '../../containers';
+import { SidePanelContainer } from '../sidepanel';
+import { SearchListContainer } from '../search_list';
 
-import { NavBar } from '../../components/navbar';
-import { StatusBar } from '../../components/statusbar';
+import { Layout } from './layout';
 
 /**
  * Testing Activity.
@@ -27,78 +26,34 @@ class TestingActivity extends React.Component {
     return Activity.getChildContext(this.props);
   }
 
-  handleAction(action) {
-    console.log(action);
-  }
+  constructor() {
+    super(...arguments);
 
-  // TODO(burdon): Factor out column. layout.
+    this._actions = Actions.actions();
+  }
 
   render() {
     return ReactUtil.render(this, () => {
-      let { config, eventListener, viewer, navigator } = this.props;
+      let { config, eventListener, viewer, navigator, typeRegistry } = this.props;
       if (!viewer) {
         return;
       }
 
-      // TODO(burdon): Factor out (specialize by app).
-      const actions = {
-        left: [
-          {
-            type: 'bug',
-            title: 'Debug info.',
-            icon: 'bug_report'
-          },
-          {
-            type: 'link',
-            title: 'GraphiQL.',
-            icon: 'language',
-            href: '/graphiql'
-          },
-          {
-            type: 'link',
-            title: 'Admin console.',
-            icon: 'graphic_eq',
-            href: '/admin'
-          },
-          {
-            type: 'link',
-            title: 'Account settings.',
-            icon: 'settings',
-            href: '/profile'
-          }
-        ],
+      let navbar = Layout.navbar(_.get(config, 'app.platform'), navigator);
 
-        right: [
-          {
-            type: 'refresh',
-            title: 'Refresh queries.',
-            icon: 'refresh'
-          }
-        ]
-      };
-
-      let version = _.get(config, 'app.version');
+      let sidebar = <SidePanelContainer navigator={ navigator} typeRegistry={ typeRegistry }/>;
 
       return (
-        <div className="ux-fullscreen ux-column">
-          <header>
-            <div className="ux-grow">
-              <h1>Alien</h1>
-            </div>
-
-            <NavBar navigator={ navigator }/>
-          </header>
-
-          <SearchPanelContainer/>
+        <Layout config={ config }
+                viewer={ viewer }
+                navbar={ navbar }
+                sidebar={ sidebar }
+                eventListener={ eventListener }
+                actions={ this._actions }>
 
           <SearchListContainer className="ux-grow"/>
 
-          <footer>
-            <StatusBar eventListener={ eventListener } actions={ actions } onAction={ this.handleAction.bind(this) }>
-              <span className="ux-font-xsmall">{ version }</span>
-            </StatusBar>
-          </footer>
-        </div>
+        </Layout>
       );
     });
   }
@@ -108,47 +63,4 @@ class TestingActivity extends React.Component {
 // HOC.
 //-------------------------------------------------------------------------------------------------
 
-// TODO(burdon): Remove.
-
-//
-// Tasks are merged (i.e., status + assigee); sub Tasks of Project are isolated with separate/munged "project/task" IDs.
-//
-const TestQuery = gql`
-  query TestQuery {
-    search: search(filter: { type: "Task", expr: { field: "status", value: { int: 1 } } }) {
-      items {
-        id
-        type
-        title
-
-        ... on Task {
-          status
-        }
-      }
-    }
-  }  
-`;
-
-export default Activity.compose(
-
-  graphql(TestQuery, {
-
-    options: (props) => ({
-      variables: {
-        filter: { type: 'Task' }
-      }
-    }),
-
-    props: ({ ownProps, data }) => {
-      let { errors, loading, search={} } = data;
-      let { items } = search;
-
-      return {
-        errors,
-        loading,
-        items
-      };
-    }
-  })
-
-)(TestingActivity);
+export default Activity.compose()(TestingActivity);

@@ -9,9 +9,9 @@ import PropTypes from 'prop-types';
 
 import { Path } from '../common/path';
 
-import AdminActivity from '../containers/activities/admin';
-import CanvasActivity from '../containers/activities/canvas';
-import FinderActivity from '../containers/activities/finder';
+// import AdminActivity from '../containers/activities/admin';
+// import CanvasActivity from '../containers/activities/canvas';
+// import FinderActivity from '../containers/activities/finder';
 
 /**
  * The Application must be a pure React component since HOCs may cause the component to be re-rendered,
@@ -39,28 +39,28 @@ export class Application extends React.Component {
         <Router history={ history }>
           {/* v4: <Switch> */}
 
-            {/*
-              * Must come first.
-              */}
-            <Route exact path={ Path.ADMIN } component={ AdminActivity }/>
+          {/*
+            * Must come first.
+            */}
+          {/*<Route exact path={ Path.ADMIN } component={ AdminActivity }/>*/}
 
-            {/*
-              * /inbox
-              * /favorites
-              */}
-            <Route path={ Path.route(['folder']) } component={ FinderActivity }/>
+          {/*
+            * /inbox
+            * /favorites
+            */}
+          {/*<Route path={ Path.route(['folder']) } component={ FinderActivity }/>*/}
 
-            {/*
-              * /project/xxx
-              * /project/board/xxx
-             */}
-            <Route path={ Path.route(['type', 'key']) } component={ CanvasActivity }/>
-            <Route path={ Path.route(['type', 'canvas', 'key']) } component={ CanvasActivity }/>
+          {/*
+            * /project/xxx
+            * /project/board/xxx
+           */}
+          {/*<Route path={ Path.route(['type', 'key']) } component={ CanvasActivity }/>*/}
+          {/*<Route path={ Path.route(['type', 'canvas', 'key']) } component={ CanvasActivity }/>*/}
 
-            {/*
-              * Catch.
-              */}
-            <Redirect from="*" to={ Path.HOME }/>
+          {/*
+            * Catch.
+            */}
+          <Redirect from="*" to={ Path.HOME }/>
 
           {/* </Switch> */}
         </Router>

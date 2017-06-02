@@ -89,7 +89,7 @@ export class TestList extends React.Component {
     let { item, items } = this.state;
 
     return (
-      <div className="ux-panel ux-grow">
+      <div className="ux-panel ux-column ux-grow">
         <div className="ux-tool-bar">
           <div/>
           <div>

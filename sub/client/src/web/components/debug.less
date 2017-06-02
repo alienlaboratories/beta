@@ -2,7 +2,9 @@
 // Copyright 2017 Alien Labs.
 //
 
-.ux-debug-panel-container {     // TODO(burdon): Not used?
+@import '../resources/css/ref/mixin';
+
+.ux-debug-panel-container {
   position: relative;
 
   .ux-debug-panel {
@@ -13,14 +15,14 @@
 
     color: darkgray;
     background-color: #333;
-    font-family: Monaco, monospace;
     font-size: 12px;
 
     opacity: .8;
     padding: 4px;
 
     label {
-      cursor: pointer;
+      .ux-text-noselect;
+      .ux-press;
     }
   }
 }

@@ -67,7 +67,7 @@ export class BaseApp {
     let message = ErrorUtil.message(error);
     this._eventListener.emit({
       type: 'error',
-      message: message
+      error
     });
 
     this._analytics.track('error', { message });

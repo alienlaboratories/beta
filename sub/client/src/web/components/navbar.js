@@ -11,23 +11,21 @@ import PropTypes from 'prop-types';
 export class NavBar extends React.Component {
 
   static propTypes = {
-    navigator: PropTypes.object.isRequired,
+    navigator: PropTypes.object,
   };
-
-  // TODO(burdon): Show/hide search view? Search "folder" overlay? (in full screen mode).
-  // TODO(burdon): Show hide < > arrows (on mobile).
-  // TODO(burdon): Current heading/breadcrumbs (in redux store).
 
   render() {
     let { navigator, children } = this.props;
 
     return (
-      <nav className="ux-nav-bar">
+      <nav className="ux-nav-bar ux-tool-bar">
         <div className="ux-grow">
           { children }
         </div>
 
+        { navigator &&
         <NavButtons navigator={ navigator }/>
+        }
       </nav>
     );
   }
