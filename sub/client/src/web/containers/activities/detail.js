@@ -37,7 +37,7 @@ class DetailActivity extends React.Component {
   render() {
     return ReactUtil.render(this, () => {
       let { params: { key } } = this.props;
-      let { config, debug, actions, eventListener, viewer, navigator, typeRegistry, search } = this.props;
+      let { config, debug, actions, eventListener, viewer, navigator, typeRegistry, filter } = this.props;
       if (!viewer) {
         return;
       }
@@ -48,7 +48,7 @@ class DetailActivity extends React.Component {
       let sidebar = <SidePanelContainer navigator={ navigator} typeRegistry={ typeRegistry }/>;
 
       // Only show search if in web mode and search is not empty.
-      let showSearch = (platform === Const.PLATFORM.WEB) && !_.isEmpty(search.text);
+      let searchPanel = (platform === Const.PLATFORM.WEB) && !_.isEmpty(filter.text) && <SearchListContainer/>;
 
       // TODO(burdon): By default show card.
       let content = (
@@ -66,7 +66,7 @@ class DetailActivity extends React.Component {
                 actions={ actions }
                 eventListener={ eventListener }>
 
-          <SplitPanel left={ showSearch && <SearchListContainer/> } right={ content }/>
+          <SplitPanel left={ searchPanel } right={ content }/>
 
         </Layout>
       );
@@ -79,10 +79,10 @@ class DetailActivity extends React.Component {
 //-------------------------------------------------------------------------------------------------
 
 const mapStateToProps = (state, ownProps) => {
-  let { search } = AppAction.getState(state);
+  let { search: { filter } } = AppAction.getState(state);
 
   return {
-    search
+    filter
   };
 };
 

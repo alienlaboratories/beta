@@ -18,20 +18,24 @@ export class SearchPanel extends React.Component {
 
   static propTypes = {
     className:  PropTypes.string,
-    search:     PropTypes.object,
+    filter:     PropTypes.object,                       // GQL filter.
     onSearch:   PropTypes.func.isRequired
   };
 
   handleSearch(text) {
-    this.props.onSearch(text);
+    let filter = {
+      text
+    };
+
+    this.props.onSearch(filter);
   }
 
   render() {
-    let { className, search={} } = this.props;
+    let { className, filter={} } = this.props;
 
     return (
       <div className={ DomUtil.className('ux-search-panel', 'ux-panel', className) }>
-        <SearchBar className="ux-grow" value={ search.text } onSearch={ this.handleSearch.bind(this) }/>
+        <SearchBar className="ux-grow" value={ filter.text } onSearch={ this.handleSearch.bind(this) }/>
       </div>
     );
   }
@@ -44,8 +48,8 @@ export class SearchBar extends React.Component {
 
   static propTypes = {
     className:  PropTypes.string,
-    onSearch:   PropTypes.func.isRequired,
-    value:      PropTypes.string
+    text:       PropTypes.string,
+    onSearch:   PropTypes.func.isRequired
   };
 
   reset() {
@@ -53,30 +57,30 @@ export class SearchBar extends React.Component {
   }
 
   set value(value) {
-    this.refs.text.value = value;
+    this.refs.textBox.value = value;
   }
 
   handleSearch(event) {
-    this.props.onSearch(this.refs.text.value);
+    this.props.onSearch(this.refs.textBox.value);
   }
 
   handleClear(event) {
-    this.refs.text.value = '';
-    this.refs.text.focus();
+    this.refs.textBox.value = '';
+    this.refs.textBox.focus();
   }
 
   render() {
-    let { value, className } = this.props;
+    let { text, className } = this.props;
 
     return (
       <div className={ DomUtil.className('ux-searchbar', 'ux-toolbar', className) }>
         <i className="ux-icon ux-icon-search" onClick={ this.handleSearch.bind(this) }/>
 
-        <TextBox ref="text"
+        <TextBox ref="textBox"
                  className='ux-grow'
                  autoFocus={ true }
                  placeholder='Search...'
-                 value={ value }
+                 value={ text }
                  onCancel={ this.handleClear.bind(this) }
                  onChange={ this.handleSearch.bind(this) }/>
 

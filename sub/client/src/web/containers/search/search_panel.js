@@ -7,20 +7,18 @@ import { connect } from 'react-redux';
 import { AppAction } from '../../common/reducers';
 import { SearchPanel } from '../../components/search';
 
-// TODO(burdon): AppState should contain filter (not text).
-
 const mapStateToProps = (state, ownProps) => {
-  let { search } = AppAction.getState(state);
+  let { search: { filter } } = AppAction.getState(state);
 
   return {
-    search
+    filter
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    onSearch: (text) => {
-      dispatch(AppAction.search(text));
+    onSearch: (filter) => {
+      dispatch(AppAction.search(filter));
     }
   };
 };

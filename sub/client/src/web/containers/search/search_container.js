@@ -27,13 +27,13 @@ export const SearchQuery = gql`
 `;
 
 const mapStateToProps = (state, ownProps) => {
-  let { injector, search } = AppAction.getState(state);
+  let { injector, search: { filter } } = AppAction.getState(state);
 
-  let typeRegistry = injector.get(TypeRegistry);
+  let typeRegistry = injector.get(TypeRegistry);    // TODO(burdon): Remove?
 
   return {
     typeRegistry,
-    search
+    filter
   };
 };
 
@@ -54,12 +54,7 @@ export function SearchContainer(query, path='search') {
       withRef: 'true',
 
       options: (props) => {
-        let { search: { text } } = props;
-
-        // Create the filter.
-        let filter = {
-          text
-        };
+        let { filter } = props;
 
         return {
           variables: {

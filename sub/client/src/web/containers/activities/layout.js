@@ -30,9 +30,12 @@ export class SplitPanel extends React.Component {
 
     return (
       <div className="ux-row ux-grow">
+        { left &&
         <div className="ux-layout-side-panel">
           { left }
         </div>
+        }
+
         <div className="ux-grow">
           { right }
         </div>

@@ -4,6 +4,8 @@
 
 import { Analytics } from './analytics';
 
+// TODO(burdon): Split into separate reducer files.
+
 //-------------------------------------------------------------------------------------------------
 // Global.
 // The global reducer listens for Apollo query results and updates the App state.
@@ -93,11 +95,13 @@ export class AppAction {
 
   /**
    * Set search state (preserved across navigation).
+   * @param {{ text }} filter GQL filter.
    */
-  static search(text) {
+  static search(filter) {
+    console.assert(_.isObject(filter));
     return {
       type: AppAction.ACTION.SEARCH,
-      value: text
+      value: filter
     };
   }
 
@@ -141,7 +145,7 @@ export const AppReducer = (injector, config, apolloClient) => {
 
     // Search bar.
     search: {
-      text: ''
+      filter: { text: '' }
     },
 
     // Board type.
@@ -170,16 +174,13 @@ export const AppReducer = (injector, config, apolloClient) => {
         return _.assign({}, state, _.pick(action.value, ['userProfile', 'server']));
       }
 
-      // TODO(burdon): Get search query (not just text).
       case AppAction.ACTION.SEARCH: {
         // TODO(madadam): Sanitize logs for privacy; Remove user query from analytics events.
         let analytics = state.injector.get(Analytics.INJECTOR_KEY);
-        analytics.track('search', { text: action.value });
+        analytics.track('search', { filter: action.value });
 
         return _.assign({}, state, {
-          search: {
-            text: action.value
-          }
+          search: { filter: action.value }
         });
       }
 

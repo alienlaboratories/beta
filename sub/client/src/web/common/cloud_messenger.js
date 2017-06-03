@@ -123,7 +123,7 @@ export class FirebaseCloudMessenger extends CloudMessenger {
       // NOTE: Currently warnings (5/4/17): FB service ticket.
       // firebase-messaging.js:26 Event handler of 'push' event must be added on the initial evaluation of worker script.
       //
-      console.log('Loading Service Worker...');
+      logger.log('Loading Service Worker...');
       return navigator.serviceWorker.register('/service_worker.js').then(registration => {
 
         // https://console.firebase.google.com/project/alien-dev/overview
