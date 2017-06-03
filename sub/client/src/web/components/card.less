@@ -2,6 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
+@import (reference) '../resources/css/ref/mixin.less';
 @import (reference) '../resources/css/ref/theme.less';
 
 .ux-card-deck {
@@ -26,6 +27,7 @@
       background-color: @ux-card-header-background;
 
       h1 {
+        .ux-text-overflow;
         font-size: @ux-font-large;
         flex-grow: 1;
       }
