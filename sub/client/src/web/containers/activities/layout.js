@@ -16,7 +16,7 @@ import { NavBar } from '../../components/navbar';
 import { StatusBar } from '../../components/statusbar';
 import { Sidebar, SidebarToggle } from '../../components/sidebar';
 
-import { SearchPanelContainer } from '../search_panel';
+import { SearchPanelContainer } from '../search/search_panel';
 
 import './layout.less';
 

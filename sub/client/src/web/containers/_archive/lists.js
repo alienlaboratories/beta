@@ -75,6 +75,87 @@ export const DebugListItemRenderer = (item) => {
 };
 
 //-------------------------------------------------------------------------------------------------
+// Query.
+//-------------------------------------------------------------------------------------------------
+
+/**
+ * List query.
+ *
+ * @param query
+ * @param path
+ */
+function searchQuery(query, path='search') {
+  console.assert(query && path);
+  Connector.registerQuery(query);
+
+  // Return HOC.
+  return graphql(query, {
+    withRef: 'true',
+
+    // Configure query variables.
+    // http://dev.apollodata.com/react/queries.html#graphql-options
+    // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient\.query
+    options: (props) => {
+      let { filter } = props;
+
+      // TODO(burdon): Generates a new callback each time rendered. Create property for class.
+      // https://github.com/apollostack/apollo-client/blob/master/src/ApolloClient.ts
+      return {
+        variables: {
+          filter,
+        }
+      };
+    },
+
+    // Configure props passed to component.
+    // http://dev.apollodata.com/react/queries.html#graphql-props
+    props: ({ ownProps, data }) => {
+      let { matcher, filter, itemInjector } = ownProps;
+      let { errors, loading, refetch } = data;
+
+      // Get query result.
+      let items = _.get(data, path + '.items', []);
+      let groupedItems = _.get(data, path + '.groupedItems');
+
+      // Inject additional items (e.g., from context).
+      if (itemInjector) {
+        items = itemInjector(items);
+      }
+
+      return {
+        errors,
+        loading,
+        refetch,
+        matcher,
+
+        // Data from query.
+        items,
+        groupedItems,
+
+        // Paging.
+        // TODO(burdon): Hook-up to UX.
+        // http://dev.apollodata.com/react/pagination.html
+        // http://dev.apollodata.com/react/cache-updates.html#fetchMore
+        fetchMoreItems: () => {
+          return data.fetchMore({
+            variables: {
+              filter
+            },
+
+            // TODO(burdon): Grouped items.
+            updateQuery: (previousResult, { fetchMoreResult }) => {
+              return _.assign({}, previousResult, {
+                items: [..._.get(previousResult, path), ..._.get(fetchMoreResult.data, path)]
+              });
+            }
+          });
+        }
+      };
+    }
+  });
+}
+
+//-------------------------------------------------------------------------------------------------
 // Basic List.
 //-------------------------------------------------------------------------------------------------
 
@@ -90,7 +171,7 @@ const BasicSearchQuery = gql`
   ${Fragments.ItemFragment}
 `;
 
-export const BasicSearchList = Connector.connect(Connector.searchQuery(BasicSearchQuery))(SubscriptionWrapper(List));
+export const BasicSearchList = Connector.connect(searchQuery(BasicSearchQuery))(SubscriptionWrapper(List));
 
 //-------------------------------------------------------------------------------------------------
 // Card List.
@@ -116,7 +197,7 @@ const CardSearchQuery = gql`
   ${Fragments.ItemMetaFragment}
 `;
 
-export const CardSearchList = Connector.connect(Connector.searchQuery(CardSearchQuery))(SubscriptionWrapper(List));
+export const CardSearchList = Connector.connect(searchQuery(CardSearchQuery))(SubscriptionWrapper(List));
 
 //-------------------------------------------------------------------------------------------------
 // Simple List.

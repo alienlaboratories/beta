@@ -408,5 +408,5 @@ const TaskQuery = gql`
 `;
 
 export const TaskCanvas = compose(
-  Connector.connect(Connector.itemQuery(TaskQuery))
+  Connector.connect(QueryItem(TaskQuery))
 )(TaskCanvasComponent);

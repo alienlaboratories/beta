@@ -105,5 +105,5 @@ const UserQuery = gql`
 `;
 
 export const UserCanvas = compose(
-  Connector.connect(Connector.itemQuery(UserQuery))
+  Connector.connect(QueryItem(UserQuery))
 )(UserCanvasComponent);

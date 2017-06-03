@@ -527,7 +527,7 @@ const ProjectBoardQuery = gql`
 
 export const ProjectBoardCanvas = compose(
 
-  Connector.connect(Connector.itemQuery(ProjectBoardQuery)),
+  Connector.connect(QueryItem(ProjectBoardQuery)),
 
   connectWithRef((state, ownProps) => {
     let { canvas: { boardAlias='status' } } = AppAction.getState(state);

@@ -340,5 +340,5 @@ const ContactQuery = gql`
 `;
 
 export const ContactCanvas = compose(
-  Connector.connect(Connector.itemQuery(ContactQuery))
+  Connector.connect(QueryItem(ContactQuery))
 )(ContactCanvasComponent);

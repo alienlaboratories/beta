@@ -11,8 +11,8 @@ import { ReactUtil } from '../../util/react';
 import { AppAction } from '../../common/reducers';
 
 import { SidePanelContainer } from '../sidepanel';
-import { SearchListContainer } from '../search_list';
-import { CardContainer } from '../item/item';
+import { SearchListContainer } from '../search/search_list';
+import { CardContainer } from '../item/item_container';
 
 import { Activity } from './activity';
 import { Layout } from './layout';
@@ -63,9 +63,7 @@ class DetailActivity extends React.Component {
 
           <div className="ux-row ux-grow">
             { showSearch &&
-            <div className="ux-panel ux-search-list-container">
-              <SearchListContainer className="ux-search-list"/>
-            </div>
+            <SearchListContainer/>
             }
 
             <div className="ux-panel ux-grow">

@@ -7,7 +7,7 @@ import React from 'react';
 import { ReactUtil } from '../../util/react';
 
 import { SidePanelContainer } from '../sidepanel';
-import { SearchListContainer } from '../search_list';
+import { SearchListContainer } from '../search/search_list';
 
 import { Activity } from './activity';
 import { Layout } from './layout';
@@ -48,7 +48,7 @@ class FolderActivity extends React.Component {
                 actions={ actions }
                 eventListener={ eventListener }>
 
-          <SearchListContainer className="ux-grow"/>
+          <SearchListContainer/>
 
         </Layout>
       );

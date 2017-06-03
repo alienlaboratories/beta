@@ -133,5 +133,5 @@ const GroupQuery = gql`
 `;
 
 export const GroupCanvas = compose(
-  Connector.connect(Connector.itemQuery(GroupQuery))
+  Connector.connect(QueryItem(GroupQuery))
 )(GroupCanvasComponent);

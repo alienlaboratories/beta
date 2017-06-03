@@ -31,7 +31,7 @@ const ItemQuery = gql`
 `;
 
 export const ItemCanvasHeader = compose(
-  Connector.connect(Connector.itemQuery(ItemQuery))
+  Connector.connect(QueryItem(ItemQuery))
 )(ItemCanvasHeaderComponent);
 
 /**

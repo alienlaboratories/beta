@@ -4,8 +4,8 @@
 
 import { connect } from 'react-redux';
 
-import { AppAction } from '../common/reducers';
-import { SearchPanel } from '../components/search';
+import { AppAction } from '../../common/reducers';
+import { SearchPanel } from '../../components/search';
 
 const mapStateToProps = (state, ownProps) => {
   let { search } = AppAction.getState(state);
