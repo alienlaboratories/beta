@@ -82,6 +82,7 @@ class NetworkIndicator extends React.Component {
         [type]: true
       });
 
+      // Off-timer.
       this._timer[[type]](() => {
         this.setState({
           [type]: false
@@ -89,13 +90,17 @@ class NetworkIndicator extends React.Component {
       });
     };
 
-    this.props.eventListener
-      .listen('network.send', event => { trigger('send'); })
-      .listen('network.recv', event => { trigger('recv'); });
+    this._listeners = {
+      send: this.props.eventListener.listen('network.send', event => { trigger('send'); }),
+      recv: this.props.eventListener.listen('network.recv', event => { trigger('recv'); })
+    };
   }
 
   componentWillUnmount() {
-    console.log('########');
+
+    // Unregister.
+    this._listeners.send();
+    this._listeners.recv();
 
     // Cancel timers to avoid setState on unmounted component.
     // JS Error: Warning: setState(...): Can only update a mounted or mounting component.
@@ -132,11 +137,17 @@ class ErrorIndicator extends React.Component {
   constructor() {
     super(...arguments);
 
-    this.props.eventListener.listen('error', event => {
+    this._listener = this.props.eventListener.listen('error', event => {
       this.setState({
         error: event.error
       });
     });
+  }
+
+  componentWillUnmount() {
+
+    // Unregister.
+    this._listener();
   }
 
   handleReset() {
