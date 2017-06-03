@@ -4,7 +4,23 @@
 
 @import (reference) '../../resources/css/ref/theme';
 
+// For testing (e.g., mobile, CRX), don't expand screen.
+.ux-platform-mobile-testing .ux-layout {
+  width: 400px;
+  flex-grow: 0;
+}
+
 .ux-layout {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+  .ux-layout-side-panel {
+    display: flex;
+
+    // Only constrain on web.
+    width: @ux-card-width;
+  }
 
   header {
     color: @ux-header-color;
@@ -16,7 +32,11 @@
       i.ux-icon-sidebar-toggle {
         font-size: 24px;
         color: @ux-header-color;
-        margin-right: 14px;
+        margin-right: 8px;
+      }
+
+      h1 {
+        opacity: .5;
       }
 
       ul {

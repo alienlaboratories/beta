@@ -122,7 +122,7 @@ export class CardList extends React.Component {
     // TODO(burdon): Warning if no mutation callback provided.
 
     return (
-      <div className="ux-card-deck ux-panel ux-column">
+      <div className="ux-card-deck ux-panel ux-column ux-grow">
         <List items={ items }
               itemRenderer={ Card.ItemRenderer }
               className="ux-grow"

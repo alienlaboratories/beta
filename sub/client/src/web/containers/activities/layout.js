@@ -21,6 +21,27 @@ import { SearchPanelContainer } from '../search/search_panel';
 import './layout.less';
 
 /**
+ * Split panel (for open/closed search panel).
+ */
+export class SplitPanel extends React.Component {
+
+  render() {
+    let { left, right } = this.props;
+
+    return (
+      <div className="ux-row ux-grow">
+        <div className="ux-layout-side-panel">
+          { left }
+        </div>
+        <div className="ux-grow">
+          { right }
+        </div>
+      </div>
+    );
+  }
+}
+
+/**
  * Main column layout.
  */
 export class Layout extends React.Component {
@@ -77,12 +98,15 @@ export class Layout extends React.Component {
 
     let title = AppDefs.APP_NAME;
     let version = _.get(config, 'app.version');
+    let platform = _.get(config, 'app.platform');
 
-    let debugPanel = debug.showPanel && <DebugPanel/>;
+    let debugPanel = (platform === Const.PLATFORM.WEB && debug.showPanel) && <DebugPanel/>;
+
+    let links = (platform === Const.PLATFORM.WEB) && <Links viewer={ viewer }/>;
 
     return (
-      <div className="ux-fullscreen ux-layout">
-        <div className="ux-column">
+      <div className="ux-fullscreen">
+        <div className="ux-layout">
 
           {/*
             * Header
@@ -97,7 +121,7 @@ export class Layout extends React.Component {
                 <h1>{ title }</h1>
               </div>
 
-              <Links viewer={ viewer }/>
+              { links }
             </div>
 
             { navbar }

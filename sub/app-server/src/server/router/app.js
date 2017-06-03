@@ -64,7 +64,7 @@ export const appRouter = (config, clientManager, options) => {
   //
   router.get(new RegExp(/(.*)/), isAuthenticated('/user/login'), (req, res, next) => {
     let { user } = req;
-    let { bundle = 'web' } = req.query;
+    let { bundle='web', platform='web' } = req.query;
 
     // Create the client.
     // TODO(burdon): Client should register after startup? (might store ID -- esp. if has worker, etc.)
@@ -115,6 +115,9 @@ export const appRouter = (config, clientManager, options) => {
 
         // Handlebars layout.
         layout: 'app',
+
+        // Const.PLATFORM.
+        platform,
 
         // Loading animation.
         loadingIndicator: __PRODUCTION__,

@@ -5,17 +5,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { ID } from 'alien-core';
+import { Const, ID } from 'alien-core';
 
 import { ReactUtil } from '../../util/react';
 import { AppAction } from '../../common/reducers';
 
 import { SidePanelContainer } from '../sidepanel';
-import { SearchListContainer, CardDeckContainer } from '../search/search_list';
+import { SearchListContainer } from '../search/search_list';
 import { CardContainer } from '../item/item_container';
 
 import { Activity } from './activity';
-import { Layout } from './layout';
+import { Layout, SplitPanel } from './layout';
 
 import './detail.less';
 
@@ -42,15 +42,20 @@ class DetailActivity extends React.Component {
         return;
       }
 
-      let navbar = Layout.navbar(_.get(config, 'app.platform'), navigator);
+      let platform = _.get(config, 'app.platform');
+      let navbar = Layout.navbar(platform, navigator);
 
       let sidebar = <SidePanelContainer navigator={ navigator} typeRegistry={ typeRegistry }/>;
 
-      // TODO(burdon): Better test.
-      let showSearch = !_.isEmpty(search.text);
+      // Only show search if in web mode and search is not empty.
+      let showSearch = (platform === Const.PLATFORM.WEB) && !_.isEmpty(search.text);
 
       // TODO(burdon): By default show card.
-      let card = <CardContainer itemKey={ ID.decodeKey(key) }/>;
+      let content = (
+        <div className="ux-card-deck">
+          <CardContainer itemKey={ ID.decodeKey(key) }/>
+        </div>
+      );
 
       return (
         <Layout config={ config }
@@ -61,17 +66,7 @@ class DetailActivity extends React.Component {
                 actions={ actions }
                 eventListener={ eventListener }>
 
-          <div className="ux-row ux-grow">
-            { showSearch &&
-            <CardDeckContainer/>
-            }
-
-            <div className="ux-panel ux-grow">
-              <div className="ux-card-deck">
-                { card }
-              </div>
-            </div>
-          </div>
+          <SplitPanel left={ showSearch && <SearchListContainer/> } right={ content }/>
 
         </Layout>
       );

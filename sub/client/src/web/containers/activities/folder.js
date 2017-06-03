@@ -4,13 +4,15 @@
 
 import React from 'react';
 
+import { Const } from 'alien-core';
+
 import { ReactUtil } from '../../util/react';
 
 import { SidePanelContainer } from '../sidepanel';
-import { SearchListContainer } from '../search/search_list';
+import { SearchListContainer, CardDeckContainer } from '../search/search_list';
 
 import { Activity } from './activity';
-import { Layout } from './layout';
+import { Layout, SplitPanel } from './layout';
 
 /**
  * Folder Activity.
@@ -35,9 +37,18 @@ class FolderActivity extends React.Component {
         return;
       }
 
-      let navbar = Layout.navbar(_.get(config, 'app.platform'), navigator);
+      let platform = _.get(config, 'app.platform');
 
-      let sidebar = <SidePanelContainer navigator={ navigator} typeRegistry={ typeRegistry }/>;
+      let navbar = Layout.navbar(platform, navigator);
+
+      let sidebar = <SidePanelContainer navigator={ navigator } typeRegistry={ typeRegistry }/>;
+
+      let content = (platform === Const.PLATFORM.WEB) ? <SearchListContainer/> : <CardDeckContainer/>;
+
+      // Wrap with split panel if in web mode (so the search panel doesn't expand).
+      if (platform === Const.PLATFORM.WEB) {
+        content = <SplitPanel left={ content }/>;
+      }
 
       return (
         <Layout config={ config }
@@ -48,7 +59,7 @@ class FolderActivity extends React.Component {
                 actions={ actions }
                 eventListener={ eventListener }>
 
-          <SearchListContainer/>
+          { content }
 
         </Layout>
       );
