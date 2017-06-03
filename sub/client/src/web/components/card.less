@@ -5,9 +5,17 @@
 @import (reference) '../resources/css/ref/mixin.less';
 @import (reference) '../resources/css/ref/theme.less';
 
+.ux-platform-web {
+
+  // Constrain on web (otherwise expand).
+  .ux-card-deck {
+    flex-grow: 0;
+    width: @ux-card-width;
+  }
+}
+
 .ux-card-deck {
-  // Don't constrain CRX/mobile.
-  width: @ux-card-width;
+  flex-grow: 1;
 
   background-color: @ux-card-deck-background;
 

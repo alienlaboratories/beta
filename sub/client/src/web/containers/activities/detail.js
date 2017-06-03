@@ -30,10 +30,6 @@ class DetailActivity extends React.Component {
     return Activity.getChildContext(this.props);
   }
 
-  constructor() {
-    super(...arguments);
-  }
-
   render() {
     return ReactUtil.render(this, () => {
       let { params: { key } } = this.props;
@@ -42,16 +38,14 @@ class DetailActivity extends React.Component {
         return;
       }
 
-      let platform = _.get(config, 'app.platform');
-      let navbar = Layout.navbar(platform, navigator);
-
       let sidebar = <SidePanelContainer navigator={ navigator} typeRegistry={ typeRegistry }/>;
 
-      // Only show search if in web mode and search is not empty.
+      // Only show search results if in web mode and search is not empty.
+      let platform = _.get(config, 'app.platform');
       let searchPanel =
         (platform === Const.PLATFORM.WEB) && !QueryParser.isEmpty(filter) && <SearchListContainer/>;
 
-      // TODO(burdon): By default show card.
+      // TODO(burdon): Type-specific cards.
       let content = (
         <div className="ux-card-deck">
           <CardContainer itemKey={ ID.decodeKey(key) }/>
@@ -62,9 +56,9 @@ class DetailActivity extends React.Component {
         <Layout config={ config }
                 debug={ debug }
                 viewer={ viewer }
-                navbar={ navbar }
                 sidebar={ sidebar }
                 actions={ actions }
+                navigator={ navigator }
                 eventListener={ eventListener }>
 
           <SplitPanel left={ searchPanel } right={ content }/>

@@ -69,6 +69,7 @@ class SidePanel extends React.Component {
       const FolderList = (props) => (
         <List items={ props.items }
               itemRenderer={ SidePanel.ItemRenderer(typeRegistry) }
+              highlight={ true }
               onItemSelect={ this.onSelect.bind(this) }/>
       );
 
@@ -77,13 +78,17 @@ class SidePanel extends React.Component {
       let projects = _.flatten(_.map(groups, group => group.projects));
 
       return (
-        <div className="app-sidepanel">
+        <div className="ux-side-panel ux-column ux-grow">
+
           <FolderList items={ folders }/>
-          <div className="app-divider"/>
+          <div className="ux-divider"/>
+
           <FolderList items={ groups }/>
-          <div className="app-divider"/>
+          <div className="ux-divider"/>
+
           <FolderList items={ projects }/>
-          <div className="app-divider"/>
+          <div className="ux-divider"/>
+
           <FolderList items={ adminItems }/>
         </div>
       );

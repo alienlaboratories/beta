@@ -42,11 +42,12 @@ const mapStateToProps = (state, ownProps) => {
   let contextManager  = injector.get(ContextManager);
   let idGenerator     = injector.get(IdGenerator);
 
+  // TODO(burdon): CRX Navigator should be able to open windows (but otherwise be the same).
   // CRX Navigator opens in new window (overridden in mapDispatchToProps for web).
   let navigator;
-  if (_.get(config, 'app.platform') === Const.PLATFORM.CRX) {
-    navigator = new WindowNavigator(new PropertyProvider(appState, 'server'));
-  }
+  // if (_.get(config, 'app.platform') === Const.PLATFORM.CRX) {
+  //   navigator = new WindowNavigator(new PropertyProvider(appState, 'server'));
+  // }
 
   return {
     config,

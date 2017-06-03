@@ -28,10 +28,6 @@ class FolderActivity extends React.Component {
     return Activity.getChildContext(this.props);
   }
 
-  constructor() {
-    super(...arguments);
-  }
-
   render() {
     return ReactUtil.render(this, () => {
       let { params: { folder='inbox' } } = this.props;
@@ -47,12 +43,9 @@ class FolderActivity extends React.Component {
         logger.warn('Invalid folder: ' + folder);
       }
 
-      let platform = _.get(config, 'app.platform');
-
-      let navbar = Layout.navbar(platform, navigator);
-
       let sidebar = <SidePanelContainer navigator={ navigator } typeRegistry={ typeRegistry }/>;
 
+      let platform = _.get(config, 'app.platform');
       let content = (platform === Const.PLATFORM.WEB) ?
         <SearchListContainer filter={ defaultFilter }/>:
         <CardDeckContainer filter={ defaultFilter }/>;
@@ -66,9 +59,9 @@ class FolderActivity extends React.Component {
         <Layout config={ config }
                 debug={ debug }
                 viewer={ viewer }
-                navbar={ navbar }
                 sidebar={ sidebar }
                 actions={ actions }
+                navigator={ navigator }
                 eventListener={ eventListener }>
 
           { content }

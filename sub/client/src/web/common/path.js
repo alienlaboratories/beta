@@ -4,9 +4,12 @@
 
 import { goBack, goForward, push } from 'react-router-redux';
 
+import { Logger } from 'alien-util';
 import { ID } from 'alien-core';
 
 import { AppDefs } from '../../common/defs';
+
+const logger = Logger.get('path');
 
 /**
  * Router paths.
@@ -87,6 +90,7 @@ export class Navigator {
 
   // TODO(burdon): Standardize usage.
   push(path) {
+    logger.log('Push:', path);
     this.dispatch(push(path));
   }
 
@@ -111,6 +115,7 @@ export class WindowNavigator {
 
   pushCanvas(item) {
     let path = this._serverProvider.value + Path.canvas(ID.key(item));
+    logger.log('Open:', path);
     window.open(path, 'ALIEN');
   }
 }

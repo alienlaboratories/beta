@@ -12,7 +12,7 @@ import { Path } from '../../common/path';
 import { AppDefs } from '../../../common/defs';
 
 import { DebugPanel } from '../../components/debug';
-import { NavBar } from '../../components/navbar';
+import { NavBar, NavButtons } from '../../components/navbar';
 import { StatusBar } from '../../components/statusbar';
 import { Sidebar, SidebarToggle } from '../../components/sidebar';
 
@@ -67,45 +67,44 @@ export class Layout extends React.Component {
     </NavBar>
   );
 
-  // TODO(burdon): Use classes directly.
-  static navbar(platform, navigator) {
-    switch (platform) {
-      case Const.PLATFORM.WEB: {
-        return (
-          <Layout.WebNavbar navigator={ navigator }/>
-        );
-      }
-
-      case Const.PLATFORM.CRX:
-      case Const.PLATFORM.MOBILE:
-      default: {
-        return (
-          <Layout.MobileNavbar/>
-        );
-      }
-    }
-  }
-
   static propTypes = {
     config:         PropTypes.object.isRequired,
     debug:          PropTypes.object.isRequired,
     viewer:         PropTypes.object.isRequired,
+    navigator:      PropTypes.object.isRequired,
     eventListener:  PropTypes.object.isRequired,
     actions:        PropTypes.object.isRequired,
-    navbar:         PropTypes.object,
     sidebar:        PropTypes.object
   };
 
   render() {
-    let { config, debug, viewer, eventListener, actions, navbar, sidebar, children } = this.props;
+    let { config, debug, viewer, navigator, eventListener, actions, sidebar, children } = this.props;
 
     let title = AppDefs.APP_NAME;
     let version = _.get(config, 'app.version');
     let platform = _.get(config, 'app.platform');
 
-    let debugPanel = (platform === Const.PLATFORM.WEB && debug.showPanel) && <DebugPanel/>;
+    let links;
+    let navbar;
+    let debugPanel;
 
-    let links = (platform === Const.PLATFORM.WEB) && <Links viewer={ viewer }/>;
+    switch (platform) {
+      case Const.PLATFORM.WEB: {
+        links = <Links viewer={ viewer }/>;
+        navbar = <Layout.WebNavbar navigator={ navigator }/>;
+        if (debug.showPanel) {
+          debugPanel = <DebugPanel/>;
+        }
+        break;
+      }
+
+      default: {
+        links = <NavButtons navigator={ navigator }/>;
+        navbar = <Layout.MobileNavbar/>;
+        break;
+      }
+    }
+
 
     return (
       <div className="ux-fullscreen">
@@ -136,7 +135,7 @@ export class Layout extends React.Component {
             */}
           <main className="ux-row">
             { sidebar &&
-            <Sidebar ref="sidebar">
+            <Sidebar ref="sidebar" autoClose={ true }>
               { sidebar }
             </Sidebar>
             }

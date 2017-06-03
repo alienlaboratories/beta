@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 
 import { Path } from '../../web/common/path';
 
+import DetailActivity from '../../web/containers/activities/detail';
 import FolderActivity from '../../web/containers/activities/folder';
 
 import '../../web/resources/css/app.less';
@@ -36,6 +37,8 @@ export class Application extends React.Component {
         <Router history={ history }>
 
           <Route path={ Path.route(['folder']) } component={ FolderActivity }/>
+          <Route path={ Path.route(['canvas', 'key']) } component={ DetailActivity }/>
+
           <Redirect from='*' to={ Path.HOME }/>
 
         </Router>
