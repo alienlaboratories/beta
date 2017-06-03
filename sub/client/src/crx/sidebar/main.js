@@ -11,7 +11,8 @@ import {
 import { Path } from '../../web/common/path';
 import { BaseApp } from '../../web/common/base_app';
 import { ChromeNetworkInterface } from '../../web/common/network';
-import { AppAction, AppReducer, ContextAction, ContextReducer } from '../../web/common/reducers';
+import { AppAction, AppReducer } from '../../web/common/reducers';
+import { ContextAction, ContextReducer } from '../../web/common/context';
 
 import { SystemChannel, SidebarCommand } from '../common';
 import { SidebarAction, SidebarReducer } from '../sidebar/reducers';

@@ -7,6 +7,57 @@ import { Database, ItemUtil } from 'alien-core';
 
 const logger = Logger.get('context');
 
+//-------------------------------------------------------------------------------------------------
+// Context Reducer.
+//-------------------------------------------------------------------------------------------------
+
+const CONTEXT_NAMESPACE = 'ALIEN_CONTEXT';
+
+/**
+ * Application context (e.g., current page for CRX, location, time, etc.)
+ * NOTE: This isn't limited to the CRX.
+ */
+export class ContextAction {
+
+  static initialState = {};
+
+  static ACTION = {
+    UPDATE_CONTEXT: `${CONTEXT_NAMESPACE}/UPDATE`,
+  };
+
+  static get namespace() {
+    return CONTEXT_NAMESPACE;
+  }
+
+  static getState(state, field=undefined) {
+    state = _.get(state, ContextAction.namespace, {});
+    return field ? _.get(state, field) : state;
+  }
+
+  /**
+   * Received context events from content script.
+   * @param context
+   */
+  static updateContext(context) {
+    return {
+      type: ContextAction.ACTION.UPDATE_CONTEXT,
+      context
+    };
+  }
+}
+
+export const ContextReducer = (state=ContextAction.initialState, action) => {
+  switch (action.type) {
+
+    case ContextAction.ACTION.UPDATE_CONTEXT: {
+      return _.assign({}, state, action.context);
+    }
+
+    default:
+      return state;
+  }
+};
+
 /**
  * Application Context.
  *
@@ -150,7 +201,7 @@ export class ContextManager {
    * @return {[{Item]}
    */
   injectItems(items) {
-    let itemsResult = [];
+    let mergedItems = [];
 
     // Track items in list.
     let itemsById = new Map();
@@ -176,7 +227,7 @@ export class ContextManager {
       }
 
       // Track items in the result.
-      itemsResult.push(item);
+      mergedItems.push(item);
       itemsById.set(item.id, item);
     });
 
@@ -185,10 +236,10 @@ export class ContextManager {
     //
     _.each(items, item => {
       if (!itemsById.get(item.id)) {
-        itemsResult.push(item);
+        mergedItems.push(item);
       }
     });
 
-    return itemsResult;
+    return mergedItems;
   }
 }

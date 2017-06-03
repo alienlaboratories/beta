@@ -6,7 +6,8 @@ import { createMemoryHistory } from 'react-router';
 
 import { WebApp } from '../web/app/main';
 import { Path } from '../web/common/path';
-import { AppAction, AppReducer, ContextAction, ContextReducer } from '../web/common/reducers';
+import { AppAction, AppReducer } from '../web/common/reducers';
+import { ContextAction, ContextReducer } from '../web/common/context';
 
 import { SidebarAction, SidebarReducer } from './sidebar/reducers';
 

@@ -49,9 +49,9 @@ export class Resolvers {
   //
 
   static DefaultItem = {
-    version: (obj, args, context) => {
-      return obj.version || 0;
-    }
+    // version: (obj, args, context) => {
+    //   return obj.version || 0;
+    // }
   };
 
   /**
@@ -114,8 +114,6 @@ export class Resolvers {
           return obj.type;
         }
       },
-
-      Folder: _.assign({}, Resolvers.DefaultItem, {}),
 
       //
       // Type resolvers:

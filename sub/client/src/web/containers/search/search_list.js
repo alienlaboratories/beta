@@ -4,11 +4,13 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { compose } from 'react-apollo';
 
 import { SubscriptionWrapper } from '../../util/subscriptions';
 import { Card } from '../../components/card';
 import { List, ListItem } from '../../components/list';
 
+import { ContextQuery, ContextContainer } from './context_container';
 import { SearchQuery, SearchContainer } from './search_container';
 
 //-------------------------------------------------------------------------------------------------
@@ -98,8 +100,6 @@ export class SearchList extends React.Component {
   }
 }
 
-export const SearchListContainer = SearchContainer(SearchQuery)(SubscriptionWrapper(SearchList));
-
 //-------------------------------------------------------------------------------------------------
 // Card list.
 //-------------------------------------------------------------------------------------------------
@@ -119,10 +119,17 @@ export class CardList extends React.Component {
   }
 
   render() {
-    let { items } = this.props;
+    let { items, itemInjector } = this.props;
 
     // TODO(burdon): Handle mutations (e.g., labels).
     // TODO(burdon): Warning if no mutation callback provided.
+
+    // TODO(burdon): Merge isn't working.
+    // TODO(burdon): Avoid merging here? (move logic out of context manager).
+    if (itemInjector) {
+      console.log('MERGED');
+      items = itemInjector(items);
+    }
 
     return (
       <div className="ux-card-deck ux-panel ux-column ux-grow">
@@ -135,4 +142,15 @@ export class CardList extends React.Component {
   }
 }
 
-export const CardDeckContainer = SearchContainer(SearchQuery)(SubscriptionWrapper(CardList));
+//-------------------------------------------------------------------------------------------------
+// Combined HOC.
+//-------------------------------------------------------------------------------------------------
+
+const SearchContextContainer = compose(
+  ContextContainer(ContextQuery),
+  SearchContainer(SearchQuery)
+);
+
+export const SearchListContainer = SearchContextContainer(SubscriptionWrapper(SearchList));
+
+export const CardDeckContainer = SearchContextContainer(SubscriptionWrapper(CardList));

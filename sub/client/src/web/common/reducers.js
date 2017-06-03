@@ -4,7 +4,7 @@
 
 import { Analytics } from './analytics';
 
-// TODO(burdon): Split into separate reducer files.
+// TODO(burdon): Split reducers (e.g., factor out search, registration/server, widget state).
 
 //-------------------------------------------------------------------------------------------------
 // Global.
@@ -195,55 +195,3 @@ export const AppReducer = (injector, config, apolloClient) => {
     }
   };
 };
-
-//-------------------------------------------------------------------------------------------------
-// Context.
-//-------------------------------------------------------------------------------------------------
-
-const CONTEXT_NAMESPACE = 'ALIEN_CONTEXT';
-
-/**
- * Application context (e.g., current page for CRX, location, time, etc.)
- * NOTE: This isn't limited to the CRX.
- */
-export class ContextAction {
-
-  static initialState = {};
-
-  static ACTION = {
-    UPDATE_CONTEXT: `${CONTEXT_NAMESPACE}/UPDATE`,
-  };
-
-  static get namespace() {
-    return CONTEXT_NAMESPACE;
-  }
-
-  static getState(state, field=undefined) {
-    state = _.get(state, ContextAction.namespace, {});
-    return field ? _.get(state, field) : state;
-  }
-
-  /**
-   * Received context events from content script.
-   * @param context
-   */
-  static updateContext(context) {
-    return {
-      type: ContextAction.ACTION.UPDATE_CONTEXT,
-      context
-    };
-  }
-}
-
-export const ContextReducer = (state=ContextAction.initialState, action) => {
-  switch (action.type) {
-
-    case ContextAction.ACTION.UPDATE_CONTEXT: {
-      return _.assign({}, state, action.context);
-    }
-
-    default:
-      return state;
-  }
-};
-

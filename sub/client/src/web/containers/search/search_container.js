@@ -6,26 +6,28 @@ import { compose, graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
 import { QueryParser } from 'alien-core';
+import { Fragments } from 'alien-api';
 
 import { ReduxUtil } from '../../util/redux';
 import { AppAction } from '../../common/reducers';
 import { TypeRegistry } from '../../common/type_registry';
-import { List } from '../../components/list';
 
 //-------------------------------------------------------------------------------------------------
 // Search HOC.
 //-------------------------------------------------------------------------------------------------
 
+// TODO(burdon): Broaden fragments, or lazily load them.
+
 export const SearchQuery = gql`
-  query SimpleSearchQuery($filter: FilterInput) {
+  query SearchQuery($filter: FilterInput) {
     search(filter: $filter) {
       items {
-        id
-        type
-        title
+        ...ItemFragment
       }
     }
   }
+
+  ${Fragments.ItemFragment}
 `;
 
 /**
@@ -114,8 +116,3 @@ export function SearchContainer(query, path='search') {
     })
   );
 }
-
-/**
- * Basic list.
- */
-export const BasicSearchListContainer = SearchContainer(SearchQuery)(List);
