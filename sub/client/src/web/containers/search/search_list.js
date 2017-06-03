@@ -5,6 +5,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { SubscriptionWrapper } from '../../util/subscriptions';
 import { List, ListItem } from '../../components/list';
 
 import { SearchQuery, SearchContainer } from './search_container';
@@ -99,4 +100,4 @@ export class SearchList extends React.Component {
   }
 }
 
-export const SearchListContainer = SearchContainer(SearchQuery)(SearchList);
+export const SearchListContainer = SearchContainer(SearchQuery)(SubscriptionWrapper(SearchList));
