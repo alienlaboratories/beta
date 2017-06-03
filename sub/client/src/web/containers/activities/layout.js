@@ -81,55 +81,57 @@ export class Layout extends React.Component {
     let debugPanel = debug.showPanel && <DebugPanel/>;
 
     return (
-      <div className="ux-fullscreen ux-layout ux-column">
+      <div className="ux-fullscreen ux-layout">
+        <div className="ux-column">
 
-        {/*
-          * Header
-          */}
-        <header className="ux-column">
-          <div className="ux-row ux-grow">
-            { sidebar &&
-            <SidebarToggle sidebar={ () => this.refs.sidebar }/>
-            }
+          {/*
+            * Header
+            */}
+          <header className="ux-column">
+            <div className="ux-row ux-grow">
+              { sidebar &&
+              <SidebarToggle sidebar={ () => this.refs.sidebar }/>
+              }
 
-            <div className="ux-grow">
-              <h1>{ title }</h1>
+              <div className="ux-grow">
+                <h1>{ title }</h1>
+              </div>
+
+              <Links viewer={ viewer }/>
             </div>
 
-            <Links viewer={ viewer }/>
+            { navbar }
+          </header>
+
+          {/*
+            * Main
+            * TODO(burdon): Option for sidebar to shove over display (e.g., like Inbox, mobile, etc.)
+            */}
+          <main className="ux-row">
+            { sidebar &&
+            <Sidebar ref="sidebar">
+              { sidebar }
+            </Sidebar>
+            }
+
+            { children }
+          </main>
+
+          {/* Debug */}
+          <div>
+            { debugPanel }
           </div>
 
-          { navbar }
-        </header>
+          {/*
+            * Footer
+            */}
+          <footer>
+            <StatusBar eventListener={ eventListener } actions={ actions }>
+              <span className="ux-font-xsmall ux-text-noselect">{ version }</span>
+            </StatusBar>
+          </footer>
 
-        {/*
-          * Main
-          * TODO(burdon): Option for sidebar to shove over display (e.g., like Inbox, mobile, etc.)
-          */}
-        <main className="ux-row">
-          { sidebar &&
-          <Sidebar ref="sidebar">
-            { sidebar }
-          </Sidebar>
-          }
-
-          { children }
-        </main>
-
-        {/* Debug */}
-        <div>
-          { debugPanel }
         </div>
-
-        {/*
-          * Footer
-          */}
-        <footer>
-          <StatusBar eventListener={ eventListener } actions={ actions }>
-            <span className="ux-font-xsmall ux-text-noselect">{ version }</span>
-          </StatusBar>
-        </footer>
-
       </div>
     );
   }

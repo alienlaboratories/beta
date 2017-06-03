@@ -88,7 +88,7 @@ export class SearchList extends React.Component {
     // TODO(burdon): Warning if no mutation callback provided.
 
     return (
-      <div className="ux-search-list-container ux-panel ux-column">
+      <div className="ux-search-list-container ux-panel ux-column ux-grow">
         <List items={ items }
 //            itemRenderer={ DebugListItemRenderer }
               itemRenderer={ ListItemRenderer(typeRegistry) }
