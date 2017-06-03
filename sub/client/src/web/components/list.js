@@ -276,7 +276,7 @@ export class List extends React.Component {
 
     let previousOrder = 0;
     let rows = _.map(items, item => {
-      console.assert(item && item.type && item.id, 'Invalid Item: ' + JSON.stringify(item, 0, 2));
+      console.assert(item && item.id, 'Invalid Item: ' + JSON.stringify(item, 0, 2));
 
       let itemKey = item.id;
       if (keyMap.get(itemKey)) {
@@ -633,7 +633,7 @@ export class ListItem extends React.Component {
     let { children, className } = this.props;
 
     return (
-      <div className={ DomUtil.className('ux-row', 'ux-data-row', className) }>
+      <div className={ DomUtil.className('ux-row', className) }>
         { children }
       </div>
     );
@@ -649,7 +649,7 @@ export class ListItemEditor extends ListItem {
     let { children, className } = this.props;
 
     return (
-      <div className={ DomUtil.className('ux-row', 'ux-data-row', className) }>
+      <div className={ DomUtil.className('ux-row', className) }>
         { children }
       </div>
     );

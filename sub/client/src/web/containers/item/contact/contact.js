@@ -214,7 +214,7 @@ export class ContactCard extends React.Component {
             </div>
             }
             { email &&
-            <div className="ux-data-row" style={{ fontSize: '14px' }}>
+            <div style={{ fontSize: '14px' }}>
               <i className="ux-icon">email</i>
               <div className="ux-text">{ email }</div>
             </div>
@@ -231,7 +231,7 @@ export class ContactCard extends React.Component {
         { messages &&
         <div className="ux-list ux-list-messages">
         {_.map(messages, message => (
-          <div className="ux-list-item ux-row ux-data-row">
+          <div className="ux-list-item ux-row">
             <i className="ux-icon">email</i>
             <div key={ message.id } className="ux-text">{ message.title }</div>
           </div>

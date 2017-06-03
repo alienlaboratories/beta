@@ -44,7 +44,7 @@ export class Actions {
       type: 'link',
       title: 'GraphiQL.',
       icon: 'language',
-      href: '/graphiql',
+      href: '/testing/graphiql',
       handler: (action) => { window.open(action.href); }
     },
     {

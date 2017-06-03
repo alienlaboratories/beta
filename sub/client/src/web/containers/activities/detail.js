@@ -5,11 +5,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
+import { ID } from 'alien-core';
+
 import { ReactUtil } from '../../util/react';
 import { AppAction } from '../../common/reducers';
 
 import { SidePanelContainer } from '../sidepanel';
 import { SearchListContainer } from '../search_list';
+import { CardContainer } from '../item/item';
 
 import { Activity } from './activity';
 import { Layout } from './layout';
@@ -46,6 +49,9 @@ class DetailActivity extends React.Component {
       // TODO(burdon): Better test.
       let showSearch = !_.isEmpty(search.text);
 
+      // TODO(burdon): By default show card.
+      let card = <CardContainer itemKey={ ID.decodeKey(key) }/>;
+
       return (
         <Layout config={ config }
                 debug={ debug }
@@ -63,7 +69,9 @@ class DetailActivity extends React.Component {
             }
 
             <div className="ux-panel ux-grow">
-              { key }
+              <div className="ux-card-deck">
+                { card }
+              </div>
             </div>
           </div>
 

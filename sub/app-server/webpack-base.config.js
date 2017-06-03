@@ -258,13 +258,11 @@ const webConfig = webpackMerge(baseConfig, {
 
     // GraphiQL test console.
     graphiql: [
-      'babel-polyfill',
       path.resolve(baseConfig.context, 'src/client/graphiql.js')
     ],
 
     // Web site (incl. CSS)
     site: [
-      'babel-polyfill',
       path.resolve(baseConfig.context, 'src/client/site.js')
     ],
   },

@@ -9,43 +9,14 @@ import { compose, graphql } from 'react-apollo';
 import { Logger } from 'alien-util';
 import { Matcher } from 'alien-core';
 
-import { ViewerQuery } from '../common/activity';
-import { AppAction } from '../common/reducers';
+import { AppAction } from '../../common/reducers';
+// import { ViewerQuery } from '../common/activity';
 
 const logger = Logger.get('connector');
-
-// TODO(burdon): Move back to containers (don't obfuscate).
 
 //-------------------------------------------------------------------------------------------------
 // Query HOC utils.
 //-------------------------------------------------------------------------------------------------
-
-const mapStateToProps = (state, ownProps) => {
-  let { injector, config, client } = AppAction.getState(state);
-
-  let matcher = injector.get(Matcher);
-
-  // Get from cache.
-  const { viewer } = client.readQuery({
-    query: ViewerQuery
-  });
-
-  let userId = _.get(viewer, 'context.user.id');
-  let buckets = _.map(_.get(viewer, 'groups'), group => group.id);
-
-  return {
-
-    // Required by HOC reducers.
-    config,
-    matcher,
-
-    // Matcher's context used by HOC reducers.
-    context: {
-      userId,
-      buckets
-    }
-  };
-};
 
 /**
  * Creates HOC for queries.
@@ -67,18 +38,11 @@ export class Connector {
    * Adapts Redux state from the App to the alien-core reducers.
    */
   static connect(containers) {
-    containers = _.concat([
-      // withRef provides Access component via getWrappedInstance()
-      // http://dev.apollodata.com/react/higher-order-components.html#with-ref
-      // https://github.com/reactjs/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options
-      connect(mapStateToProps, null, null, { withRef: true }),
-    ], containers);
-
     return compose(...containers);
   }
 
   /**
-   * Item query.
+   * Creates a graphql HOC to bind the component to a queried Item.
    *
    * @param query
    * @param path
@@ -94,6 +58,7 @@ export class Connector {
       // http://dev.apollodata.com/react/queries.html#graphql-options
       options: (props) => {
         let { itemKey:key } = props;
+        console.assert(key);
 
         return {
           variables: {
@@ -128,6 +93,7 @@ export class Connector {
    * @param query
    * @param path
    */
+  // TODO(burdon): Move to SearchContainer.
   static searchQuery(query, path='search') {
     console.assert(query && path);
     Connector.registerQuery(query);

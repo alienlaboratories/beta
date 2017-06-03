@@ -56,13 +56,9 @@ export class Path {
    * @return {string}
    */
   static canvas(key, canvas=undefined) {
-    console.assert(key && key.id && key.type);
-    let type = key.type.toLowerCase();
-    if (canvas) {
-      return `${Path.ROOT}/${type}/${canvas}/${ID.encodeKey(key)}`;
-    } else {
-      return `${Path.ROOT}/${type}/${ID.encodeKey(key)}`;
-    }
+    console.assert(key && key.type && key.id);
+    let type = canvas || key.type.toLowerCase();
+    return `${Path.ROOT}/${type}/${ID.encodeKey(key)}`;
   }
 }
 
