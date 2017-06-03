@@ -6,6 +6,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { SubscriptionWrapper } from '../../util/subscriptions';
+import { Card } from '../../components/card';
 import { List, ListItem } from '../../components/list';
 
 import { SearchQuery, SearchContainer } from './search_container';
@@ -100,4 +101,37 @@ export class SearchList extends React.Component {
   }
 }
 
+/**
+ * Card deck.
+ */
+export class CardList extends React.Component {
+
+  static contextTypes = {
+    navigator: PropTypes.object.isRequired,
+    mutator: PropTypes.object.isRequired
+  };
+
+  handleItemSelect(item) {
+    this.context.navigator.pushCanvas(item);
+  }
+
+  render() {
+    let { items } = this.props;
+
+    // TODO(burdon): Handle mutations (e.g., labels).
+    // TODO(burdon): Warning if no mutation callback provided.
+
+    return (
+      <div className="ux-card-deck ux-panel ux-column">
+        <List items={ items }
+              itemRenderer={ Card.ItemRenderer }
+              className="ux-grow"
+              onItemSelect={ this.handleItemSelect.bind(this) }/>
+      </div>
+    );
+  }
+}
+
 export const SearchListContainer = SearchContainer(SearchQuery)(SubscriptionWrapper(SearchList));
+
+export const CardDeckContainer = SearchContainer(SearchQuery)(SubscriptionWrapper(CardList));
