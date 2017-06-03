@@ -23,6 +23,11 @@ export const ContextQuery = gql`
     context: search(filter: $filter) {
       items {
         ...ItemFragment
+
+        # TODO(burdon): Required for match.
+        ... on Contact {
+          email
+        }
       }
     }
   }
@@ -74,9 +79,12 @@ export function ContextContainer(query, path='context') {
         let search = _.get(data, path, {});
         let { items } = search;
 
+        // TODO(burdon): Disable this HOC for non-CRX.
         // TODO(burdon): Currently contextManager caches items. Instead merge here.
         // TODO(burdon): Inject item getter property that encapsulates merging (so no logic in render).
-        contextManager.updateContextItems(items);
+        if (contextManager) {
+          contextManager.updateContextItems(items);
+        }
 
         return {
           contextItems: items
