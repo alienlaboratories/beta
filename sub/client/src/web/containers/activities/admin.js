@@ -5,12 +5,11 @@
 import React from 'react';
 
 import { ReactUtil } from '../../util/react';
-import { Actions } from '../../common/actions';
-import { Activity } from '../../common/activity';
 
 import { SidePanelContainer } from '../sidepanel';
 import { SearchListContainer } from '../search_list';
 
+import { Activity } from './activity';
 import { Layout } from './layout';
 
 /**
@@ -26,13 +25,11 @@ class AdminActivity extends React.Component {
 
   constructor() {
     super(...arguments);
-
-    this._actions = Actions.actions();
   }
 
   render() {
     return ReactUtil.render(this, () => {
-      let { config, eventListener, viewer, navigator, typeRegistry } = this.props;
+      let { config, debug, actions, eventListener, viewer, navigator, typeRegistry } = this.props;
       if (!viewer) {
         return;
       }
@@ -41,10 +38,11 @@ class AdminActivity extends React.Component {
 
       return (
         <Layout config={ config }
+                debug={ debug }
                 viewer={ viewer }
                 sidebar={ sidebar }
-                eventListener={ eventListener }
-                actions={ this._actions }>
+                actions={ actions }
+                eventListener={ eventListener }>
 
           <SearchListContainer className="ux-grow"/>
 

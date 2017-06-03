@@ -13,7 +13,7 @@ import { FirebaseCloudMessenger } from '../common/cloud_messenger';
 import { NetworkManager } from '../common/network';
 import { AppAction, AppReducer, GlobalAppReducer } from '../common/reducers';
 
-import { TypeRegistryFactory } from '../containers/type_factory';
+import { TypeRegistryFactory } from '../containers/item/type_factory';
 
 /**
  * Base class for Web apps.

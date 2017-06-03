@@ -6,13 +6,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { ReactUtil } from '../../util/react';
-import { Actions } from '../../common/actions';
-import { Activity } from '../../common/activity';
 import { AppAction } from '../../common/reducers';
 
 import { SidePanelContainer } from '../sidepanel';
 import { SearchListContainer } from '../search_list';
 
+import { Activity } from './activity';
 import { Layout } from './layout';
 
 import './detail.less';
@@ -30,13 +29,12 @@ class DetailActivity extends React.Component {
 
   constructor() {
     super(...arguments);
-
-    this._actions = Actions.actions();
   }
 
   render() {
     return ReactUtil.render(this, () => {
-      let { params: { key }, config, eventListener, viewer, navigator, typeRegistry, search } = this.props;
+      let { params: { key } } = this.props;
+      let { config, debug, actions, eventListener, viewer, navigator, typeRegistry, search } = this.props;
       if (!viewer) {
         return;
       }
@@ -50,11 +48,12 @@ class DetailActivity extends React.Component {
 
       return (
         <Layout config={ config }
+                debug={ debug }
                 viewer={ viewer }
                 navbar={ navbar }
                 sidebar={ sidebar }
-                eventListener={ eventListener }
-                actions={ this._actions }>
+                actions={ actions }
+                eventListener={ eventListener }>
 
           <div className="ux-row ux-grow">
             { showSearch &&
@@ -63,7 +62,7 @@ class DetailActivity extends React.Component {
             </div>
             }
 
-            <div className="ux-panel___ ux-grow">
+            <div className="ux-panel ux-grow">
               { key }
             </div>
           </div>

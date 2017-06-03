@@ -11,11 +11,12 @@ import { EventListener, PropertyProvider } from 'alien-util';
 import { Const, IdGenerator, Mutator, QueryRegistry } from 'alien-core';
 import { Fragments } from 'alien-api';
 
-import { Analytics } from './analytics';
-import { ContextManager } from './context';
-import { Navigator, WindowNavigator } from './path';
-import { AppAction } from './reducers';
-import { TypeRegistry } from './type_registry';
+import { Actions } from '../../common/actions';
+import { Analytics } from '../../common/analytics';
+import { ContextManager } from '../../common/context';
+import { Navigator, WindowNavigator } from '../../common/path';
+import { AppAction } from '../../common/reducers';
+import { TypeRegistry } from '../../common/type_registry';
 
 //-------------------------------------------------------------------------------------------------
 // Default Redux property providers for activities.
@@ -28,14 +29,16 @@ import { TypeRegistry } from './type_registry';
  */
 const mapStateToProps = (state, ownProps) => {
   let appState = AppAction.getState(state);
-  let { config, client, injector } = appState;
+  let { config, debug, client, injector } = appState;
 
-  // TODO(burdon): Move to Redux state?
+  // NOTE: This is called for every Redux action (incl. GraphQL).
+  // TODO(burdon): Move injector to Redux state (remove dependency on context).
 
   let analytics       = injector.get(Analytics.INJECTOR_KEY);
   let typeRegistry    = injector.get(TypeRegistry);
   let queryRegistry   = injector.get(QueryRegistry);
-  let eventListener    = injector.get(EventListener);
+  let actions         = injector.get(Actions);
+  let eventListener   = injector.get(EventListener);
   let contextManager  = injector.get(ContextManager);
   let idGenerator     = injector.get(IdGenerator);
 
@@ -47,14 +50,16 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     config,
+    debug,
     analytics,
     typeRegistry,
     queryRegistry,
+    actions,
     eventListener,
     contextManager,
     navigator,
 
-    // Needed by Mutator.
+    // Required by Mutator.
     client,
     idGenerator
   };
@@ -137,8 +142,11 @@ export class Activity {
     return compose(...connectors);
   }
 
+  // TODO(burdon): Remove dependency on context.
+
   static childContextTypes = {
     config:           PropTypes.object,
+    debug:            PropTypes.object,
     analytics:        PropTypes.object,
     typeRegistry:     PropTypes.object,
     queryRegistry:    PropTypes.object,
@@ -153,6 +161,7 @@ export class Activity {
   static getChildContext(props) {
     let {
       config,
+      debug,
       analytics,
       typeRegistry,
       queryRegistry,
@@ -165,6 +174,7 @@ export class Activity {
     } = props;
 
     console.assert(config);
+    console.assert(debug);
     console.assert(analytics);
     console.assert(typeRegistry);
     console.assert(queryRegistry);
@@ -175,6 +185,7 @@ export class Activity {
 
     return {
       config,
+      debug,
       analytics,
       typeRegistry,
       queryRegistry,

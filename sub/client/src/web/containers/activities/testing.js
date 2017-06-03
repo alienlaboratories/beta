@@ -5,9 +5,8 @@
 import React from 'react';
 
 import { ReactUtil } from '../../util/react';
-import { Actions } from '../../common/actions';
-import { Activity } from '../../common/activity';
 
+import { Activity } from './activity';
 import { Layout } from './layout';
 
 /**
@@ -25,22 +24,21 @@ class TestingActivity extends React.Component {
 
   constructor() {
     super(...arguments);
-
-    this._actions = Actions.actions();
   }
 
   render() {
     return ReactUtil.render(this, () => {
-      let { config, eventListener, viewer } = this.props;
+      let { config, debug, actions, eventListener, viewer } = this.props;
       if (!viewer) {
         return;
       }
 
       return (
         <Layout config={ config }
+                debug={ debug }
                 viewer={ viewer }
-                eventListener={ eventListener }
-                actions={ this._actions }>
+                actions={ actions }
+                eventListener={ eventListener }>
 
           <h2>Testing</h2>
 

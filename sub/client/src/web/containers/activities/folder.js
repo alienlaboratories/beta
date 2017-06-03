@@ -5,18 +5,17 @@
 import React from 'react';
 
 import { ReactUtil } from '../../util/react';
-import { Actions } from '../../common/actions';
-import { Activity } from '../../common/activity';
 
 import { SidePanelContainer } from '../sidepanel';
 import { SearchListContainer } from '../search_list';
 
+import { Activity } from './activity';
 import { Layout } from './layout';
 
 /**
- * Search Activity.
+ * Folder Activity.
  */
-class SearchActivity extends React.Component {
+class FolderActivity extends React.Component {
 
   static childContextTypes = Activity.childContextTypes;
 
@@ -26,13 +25,12 @@ class SearchActivity extends React.Component {
 
   constructor() {
     super(...arguments);
-
-    this._actions = Actions.actions();
   }
 
   render() {
     return ReactUtil.render(this, () => {
-      let { params: { folder='inbox' }, config, eventListener, viewer, navigator, typeRegistry } = this.props;
+      let { params: { folder='inbox' } } = this.props;
+      let { config, debug, actions, eventListener, viewer, navigator, typeRegistry } = this.props;
       if (!viewer) {
         return;
       }
@@ -43,11 +41,12 @@ class SearchActivity extends React.Component {
 
       return (
         <Layout config={ config }
+                debug={ debug }
                 viewer={ viewer }
                 navbar={ navbar }
                 sidebar={ sidebar }
-                eventListener={ eventListener }
-                actions={ this._actions }>
+                actions={ actions }
+                eventListener={ eventListener }>
 
           <SearchListContainer className="ux-grow"/>
 
@@ -61,4 +60,4 @@ class SearchActivity extends React.Component {
 // HOC.
 //-------------------------------------------------------------------------------------------------
 
-export default Activity.compose()(SearchActivity);
+export default Activity.compose()(FolderActivity);

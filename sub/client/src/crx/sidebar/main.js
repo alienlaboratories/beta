@@ -16,7 +16,7 @@ import { AppAction, AppReducer, ContextAction, ContextReducer } from '../../web/
 import { SystemChannel, SidebarCommand } from '../common';
 import { SidebarAction, SidebarReducer } from '../sidebar/reducers';
 
-import { TypeRegistryFactory } from '../../web/containers/type_factory';
+import { TypeRegistryFactory } from '../../web/containers/item/type_factory';
 
 const logger = Logger.get('sidebar');
 

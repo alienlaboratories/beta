@@ -17,6 +17,7 @@ import { ITEM_TYPES } from 'alien-api';
 
 import { createFragmentMatcher} from '../../util/apollo_tools';
 
+import { Actions } from './actions';
 import { Analytics } from './analytics';
 import { ContextManager } from './context';
 
@@ -114,8 +115,9 @@ export class BaseApp {
       Injector.provide(new Matcher()),
       Injector.provide(new QueryParser()),
       Injector.provide(new ContextManager(idGenerator)),
+      Injector.provide(new Actions((action) => this.store.dispatch(action), this._queryRegistry)),
       Injector.provide(this._eventListener),
-      Injector.provide(this._queryRegistry)
+      Injector.provide(this._queryRegistry),
     ], this.providers);
 
     // TODO(burdon): Move to Redux?

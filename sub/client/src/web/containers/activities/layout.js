@@ -64,6 +64,7 @@ export class Layout extends React.Component {
 
   static propTypes = {
     config:         PropTypes.object.isRequired,
+    debug:          PropTypes.object.isRequired,
     viewer:         PropTypes.object.isRequired,
     eventListener:  PropTypes.object.isRequired,
     actions:        PropTypes.object.isRequired,
@@ -72,12 +73,12 @@ export class Layout extends React.Component {
   };
 
   render() {
-    let { config, viewer, eventListener, actions, navbar, sidebar, children } = this.props;
+    let { config, debug, viewer, eventListener, actions, navbar, sidebar, children } = this.props;
 
     let title = AppDefs.APP_NAME;
     let version = _.get(config, 'app.version');
 
-    let debugPanel = <DebugPanel/>;
+    let debugPanel = debug.showPanel && <DebugPanel/>;
 
     return (
       <div className="ux-fullscreen ux-layout ux-column">

@@ -11,7 +11,8 @@ import { Path } from '../common/path';
 
 import AdminActivity from '../containers/activities/admin';
 import DetailActivity from '../containers/activities/detail';
-import SearchActivity from '../containers/activities/search';
+import FolderActivity from '../containers/activities/folder';
+import TestingActivity from '../containers/activities/testing';
 
 import '../resources/css/app.less';
 
@@ -44,12 +45,13 @@ export class Application extends React.Component {
             * Must come first.
             */}
           <Route exact path={ Path.ADMIN } component={ AdminActivity }/>
+          <Route exact path={ Path.TESTING } component={ TestingActivity }/>
 
           {/*
             * /inbox
             * /favorites
             */}
-          <Route path={ Path.route(['folder']) } component={ SearchActivity }/>
+          <Route path={ Path.route(['folder']) } component={ FolderActivity }/>
 
           {/*
             * /project/xxx
