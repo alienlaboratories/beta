@@ -115,6 +115,8 @@ export class Resolvers {
         }
       },
 
+      Folder: _.assign({}, Resolvers.DefaultItem, {}),
+
       //
       // Type resolvers:
       // http://dev.apollodata.com/tools/graphql-tools/resolvers.html#Resolver-function-signature

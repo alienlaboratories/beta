@@ -17,6 +17,7 @@ export class QueryParser {
    * @returns {boolean}
    */
   static isEmpty(filter) {
+    console.assert(_.isObject(filter));
     return _.isEmpty(filter.labels) && !filter.type && !filter.text;
   }
 

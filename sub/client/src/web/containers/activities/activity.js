@@ -86,6 +86,8 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
 // HOC.
 //-------------------------------------------------------------------------------------------------
 
+// TODO(burdon): Split groups/folders since may change?
+
 export const ViewerQuery = gql`
   query ViewerQuery {
 
@@ -100,6 +102,13 @@ export const ViewerQuery = gql`
         projects {
           ...ItemFragment
         }
+      }
+
+      folders {
+        type
+        id
+        alias
+        filter
       }
     }
   }

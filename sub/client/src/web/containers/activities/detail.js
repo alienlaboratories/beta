@@ -5,7 +5,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { Const, ID } from 'alien-core';
+import { Const, ID, QueryParser } from 'alien-core';
 
 import { ReactUtil } from '../../util/react';
 import { AppAction } from '../../common/reducers';
@@ -48,7 +48,8 @@ class DetailActivity extends React.Component {
       let sidebar = <SidePanelContainer navigator={ navigator} typeRegistry={ typeRegistry }/>;
 
       // Only show search if in web mode and search is not empty.
-      let searchPanel = (platform === Const.PLATFORM.WEB) && !_.isEmpty(filter.text) && <SearchListContainer/>;
+      let searchPanel =
+        (platform === Const.PLATFORM.WEB) && !QueryParser.isEmpty(filter) && <SearchListContainer/>;
 
       // TODO(burdon): By default show card.
       let content = (

@@ -12,17 +12,8 @@ import { List, ListItem } from '../../components/list';
 import { SearchQuery, SearchContainer } from './search_container';
 
 //-------------------------------------------------------------------------------------------------
-// List renderers.
+// Simple search list.
 //-------------------------------------------------------------------------------------------------
-
-const CustomIcon = ListItem.createInlineComponent((props, context) => {
-  let { item } = context;
-  let { typeRegistry } = props;
-
-  return (
-    <ListItem.Icon icon={ item.iconUrl || typeRegistry.icon(item.type) }/>
-  );
-});
 
 const CustomColumn = ListItem.createInlineComponent((props, context) => {
   let { item } = context;
@@ -31,7 +22,7 @@ const CustomColumn = ListItem.createInlineComponent((props, context) => {
   let Column = typeRegistry.column(item.type);
 
   return (
-    <div className="ux-noshrink">
+    <div>
       { Column &&
         <Column item={ item }/>
       }
@@ -47,10 +38,16 @@ export const ListItemRenderer = (typeRegistry) => (item) => {
     <ListItem item={ item }>
       <ListItem.Favorite/>
       <ListItem.Text value={ item.title } select={ true }/>
+
       <CustomColumn typeRegistry={ typeRegistry }/>
-      <div className="ux-icons ux-noshrink">
-        <CustomIcon typeRegistry={ typeRegistry }/>
-        <ListItem.DeleteButton/>
+
+      <div className="ux-icons">
+        <div className="ux-no-hover">
+          <ListItem.Icon icon={ item.iconUrl || typeRegistry.icon(item.type) }/>
+        </div>
+        <div className="ux-hover">
+          <ListItem.DeleteButton/>
+        </div>
       </div>
     </ListItem>
   );
@@ -101,6 +98,12 @@ export class SearchList extends React.Component {
   }
 }
 
+export const SearchListContainer = SearchContainer(SearchQuery)(SubscriptionWrapper(SearchList));
+
+//-------------------------------------------------------------------------------------------------
+// Card list.
+//-------------------------------------------------------------------------------------------------
+
 /**
  * Card deck.
  */
@@ -131,7 +134,5 @@ export class CardList extends React.Component {
     );
   }
 }
-
-export const SearchListContainer = SearchContainer(SearchQuery)(SubscriptionWrapper(SearchList));
 
 export const CardDeckContainer = SearchContainer(SearchQuery)(SubscriptionWrapper(CardList));

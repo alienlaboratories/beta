@@ -95,6 +95,8 @@ class NetworkIndicator extends React.Component {
   }
 
   componentWillUnmount() {
+    console.log('########');
+
     // Cancel timers to avoid setState on unmounted component.
     // JS Error: Warning: setState(...): Can only update a mounted or mounting component.
     // https://facebook.github.io/react/blog/2015/12/16/ismounted-antipattern.html

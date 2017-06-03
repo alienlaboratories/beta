@@ -2,10 +2,12 @@
 // Copyright 2017 Alien Labs.
 //
 
-import { connect } from 'react-redux';
 import { compose, graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
+import { QueryParser } from 'alien-core';
+
+import { ReduxUtil } from '../../util/redux';
 import { AppAction } from '../../common/reducers';
 import { TypeRegistry } from '../../common/type_registry';
 import { List } from '../../components/list';
@@ -26,17 +28,6 @@ export const SearchQuery = gql`
   }
 `;
 
-const mapStateToProps = (state, ownProps) => {
-  let { injector, search: { filter } } = AppAction.getState(state);
-
-  let typeRegistry = injector.get(TypeRegistry);    // TODO(burdon): Remove?
-
-  return {
-    typeRegistry,
-    filter
-  };
-};
-
 /**
  * Creates a graphql HOC that binds a search result to a list.
  *
@@ -48,13 +39,30 @@ export function SearchContainer(query, path='search') {
 
   return compose(
 
-    connect(mapStateToProps),
+    ReduxUtil.connect({
+      mapStateToProps: (state, ownProps) => {
+        let { injector, search } = AppAction.getState(state);
+
+        // Required by list renderer for custom types.
+        let typeRegistry = injector.get(TypeRegistry);
+
+        return {
+          typeRegistry,
+          search
+        };
+      }
+    }),
 
     graphql(query, {
       withRef: 'true',
 
       options: (props) => {
-        let { filter } = props;
+        let { filter, search } = props;
+
+        // Override the default filter with a valid search.
+        if (!QueryParser.isEmpty(search.filter)) {
+          filter = search.filter;
+        }
 
         return {
           variables: {
@@ -64,7 +72,7 @@ export function SearchContainer(query, path='search') {
       },
 
       props: ({ ownProps, data }) => {
-        let { filter, itemInjector } = ownProps;
+        let { search: { filter }, itemInjector } = ownProps;
         let { errors, loading, refetch } = data;
 
         let search = _.get(data, path, {});

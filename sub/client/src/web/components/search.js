@@ -18,24 +18,20 @@ export class SearchPanel extends React.Component {
 
   static propTypes = {
     className:  PropTypes.string,
-    filter:     PropTypes.object,                       // GQL filter.
+    text:       PropTypes.string,
     onSearch:   PropTypes.func.isRequired
   };
 
   handleSearch(text) {
-    let filter = {
-      text
-    };
-
-    this.props.onSearch(filter);
+    this.props.onSearch(text);
   }
 
   render() {
-    let { className, filter={} } = this.props;
+    let { className, text } = this.props;
 
     return (
       <div className={ DomUtil.className('ux-search-panel', 'ux-panel', className) }>
-        <SearchBar className="ux-grow" value={ filter.text } onSearch={ this.handleSearch.bind(this) }/>
+        <SearchBar className="ux-grow" value={ text } onSearch={ this.handleSearch.bind(this) }/>
       </div>
     );
   }

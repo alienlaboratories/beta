@@ -6,7 +6,9 @@
 @import (reference) '../resources/css/ref/theme.less';
 
 .ux-card-deck {
-  min-width: @ux-card-width;
+  // Don't constrain CRX/mobile.
+  width: @ux-card-width;
+
   background-color: @ux-card-deck-background;
 
   .ux-list-items {

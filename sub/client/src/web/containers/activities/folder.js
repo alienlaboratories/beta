@@ -4,6 +4,7 @@
 
 import React from 'react';
 
+import { Logger } from 'alien-util';
 import { Const } from 'alien-core';
 
 import { ReactUtil } from '../../util/react';
@@ -13,6 +14,8 @@ import { SearchListContainer, CardDeckContainer } from '../search/search_list';
 
 import { Activity } from './activity';
 import { Layout, SplitPanel } from './layout';
+
+const logger = Logger.get('folder');
 
 /**
  * Folder Activity.
@@ -37,13 +40,22 @@ class FolderActivity extends React.Component {
         return;
       }
 
+      // Set the default filter from the current folder.
+      let folderItem = _.find(viewer.folders, f => f.alias === folder);
+      let defaultFilter = JSON.parse(_.get(folderItem, 'filter', '{}'));
+      if (!folderItem) {
+        logger.warn('Invalid folder: ' + folder);
+      }
+
       let platform = _.get(config, 'app.platform');
 
       let navbar = Layout.navbar(platform, navigator);
 
       let sidebar = <SidePanelContainer navigator={ navigator } typeRegistry={ typeRegistry }/>;
 
-      let content = (platform === Const.PLATFORM.WEB) ? <SearchListContainer/> : <CardDeckContainer/>;
+      let content = (platform === Const.PLATFORM.WEB) ?
+        <SearchListContainer filter={ defaultFilter }/>:
+        <CardDeckContainer filter={ defaultFilter }/>;
 
       // Wrap with split panel if in web mode (so the search panel doesn't expand).
       if (platform === Const.PLATFORM.WEB) {

@@ -16,48 +16,48 @@ import { TypeRegistry } from '../../common/type_registry';
  */
 export const TypeRegistryFactory = () => new TypeRegistry({
 
-  // Contact: {
-  //   icon: 'contacts',
+  Contact: {
+    icon: 'contacts',
   //   card: ContactCard,
   //   canvas: {
   //     def: ContactCanvas
   //   }
-  // },
-  //
-  // Document: {
-  //   icon: 'insert_drive_file',
+  },
+
+  Document: {
+    icon: 'insert_drive_file',
   //   column: DocumentColumn
-  // },
-  //
-  // Group: {
-  //   icon: 'group',
+  },
+
+  Group: {
+    icon: 'group',
   //   canvas: {
   //     def: GroupCanvas
   //   }
-  // },
-  //
-  // Project: {
-  //   icon: 'assignment',
+  },
+
+  Project: {
+    icon: 'assignment',
   //   card: ProjectCard,
   //   toolbar: ProjectCanvasToolbar,
   //   canvas: {
   //     def: ProjectBoardCanvas,
   //   }
-  // },
-  //
-  // Task: {
-  //   icon: 'assignment_turned_in',
+  },
+
+  Task: {
+    icon: 'assignment_turned_in',
   //   card: TaskCard,
   //   canvas: {
   //     def: TaskCanvas
   //   }
-  // },
-  //
-  // User: {
-  //   icon: 'accessibility',
+  },
+
+  User: {
+    icon: 'accessibility',
   //   canvas: {
   //     def: UserCanvas
   //   }
-  // }
+  }
 
 });

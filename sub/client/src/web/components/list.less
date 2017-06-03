@@ -16,6 +16,41 @@
     .ux-list-item {
       margin: 0;
     }
+
+    // Default style (e.g., does not apply to cards).
+    .ux-list-item {
+      .ux-row {
+        padding: 4px;
+
+        > .ux-icon {
+          margin-right: 4px;
+
+          &:last-child {
+            background-color: red;
+            margin: 0;
+          }
+        }
+
+        // Hide delete icon unless hover.
+        .ux-hover {
+          display: none;
+        }
+        .ux-no-hover {
+          display: block;
+        }
+      }
+
+      &:hover {
+        .ux-row {
+          .ux-hover {
+            display: block;
+          }
+          .ux-no-hover {
+            display: none;
+          }
+        }
+      }
+    }
   }
 
   &.ux-list-highlight {
