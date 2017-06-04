@@ -52,7 +52,9 @@ export class SidePanel extends React.Component {
           type: 'Folder',
           id: 'folder-admin',
           title: 'Admin',
-          icon: 'build',
+          meta: {
+            icon: 'build'
+          },
           link: Path.ADMIN
         },
         // TODO(burdon): If debug set in config.
@@ -60,7 +62,9 @@ export class SidePanel extends React.Component {
           type: 'Folder',
           id: 'folder-testing',
           title: 'Testing',
-          icon: 'bug_report',
+          meta: {
+            icon: 'bug_report'
+          },
           link: Path.TESTING
         }
       ];

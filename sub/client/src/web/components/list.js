@@ -455,12 +455,13 @@ export class ListItem extends React.Component {
    * <ListItem.Favorite/>
    */
   static Favorite = ListItem.createInlineComponent((props, context) => {
-    let { item } = context;
+    let { item, onItemUpdate } = context;
 
     // TODO(burdon): Generalize to toggle any icon.
     let set = _.indexOf(item.labels, '_favorite') !== -1;
     const handleToggleLabel = () => {
-      context.onItemUpdate(item, [
+      console.assert(onItemUpdate);
+      onItemUpdate(item, [
         MutationUtil.createLabelMutation('_favorite', !set)
       ]);
     };

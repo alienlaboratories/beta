@@ -4,7 +4,9 @@
     "inbox": {
       "order": 1,
       "title": "Inbox",
-      "icon": "inbox",
+      "meta": {
+        "icon": "inbox"
+      },
       "filter": {
         "namespace": "user",
         "matchAll": true,
@@ -38,7 +40,9 @@
     "favorites": {
       "order": 3,
       "title": "Favorites",
-      "icon": "star",
+      "meta": {
+        "icon": "star"
+      },
       "filter": {
         "labels": [
           "_favorite"
@@ -51,7 +55,9 @@
       "order": 4,
       "alias": "projects",
       "title": "Projects",
-      "icon": "assignment",
+      "meta": {
+        "icon": "assignment"
+      },
       "filter": {
         "type": "Project",
         "groupBy": false
@@ -61,7 +67,9 @@
     "tasks": {
       "order": 2,
       "title": "Tasks",
-      "icon": "assignment_turned_in",
+      "meta": {
+        "icon": "assignment_turned_in"
+      },
       "filter": {
         "type": "Task",
         "expr": {
@@ -84,7 +92,9 @@
     "deleted": {
       "order": 5,
       "title": "Deleted",
-      "icon": "delete",
+      "meta": {
+        "icon": "delete"
+      },
       "filter": {
         "labels": [
           "_deleted"

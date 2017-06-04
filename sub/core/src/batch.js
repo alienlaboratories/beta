@@ -42,8 +42,8 @@ export class Batch {
    * @param {boolean} optimistic
    * @private
    */
-  constructor(idGenerator, mutate, bucket, fragments=null, optimistic=false) {
-    console.assert(idGenerator && mutate && bucket);
+  constructor(idGenerator, mutate, bucket=undefined, fragments=null, optimistic=false) {
+    console.assert(idGenerator && mutate);
 
     // TODO(burdon): Enforce same bucket for entire batch? Otherwise multiple batches (e.g., private task for project).
 

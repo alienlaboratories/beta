@@ -87,6 +87,10 @@ export class SearchList extends React.Component {
     this.context.navigator.pushCanvas(item);
   }
 
+  handleItemUpdate(item, mutations) {
+    this.context.mutator.batch().updateItem(item, mutations).commit();
+  }
+
   render() {
     let { items } = this.props;
 
@@ -99,7 +103,8 @@ export class SearchList extends React.Component {
               itemRenderer={ this._itemRenderer }
               highlight={ true }
               className="ux-search-list ux-grow"
-              onItemSelect={ this.handleItemSelect.bind(this) }/>
+              onItemSelect={ this.handleItemSelect.bind(this) }
+              onItemUpdate={ this.handleItemUpdate.bind(this) }/>
       </div>
     );
   }

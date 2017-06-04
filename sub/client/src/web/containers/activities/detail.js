@@ -36,11 +36,11 @@ class DetailActivity extends React.Component {
         return;
       }
 
-      // TODO(burdon): Continue to show folder.
+      // TODO(burdon): Set folder in redux state.
       // Only show search results if in web mode and search is not empty.
       let platform = _.get(config, 'app.platform');
       let searchPanel;
-      if (platform === Const.PLATFORM.WEB && true || !QueryParser.isEmpty(filter)) {
+      if (platform === Const.PLATFORM.WEB && !QueryParser.isEmpty(filter)) {
         searchPanel = <SearchListContainer/>;
       }
 
