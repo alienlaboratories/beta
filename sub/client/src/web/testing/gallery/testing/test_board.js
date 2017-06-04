@@ -90,7 +90,7 @@ export class TestBoard extends React.Component {
     // Rerender all lists.
     this.forceUpdate();
 
-    console.log('Mutations: ' + JSON.stringify(changes));
+//  console.log('Mutations: ' + JSON.stringify(changes));
   }
 
   render() {

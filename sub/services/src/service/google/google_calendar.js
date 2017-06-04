@@ -47,7 +47,7 @@ export class GoogleCalendarClient {
    * Convert Drive result to a schema object Item.
    */
   static toItem(event) {
-    console.log(JSON.stringify(event, null, 2));
+//  console.log(JSON.stringify(event, null, 2));
 
     let item = {
       namespace: NAMESPACE,

@@ -40,7 +40,7 @@ const CreateTask = (mutator, user, parent, mutations) => {
     .createItem('Task', _.concat(mutations, [
       MutationUtil.createFieldMutation('project', 'key',   ID.key(parent.project)),
       MutationUtil.createFieldMutation('owner',   'key',   ID.key(user)),
-      MutationUtil.createFieldMutation('status',  'int',  Enum.TASK_LEVEL.UNSTARTED),
+      MutationUtil.createFieldMutation('status',  'int',   Enum.TASK_LEVEL.UNSTARTED),
     ]), 'task')
     .updateItem(parent, [
       ({ task }) => MutationUtil.createSetMutation('tasks', 'key', ID.key(task))
@@ -148,6 +148,8 @@ export class TaskCard extends React.Component {
             <span>{ assignee.title }</span>
           </div>
           }
+
+          <i className="ux-icon ux-icon-add" onClick={ this.handleTaskAdd.bind(this, 'tasks') }/>
 
           <List ref="tasks"
                 className="ux-list-tasks"

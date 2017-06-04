@@ -11,10 +11,21 @@ import { ReactUtil } from '../util/react';
 
 import './card.less';
 
+const CarcChildContextTypes = {
+  item: PropTypes.object,
+  setSectionState: PropTypes.func.isRequired
+};
+
 /**
  * Card wrapper.
  */
 export class Card extends React.Component {
+
+  /**
+   * Map of state objects indexed by item id.
+   * @type {Map} <{ID}:{ID:{ closed }}>
+   */
+  static state = new Map();
 
   /**
    * Default renderer.
@@ -22,6 +33,50 @@ export class Card extends React.Component {
   static ItemRenderer = (item) => {
     return <Card item={ item }/>;
   };
+
+  /**
+   * Card section.
+   */
+  static Section = Card.createInlineComponent((props, context) => {
+    let { item, setSectionState } = context;
+    let { id, title, children, open=true } = props;
+
+    let key = 'open.' + id;
+    let state = TypeUtil.defaultMap(Card.state, item.id, Object);
+    open = _.get(state, key, open);
+
+    let header;
+    if (title) {
+      console.assert(id);
+
+      const onClick = () => {
+        setSectionState(key, !open);
+      };
+
+      header = (
+        <div className="ux-card-section-header">
+          <h2 onClick={ onClick }>{ title }</h2>
+          <i className={ DomUtil.className('ux-icon', 'ux-icon-toggle', open && 'ux-open') } onClick={ onClick }/>
+        </div>
+      );
+    }
+
+    let body = children;
+    if (header) {
+      body = (
+        <div>
+          { children }
+        </div>
+      );
+    }
+
+    return (
+      <div className="ux-card-section">
+        { header }
+        { open && body }
+      </div>
+    );
+  });
 
   static propTypes = {
     className: PropTypes.string,
@@ -34,9 +89,27 @@ export class Card extends React.Component {
     navigator: PropTypes.object
   };
 
-  state = {
-    closed: new Map()
-  };
+  static childContextTypes = CarcChildContextTypes;
+
+  static createInlineComponent(render) {
+    render.contextTypes = CarcChildContextTypes;
+    return render;
+  }
+
+  getChildContext() {
+    return {
+      item: this.props.item,
+      setSectionState: this.setSectionState.bind(this)
+    };
+  }
+
+  setSectionState(key, value) {
+    console.log(key, value);
+    let { item } = this.props;
+    let state = TypeUtil.defaultMap(Card.state, item.id, Object);
+    _.set(state, key, value);
+    this.forceUpdate();
+  }
 
   handleSelect(item) {
     let { navigator } = this.context;
@@ -47,7 +120,7 @@ export class Card extends React.Component {
   render() {
     return ReactUtil.render(this, () => {
       let { config } = this.context;
-      let { children, className, item, icon } = this.props;
+      let { children, className, debug=true, item, icon } = this.props;
       if (!item) {
         return;
       }
@@ -55,51 +128,17 @@ export class Card extends React.Component {
       let { title, description, modified } = item;
 
       //
-      // Section.
-      //
-
-      const Section = ({ id, title, children }) => {
-        let open = !this.state.closed.get(id);
-
-        let onClick = () => {
-          this.state.closed.set(id, open);
-          this.setState({
-            closed: this.state.closed
-          });
-        };
-
-        return (
-          <div className="ux-card-section">
-            <div className="ux-card-section-header">
-              <h2>{ title }</h2>
-              <i className={ DomUtil.className('ux-icon', 'ux-icon-toggle', open && 'ux-open') } onClick={ onClick }/>
-            </div>
-
-            { open &&
-            <div>
-              { children }
-            </div>
-            }
-          </div>
-        );
-      };
-
-      //
       // Debug.
       //
 
-      let debug;
-      if (_.get(config, 'options.debugInfo')) {
-        let debugStr = TypeUtil.stringify(_.pick(item, ['bucket', 'type', 'id']), false) +
-          (item.namespace ? ` [${item.namespace[0].toUpperCase()}]` : '') +
-          (item.labels ? ` ${JSON.stringify(item.labels)}` : '');
-
-        debug = (
-          <div className="ux-card-section">
-            <div className="ux-card-padding ux-debug" title={ JSON.stringify(_.pick(item, ['namespace', 'bucket'])) }>
-              { debugStr }
-            </div>
-          </div>
+      let debugSection;
+      if (debug || _.get(config, 'options.debugInfo')) {
+        debugSection = (
+          <Card.Section id="debug" item={ item } title="Debug" open={ false }>
+            <pre className="ux-card-padding ux-debug" title={ JSON.stringify(_.pick(item, ['namespace', 'bucket'])) }>
+              { TypeUtil.stringify(item, 2) }
+            </pre>
+          </Card.Section>
         );
       }
 
@@ -119,20 +158,20 @@ export class Card extends React.Component {
           {/* Main */}
           <div className="ux-card-main">
 
-            {/* Standard */}
+            {/* TODO(burdon): Make extensible. */}
             { description &&
-            <Section id="details" title="Details">
+            <Card.Section id="details" title="Details">
               <div className="ux-card-padding">
                 <div className="ux-font-small">{ description }</div>
               </div>
-            </Section>
+            </Card.Section>
             }
 
             {/* Type-specific */}
             { children }
 
             {/* Debug */}
-            { debug }
+            { debugSection }
           </div>
 
           {/* Footer */}

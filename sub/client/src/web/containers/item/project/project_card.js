@@ -7,6 +7,7 @@ import React from 'react';
 
 import { Fragments } from 'alien-api';
 
+import { ReactUtil } from '../../../util/react';
 import { Card } from '../../../components/card';
 
 import { QueryItem } from '../item_container';
@@ -17,13 +18,18 @@ import { QueryItem } from '../item_container';
 export class ProjectCard extends React.Component {
 
   render() {
-    let { item } = this.props;
+    return ReactUtil.render(this, () => {
+      let { item:project } = this.props;
+      if (!project) {
+        return;
+      }
 
-    return (
-      <Card item={ item }>
-        Project
-      </Card>
-    );
+      return (
+        <Card item={ project }>
+          Project
+        </Card>
+      );
+    });
   }
 }
 

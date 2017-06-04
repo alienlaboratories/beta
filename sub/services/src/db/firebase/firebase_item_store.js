@@ -122,7 +122,7 @@ export class FirebaseItemStore extends BaseItemStore {
             if (item) {
               items.push(item);
             } else {
-              console.log(JSON.stringify(typeMap, null, 2));
+//            console.log(JSON.stringify(typeMap, null, 2));
               console.warn('Item not found ' + JSON.stringify(context.buckets) + '.' + key);
             }
           });

@@ -157,7 +157,7 @@ export class Picker extends React.Component {
     let { text, items=[], showPopup } = this.state;
 
     // TODO(burdon): Default props.
-    let placeholder = 'Search...';
+    let placeholder = 'Select...';
 
     // TODO(burdon): Reuse List (for cursor capability).
     let rows = items.map((item) => {

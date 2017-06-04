@@ -158,6 +158,9 @@ export class TestInspector extends Inspector {
         let name = root.text();
         let email = root.attr('email');
         let thumbnailUrl = root.find('img').attr('src');
+
+        console.log('::::::::::;', thumbnailUrl);
+
         if (name && email) {
           context = {
             items: [{

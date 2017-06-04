@@ -31,7 +31,7 @@ class DetailActivity extends React.Component {
   render() {
     return ReactUtil.render(this, () => {
       let { params: { key } } = this.props;
-      let { config, debug, actions, eventListener, viewer, navigator, typeRegistry, filter } = this.props;
+      let { config, debug, actions, eventListener, viewer, mutator, navigator, typeRegistry, filter } = this.props;
       if (!viewer) {
         return;
       }
@@ -48,11 +48,9 @@ class DetailActivity extends React.Component {
       let itemKey = ID.decodeKey(key);
       let CardContainer = typeRegistry.container(itemKey.type);
 
-      // TODO(burdon): Handle default container.
-
       let content = (
         <div className="ux-card-deck">
-          <CardContainer itemKey={ itemKey }/>
+          <CardContainer viewer={ viewer} mutator={ mutator } itemKey={ itemKey }/>
         </div>
       );
 

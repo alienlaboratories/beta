@@ -7,9 +7,13 @@ import React from 'react';
 
 import { Fragments } from 'alien-api';
 
+import { ReactUtil } from '../../../util/react';
 import { Card } from '../../../components/card';
+import { Image } from '../../../components/image';
 
 import { QueryItem } from '../item_container';
+
+import './contact.less';
 
 /**
  * Contact card.
@@ -17,16 +21,28 @@ import { QueryItem } from '../item_container';
 export class ContactCard extends React.Component {
 
   render() {
-    let { item:contact={} } = this.props;
-    let { email } = contact;
+    return ReactUtil.render(this, () => {
+      let { item:contact } = this.props;
+      if (!contact) {
+        return;
+      }
 
-    return (
-      <Card item={ contact }>
-        <div className="ux-card-section">
-          <div className="ux-card-padding">{ email }</div>
-        </div>
-      </Card>
-    );
+      let { meta, email } = contact;
+      let { thumbnailUrl } = meta || {};
+
+      return (
+        <Card item={ contact }>
+
+          <Card.Section id="contact" title="Contact">
+            <div className="ux-row ux-grow ux-card-padding">
+              <div className="ux-grow">{ email }</div>
+              <Image className="ux-avatar" src={ thumbnailUrl }/>
+            </div>
+          </Card.Section>
+
+        </Card>
+      );
+    });
   }
 }
 
