@@ -4,41 +4,37 @@
 
 import { TypeRegistry } from '../../common/type_registry';
 
-// import { ContactCard, ContactCanvas } from './type/contact';
-// import { DocumentColumn } from './type/document';
-// import { GroupCanvas } from './type/group';
-// import { ProjectCard, ProjectBoardCanvas, ProjectCanvasToolbar } from './type/project';
-// import { TaskCard, TaskCanvas } from './type/task';
-// import { UserCanvas } from './type/user';
+import { ItemCardContainer } from './item_container';
+
+import { ContactCardContainer } from './contact/contact_card';
+import { ProjectCardContainer } from './project/project_card';
+import { TaskCardContainer } from './task/task_card';
 
 /**
  * Class utility to create the TypeRegistry singleton.
  */
 export const TypeRegistryFactory = () => new TypeRegistry({
 
+  Item: {
+    card: ItemCardContainer
+  },
+
   Contact: {
     icon: 'contacts',
-  //   card: ContactCard,
-  //   canvas: {
-  //     def: ContactCanvas
-  //   }
+    card: ContactCardContainer
   },
 
   Document: {
-    icon: 'insert_drive_file',
-  //   column: DocumentColumn
+    icon: 'insert_drive_file'
   },
 
   Group: {
-    icon: 'group',
-  //   canvas: {
-  //     def: GroupCanvas
-  //   }
+    icon: 'group'
   },
 
   Project: {
     icon: 'assignment',
-  //   card: ProjectCard,
+    card: ProjectCardContainer,
   //   toolbar: ProjectCanvasToolbar,
   //   canvas: {
   //     def: ProjectBoardCanvas,
@@ -47,17 +43,11 @@ export const TypeRegistryFactory = () => new TypeRegistry({
 
   Task: {
     icon: 'assignment_turned_in',
-  //   card: TaskCard,
-  //   canvas: {
-  //     def: TaskCanvas
-  //   }
+    card: TaskCardContainer
   },
 
   User: {
-    icon: 'accessibility',
-  //   canvas: {
-  //     def: UserCanvas
-  //   }
+    icon: 'accessibility'
   }
 
 });

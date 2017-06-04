@@ -74,4 +74,4 @@ export function QueryItem(query, path='item') {
 /**
  * Default container.
  */
-export const CardContainer = QueryItem(ItemQuery)(Card);
+export const ItemCardContainer = QueryItem(ItemQuery)(Card);

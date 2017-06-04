@@ -23,11 +23,17 @@ export const SearchQuery = gql`
     search(filter: $filter) {
       items {
         ...ItemFragment
+        ...ContactFragment
+        ...TaskFragment
+        ...ProjectFragment
       }
     }
   }
 
   ${Fragments.ItemFragment}
+  ${Fragments.ContactFragment}
+  ${Fragments.TaskFragment}
+  ${Fragments.ProjectFragment}
 `;
 
 /**

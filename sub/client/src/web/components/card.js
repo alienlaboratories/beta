@@ -96,7 +96,7 @@ export class Card extends React.Component {
 
         debug = (
           <div className="ux-card-section">
-            <div className="ux-padding ux-debug" title={ JSON.stringify(_.pick(item, ['namespace', 'bucket'])) }>
+            <div className="ux-card-padding ux-debug" title={ JSON.stringify(_.pick(item, ['namespace', 'bucket'])) }>
               { debugStr }
             </div>
           </div>

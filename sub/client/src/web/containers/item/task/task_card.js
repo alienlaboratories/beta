@@ -12,31 +12,31 @@ import { Card } from '../../../components/card';
 import { QueryItem } from '../item_container';
 
 /**
- * Project card.
+ * Task card.
  */
-export class ProjectCard extends React.Component {
+export class TaskCard extends React.Component {
 
   render() {
     let { item } = this.props;
 
     return (
       <Card item={ item }>
-        Project
+        Task
       </Card>
     );
   }
 }
 
-const ProjectItemQuery = gql`
-  query ProjectItemQuery($key: KeyInput!) {
+const TaskItemQuery = gql`
+  query TaskItemQuery($key: KeyInput!) {
     item(key: $key) {
       ...ItemFragment
-      ...ProjectFragment
+      ...TaskFragment
     }
   }
 
   ${Fragments.ItemFragment}  
-  ${Fragments.ProjectFragment}  
+  ${Fragments.TaskFragment}  
 `;
 
-export const ProjectCardContainer = QueryItem(ProjectItemQuery)(ProjectCard);
+export const TaskCardContainer = QueryItem(TaskItemQuery)(TaskCard);

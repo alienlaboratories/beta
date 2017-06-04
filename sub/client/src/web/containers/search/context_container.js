@@ -25,14 +25,13 @@ export const ContextQuery = gql`
         ...ItemFragment
 
         # TODO(burdon): Required for match.
-        ... on Contact {
-          email
-        }
+        ...ContactFragment
       }
     }
   }
 
   ${Fragments.ItemFragment}
+  ${Fragments.ContactFragment}
 `;
 
 export function ContextContainer(query, path='context') {
@@ -46,17 +45,19 @@ export function ContextContainer(query, path='context') {
 
         let contextFilter;
         let contextManager;
+        let itemInjector;
         let platform = _.get(config, 'app.platform');
         if (platform === Const.PLATFORM.CRX) {
           let contextState = ContextAction.getState(state);
           contextManager = injector.get(ContextManager).updateContext(userProfile, contextState);
           contextFilter = contextManager.getFilter() || {};
+          itemInjector = (items) => contextManager.injectItems(items);
         }
 
         return {
           contextManager,
           contextFilter,
-          itemInjector: (items) => contextManager.injectItems(items)
+          itemInjector
         };
       }
     }),

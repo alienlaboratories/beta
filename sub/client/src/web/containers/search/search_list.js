@@ -124,10 +124,8 @@ export class CardList extends React.Component {
     // TODO(burdon): Handle mutations (e.g., labels).
     // TODO(burdon): Warning if no mutation callback provided.
 
-    // TODO(burdon): Merge isn't working.
     // TODO(burdon): Avoid merging here? (move logic out of context manager).
     if (itemInjector) {
-      console.log('MERGED');
       items = itemInjector(items);
     }
 

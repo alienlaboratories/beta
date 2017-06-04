@@ -2,9 +2,6 @@
 // Copyright 2017 Alien Labs.
 //
 
-import { Canvas } from '../components/canvas';
-import { Card } from '../components/card';
-
 /**
  * The type registry provides definitions and factories for typed components.
  */
@@ -51,7 +48,7 @@ export class TypeRegistry {
    */
   card(type) {
     console.assert(type);
-    return _.get(this._types, `${type}.card`, Card);                    // TODO(burdon): Default.
+    return _.get(this._types, `${type}.card`, _.get(this._types, 'Item'));
   }
 
   /**
@@ -63,7 +60,7 @@ export class TypeRegistry {
    */
   canvas(type, canvas='def') {
     console.assert(type);
-    return _.get(this._types, `${type}.canvas.${canvas}`, Canvas);      // TODO(burdon): Default.
+    return _.get(this._types, `${type}.canvas.${canvas}`);
   }
 
   /**

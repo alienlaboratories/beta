@@ -12,7 +12,6 @@ import { AppAction } from '../../common/reducers';
 
 import { SidePanelContainer } from '../sidepanel';
 import { SearchListContainer } from '../search/search_list';
-import { CardContainer } from '../item/item_container';
 
 import { Activity } from './activity';
 import { Layout, SplitPanel } from './layout';
@@ -45,10 +44,15 @@ class DetailActivity extends React.Component {
       let searchPanel =
         (platform === Const.PLATFORM.WEB) && !QueryParser.isEmpty(filter) && <SearchListContainer/>;
 
-      // TODO(burdon): Type-specific cards.
+      // TODO(burdon): typeRegistry should return card no container (so can be used in list).
+      // TODO(burdon): Either basic Card and CardContainer with plugins or TR returns both card and container.
+      // Type-specific cards.
+      let itemKey = ID.decodeKey(key);
+      let CardContainer = typeRegistry.card(itemKey.type);
+
       let content = (
         <div className="ux-card-deck">
-          <CardContainer itemKey={ ID.decodeKey(key) }/>
+          <CardContainer itemKey={ itemKey }/>
         </div>
       );
 
