@@ -78,18 +78,21 @@ export class GoogleDriveClient {
    * Convert Drive result to a schema object Item.
    */
   static toItem(file) {
+    let { id, name, iconLink, webViewLink } = file;
+
     let item = {
       namespace: NAMESPACE,
       type: 'Document',
-      id: file.id,
-      title: file.name
+      id: id,
+      title: name
     };
 
-    if (file.webViewLink) {
-      item.url = file.webViewLink;
+    if (iconLink) {
+      _.set(item, 'meta.iconUrl', iconLink);
     }
-    if (file.iconLink) {
-      item.iconUrl = file.iconLink;
+
+    if (webViewLink) {
+      item.externalUrl = webViewLink;
     }
 
     return item;

@@ -15,6 +15,7 @@ import { DebugPanel } from '../../components/debug';
 import { NavBar, NavButtons } from '../../components/navbar';
 import { StatusBar } from '../../components/statusbar';
 import { Sidebar, SidebarToggle } from '../../components/sidebar';
+import { SidePanel } from '../../components/sidepanel';
 
 import { SearchPanelContainer } from '../search/search_panel';
 
@@ -72,13 +73,14 @@ export class Layout extends React.Component {
     debug:          PropTypes.object.isRequired,
     viewer:         PropTypes.object.isRequired,
     navigator:      PropTypes.object.isRequired,
+    typeRegistry:   PropTypes.object.isRequired,
     eventListener:  PropTypes.object.isRequired,
     actions:        PropTypes.object.isRequired,
     sidebar:        PropTypes.object
   };
 
   render() {
-    let { config, debug, viewer, navigator, eventListener, actions, sidebar, children } = this.props;
+    let { config, debug, viewer, navigator, typeRegistry, eventListener, actions, children } = this.props;
 
     let title = AppDefs.APP_NAME;
     let version = _.get(config, 'app.version');
@@ -105,6 +107,7 @@ export class Layout extends React.Component {
       }
     }
 
+    let sidebar = <SidePanel viewer={ viewer } navigator={ navigator } typeRegistry={ typeRegistry }/>;
 
     return (
       <div className="ux-fullscreen">
@@ -115,9 +118,7 @@ export class Layout extends React.Component {
             */}
           <header className="ux-column">
             <div className="ux-row ux-grow">
-              { sidebar &&
               <SidebarToggle sidebar={ () => this.refs.sidebar }/>
-              }
 
               <div className="ux-grow">
                 <h1>{ title }</h1>
@@ -134,11 +135,7 @@ export class Layout extends React.Component {
             * TODO(burdon): Option for sidebar to shove over display (e.g., like Inbox, mobile, etc.)
             */}
           <main className="ux-row">
-            { sidebar &&
-            <Sidebar ref="sidebar" autoClose={ true }>
-              { sidebar }
-            </Sidebar>
-            }
+            <Sidebar ref="sidebar" autoClose={ true }>{ sidebar }</Sidebar>
 
             { children }
           </main>

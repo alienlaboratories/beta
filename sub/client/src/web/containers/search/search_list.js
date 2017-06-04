@@ -24,11 +24,7 @@ const CustomColumn = ListItem.createInlineComponent((props, context) => {
   let Column = typeRegistry.column(item.type);
 
   return (
-    <div>
-      { Column &&
-        <Column item={ item }/>
-      }
-    </div>
+    <div>{ Column && <Column item={ item }/> }</div>
   );
 });
 
@@ -36,6 +32,9 @@ const CustomColumn = ListItem.createInlineComponent((props, context) => {
  * NOTE: Depends on ItemFragment fields.
  */
 export const ListItemRenderer = (typeRegistry) => (item) => {
+  let { meta } = item;
+  let { icon, iconUrl } = meta || {};
+
   return (
     <ListItem item={ item }>
       <ListItem.Favorite/>
@@ -45,7 +44,7 @@ export const ListItemRenderer = (typeRegistry) => (item) => {
 
       <div className="ux-icons">
         <div className="ux-no-hover">
-          <ListItem.Icon icon={ item.iconUrl || typeRegistry.icon(item.type) }/>
+          <ListItem.Icon icon={ typeRegistry.icon(item.type) || icon } url={ iconUrl }/>
         </div>
         <div className="ux-hover">
           <ListItem.DeleteButton/>
@@ -77,12 +76,19 @@ export class SearchList extends React.Component {
     mutator: PropTypes.object.isRequired
   };
 
+  constructor() {
+    super(...arguments);
+
+//  this._itemRenderer = DebugListItemRenderer;
+    this._itemRenderer = ListItemRenderer(this.context.typeRegistry);
+  }
+
   handleItemSelect(item) {
     this.context.navigator.pushCanvas(item);
   }
 
   render() {
-    let { typeRegistry, items } = this.props;
+    let { items } = this.props;
 
     // TODO(burdon): Handle mutations (e.g., labels).
     // TODO(burdon): Warning if no mutation callback provided.
@@ -90,10 +96,9 @@ export class SearchList extends React.Component {
     return (
       <div className="ux-search-list-container ux-panel ux-column ux-grow">
         <List items={ items }
-//            itemRenderer={ DebugListItemRenderer }
-              itemRenderer={ ListItemRenderer(typeRegistry) }
-              className="ux-search-list ux-grow"
+              itemRenderer={ this._itemRenderer }
               highlight={ true }
+              className="ux-search-list ux-grow"
               onItemSelect={ this.handleItemSelect.bind(this) }/>
       </div>
     );
@@ -104,15 +109,27 @@ export class SearchList extends React.Component {
 // Card list.
 //-------------------------------------------------------------------------------------------------
 
+const CardItemRenderer = (typeRegistry) => (item) => {
+  let CardComponent = typeRegistry.card(item.type) || Card;
+  return <CardComponent item={ item }/>;
+};
+
 /**
  * Card deck.
  */
 export class CardList extends React.Component {
 
   static contextTypes = {
+    typeRegistry: PropTypes.object.isRequired,
     navigator: PropTypes.object.isRequired,
     mutator: PropTypes.object.isRequired
   };
+
+  constructor() {
+    super(...arguments);
+
+    this._itemRenderer = CardItemRenderer(this.context.typeRegistry);
+  }
 
   handleItemSelect(item) {
     this.context.navigator.pushCanvas(item);
@@ -132,7 +149,7 @@ export class CardList extends React.Component {
     return (
       <div className="ux-card-deck ux-panel ux-column ux-grow">
         <List items={ items }
-              itemRenderer={ Card.ItemRenderer }
+              itemRenderer={ this._itemRenderer }
               className="ux-grow"
               onItemSelect={ this.handleItemSelect.bind(this) }/>
       </div>

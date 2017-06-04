@@ -4,13 +4,9 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose } from 'react-apollo';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
 
 import { ID } from 'alien-core';
 
-import { SubscriptionWrapper } from '../util/subscriptions';
 import { ReactUtil } from '../util/react';
 import { List, ListItem } from '../components/list';
 import { Path } from '../common/path';
@@ -20,32 +16,35 @@ import './sidepanel.less';
 /**
  * Sidebar content.
  */
-class SidePanel extends React.Component {
+export class SidePanel extends React.Component {
 
   static ItemRenderer = (typeRegistry) => (item) => {
-    let { icon } = item;
+    let { type, title, meta } = item;
+    let { icon=typeRegistry.icon(type) } = meta || {};
 
     return (
       <ListItem item={ item }>
-        <ListItem.Icon icon={ icon || typeRegistry.icon(item.type) }/>
-        <ListItem.Text value={ item.title }/>
+        <ListItem.Icon icon={ icon }/>
+        <ListItem.Text value={ title }/>
       </ListItem>
     );
   };
 
   static propTypes = {
+    viewer: PropTypes.object.isRequired,
     navigator: PropTypes.object.isRequired,
-    typeRegistry: PropTypes.object.isRequired
+    typeRegistry: PropTypes.object.isRequired,
   };
 
   onSelect(item) {
+    let { navigator } = this.props;
     let { alias, link } = item;
-    this.props.navigator.push(link || (alias && Path.folder(alias)) || Path.canvas(ID.key(item)));
+    navigator.push(link || (alias && Path.folder(alias)) || Path.canvas(ID.key(item)));
   }
 
   render() {
     return ReactUtil.render(this, () => {
-      let { typeRegistry, viewer } = this.props;
+      let { viewer, typeRegistry } = this.props;
 
       const adminItems = [
         // TODO(burdon): Admin ACL.
@@ -66,9 +65,10 @@ class SidePanel extends React.Component {
         }
       ];
 
-      const FolderList = (props) => (
-        <List items={ props.items }
-              itemRenderer={ SidePanel.ItemRenderer(typeRegistry) }
+      const itemRenderer = SidePanel.ItemRenderer(typeRegistry);
+      const FolderList = ({ items }) => (
+        <List items={ items }
+              itemRenderer={ itemRenderer }
               highlight={ true }
               onItemSelect={ this.onSelect.bind(this) }/>
       );
@@ -95,64 +95,3 @@ class SidePanel extends React.Component {
     });
   }
 }
-
-//-------------------------------------------------------------------------------------------------
-// HOC.
-//-------------------------------------------------------------------------------------------------
-
-const SidebarQuery = gql`
-  query SidebarQuery {
-
-    viewer {
-      user {
-        type
-        id
-        title
-      }
-
-      folders {
-        type
-        id
-        alias
-        icon
-        title
-      }
-
-      groups {
-        type
-        id
-        title
-
-        projects {
-          type
-          id
-          type
-          labels
-          title
-        }
-      }
-    }
-  }
-`;
-
-export const SidePanelContainer = compose(
-
-  // Query.
-  graphql(SidebarQuery, {
-    props: ({ ownProps, data }) => {
-      let { errors, loading, viewer } = data;
-
-      return {
-        errors,
-        loading,
-        viewer,
-
-        // For subscriptions.
-        refetch: () => {
-          data.refetch();
-        }
-      };
-    }
-  }),
-
-)(SubscriptionWrapper(SidePanel));

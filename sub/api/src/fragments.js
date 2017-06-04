@@ -19,9 +19,16 @@ const ItemFragment = gql`
     version
 
     fkey
+    alias
 
     labels
     title
+    
+    meta {
+      icon
+      iconUrl
+      thumbnailUrl
+    }
   }
 `;
 
@@ -35,8 +42,7 @@ const DocumentFragment = gql`
   fragment DocumentFragment on Document {
     ...ItemFragment
 
-    url                 # TODO(burdon): Move to Item.
-    iconUrl             # TODO(burdon): Avatar/thumbnail.
+    externalUrl  
   }
 
   ${ItemFragment}
@@ -90,9 +96,7 @@ const TaskFragment = gql`
 const ContactFragment = gql`
   fragment ContactFragment on Contact {
     ...ItemFragment
-
-    thumbnailUrl        # TODO(burdon): Move to Item.
-
+    
     email
 
     messages {

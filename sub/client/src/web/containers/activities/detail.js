@@ -10,7 +10,6 @@ import { Const, ID, QueryParser } from 'alien-core';
 import { ReactUtil } from '../../util/react';
 import { AppAction } from '../../common/reducers';
 
-import { SidePanelContainer } from '../sidepanel';
 import { SearchListContainer } from '../search/search_list';
 
 import { Activity } from './activity';
@@ -37,18 +36,19 @@ class DetailActivity extends React.Component {
         return;
       }
 
-      let sidebar = <SidePanelContainer navigator={ navigator} typeRegistry={ typeRegistry }/>;
-
+      // TODO(burdon): Continue to show folder.
       // Only show search results if in web mode and search is not empty.
       let platform = _.get(config, 'app.platform');
-      let searchPanel =
-        (platform === Const.PLATFORM.WEB) && !QueryParser.isEmpty(filter) && <SearchListContainer/>;
+      let searchPanel;
+      if (platform === Const.PLATFORM.WEB && true || !QueryParser.isEmpty(filter)) {
+        searchPanel = <SearchListContainer/>;
+      }
 
-      // TODO(burdon): typeRegistry should return card no container (so can be used in list).
-      // TODO(burdon): Either basic Card and CardContainer with plugins or TR returns both card and container.
       // Type-specific cards.
       let itemKey = ID.decodeKey(key);
-      let CardContainer = typeRegistry.card(itemKey.type);
+      let CardContainer = typeRegistry.container(itemKey.type);
+
+      // TODO(burdon): Handle default container.
 
       let content = (
         <div className="ux-card-deck">
@@ -60,9 +60,9 @@ class DetailActivity extends React.Component {
         <Layout config={ config }
                 debug={ debug }
                 viewer={ viewer }
-                sidebar={ sidebar }
                 actions={ actions }
                 navigator={ navigator }
+                typeRegistry={ typeRegistry }
                 eventListener={ eventListener }>
 
           <SplitPanel left={ searchPanel } right={ content }/>

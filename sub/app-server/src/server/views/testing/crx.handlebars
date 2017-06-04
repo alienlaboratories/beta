@@ -39,11 +39,11 @@
   // TODO(burdon): Merge with sidebar tester.
 
   const ITEMS = {
-    t1: { type: 'Contact', title: 'Alice',      email: 'alice.braintree@gmail.com', thumbnailUrl: '/img/testing/avatar/p1.png'},
-    t2: { type: 'Contact', title: 'Bob',        email: 'bob@example.com',           thumbnailUrl: '/img/testing/avatar/p2.png'},
-    t3: { type: 'Contact', title: 'Catherine',  email: 'catherine@example.com',     thumbnailUrl: '/img/testing/avatar/p3.png'},
-    t4: { type: 'Contact', title: 'David',      email: 'david@example.com',         thumbnailUrl: '/img/testing/avatar/p4.png'},
-    t5: { type: 'Contact', title: 'Eric',       email: 'eric@example.com',          thumbnailUrl: '/img/testing/avatar/p5.png'},
+    t1: { type: 'Contact', title: 'Alice',      email: 'alice.braintree@gmail.com', meta: { thumbnailUrl: '/img/testing/avatar/p1.png' } },
+    t2: { type: 'Contact', title: 'Bob',        email: 'bob@example.com',           meta: { thumbnailUrl: '/img/testing/avatar/p2.png' } },
+    t3: { type: 'Contact', title: 'Catherine',  email: 'catherine@example.com',     meta: { thumbnailUrl: '/img/testing/avatar/p3.png' } },
+    t4: { type: 'Contact', title: 'David',      email: 'david@example.com',         meta: { thumbnailUrl: '/img/testing/avatar/p4.png' } },
+    t5: { type: 'Contact', title: 'Eric',       email: 'eric@example.com',          meta: { thumbnailUrl: '/img/testing/avatar/p5.png' } },
   };
 
   $(document).ready(() => {
@@ -56,13 +56,13 @@
       console.log('Selected: ' + JSON.stringify(item));
       let content = $('#content').empty();
       if (item) {
-        let thumbnailUrl = item.thumbnailUrl && window.location.origin + item.thumbnailUrl;
+        let { title, email, meta: { thumbnailUrl } } = item;
 
         // Triggers DOM change for TestInspector.
         content.append($('<div>')
-            .text(item.title)
-            .attr('email', item.email)
-            .append($('<img>').attr('src', thumbnailUrl)));
+            .text(title)
+            .attr('email', email)
+            .append($('<img>').attr('src', window.location.origin + thumbnailUrl)));
       }
     });
   });

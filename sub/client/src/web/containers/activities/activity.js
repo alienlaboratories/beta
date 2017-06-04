@@ -106,9 +106,8 @@ export const ViewerQuery = gql`
       }
 
       folders {
-        type
-        id
-        alias
+        ...ItemFragment
+
         filter
       }
     }

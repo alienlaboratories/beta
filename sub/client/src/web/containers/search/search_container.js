@@ -24,6 +24,7 @@ export const SearchQuery = gql`
       items {
         ...ItemFragment
         ...ContactFragment
+        ...DocumentFragment
         ...TaskFragment
         ...ProjectFragment
       }
@@ -32,6 +33,7 @@ export const SearchQuery = gql`
 
   ${Fragments.ItemFragment}
   ${Fragments.ContactFragment}
+  ${Fragments.DocumentFragment}
   ${Fragments.TaskFragment}
   ${Fragments.ProjectFragment}
 `;

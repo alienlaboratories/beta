@@ -417,8 +417,8 @@ export class ListItem extends React.Component {
    * <ListItem.Debug/>
    */
   static Debug = ListItem.createInlineComponent((props, context) => {
-    let { item } = context;
     let { fields } = props;
+    let { item } = context;
 
     let obj = fields ? _.pick(item, fields) : item;
     return (
@@ -427,26 +427,26 @@ export class ListItem extends React.Component {
   });
 
   /**
-   * <ListItem.Icon/>
+   * <ListItem.Icon url="" icon=""/>
    */
   static Icon = ListItem.createInlineComponent((props, context) => {
+    let { onClick, url, icon='crop_square' } = props;
     let { item } = context;
 
     let attrs = {};
-    if (props.onClick) {
-      attrs.onClick = () => { props.onClick(item); };
+    if (onClick) {
+      attrs.onClick = () => { onClick(item); };
     }
 
-    let icon = props.icon || item.icon || '';
-    if (icon.startsWith('http') || icon.startsWith('/')) {
+    if (url) {
       return (
-        <i className="ux-icon ux-icon-img" {...attrs}>
-          <img src={ icon }/>
+        <i className="ux-icon ux-icon-img" { ...attrs }>
+          <img src={ url }/>
         </i>
       );
-    } else {
+    } else if (icon) {
       return (
-        <i className="ux-icon" {...attrs}>{ icon }</i>
+        <i className="ux-icon" { ...attrs }>{ icon }</i>
       );
     }
   });

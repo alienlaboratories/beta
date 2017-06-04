@@ -9,7 +9,6 @@ import { Const } from 'alien-core';
 
 import { ReactUtil } from '../../util/react';
 
-import { SidePanelContainer } from '../sidepanel';
 import { SearchListContainer, CardDeckContainer } from '../search/search_list';
 
 import { Activity } from './activity';
@@ -43,8 +42,6 @@ class FolderActivity extends React.Component {
         logger.warn('Invalid folder: ' + folder);
       }
 
-      let sidebar = <SidePanelContainer navigator={ navigator } typeRegistry={ typeRegistry }/>;
-
       let platform = _.get(config, 'app.platform');
       let content = (platform === Const.PLATFORM.WEB) ?
         <SearchListContainer filter={ defaultFilter }/>:
@@ -59,9 +56,9 @@ class FolderActivity extends React.Component {
         <Layout config={ config }
                 debug={ debug }
                 viewer={ viewer }
-                sidebar={ sidebar }
                 actions={ actions }
                 navigator={ navigator }
+                typeRegistry={ typeRegistry }
                 eventListener={ eventListener }>
 
           { content }

@@ -14,15 +14,19 @@
 # https://github.com/apollostack/graphql-server/issues/172
 #===================================================================================================
 
-# TODO(burdon): Move to framework.
-# TODO(burdon): Event as type AND item (i.e., enable inline).
+# Common properties.
+type Meta {
+  icon: String                # Material icon name.
+  iconUrl: String             # External icon URL.
+  thumbnailUrl: String        # External thumbnail URL.
+}
 
 interface Item {
   namespace: String           # External namespace (query provider).
   bucket: ID                  # ID of User or Group (null for system item).
   type: String!
   id: ID!
-  version: Int                # TODO(burdon): Version or monotonic sequence number?
+  version: Int                # TODO(burdon): Version (separate monotonic seq for mutations).
 
   # TODO(burdon): Multiple foreign keys (e.g., emails, linkedin).
   fkey: String                # Opaque foreign key (i.e., not Key).
@@ -30,10 +34,12 @@ interface Item {
   alias: String               # Short-name for URLs (unique, human-readable).
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
 
   title: String!
   description: String
-  labels: [String]
+
+  meta: Meta
 }
 
 #===================================================================================================
@@ -50,9 +56,10 @@ type User implements Item {
   alias: String
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
   title: String!
   description: String
-  labels: [String]
+  meta: Meta
 
   active: Boolean
 
@@ -78,9 +85,10 @@ type Group implements Item {
   alias: String
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
   title: String!
   description: String
-  labels: [String]
+  meta: Meta
 
   whitelist: [String]
   members: [User]!
@@ -103,12 +111,12 @@ type Contact implements Item {
   alias: String
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
   title: String!
   description: String
-  labels: [String]
+  meta: Meta
 
   email: String
-  thumbnailUrl: String
 
   user: User
 
@@ -127,14 +135,12 @@ type Document implements Item {
   alias: String
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
   title: String!
   description: String
-  labels: [String]
+  meta: Meta
 
-  # TODO(burdon): Move url, iconUrl, thumbnailUrl (avatar) to ItemFragment
-  url: String
-  iconUrl: String
-  thumbnailUrl: String
+  externalUrl: String
 }
 
 type Event implements Item {
@@ -147,9 +153,10 @@ type Event implements Item {
   alias: String
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
   title: String!
   description: String
-  labels: [String]
+  meta: Meta
 
   location: Location
   participants: [Contact]
@@ -167,11 +174,10 @@ type Folder implements Item {
   alias: String
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
   title: String!
   description: String
-  labels: [String]
-
-  icon: String
+  meta: Meta
 
   # JSON serialized FilterInput.
   filter: String!
@@ -187,9 +193,10 @@ type Location implements Item {
   alias: String
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
   title: String!
   description: String
-  labels: [String]
+  meta: Meta
 
   address: Address
 }
@@ -204,9 +211,10 @@ type Message implements Item {
   alias: String
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
   title: String!
   description: String
-  labels: [String]
+  meta: Meta
 
   snippet: String
   from: String!
@@ -223,9 +231,10 @@ type Project implements Item {
   alias: String
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
   title: String!
   description: String
-  labels: [String]
+  meta: Meta
 
   # All projects are owned by a Group (each User has a private Group).
   group: Group!
@@ -251,9 +260,10 @@ type Task implements Item {
   alias: String
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
   title: String!
   description: String
-  labels: [String]
+  meta: Meta
 
   # All tasks belong to a project.
   project: Project

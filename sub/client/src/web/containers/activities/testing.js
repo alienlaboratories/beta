@@ -28,7 +28,7 @@ class TestingActivity extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { config, debug, actions, eventListener, viewer } = this.props;
+      let { config, debug, actions, typeRegistry, eventListener, viewer } = this.props;
       if (!viewer) {
         return;
       }
@@ -38,6 +38,7 @@ class TestingActivity extends React.Component {
                 debug={ debug }
                 viewer={ viewer }
                 actions={ actions }
+                typeRegistry={ typeRegistry }
                 eventListener={ eventListener }>
 
           <h2>Testing</h2>

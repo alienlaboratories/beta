@@ -32,9 +32,9 @@ export const BatchMutationPath = // 'batchMutation'
 export class MutationUtil {
 
   static DEF_ITEM_KEYS = {
-    title:          'string',
-    email:          'string',
-    thumbnailUrl:   'string'
+    'title':              'string',
+    'meta.thumbnailUrl':  'string',
+    'email':              'string'
   };
 
   /**
@@ -49,7 +49,7 @@ export class MutationUtil {
     let mutations = [];
 
     _.each(keys, (type, key) => {
-      let value = item[key];
+      let value = _.get(item, key);
       if (value) {
         mutations.push(MutationUtil.createFieldMutation(key, type, value));
       }

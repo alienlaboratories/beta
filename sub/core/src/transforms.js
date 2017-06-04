@@ -98,7 +98,7 @@ export class Transforms {
     // Scalars.
     let scalar = Transforms.scalarValue(context, value);
     if (scalar !== undefined) {
-      object[field] = scalar;
+      _.set(object, field, scalar);
       return object;
     }
 

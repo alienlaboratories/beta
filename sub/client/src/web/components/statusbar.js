@@ -29,8 +29,7 @@ export class StatusBar extends React.Component {
       }
 
       return (
-        <i className="ux-icon ux-icon-action" title={ action.title }
-           onClick={ handleAction }>{ action.icon }</i>
+        <i className="ux-icon ux-icon-action" title={ action.title } onClick={ handleAction }>{ action.icon }</i>
       );
     };
 

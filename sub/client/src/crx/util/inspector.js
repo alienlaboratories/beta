@@ -163,8 +163,10 @@ export class TestInspector extends Inspector {
             items: [{
               type: 'Contact',
               title: name,
-              email,
-              thumbnailUrl
+              meta: {
+                thumbnailUrl
+              },
+              email
             }]
           };
 
@@ -285,8 +287,10 @@ export class GoogleInboxInspector extends Inspector {
               return {
                 type: 'Contact',
                 title,
-                email,
-                thumbnailUrl
+                meta: {
+                  thumbnailUrl
+                },
+                email
               };
             }
           }))

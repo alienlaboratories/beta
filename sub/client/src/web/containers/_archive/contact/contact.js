@@ -147,7 +147,8 @@ export class ContactCard extends React.Component {
   render() {
     let { viewer } = this.context;
     let { item:contact } = this.props;
-    let { user, email, thumbnailUrl, tasks, messages } = contact;
+    let { user, email, meta, tasks, messages } = contact;
+    let { thumbnailUrl } = meta || {};
 
     // Default project for Viewer.
     let defaultProject = ContactCard.getProjectFromGroupsByLabel(viewer.groups, '_default');

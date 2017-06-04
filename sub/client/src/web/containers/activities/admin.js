@@ -11,8 +11,6 @@ import { Fragments } from 'alien-api';
 import { ReactUtil } from '../../util/react';
 import { List, ListItem } from '../../components/list';
 
-import { SidePanelContainer } from '../sidepanel';
-
 import { Activity } from './activity';
 import { Layout } from './layout';
 
@@ -50,7 +48,7 @@ class AdminActivity extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { config, debug, actions, eventListener, viewer, navigator, typeRegistry } = this.props;
+      let { config, debug, actions, typeRegistry, eventListener, viewer, navigator } = this.props;
       if (!viewer) {
         return;
       }
@@ -72,7 +70,7 @@ class AdminActivity extends React.Component {
         });
       }
 
-      let sidebar = <SidePanelContainer navigator={ navigator} typeRegistry={ typeRegistry }/>;
+      let sidebar = <SidePanelContainer navigator={ navigator } typeRegistry={ typeRegistry }/>;
 
       return (
         <Layout config={ config }
@@ -80,6 +78,7 @@ class AdminActivity extends React.Component {
                 viewer={ viewer }
                 sidebar={ sidebar }
                 actions={ actions }
+                typeRegistry={ typeRegistry }
                 eventListener={ eventListener }>
 
           <div className="ux-panel ux-columns ux-grow">
