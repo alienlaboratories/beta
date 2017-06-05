@@ -5,6 +5,8 @@
 import _ from 'lodash';
 import Random from 'random-seed';
 
+import { TypeUtil } from 'alien-util';
+
 //
 // If Node (i.e., not DOM) then augment global functions.
 // TODO(burdon): Factor out node/web abstraction layer.
@@ -61,13 +63,13 @@ export class ID {
   }
 
   static createStoreId(obj) {
-    console.assert(obj.type && obj.id, 'Invalid key:', obj);
+    console.assert(obj && obj.type && obj.id, 'Invalid key:', obj);
     return obj.type + ':' + obj.id;
   }
 
   static key(item) {
-    console.assert(item && item.type && item.id, 'Invalid item: ' + JSON.stringify(item));
-    return _.pick(item, 'namespace', 'bucket', 'type', 'id');
+    console.assert(item.type && item.id, 'Invalid item: ' + JSON.stringify(item));
+    return TypeUtil.compact(_.pick(item, 'namespace', 'bucket', 'type', 'id'));
   }
 
   static keyEqual(key1, key2) {

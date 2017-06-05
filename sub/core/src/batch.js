@@ -22,7 +22,7 @@ export class Batch {
   /**
    * Manages batch mutations.
    *
-   * new Batch(idGenerator, mutator, bucket, fragments, true)
+   * new Batch(idGenerator, mutator, fragments, bucket, true)
    *
    *   .createItem('Task', [
    *     MutationUtil.createFieldMutation('title', 'string', 'Test')
@@ -38,19 +38,19 @@ export class Batch {
    * @param {IdGenerator} idGenerator.
    * @param {function.<{Options}>} mutate Mutate function provided by Apollo.
    * @param {string} bucket All batched operations must belong to the same bucket.
-   * @param {FragmentsMap} fragments
+   * @param {FragmentsMap} fragments Map of fragments to which mutations are applied.
    * @param {boolean} optimistic
    * @private
    */
-  constructor(idGenerator, mutate, bucket=undefined, fragments=null, optimistic=false) {
+  constructor(idGenerator, mutate, fragments=undefined, bucket=undefined, optimistic=false) {
     console.assert(idGenerator && mutate);
 
     // TODO(burdon): Enforce same bucket for entire batch? Otherwise multiple batches (e.g., private task for project).
 
     this._idGenerator = idGenerator;
     this._mutate = mutate;
-    this._bucket = bucket;
     this._fragments = fragments;
+    this._bucket = bucket;
     this._optimistic = optimistic;
 
     this._refs = new Map();
@@ -141,6 +141,7 @@ export class Batch {
     // Create optimistic response.
     let optimisticResponse;
     if (this._optimistic) {
+      logger.log('Creating optimistic response.');
 
       // Create the response (GraphQL mutation API).
       // NOTE: __typename is required to avoid warnings.
@@ -241,37 +242,77 @@ export class Batch {
           fragmentName
         });
 
-        // TODO(burdon): Assert if update.
+        //
+        // Apply mutations.
+        //
+
+        let baseItem;
         if (!cachedItem) {
-          cachedItem = {__typename: key.type, ...key, version: 0 };
+          // TODO(burdon): Assert not an update.
+          // TODO(burdon): Must have null for all fields declared in fragment map. (server returns null).
+          // TODO(burdon): Introspect frags and create (tests).
+          // TODO(burdon): npm link apollo-client and change warning before filing issue. Review issues.
+          // TODO(burdon): "Missing field { ... }" on write (seems async?)
+          baseItem = _.defaults(key, {
+            __typename: key.type,
+
+            // Item
+            namespace: null,
+            bucket: null,
+            version: 0,
+            fkey: null,
+            alias: null,
+            created: null,
+            modified: null,
+            labels: null,
+            description: null,
+            meta: null,
+
+            // Contact
+            email: null,
+            user: null,
+            tasks: null,
+            messages: null,
+
+            // Project
+            group: null,
+//          tasks: null,
+            contacts: null,
+            boards: null,
+
+            // Task
+            project: null,
+//          tasks: null,
+            owner: null,
+            assignee: null,
+            status: 0
+          });
+        } else {
+          baseItem = TypeUtil.clone(cachedItem);
         }
+
+        // Apply mutations.
+        let mutatedItem = Transforms.applyObjectMutations({ client: true }, baseItem, mutations);
 
         //
         // Update cache.
         //
 
-        // Apply mutations.
-
-        let mutatedItem = Transforms.applyObjectMutations({ client: true }, TypeUtil.clone(cachedItem), mutations);
-
         // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.writeFragment
-        console.log('[[[', JSON.stringify(cachedItem));
         proxy.writeFragment({
           id: ID.createStoreId(mutatedItem),
           fragment,
           fragmentName,
           data: mutatedItem
         });
-        console.log(']]]', JSON.stringify(mutatedItem));
-        // TODO(burdon): Async? Logged after here. "Missing field { version title status }"
-        // TODO(burdon): npm link apollo-client and change warning before filing issue.
 
         //
+        // TODO(burdon): Debug only.
         // Check updated.
         //
 
         cachedItem = proxy.readFragment({
-          id: ID.createStoreId(cachedItem),
+          id: ID.createStoreId(mutatedItem),
           fragment,
           fragmentName
         });

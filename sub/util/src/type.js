@@ -98,7 +98,7 @@ export class TypeUtil {
 
   /**
    * Remove empty fields from object.
-   * @param value
+   * @param {Object} value
    */
   static compact(value) {
     return _.omitBy(value, v => _.isNil(v)    // Null/undefined scalar.

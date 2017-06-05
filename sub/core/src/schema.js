@@ -26,6 +26,9 @@ export const ValueFragment = gql`
 
 /**
  * Map of Fragments by type.
+ *
+ * This map is used by the mutator's batch to apply mutation results (both optimistic and server)
+ * to the cache.
  */
 export class FragmentsMap {
 
@@ -35,6 +38,7 @@ export class FragmentsMap {
   }
 
   constructor() {
+    // Map of array of fragment GQL documents by type.
     this._map = new Map();
   }
 

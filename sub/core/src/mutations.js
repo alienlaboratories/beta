@@ -145,9 +145,11 @@ export class MutationUtil {
 export class Mutator {
 
   /**
+   * @param {FragmentsMap} fragments
    * @return Standard mutation wrapper supplied to redux's combine() method.
    */
-  static graphql() {
+  static graphql(fragments=undefined) {
+
     return graphql(BatchMutation, {
       withRef: true,
 
@@ -162,9 +164,10 @@ export class Mutator {
       // NOTE: dependencies must previously have been injected into the properties.
       //
       props: ({ ownProps, mutate }) => {
-        let { config, idGenerator, analytics } = ownProps;
+        let { idGenerator, config } = ownProps;
+
         return {
-          mutator: new Mutator(idGenerator, mutate, config, analytics)
+          mutator: new Mutator(idGenerator, mutate, fragments, config)
         };
       }
     });
@@ -173,15 +176,15 @@ export class Mutator {
   /**
    * @param idGenerator
    * @param {function} mutate Provided by apollo.
+   * @param {FragmentsMap} fragments
    * @param config
-   * @param analytics
    */
-  constructor(idGenerator, mutate, config, analytics) {
-    console.assert(mutate && idGenerator && config && analytics);
+  constructor(idGenerator, mutate, fragments, config) {
+    console.assert(idGenerator && mutate && fragments && config);
     this._idGenerator = idGenerator;
     this._mutate = mutate;
+    this._fragments = fragments;
     this._config = config;
-    this._analytics = analytics;
   }
 
   /**
@@ -189,8 +192,10 @@ export class Mutator {
    * @param bucket
    * @returns {Batch}
    */
+  // TODO(burdon): Should bucket be required?
   batch(bucket=undefined) {
+    // TODO(burdon): Inject dynamic options (don't leak entire config here).
     let optimistic = _.get(this._config, 'options.optimisticResponse');
-    return new Batch(this._idGenerator, this._mutate, bucket, null, optimistic);
+    return new Batch(this._idGenerator, this._mutate, this._fragments, bucket, optimistic);
   }
 }

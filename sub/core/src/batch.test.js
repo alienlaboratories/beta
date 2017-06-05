@@ -12,6 +12,8 @@ const bucket = 'Group-1';
 
 const idGenerator = new IdGenerator();
 
+// TODO(burdon): Test fragments.
+
 test('Null batch.', (done) => {
 
   function mutate(args) {
@@ -22,7 +24,7 @@ test('Null batch.', (done) => {
   }
 
   try {
-    new Batch(idGenerator, mutate, bucket).commit();
+    new Batch(idGenerator, mutate, null, bucket).commit();
   } catch (err) {
     done.fail(err);
   }
@@ -38,7 +40,7 @@ test('Create item.', (done) => {
     });
   }
 
-  new Batch(idGenerator, mutate, bucket)
+  new Batch(idGenerator, mutate, null, bucket)
     .createItem('Task', [
       MutationUtil.createFieldMutation('title', 'string', 'Test')
     ])
@@ -62,7 +64,7 @@ test('Create and insert (with optimistic responses).', (done) => {
     });
   }
 
-  new Batch(idGenerator, mutator, bucket, null, true)
+  new Batch(idGenerator, mutator, null, bucket, true)
     .createItem('Task', [
       MutationUtil.createFieldMutation('title', 'string', 'Test')
     ], 'task')

@@ -223,7 +223,7 @@ export class Transforms {
   static scalarValue(context, value) {
     if (value.key) {
       if (context.client) {
-        return value.key;
+        return { __typename: value.key.type, ...value.key };
       } else {
         return value.key.id;
       }

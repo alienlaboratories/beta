@@ -4,7 +4,7 @@
 
 import gql from 'graphql-tag';
 
-import { ValueFragment } from 'alien-core';
+import { FragmentsMap, ValueFragment } from 'alien-core';
 
 //
 // All sub-types should include the Item fragment.
@@ -182,10 +182,22 @@ const ItemMetaFragment = gql`
 `;
 
 //
+// Map of fragmentds to update on mutation.
+//
+
+export const MutationFragments = new FragmentsMap()
+  .add(ItemFragment)
+  .add(ContactFragment)
+  .add(ProjectFragment)
+  .add(TaskFragment);
+
+//
 // Exported fragment defs.
 //
 
 export const Fragments = {
+
+  // Framework.
 
   ItemFragment,
   ItemMetaFragment,
