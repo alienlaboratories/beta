@@ -114,9 +114,9 @@ export class SearchList extends React.Component {
 // Card list.
 //-------------------------------------------------------------------------------------------------
 
-const CardItemRenderer = (typeRegistry) => (item) => {
+const CardItemRenderer = (mutator, typeRegistry, viewer) => (item, list) => {
   let CardComponent = typeRegistry.card(item.type) || Card;
-  return <CardComponent item={ item }/>;
+  return <CardComponent mutator={ mutator } viewer={ viewer } item={ item }/>;
 };
 
 /**
@@ -127,13 +127,15 @@ export class CardList extends React.Component {
   static contextTypes = {
     typeRegistry: PropTypes.object.isRequired,
     navigator: PropTypes.object.isRequired,
-    mutator: PropTypes.object.isRequired
+    mutator: PropTypes.object.isRequired,
+    viewer: PropTypes.object.isRequired
   };
 
   constructor() {
     super(...arguments);
 
-    this._itemRenderer = CardItemRenderer(this.context.typeRegistry);
+    let { mutator, viewer } = this.context;
+    this._itemRenderer = CardItemRenderer(mutator, this.context.typeRegistry, viewer);
   }
 
   handleItemSelect(item) {

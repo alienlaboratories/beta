@@ -50,7 +50,7 @@ class DetailActivity extends React.Component {
 
       let content = (
         <div className="ux-card-deck">
-          <CardContainer viewer={ viewer} mutator={ mutator } itemKey={ itemKey }/>
+          <CardContainer mutator={ mutator } viewer={ viewer } itemKey={ itemKey }/>
         </div>
       );
 

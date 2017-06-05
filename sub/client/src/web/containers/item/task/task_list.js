@@ -64,14 +64,16 @@ export const TaskItemEditor = (item) => {
  */
 export class TaskList extends React.Component {
 
-  // TODO(burdon): Hanging editor.
-
   static propTypes = {
     mutator:    PropTypes.object.isRequired,
     viewer:     PropTypes.object.isRequired,
     parent:     PropTypes.object.isRequired,
     project:    PropTypes.object.isRequired,
     tasks:      PropTypes.array.isRequired
+  };
+
+  static defaultProps = {
+    tasks: []
   };
 
   handleTaskUpdate(item, mutations) {

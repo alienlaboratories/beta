@@ -292,6 +292,8 @@ export class List extends React.Component {
         keyMap.set(itemKey, item);
       }
 
+      // TODO(burdon): Make renderers class (shifts context requirements to class).
+
       // Primary item.
       let listItem;
       if (item.id === editItem) {
