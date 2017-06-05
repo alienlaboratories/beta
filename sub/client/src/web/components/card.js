@@ -30,6 +30,7 @@ export class Card extends React.Component {
   /**
    * Default renderer.
    */
+  // TODO(burdon): Card requires viewer, mutator (context?)
   static ItemRenderer = (item) => {
     return <Card item={ item }/>;
   };
@@ -141,6 +142,8 @@ export class Card extends React.Component {
           </Card.Section>
         );
       }
+
+      // TODO(burdon): Edit-in-place title.
 
       return (
         <div className={ DomUtil.className('ux-card', className) }>

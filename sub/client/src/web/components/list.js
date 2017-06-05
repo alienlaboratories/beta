@@ -85,6 +85,7 @@ export class List extends React.Component {
 
     className:          PropTypes.string,
     highlight:          PropTypes.bool,
+    showEditor:         PropTypes.bool,
 
     items:              PropTypes.arrayOf(PropTypes.object),
     groupedItems:       PropTypes.arrayOf(PropTypes.object),
@@ -104,13 +105,17 @@ export class List extends React.Component {
     itemRenderer:       List.DefaultItemRenderer
   };
 
-  state = {
-    itemEditor:         this.props.itemEditor   || List.DefaultItemEditor,
-    itemRenderer:       this.props.itemRenderer || List.DefaultItemRenderer,
+  constructor() {
+    super(...arguments);
 
-    addItem:            false,      // { boolean }
-    editItem:           null        // { string:ID }
-  };
+    this.state = {
+      itemEditor:         this.props.itemEditor   || List.DefaultItemEditor,
+      itemRenderer:       this.props.itemRenderer || List.DefaultItemRenderer,
+
+      addItem:            this.props.showEditor,
+      editItem:           null
+    };
+  }
 
   getChildContext() {
     return {
@@ -203,7 +208,7 @@ export class List extends React.Component {
    */
   handleItemCancel() {
     this.setState({
-      addItem: false,
+      addItem: this.props.showEditor,
       editItem: null
     });
   }
@@ -650,7 +655,7 @@ export class ListItemEditor extends ListItem {
     let { children, className } = this.props;
 
     return (
-      <div className={ DomUtil.className('ux-row', className) }>
+      <div className={ DomUtil.className('ux-row', 'ux-form-row', className) }>
         { children }
       </div>
     );

@@ -2,8 +2,9 @@
 // Copyright 2017 Minder Labs.
 //
 
-import gql from 'graphql-tag';
 import React from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
 
 import { Fragments } from 'alien-api';
 
@@ -11,22 +12,34 @@ import { ReactUtil } from '../../../util/react';
 import { Card } from '../../../components/card';
 
 import { QueryItem } from '../item_container';
+import { TaskList } from '../task/task_list';
 
 /**
  * Project card.
  */
 export class ProjectCard extends React.Component {
 
+  static propTypes = {
+    mutator:    PropTypes.object.isRequired,
+    viewer:     PropTypes.object.isRequired
+  };
+
   render() {
     return ReactUtil.render(this, () => {
-      let { item:project } = this.props;
+      let { mutator, viewer, item:project } = this.props;
       if (!project) {
         return;
       }
 
+      let { tasks } = project;
+
       return (
         <Card item={ project }>
-          Project
+
+          <Card.Section id="tasks" title="Tasks">
+            <TaskList mutator={ mutator } viewer={ viewer } parent={ project } project={ project } tasks={ tasks }/>
+          </Card.Section>
+
         </Card>
       );
     });

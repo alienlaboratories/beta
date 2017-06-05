@@ -55,11 +55,35 @@
 
 .ux-debug {
   color: #999;
-  font-size: @ux-font-small;
+  font-size: @ux-font-xxsmall;
   word-break: break-all;
 }
 
-// TODO(burdon): Forms (align controls: ux-data-row).
+//
+// Forms.
+//
+
+.ux-form-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  a,
+  .ux-text {
+    padding: 2px 3px;
+  }
+
+  select {
+    border: none;
+    border-bottom: 1px solid @ux-control-border;
+    background-color: transparent;
+  }
+
+  label {
+    font-size: @ux-font-xsmall;
+    color: @ux-color-label;
+  }
+}
 
 //
 // Panels

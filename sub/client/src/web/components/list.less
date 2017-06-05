@@ -11,47 +11,52 @@
     flex-direction: column;
     flex-grow: 1;
     overflow-y: scroll;
+  }
 
-    // NOTE: No margins.
-    .ux-list-item {
-      margin: 0;
-    }
+  // NOTE ux-list-item  also wraps the ux-list-editor.
+  > .ux-list-editor {
+    // Account for list scrollbar.
+    margin-right: @ux-scrollbar-width !important;
+  }
 
-    // Default style (e.g., does not apply to cards).
-    .ux-list-item {
-      .ux-row {
-        padding: 4px;
+  // NOTE: No margins.
+  .ux-list-item {
+    margin: 0;
+  }
 
-        > .ux-icon {
-          margin-right: 4px;
+  // Default style (e.g., does not apply to cards).
+  .ux-list-item {
+    .ux-row {
+      padding: 4px;
 
-          &:last-child {
-            background-color: red;
-            margin: 0;
-          }
-        }
+      > .ux-icon {
+        margin-right: 4px;
 
-        .ux-icons {
-          margin-left: 4px;
-        }
-
-        // Hide delete icon unless hover.
-        .ux-hover {
-          display: none;
-        }
-        .ux-no-hover {
-          display: block;
+        &:last-child {
+          margin: 0;
         }
       }
 
-      &:hover {
-        .ux-row {
-          .ux-hover {
-            display: block;
-          }
-          .ux-no-hover {
-            display: none;
-          }
+      .ux-icons {
+        margin-left: 4px;
+      }
+
+      // Hide delete icon unless hover.
+      .ux-hover {
+        display: none;
+      }
+      .ux-no-hover {
+        display: block;
+      }
+    }
+
+    &:hover {
+      .ux-row {
+        .ux-hover {
+          display: block;
+        }
+        .ux-no-hover {
+          display: none;
         }
       }
     }

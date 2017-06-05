@@ -3,5 +3,5 @@
 //
 
 export * from './members';
-export * from './task';
 export * from './task_card';
+export * from './task_list';
