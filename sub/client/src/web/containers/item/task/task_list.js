@@ -104,7 +104,6 @@ export class TaskList extends React.Component {
 
     return (
       <List ref="tasks"
-            className="ux-list-tasks"
             showEditor={ true }
             items={ tasks }
             itemRenderer={ TaskItemRenderer }
