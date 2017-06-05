@@ -18,7 +18,9 @@
     "alien-util": "0.0.1",
     "argparse": "^1.0.9",
     "google-cli-auth": "^0.0.1",
-    "node-yaml": "^3.1.0"
+    "lodash": "^4.17.4",
+    "node-yaml": "^3.1.0",
+    "request": "^2.81.0"
   },
   "jest": {
     "verbose": false,
