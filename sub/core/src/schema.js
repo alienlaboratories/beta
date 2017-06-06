@@ -49,7 +49,84 @@ export class FragmentsMap {
     return this;
   }
 
+  getDefaultObject(type) {
+    let object = {};
+    let fragments = this.getFragments(type);
+    _.each(fragments, fragment => {
+      let parser = new FragmentParser(fragment);
+      let partial = parser.getDefaultObject();
+      _.defaultsDeep(object, partial);
+    });
+
+    return object;
+  }
+
   getFragments(type) {
     return this._map.get(type);
+  }
+}
+
+/**
+ * GQL Document structure.
+ *
+ * definitions[]
+ *   typeCondition.name.value
+ *   selectionSet
+ *     selections[]
+ *       typeCondition.name.value
+ *       selectionSet
+ */
+export class FragmentParser {
+
+  constructor(fragment) {
+    console.assert(fragment);
+    this._defaultDefinition = fragment.definitions[0];
+
+    this._definitionMap = new Map();
+
+    _.each(fragment.definitions, definition => {
+      this._definitionMap.set(definition.name.value, definition);
+    });
+  }
+
+  getDefaultObject() {
+    return this._getDefaultsForDefinition({}, this._defaultDefinition);
+  }
+
+  _getDefaultsForDefinition(object, definition) {
+    console.assert(definition.typeCondition.name.value);
+    object.__typename = definition.typeCondition.name.value;
+    return this._getDefaultsForSelectionSet(object, definition.selectionSet);
+  }
+
+  _getDefaultsForSelectionSet(object, selectionSet) {
+    if (!selectionSet) {
+      return object;
+    }
+
+    _.each(selectionSet.selections, selection => {
+      switch (selection.kind) {
+
+        case 'Field': {
+          _.set(object, selection.name.value, null);
+          break;
+        }
+
+        case 'FragmentSpread': {
+          let definition = this._definitionMap.get(selection.name.value);
+          console.assert(definition);
+          this._getDefaultsForSelectionSet(object, definition.selectionSet);
+          break;
+        }
+
+//      case 'InlineFragment': {}
+
+        default: {
+          throw new Error('Unexpected kind: ', selection.kind);
+        }
+      }
+    });
+
+    return object;
   }
 }

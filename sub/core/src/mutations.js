@@ -183,7 +183,7 @@ export class Mutator {
     console.assert(idGenerator && mutate && fragments && config);
     this._idGenerator = idGenerator;
     this._mutate = mutate;
-    this._fragments = fragments;
+    this._fragmentMap = fragments;
     this._config = config;
   }
 
@@ -196,6 +196,6 @@ export class Mutator {
   batch(bucket=undefined) {
     // TODO(burdon): Inject dynamic options (don't leak entire config here).
     let optimistic = _.get(this._config, 'options.optimisticResponse');
-    return new Batch(this._idGenerator, this._mutate, this._fragments, bucket, optimistic);
+    return new Batch(this._idGenerator, this._mutate, this._fragmentMap, bucket, optimistic);
   }
 }

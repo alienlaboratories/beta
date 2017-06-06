@@ -47,7 +47,6 @@ test('Create item.', (done) => {
     .commit();
 });
 
-
 test('Create and insert (with optimistic responses).', (done) => {
 
   // TODO(burdon): Opt respomnse.
