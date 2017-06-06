@@ -31,7 +31,7 @@ class DetailActivity extends React.Component {
   render() {
     return ReactUtil.render(this, () => {
       let { params: { key } } = this.props;
-      let { config, debug, actions, eventListener, viewer, mutator, navigator, typeRegistry, filter } = this.props;
+      let { config, debug, viewer, actions, navigator, typeRegistry, eventListener, mutator, filter } = this.props;
       if (!viewer) {
         return;
       }

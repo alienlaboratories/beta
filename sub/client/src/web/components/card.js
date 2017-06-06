@@ -28,11 +28,13 @@ export class Card extends React.Component {
   static state = new Map();
 
   /**
-   * Default renderer.
+   * Type-specific card renderer.
    */
-  // TODO(burdon): Card requires viewer, mutator (context?)
-  static ItemRenderer = (item) => {
-    return <Card item={ item }/>;
+  static ItemRenderer = (typeRegistry, mutator, viewer) => {
+    return ({ item }) => {
+      let CardComponent = typeRegistry && typeRegistry.card(item.type) || Card;
+      return <CardComponent item={ item } mutator={ mutator } viewer={ viewer }/>;
+    };
   };
 
   /**

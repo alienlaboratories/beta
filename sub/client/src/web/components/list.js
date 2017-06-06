@@ -36,7 +36,7 @@ export class List extends React.Component {
   // Default renderers.
   //
 
-  static DefaultItemEditor = (item) => {
+  static DefaultItemEditor = ({ item }) => {
     return (
       <ListItemEditor item={ item }>
         <ListItem.Edit field="title"/>
@@ -45,7 +45,7 @@ export class List extends React.Component {
     );
   };
 
-  static DefaultItemRenderer = (item) => {
+  static DefaultItemRenderer = ({ item }) => {
     return (
       <ListItem item={ item }>
         <ListItem.Text value={ item.title }/>
@@ -53,7 +53,7 @@ export class List extends React.Component {
     );
   };
 
-  static DefaultEditableItemRenderer = (item) => {
+  static DefaultEditableItemRenderer = ({ item }) => {
     return (
       <ListItem item={ item }>
         <ListItem.Text value={ item.title }/>
@@ -62,7 +62,7 @@ export class List extends React.Component {
     );
   };
 
-  static DebugItemRenderer = (fields) => (item) => {
+  static DebugItemRenderer = (fields) => ({ item }) => {
     return (
       <ListItem item={ item }>
         <ListItem.Debug fields={ fields }/>
@@ -207,6 +207,10 @@ export class List extends React.Component {
    * Cancel adding or editing item.
    */
   handleItemCancel() {
+
+    // TODO(burdon): Force reset of editor?
+    // HACK: list maintains "isEditing" state and cancels it here; Editor calls back to set state when edit begins.
+
     this.setState({
       addItem: this.props.showEditor,
       editItem: null
@@ -243,10 +247,9 @@ export class List extends React.Component {
   */
 
   render() {
-
     // NOTE: data is a user-label to identify the list.
     let { items, itemClassName, itemOrderModel, groupedItems, data } = this.props;
-    let { itemRenderer, itemEditor, addItem, editItem } = this.state;
+    let { itemRenderer:ItemRenderer, itemEditor:ItemEditor, addItem, editItem } = this.state;
 
     //
     // Group/merge items.
@@ -292,20 +295,18 @@ export class List extends React.Component {
         keyMap.set(itemKey, item);
       }
 
-      // TODO(burdon): Make renderers class (shifts context requirements to class).
-
       // Primary item.
       let listItem;
       if (item.id === editItem) {
         listItem = (
           <div key={ itemKey } className={ DomUtil.className('ux-list-item', 'ux-list-editor', itemClassName) }>
-            { itemEditor(item, this) }
+            <ItemEditor item={ item }/>
           </div>
         );
       } else {
         listItem = (
           <div key={ itemKey } className={ DomUtil.className('ux-list-item', itemClassName) }>
-            { itemRenderer(item, this) }
+            <ItemRenderer item={ item }/>
           </div>
         );
       }
@@ -348,19 +349,6 @@ export class List extends React.Component {
     }
 
     //
-    // Editor.
-    //
-
-    let editor;
-    if (addItem) {
-      editor = (
-        <div className={ DomUtil.className('ux-list-item', 'ux-list-editor', itemClassName) }>
-          { itemEditor(null, this) }
-        </div>
-      );
-    }
-
-    //
     // Layout.
     //
 
@@ -374,7 +362,12 @@ export class List extends React.Component {
             { lastDropTarget }
           </div>
         </div>
-        { editor }
+
+        { addItem &&
+        <div className={ DomUtil.className('ux-list-item', 'ux-list-editor', itemClassName) }>
+          <ItemEditor/>
+        </div>
+        }
       </div>
     );
   }

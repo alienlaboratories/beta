@@ -32,33 +32,15 @@ export const ValueFragment = gql`
  */
 export class FragmentsMap {
 
-  static getFragmentName(fragment) {
-    console.assert(fragment);
-    return _.get(fragment, 'definitions[0].name.value');
-  }
-
   constructor() {
     // Map of array of fragment GQL documents by type.
     this._map = new Map();
   }
 
   add(fragment) {
-    let type = _.get(fragment, 'definitions[0].typeCondition.name.value');
-    console.assert(type);
+    let type = FragmentParser.getFragmentTypeName(fragment);
     TypeUtil.defaultMap(this._map, type, Array).push(fragment);
     return this;
-  }
-
-  getDefaultObject(type) {
-    let object = {};
-    let fragments = this.getFragments(type);
-    _.each(fragments, fragment => {
-      let parser = new FragmentParser(fragment);
-      let partial = parser.getDefaultObject();
-      _.defaultsDeep(object, partial);
-    });
-
-    return object;
   }
 
   getFragments(type) {
@@ -77,6 +59,16 @@ export class FragmentsMap {
  *       selectionSet
  */
 export class FragmentParser {
+
+  static getFragmentName(fragment) {
+    console.assert(fragment);
+    return _.get(fragment, 'definitions[0].name.value');
+  }
+
+  static getFragmentTypeName(fragment) {
+    console.assert(fragment);
+    return _.get(fragment, 'definitions[0].typeCondition.name.value');
+  }
 
   constructor(fragment) {
     console.assert(fragment);

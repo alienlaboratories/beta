@@ -32,7 +32,7 @@ export class TestCards extends React.Component {
 
     return (
       <List className="ux-card-deck ux-grow"
-            itemRenderer={ Card.ItemRenderer }
+            itemRenderer={ Card.ItemRenderer() }
             items={ items }/>
     );
   }

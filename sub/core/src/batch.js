@@ -9,7 +9,7 @@ import { Logger, TypeUtil } from 'alien-util';
 import { Database } from './database';
 import { ID } from './id';
 import { MutationUtil } from './mutations';
-import { FragmentsMap } from './schema';
+import { FragmentParser } from './schema';
 import { Transforms } from './transforms';
 
 const logger = Logger.get('batch');
@@ -85,7 +85,7 @@ export class Batch {
     mutations = _.compact(_.flattenDeep(mutations));
 
     let id = this._idGenerator.createId();
-    let key = { bucket: this._bucket, type, id };
+    let key = { namespace: null, bucket: this._bucket, type, id };
     let item = { __typename: type, ...key, verson: 0 };
     this._items.set(id, item);
 
@@ -230,12 +230,13 @@ export class Batch {
 
       // Apply to each fragment.
       _.each(this._fragmentMap.getFragments(key.type), fragment => {
-        let fragmentName = FragmentsMap.getFragmentName(fragment);
+        let fragmentName = FragmentParser.getFragmentName(fragment);
 
         //
         // Read currently cached item (if exists).
         // http://dev.apollodata.com/core/apollo-client-api.html#DataProxy.readFragment
         //
+
         let cachedItem = proxy.readFragment({
           id: ID.createStoreId(key),
           fragment,
@@ -244,30 +245,19 @@ export class Batch {
 
         //
         // Apply mutations.
+        // The FragmentParser provides a template item (with null fields for each fragment).
+        // This avoids the "Missing fields" warnings.
+        // Additionally nested Items are defined (in the fragments) only by key fields.
+        // Apollo can use the `dataIdFromObject` property to match the associated cached Items.
         //
 
-        let baseItem;
-        if (!cachedItem) {
-          // TODO(burdon): Assert not an update.
-
-          // TODO(burdon): "Missing field { ... }" on write (seems async?)
-          // TODO(burdon): Seems to be missing fields from fragment read.
-          // TODO(burdon): Debug: npm link apollo-client and change warning before filing issue. Review issues.
-          // TODO(burdon): Create integration test?
-
-          baseItem = _.defaultsDeep(TypeUtil.clone(key), this._fragmentMap.getDefaultObject(key.type));
-        } else {
-          baseItem = TypeUtil.clone(cachedItem);
-        }
-
-        // Apply mutations.
+        let parser = new FragmentParser(fragment);
+        let baseItem = _.defaults(TypeUtil.clone(cachedItem || key), parser.getDefaultObject());
         let mutatedItem = Transforms.applyObjectMutations({ client: true }, baseItem, mutations);
 
         //
         // Update cache.
         //
-
-        console.log('### WRITING ###\n', JSON.stringify(mutatedItem, null, 2));
 
         // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.writeFragment
         proxy.writeFragment({
@@ -282,15 +272,18 @@ export class Batch {
         // Check updated.
         //
 
-        cachedItem = proxy.readFragment({
-          id: ID.createStoreId(mutatedItem),
-          fragment,
-          fragmentName
-        });
+        const debug = true;
+        if (debug) {
+          cachedItem = proxy.readFragment({
+            id: ID.createStoreId(mutatedItem),
+            fragment,
+            fragmentName
+          });
 
-        let storeItem = proxy.data[ID.createStoreId(cachedItem)];
-        console.assert(cachedItem && storeItem);
-        console.assert(cachedItem.id === storeItem.id);
+          let storeItem = proxy.data[ ID.createStoreId(cachedItem) ];
+          console.assert(cachedItem && storeItem);
+          console.assert(cachedItem.id === storeItem.id);
+        }
       });
     });
   }

@@ -9,7 +9,7 @@ import { compose, graphql } from 'react-apollo';
 
 import { EventListener, PropertyProvider } from 'alien-util';
 import { Const, IdGenerator, Mutator, QueryRegistry } from 'alien-core';
-import { MutationFragments, Fragments } from 'alien-api';
+import { MutationFragmentsMap, Fragments } from 'alien-api';
 
 import { Actions } from '../../common/actions';
 import { Analytics } from '../../common/analytics';
@@ -134,7 +134,7 @@ export class Activity {
 
       // Apollo mutation.
       // Provides mutator property.
-      Mutator.graphql(MutationFragments),
+      Mutator.graphql(MutationFragmentsMap),
 
       // Apollo viewer query.
       graphql(ViewerQuery, {

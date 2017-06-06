@@ -100,7 +100,7 @@ export class TestBoard extends React.Component {
       <div className="ux-panel ux-grow">
         <div className="ux-scroll-container ux-row ux-grow">
           <Board items={ model.items }
-                 itemRenderer={ Card.ItemRenderer }
+                 itemRenderer={ Card.ItemRenderer() }
                  columns={ model.columns }
                  columnMapper={ model.columnMapper }
                  onItemDrop={ this.handleDrop.bind(this) }/>

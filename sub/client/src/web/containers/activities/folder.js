@@ -30,7 +30,7 @@ class FolderActivity extends React.Component {
   render() {
     return ReactUtil.render(this, () => {
       let { params: { folder='inbox' } } = this.props;
-      let { config, debug, actions, eventListener, viewer, navigator, typeRegistry } = this.props;
+      let { config, debug, viewer, actions, navigator, typeRegistry, eventListener } = this.props;
       if (!viewer) {
         return;
       }

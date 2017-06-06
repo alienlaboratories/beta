@@ -18,7 +18,7 @@ export class TestList extends React.Component {
     return 'I-' + ++TestList.id;
   }
 
-  static ItemEditor = (item, list) => (
+  static ItemEditor = (item) => (
     <ListItemEditor item={ item }>
       <ListItem.Icon/>
       <ListItem.Edit field="title"/>
@@ -26,7 +26,7 @@ export class TestList extends React.Component {
     </ListItemEditor>
   );
 
-  static ItemRenderer = (item, list) => (
+  static ItemRenderer = (item) => (
     <ListItem item={ item }>
       <ListItem.Icon icon="check_box_outline_blank"/>
       <ListItem.Text value={ item.title }/>

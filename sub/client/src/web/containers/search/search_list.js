@@ -31,7 +31,7 @@ const CustomColumn = ListItem.createInlineComponent((props, context) => {
 /**
  * NOTE: Depends on ItemFragment fields.
  */
-export const ListItemRenderer = (typeRegistry) => (item) => {
+export const ListItemRenderer = (typeRegistry) => ({ item }) => {
   let { meta } = item;
   let { icon, iconUrl } = meta || {};
 
@@ -57,7 +57,7 @@ export const ListItemRenderer = (typeRegistry) => (item) => {
 /**
  * Debug.
  */
-export const DebugListItemRenderer = (item) => {
+export const DebugListItemRenderer = ({ item }) => {
   return (
     <ListItem item={ item } className="ux-column">
       <ListItem.Debug/>
@@ -114,11 +114,6 @@ export class SearchList extends React.Component {
 // Card list.
 //-------------------------------------------------------------------------------------------------
 
-const CardItemRenderer = (mutator, typeRegistry, viewer) => (item, list) => {
-  let CardComponent = typeRegistry.card(item.type) || Card;
-  return <CardComponent mutator={ mutator } viewer={ viewer } item={ item }/>;
-};
-
 /**
  * Card deck.
  */
@@ -135,7 +130,7 @@ export class CardList extends React.Component {
     super(...arguments);
 
     let { mutator, viewer } = this.context;
-    this._itemRenderer = CardItemRenderer(mutator, this.context.typeRegistry, viewer);
+    this._itemRenderer = Card.ItemRenderer(this.context.typeRegistry, mutator, viewer);
   }
 
   handleItemSelect(item) {

@@ -10,6 +10,15 @@ import { FragmentsMap, ValueFragment } from 'alien-core';
 // All sub-types should include the Item fragment.
 //
 
+const KeyFragment = gql`
+  fragment KeyFragment on Item {
+    namespace
+    bucket
+    type
+    id
+  }
+`;
+
 const ItemFragment = gql`
   fragment ItemFragment on Item {
     namespace
@@ -70,6 +79,7 @@ const GroupFragment = gql`
 const TaskFragment = gql`
   fragment TaskFragment on Task {
     ...ItemFragment
+
     status
     
     project {
@@ -182,16 +192,6 @@ const ItemMetaFragment = gql`
 `;
 
 //
-// Map of fragmentds to update on mutation.
-//
-
-export const MutationFragments = new FragmentsMap()
-  .add(ItemFragment)
-  .add(ContactFragment)
-  .add(ProjectFragment)
-  .add(TaskFragment);
-
-//
 // Exported fragment defs.
 //
 
@@ -215,3 +215,92 @@ export const Fragments = {
 
   UserFragment,
 };
+
+//
+// Mutaton fragments define the subset of fields that can be mutated.
+// In particular, only Keys are declared for sub Items; this enables references to be added in field mutations
+// so that Apollo can use `dataIdFromObject` to match the associated Item. Otherwise there would be
+// "Missing field" warnings when writing the (partial) fragment to the cache (in the batch update).
+//
+
+const MutationContactFragment = gql`
+  fragment MutationContactFragment on Contact {
+    ...ItemFragment
+
+    email
+
+    messages {
+      ...KeyFragment
+    }
+
+    tasks {
+      ...KeyFragment
+    }
+  }
+
+  ${KeyFragment}
+`;
+
+const MutationProjectFragment = gql`
+  fragment MutationProjectFragment on Project {
+    ...ItemFragment
+
+    tasks {
+      ...KeyFragment
+    }
+
+#    boards {
+#      alias
+#
+#      columns {
+#        id
+#        title
+#        value {
+#          ...ValueFragment
+#        }
+#      }
+#
+#      itemMeta {
+#        itemId
+#        listId
+#        order
+#      }
+#    }
+  }
+
+  ${KeyFragment}
+  ${ItemFragment}
+#  ${ValueFragment}
+`;
+
+const MutationTaskFragment = gql`
+  fragment MutationTaskFragment on Task {
+    ...ItemFragment
+
+    status
+    
+    project {
+      ...KeyFragment
+    }
+
+    owner {
+      ...KeyFragment
+    }
+
+    assignee {
+      ...KeyFragment
+    }
+
+    tasks {
+      ...KeyFragment
+    }
+  }
+
+  ${KeyFragment}
+  ${ItemFragment}
+`;
+
+export const MutationFragmentsMap = new FragmentsMap()
+  .add(MutationContactFragment)
+  .add(MutationProjectFragment)
+  .add(MutationTaskFragment);

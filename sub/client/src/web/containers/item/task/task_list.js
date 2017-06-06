@@ -36,7 +36,7 @@ const TaskStatus = ListItem.createInlineComponent((props, context) => {
 /**
  * Renders task title and status checkbox.
  */
-export const TaskItemRenderer = (item) => {
+export const TaskItemRenderer = ({ item }) => {
   return (
     <ListItem item={ item } className="ux-form-row">
       <TaskStatus/>
@@ -49,7 +49,7 @@ export const TaskItemRenderer = (item) => {
 /**
  * Renders task editor.
  */
-export const TaskItemEditor = (item) => {
+export const TaskItemEditor = ({ item }) => {
   return (
     <ListItemEditor item={ item }>
       <ListItem.Icon icon="check_box_outline_blank"/>

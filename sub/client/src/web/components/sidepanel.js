@@ -18,7 +18,7 @@ import './sidepanel.less';
  */
 export class SidePanel extends React.Component {
 
-  static ItemRenderer = (typeRegistry) => (item) => {
+  static ItemRenderer = (typeRegistry) => ({ item }) => {
     let { type, title, meta } = item;
     let { icon=typeRegistry.icon(type) } = meta || {};
 
