@@ -80,14 +80,14 @@ export class TaskList extends React.Component {
     tasks: []
   };
 
-  handleTaskUpdate(item, mutations) {
+  handleTaskUpdate(task, mutations) {
     let { mutator, viewer: { user }, parent, project } = this.props;
     console.assert(mutations && user && parent && project);
 
-    if (item) {
+    if (task) {
       mutator
         .batch(project.bucket)
-        .updateItem(item, mutations)
+        .updateItem(task, mutations)
         .commit();
 
     } else {
@@ -105,6 +105,20 @@ export class TaskList extends React.Component {
     }
   }
 
+  handleTaskDelete(task) {
+    let { mutator } = this.props;
+
+    mutator
+      .batch(task.bucket)
+      .updateItem(task, [
+        MutationUtil.createLabelMutation('_deleted')          // TODO(burdon): Const.
+      ])
+      .updateItem(task.project, [
+        MutationUtil.createSetMutation('tasks', 'key', ID.key(task), false)
+      ])
+      .commit();
+  }
+
   render() {
     let { tasks } = this.props;
 
@@ -114,7 +128,8 @@ export class TaskList extends React.Component {
             items={ tasks }
             itemRenderer={ TaskItemRenderer }
             itemEditor={ TaskItemEditor }
-            onItemUpdate={ this.handleTaskUpdate.bind(this) }/>
+            onItemUpdate={ this.handleTaskUpdate.bind(this) }
+            onItemDelete={ this.handleTaskDelete.bind(this) }/>
     );
   }
 }

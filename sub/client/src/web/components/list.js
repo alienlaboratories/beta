@@ -69,6 +69,7 @@ export class List extends React.Component {
     onItemSelect:       PropTypes.func,
     onItemEdit:         PropTypes.func,
     onItemUpdate:       PropTypes.func,
+    onItemDelete:       PropTypes.func,
     onItemCancel:       PropTypes.func
   };
 
@@ -87,8 +88,9 @@ export class List extends React.Component {
     itemRenderer:       PropTypes.func,
     itemOrderModel:     PropTypes.object,       // Order model for drag and drop.
 
-    onItemUpdate:       PropTypes.func,
     onItemSelect:       PropTypes.func,
+    onItemUpdate:       PropTypes.func,
+    onItemDelete:       PropTypes.func,
     onItemDrop:         PropTypes.func
   };
 
@@ -101,7 +103,7 @@ export class List extends React.Component {
     itemEditor:         this.props.itemEditor   || List.DefaultItemEditor,
     itemRenderer:       this.props.itemRenderer || List.DefaultItemRenderer,
 
-    showEditor:            this.props.showEditor,
+    showEditor:         this.props.showEditor,
     editingItemId:      null,
 
     seq:                0                       // Sequence number to reset editor.
@@ -112,6 +114,7 @@ export class List extends React.Component {
       onItemSelect:     this.handleItemSelect.bind(this),
       onItemEdit:       this.handleItemEdit.bind(this),
       onItemUpdate:     this.handleItemUpdate.bind(this),
+      onItemDelete:     this.handleItemDelete.bind(this),
       onItemCancel:     this.handleItemCancel.bind(this)
     };
   }
@@ -199,6 +202,18 @@ export class List extends React.Component {
     console.assert(this.props.onItemUpdate);
 
     this.props.onItemUpdate(item, mutations);
+
+    this.handleItemCancel(item);
+  }
+
+  /**
+   * Call the List's onItemDelete callback with deletes the item.
+   * @param item
+   */
+  handleItemDelete(item) {
+    console.assert(this.props.onItemDelete);
+
+    this.props.onItemDelete(item);
 
     this.handleItemCancel(item);
   }

@@ -26,6 +26,7 @@ const ListItemChildContextTypes = {
   onItemSelect: PropTypes.func,
   onItemEdit:   PropTypes.func,
   onItemUpdate: PropTypes.func,
+  onItemDelete: PropTypes.func,
   onItemCancel: PropTypes.func
 };
 
@@ -149,8 +150,7 @@ export class ListItem extends React.Component {
       ]);
     };
 
-    const handleCancel = () => { onItemCancel(); };
-
+    // TODO(burdon): Check isn't called multiple times.
     // Sets callback (e.g., when <ListItem.EditorButtons/> saves).
     listItem.setOnSave(() => {
       handleSave();
@@ -164,7 +164,7 @@ export class ListItem extends React.Component {
                value={ value }
                reset={ reset }
                onEnter={ handleSave }
-               onCancel={ handleCancel }/>
+               onCancel={ () => { onItemCancel(); } }/>
     );
   });
 
@@ -174,16 +174,12 @@ export class ListItem extends React.Component {
   static EditorButtons = ListItem.createInlineComponent((props, context) => {
     let { listItem, onItemCancel } = context;
 
-    const handleSave = () => {
-      listItem.save();
-    };
-
-    const handleCancel = () => { onItemCancel(); };
-
     return (
       <div className="ux-icons">
-        <i className="ux-icon ux-icon-action ux-icon-ok" onClick={ handleSave }/>
-        <i className="ux-icon ux-icon-action ux-icon-cancel" onClick={ handleCancel }/>
+        <i className="ux-icon ux-icon-action ux-icon-ok"
+           onClick={ () => { listItem.save(); } }/>
+        <i className="ux-icon ux-icon-action ux-icon-cancel"
+           onClick={ () => { onItemCancel(); } }/>
       </div>
     );
   });
@@ -194,12 +190,9 @@ export class ListItem extends React.Component {
   static EditButton = ListItem.createInlineComponent((props, context) => {
     let { item, onItemEdit } = context;
 
-    const handleEdit = () => {
-      onItemEdit(item.id);
-    };
-
     return (
-      <i className="ux-icon ux-icon-action ux-hover ux-icon-edit" onClick={ handleEdit }/>
+      <i className="ux-icon ux-icon-action ux-hover ux-icon-edit"
+         onClick={ () => { onItemEdit(item.id); } }/>
     );
   });
 
@@ -207,17 +200,11 @@ export class ListItem extends React.Component {
    * <ListItem.DeleteButton/>
    */
   static DeleteButton = ListItem.createInlineComponent((props, context) => {
-    let { item } = context;
-
-    // TODO(burdon): Raise-up mutations (must delete from project).
-    const handleDelete = () => {
-      context.onItemUpdate(item, [
-        MutationUtil.createDeleteMutation(_.findIndex(item.labels, '_deleted') === -1)
-      ]);
-    };
+    let { item, onItemDelete } = context;
 
     return (
-      <i className="ux-icon ux-icon-action ux-hover ux-icon-delete" onClick={ handleDelete }/>
+      <i className="ux-icon ux-icon-action ux-hover ux-icon-delete"
+         onClick={ () => { onItemDelete(item); } }/>
     );
   });
 
@@ -235,6 +222,7 @@ export class ListItem extends React.Component {
   static contextTypes = {
     onItemSelect: PropTypes.func.isRequired,
     onItemUpdate: PropTypes.func.isRequired,
+    onItemDelete: PropTypes.func.isRequired,
     onItemCancel: PropTypes.func.isRequired
   };
 

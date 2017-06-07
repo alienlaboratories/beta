@@ -301,6 +301,7 @@ export class Batch {
    */
   _resolve(mutation) {
     if (_.isFunction(mutation)) {
+      // TODO(burdon): Read args and check ref exists.
       return mutation.call(this, this.refs);
     } else {
       return mutation;
