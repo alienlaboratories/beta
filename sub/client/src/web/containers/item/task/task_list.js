@@ -8,7 +8,8 @@ import PropTypes from 'prop-types';
 import { Enum } from 'alien-api';
 import { ID, MutationUtil } from 'alien-core';
 
-import { List, ListItem, ListItemEditor } from '../../../components/list';
+import { List } from '../../../components/list';
+import { ListItem, ListItemEditor } from '../../../components/list_item';
 
 /**
  * Status checkbox.
@@ -40,7 +41,7 @@ export const TaskItemRenderer = ({ item }) => {
   return (
     <ListItem item={ item } className="ux-form-row">
       <TaskStatus/>
-      <ListItem.Text value={ item.title }/>
+      <ListItem.Text field="title"/>
       <ListItem.EditButton/>
     </ListItem>
   );
@@ -49,9 +50,9 @@ export const TaskItemRenderer = ({ item }) => {
 /**
  * Renders task editor.
  */
-export const TaskItemEditor = ({ item }) => {
+export const TaskItemEditor = (props) => {
   return (
-    <ListItemEditor item={ item }>
+    <ListItemEditor { ...props } edi="1">
       <ListItem.Icon icon="check_box_outline_blank"/>
       <ListItem.Edit field="title"/>
       <ListItem.EditorButtons/>

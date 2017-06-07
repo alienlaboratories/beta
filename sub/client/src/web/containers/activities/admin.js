@@ -9,7 +9,8 @@ import gql from 'graphql-tag';
 import { Fragments } from 'alien-api';
 
 import { ReactUtil } from '../../util/react';
-import { List, ListItem } from '../../components/list';
+import { List } from '../../components/list';
+import { ListItem } from '../../components/list_item';
 
 import { Activity } from './activity';
 import { Layout } from './layout';

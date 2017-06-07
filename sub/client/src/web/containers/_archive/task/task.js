@@ -80,7 +80,7 @@ export const TaskItemRenderer = ({ item }) => {
   return (
     <ListItem item={ item }>
       <TaskStatus/>
-      <ListItem.Text value={ item.title }/>
+      <ListItem.Text field="title"/>
       <ListItem.EditButton/>
     </ListItem>
   );

@@ -8,7 +8,8 @@ import { compose } from 'react-apollo';
 
 import { SubscriptionWrapper } from '../../util/subscriptions';
 import { Card } from '../../components/card';
-import { List, ListItem } from '../../components/list';
+import { List } from '../../components/list';
+import { ListItem } from '../../components/list_item';
 
 import { ContextQuery, ContextContainer } from './context_container';
 import { SearchQuery, SearchContainer } from './search_container';
@@ -38,7 +39,7 @@ export const ListItemRenderer = (typeRegistry) => ({ item }) => {
   return (
     <ListItem item={ item }>
       <ListItem.Favorite/>
-      <ListItem.Text value={ item.title } select={ true }/>
+      <ListItem.Text field="title" select={ true }/>
 
       <CustomColumn typeRegistry={ typeRegistry }/>
 

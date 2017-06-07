@@ -50,7 +50,7 @@
       align-items: center;
 
       padding: @ux-card-padding;
-      padding-right: @ux-scrollbar-width;
+      padding-right: @ux-scrollbar-width + @ux-list-padding;
       background-color: @ux-card-header-background;
 
       h1 {
@@ -78,7 +78,7 @@
           align-items: center;
 
           padding: 0 @ux-card-padding;
-          padding-right: @ux-scrollbar-width;
+          padding-right: @ux-scrollbar-width + @ux-list-padding;
           background-color: #EEE;
 
           h2 {
@@ -92,15 +92,18 @@
         }
 
         .ux-list {
-          max-height: 6 * 22px;   // 5 rows + editor.
           margin-top: 2px;
           margin-bottom: 8px;
 
-          .ux-list-item {
-            .ux-row {
-              padding: 0 0 0 2px;
-            }
+          .ux-list-items {
+            max-height: 5 * 23px;
           }
+
+          //.ux-list-item {
+          //  .ux-row {
+          //    padding: 0 0 0 2px;
+          //  }
+          //}
         }
 
         .ux-form-row {

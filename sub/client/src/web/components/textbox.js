@@ -65,8 +65,8 @@ export class TextBox extends React.Component {
    * https://facebook.github.io/react/docs/react-component.html#componentwillreceiveprops
    */
   componentWillReceiveProps(nextProps) {
-    let { value } = nextProps;
-    if (this.state.readOnly || value !== this._currentValue) {
+    let { value, reset } = nextProps;
+    if (reset || this.state.readOnly || value !== this._currentValue) {
       this._currentValue = value;
     } else {
       value = this.state.value;

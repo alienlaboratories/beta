@@ -8,7 +8,7 @@
   display: flex;
   flex-direction: column;
 
-  .ux-list-items {
+  > .ux-list-items {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -21,49 +21,49 @@
     padding-right: @ux-scrollbar-width !important;
   }
 
-  // NOTE: No margins.
-  .ux-list-item {
-    margin: 0;
-  }
-
   // Default style (e.g., does not apply to cards).
   .ux-list-item {
-    .ux-row {
-      padding: 4px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 
-      > .ux-icon {
-        margin-right: 4px;
+    margin: 0;
 
-        &:last-child {
-          margin: 0;
-        }
-      }
+    padding: 0 @ux-list-padding;
 
-      .ux-icons {
-        margin-left: 4px;
-      }
+    > .ux-icon {
+      margin-right: 4px;
 
-      // Hide delete icon unless hover.
-      .ux-hover {
-        display: none;
+      &:last-child {
+        margin: 0;
       }
-      .ux-no-hover {
-        display: block;
-      }
+    }
+
+    .ux-icons {
+      margin-left: 4px;
+    }
+  }
+
+  // Hovering.
+  .ux-list-item {
+    .ux-hover {
+      display: none;
+    }
+    .ux-no-hover {
+      display: block;
     }
 
     &:hover {
-      .ux-row {
-        .ux-hover {
-          display: block;
-        }
-        .ux-no-hover {
-          display: none;
-        }
+      .ux-hover {
+        display: block;
+      }
+      .ux-no-hover {
+        display: none;
       }
     }
   }
 
+  // Highlight.
   &.ux-list-highlight {
     .ux-list-item:hover {
       background-color: @ux-list-highlight;

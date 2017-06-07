@@ -6,7 +6,8 @@ import React from 'react';
 
 import { Transforms } from 'alien-core';
 
-import { List, ListItem, ListItemEditor } from '../../../components/list';
+import { List } from '../../../components/list';
+import { ListItem, ListItemEditor } from '../../../components/list_item';
 
 /**
  * Test List.
@@ -18,7 +19,7 @@ export class TestList extends React.Component {
     return 'I-' + ++TestList.id;
   }
 
-  static ItemEditor = (item) => (
+  static ItemEditor = ({ item }) => (
     <ListItemEditor item={ item }>
       <ListItem.Icon/>
       <ListItem.Edit field="title"/>
@@ -26,10 +27,10 @@ export class TestList extends React.Component {
     </ListItemEditor>
   );
 
-  static ItemRenderer = (item) => (
+  static ItemRenderer = ({ item }) => (
     <ListItem item={ item }>
       <ListItem.Icon icon="check_box_outline_blank"/>
-      <ListItem.Text value={ item.title }/>
+      <ListItem.Text field="title"/>
       <ListItem.EditButton/>
     </ListItem>
   );

@@ -8,7 +8,8 @@ import PropTypes from 'prop-types';
 import { ID } from 'alien-core';
 
 import { ReactUtil } from '../util/react';
-import { List, ListItem } from '../components/list';
+import { List } from '../components/list';
+import { ListItem } from '../components/list_item';
 import { Path } from '../common/path';
 
 import './sidepanel.less';
@@ -19,13 +20,13 @@ import './sidepanel.less';
 export class SidePanel extends React.Component {
 
   static ItemRenderer = (typeRegistry) => ({ item }) => {
-    let { type, title, meta } = item;
+    let { type, meta } = item;
     let { icon=typeRegistry.icon(type) } = meta || {};
 
     return (
       <ListItem item={ item }>
         <ListItem.Icon icon={ icon }/>
-        <ListItem.Text value={ title }/>
+        <ListItem.Text field="title"/>
       </ListItem>
     );
   };
