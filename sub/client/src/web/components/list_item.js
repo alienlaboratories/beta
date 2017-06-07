@@ -199,7 +199,7 @@ export class ListItem extends React.Component {
     };
 
     return (
-      <i className="ux-icon ux-icon-action ux-icon-hover ux-icon-edit" onClick={ handleEdit }/>
+      <i className="ux-icon ux-icon-action ux-hover ux-icon-edit" onClick={ handleEdit }/>
     );
   });
 
@@ -209,6 +209,7 @@ export class ListItem extends React.Component {
   static DeleteButton = ListItem.createInlineComponent((props, context) => {
     let { item } = context;
 
+    // TODO(burdon): Raise-up mutations (must delete from project).
     const handleDelete = () => {
       context.onItemUpdate(item, [
         MutationUtil.createDeleteMutation(_.findIndex(item.labels, '_deleted') === -1)
@@ -216,7 +217,7 @@ export class ListItem extends React.Component {
     };
 
     return (
-      <i className="ux-icon ux-icon-delete" onClick={ handleDelete }>cancel</i>
+      <i className="ux-icon ux-icon-action ux-hover ux-icon-delete" onClick={ handleDelete }/>
     );
   });
 

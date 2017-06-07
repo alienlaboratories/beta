@@ -7,6 +7,8 @@ import PropTypes from 'prop-types';
 
 import { Async, DomUtil } from 'alien-util';
 
+import './textbox.less';
+
 /**
  * Text box.
  */
@@ -79,7 +81,7 @@ export class TextBox extends React.Component {
   }
 
   get value() {
-    return this.state.value;
+    return this.state.value || '';
   }
 
   set value(value) {

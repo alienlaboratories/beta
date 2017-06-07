@@ -94,7 +94,7 @@ export class TaskCard extends React.Component {
         <option key={ level } value={ level }>{ Enum.TASK_LEVEL.properties[level].title }</option>);
 
       return (
-        <Card item={ task }>
+        <Card mutator={ mutator } viewer={ viewer } item={ task }>
 
           <Card.Section id="task">
             <div className="ux-card-padding">

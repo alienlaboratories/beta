@@ -6,8 +6,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { DomUtil, TypeUtil } from 'alien-util';
+import { MutationUtil } from 'alien-core';
 
 import { ReactUtil } from '../util/react';
+import { TextBox } from '../components/textbox';
 
 import './card.less';
 
@@ -50,7 +52,6 @@ export class Card extends React.Component {
     let header;
     if (title) {
       console.assert(id);
-
       const onClick = () => {
         setSectionState(key, !open);
       };
@@ -81,14 +82,16 @@ export class Card extends React.Component {
   });
 
   static propTypes = {
-    className: PropTypes.string,
-    item: PropTypes.object,
-    icon: PropTypes.string
+    mutator:      PropTypes.object.isRequired,
+    viewer:       PropTypes.object.isRequired,
+    className:    PropTypes.string,
+    item:         PropTypes.object,
+    icon:         PropTypes.string
   };
 
   static contextTypes = {
-    config: PropTypes.object,
-    navigator: PropTypes.object
+    config:       PropTypes.object,
+    navigator:    PropTypes.object
   };
 
   static childContextTypes = CarcChildContextTypes;
@@ -113,10 +116,21 @@ export class Card extends React.Component {
     this.forceUpdate();
   }
 
-  handleSelect(item) {
+  handleSelect() {
     let { navigator } = this.context;
+    let { item } = this.props;
 
     navigator && navigator.pushCanvas(item);
+  }
+
+  handleEdit(field, value) {
+    let { mutator, item } = this.props;
+
+    mutator.batch(item.bucket)
+      .updateItem(item, [
+        MutationUtil.createFieldMutation(field, 'string', value)
+      ])
+      .commit();
   }
 
   render() {
@@ -144,8 +158,6 @@ export class Card extends React.Component {
         );
       }
 
-      // TODO(burdon): Edit-in-place title.
-
       return (
         <div className={ DomUtil.className('ux-card', className) }>
 
@@ -153,8 +165,10 @@ export class Card extends React.Component {
           <div className="ux-card-header">
             { icon && <i className="ux-icon">{ icon }</i> }
 
-            <h1 className="ux-text-noselect ux-press"
-                onClick={ this.handleSelect.bind(this, item) }>{ title }</h1>
+            <TextBox className="ux-title ux-grow"
+                     value={ title }
+                     clickToEdit={ true }
+                     onEnter={ this.handleEdit.bind(this, 'title') }/>
 
             <i className="ux-icon ux-icon-menu"/>
           </div>

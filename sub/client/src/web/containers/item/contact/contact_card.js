@@ -45,7 +45,7 @@ export class ContactCard extends React.Component {
       let { thumbnailUrl } = meta || {};
 
       return (
-        <Card item={ contact }>
+        <Card mutator={ mutator } viewer={ viewer } item={ contact }>
 
           <Card.Section id="contact" title="Contact">
             <div className="ux-row ux-grow ux-card-padding">

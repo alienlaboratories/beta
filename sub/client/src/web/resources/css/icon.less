@@ -22,6 +22,8 @@
 }
 
 .ux-icons {
+  display: flex;
+
   // Remove DIV padding.
   line-height: 0;
 
@@ -57,11 +59,9 @@ i.ux-icon.ux-icon-menu:after {
   content: 'menu';
 }
 
-i.ux-icon.ux-icon-pin {
-  color: cornflowerblue;
-}
 i.ux-icon.ux-icon-pin:after {
   content: 'label_outline';
+  color: cornflowerblue;
 }
 i.ux-icon.ux-icon-pin.ux-selected:after {
   content: 'label';
@@ -96,6 +96,13 @@ i.ux-icon-edit:after {
 }
 i.ux-icon-edit:hover {
   color: darkblue;
+}
+
+i.ux-icon-delete:after {
+  content: 'cancel';
+}
+i.ux-icon-delete:hover {
+  color: darkred;
 }
 
 i.ux-icon-ok:after {

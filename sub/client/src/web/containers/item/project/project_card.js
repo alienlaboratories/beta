@@ -34,7 +34,7 @@ export class ProjectCard extends React.Component {
       let { tasks } = project;
 
       return (
-        <Card item={ project }>
+        <Card mutator={ mutator } viewer={ viewer } item={ project }>
 
           <Card.Section id="tasks" title="Tasks">
             <TaskList mutator={ mutator } viewer={ viewer } parent={ project } project={ project } tasks={ tasks }/>

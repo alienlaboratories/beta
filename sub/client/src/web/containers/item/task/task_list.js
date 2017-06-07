@@ -42,7 +42,10 @@ export const TaskItemRenderer = ({ item }) => {
     <ListItem item={ item } className="ux-form-row">
       <TaskStatus/>
       <ListItem.Text field="title"/>
-      <ListItem.EditButton/>
+      <div className="ux-icons">
+        <ListItem.EditButton/>
+        <ListItem.DeleteButton/>
+      </div>
     </ListItem>
   );
 };
