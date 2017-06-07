@@ -40,8 +40,6 @@ export class Card extends React.Component {
    * Card section.
    */
   static Section = Card.createInlineComponent((props, context) => {
-    //if (props.id === 'tasks') return <div/>;
-
     let { item, setSectionState } = context;
     let { id, title, children, open=true } = props;
 

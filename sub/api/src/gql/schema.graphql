@@ -17,7 +17,7 @@
 # Common properties.
 type Meta {
   icon: String                # Material icon name.
-  iconUrl: String             # External icon URL.
+  iconClassName: String       # Item classname.
   thumbnailUrl: String        # External thumbnail URL.
 }
 

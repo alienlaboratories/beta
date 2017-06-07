@@ -34,7 +34,7 @@ const CustomColumn = ListItem.createInlineComponent((props, context) => {
  */
 export const ListItemRenderer = (typeRegistry) => ({ item }) => {
   let { meta } = item;
-  let { icon, iconUrl } = meta || {};
+  let { icon, iconClassName } = meta || {};
 
   return (
     <ListItem item={ item }>
@@ -45,7 +45,8 @@ export const ListItemRenderer = (typeRegistry) => ({ item }) => {
 
       <div className="ux-icons">
         <div className="ux-no-hover">
-          <ListItem.Icon icon={ typeRegistry.icon(item.type) || icon } url={ iconUrl }/>
+          <ListItem.Icon icon={ !iconClassName && (typeRegistry.icon(item.type) || icon) }
+                         className={ iconClassName }/>
         </div>
         <div className="ux-hover">
           <ListItem.DeleteButton/>

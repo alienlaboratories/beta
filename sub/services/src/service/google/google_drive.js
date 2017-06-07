@@ -80,27 +80,29 @@ export class GoogleDriveClient {
   static toItem(file) {
     let { id, name, webViewLink, mimeType } = file;
 
+    // TODO(burdon): Factor out (also check other types; set class instead of icon).
+    const iconTypes = {
+      'default':                                    'ux-icon-link',
+      'application/vnd.google-apps.spreadsheet':    'ux-icon-spreadsheet',
+      'application/vnd.google-apps.document':       'ux-icon-document',
+      'application/vnd.google-apps.presentation':   'ux-icon-presentation',
+      'application/pdf':                            'ux-icon-pdf'
+    };
+
     let item = {
       namespace: NAMESPACE,
       type: 'Document',
       id: id,
-      title: name
+      title: name,
+
+      meta: {
+        iconClassName: iconTypes[mimeType] || iconTypes['default']
+      },
+
+      externalUrl: webViewLink
     };
 
-    // TODO(burdon): Factor out (also check other types; set class instead of icon).
-    const iconTypes = {
-      'default':                                    'link',
-      'application/vnd.google-apps.spreadsheet':    'view_list',
-      'application/vnd.google-apps.document':       'insert_drive_file',
-      'application/vnd.google-apps.presentation':   'tv',
-      'application/pdf':                            'picture_as_pdf'
-    };
-
-    _.set(item, 'meta.icon', iconTypes[mimeType] || iconTypes['default']);
-
-    if (webViewLink) {
-      item.externalUrl = webViewLink;
-    }
+    console.log('###########', JSON.stringify(item, null, 2));
 
     return item;
   }

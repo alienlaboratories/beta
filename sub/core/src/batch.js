@@ -261,7 +261,7 @@ export class Batch {
 
         // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.writeFragment
         try {
-          let x = proxy.writeFragment({
+          proxy.writeFragment({
             id: ID.createStoreId(mutatedItem),
             fragment,
             fragmentName,

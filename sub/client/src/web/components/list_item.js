@@ -67,10 +67,10 @@ export class ListItem extends React.Component {
   });
 
   /**
-   * <ListItem.Icon url="" icon=""/>
+   * <ListItem.Icon className="" icon=""/>
    */
   static Icon = ListItem.createInlineComponent((props, context) => {
-    let { onClick, url, icon='crop_square' } = props;
+    let { onClick, className, icon='crop_square' } = props;
     let { item } = context;
 
     let attrs = {};
@@ -78,17 +78,9 @@ export class ListItem extends React.Component {
       attrs.onClick = () => { onClick(item); };
     }
 
-    if (url) {
-      return (
-        <i className="ux-icon ux-icon-img" { ...attrs }>
-          <img src={ url }/>
-        </i>
-      );
-    } else if (icon) {
-      return (
-        <i className="ux-icon" { ...attrs }>{ icon }</i>
-      );
-    }
+    return (
+      <i className={ DomUtil.className('ux-icon', className) }>{ icon }</i>
+    );
   });
 
   /**

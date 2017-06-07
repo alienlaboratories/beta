@@ -19,6 +19,14 @@ const KeyFragment = gql`
   }
 `;
 
+const MetaFragment = gql`
+  fragment MetaFragment on Meta {
+    icon
+    iconClassName
+    thumbnailUrl
+  }
+`;
+
 const ItemFragment = gql`
   fragment ItemFragment on Item {
     namespace
@@ -32,13 +40,13 @@ const ItemFragment = gql`
 
     labels
     title
-    
+
     meta {
-      icon
-      iconUrl
-      thumbnailUrl
+      ...MetaFragment
     }
   }
+  
+  ${MetaFragment}
 `;
 
 //

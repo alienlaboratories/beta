@@ -77,7 +77,7 @@ export class SlackQueryProcessor extends QueryProcessor {
       description: text,
 
       meta: {
-        iconUrl: '/img/slack-icon-24px.png'
+        iconClassName: 'chat'
       },
 
       externalUrl: permalink,
