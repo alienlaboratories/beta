@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { Link } from 'react-router';
 
-import { ID } from 'alien-core';
+import { ID, MutationUtil } from 'alien-core';
 import { Enum, Fragments } from 'alien-api';
 
 import { Card } from '../../../components/card';
@@ -33,27 +33,50 @@ export class TaskCard extends React.Component {
 
   // TODO(burdon): Move state management to MembersPicker.
   componentWillReceiveProps(nextProps) {
-    let { item={} } = nextProps;
-    let { assignee } = item;
+    let { item:task={} } = nextProps;
+    let { status } = task;
 
     this.state = {
-      assignee: {
-        title: _.get(assignee, 'title')
-      }
+      status,
+      assignee: _.get(task, 'assignee')
     };
   }
 
-  // TODO(burdon): Tigger mutation.
-  handleSetItem(property, item) {
-    this.setState({
-      [property]: item
+  handleSetReference(field, item) {
+    let { mutator, item:task } = this.props;
+
+    let key = item && ID.key(item);
+
+    let batch = mutator
+      .batch(task.bucket)
+      .updateItem(task, [
+        MutationUtil.createFieldMutation(field, 'key', key)
+      ])
+      .commit();
+
+    batch.then(() => {
+      this.setState({
+        [field]: item
+      });
     });
   }
 
-  // TODO(burdon): Tigger mutation.
   handleSetStatus(event) {
-    this.setState({
-      status: event.target.value
+    let { mutator, item:task } = this.props;
+
+    let status = event.target.value;
+
+    let batch = mutator
+      .batch(task.bucket)
+      .updateItem(task, [
+        MutationUtil.createFieldMutation('status', 'int', status)
+      ])
+      .commit();
+
+    batch.then(() => {
+      this.setState({
+        status
+      });
     });
   }
 
@@ -76,6 +99,22 @@ export class TaskCard extends React.Component {
           <Card.Section id="task">
             <div className="ux-card-padding">
 
+              <div className="ux-form-row">
+                <label>Status</label>
+                <select value={ status } onChange={ this.handleSetStatus.bind(this) }>
+                  { levels }
+                </select>
+              </div>
+
+              { project && project.group &&
+              <div className="ux-form-row">
+                <label>Assigned</label>
+                <MembersPicker value={ _.get(assignee, 'title') }
+                               groupId={ project.group.id }
+                               onItemSelect={ this.handleSetReference.bind(this, 'assignee') }/>
+              </div>
+              }
+
               { project &&
               <div className="ux-form-row">
                 <label>Project</label>
@@ -83,23 +122,7 @@ export class TaskCard extends React.Component {
               </div>
               }
 
-              { project && project.group && // TODO(burdon): Invalid group.
-              <div className="ux-form-row">
-                <label>Assigned</label>
-                <MembersPicker value={ _.get(assignee, 'title') }
-                               groupId={ project.group.id }
-                               onItemSelect={ this.handleSetItem.bind(this, 'assignee') }/>
-              </div>
-              }
-
-              <div className="ux-form-row">
-                <label>Status</label>
-                <select value={ status } onChange={ this.handleSetStatus.bind(this) }>
-                  { levels }
-                </select>
-              </div>
             </div>
-
           </Card.Section>
 
           <Card.Section id="tasks" title="Tasks">

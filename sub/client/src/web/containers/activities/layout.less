@@ -4,11 +4,30 @@
 
 @import (reference) '../../resources/css/ref/theme';
 
-// For testing (e.g., mobile, CRX), don't expand screen.
-.ux-platform-mobile-testing .ux-layout {
-  width: 400px;
-  flex-grow: 0;
+
+//
+// Platform specific.
+//
+
+body > div {
+  // For testing (e.g., mobile, CRX), don't expand screen.
+  &.ux-platform-mobile-testing .ux-layout {
+    width: 400px;
+    flex-grow: 0;
+  }
+
+  &:not(.ux-platform-web) {
+    .ux-layout {
+      header {
+        padding-bottom: 4px;
+      }
+    }
+  }
 }
+
+//
+// Main layout.
+//
 
 .ux-layout {
   display: flex;

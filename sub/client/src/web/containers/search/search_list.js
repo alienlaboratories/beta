@@ -14,6 +14,8 @@ import { ListItem } from '../../components/list_item';
 import { ContextQuery, ContextContainer } from './context_container';
 import { SearchQuery, SearchContainer } from './search_container';
 
+import './search_list.less';
+
 //-------------------------------------------------------------------------------------------------
 // Simple search list.
 //-------------------------------------------------------------------------------------------------
@@ -24,9 +26,7 @@ const CustomColumn = ListItem.createInlineComponent((props, context) => {
 
   let Column = typeRegistry.column(item.type);
 
-  return (
-    <div>{ Column && <Column item={ item }/> }</div>
-  );
+  return Column ? <Column item={ item }/> : <div/>;
 });
 
 /**
@@ -95,15 +95,11 @@ export class SearchList extends React.Component {
   render() {
     let { items } = this.props;
 
-    // TODO(burdon): Handle mutations (e.g., labels).
-    // TODO(burdon): Warning if no mutation callback provided.
-
     return (
-      <div className="ux-search-list-container ux-panel ux-column ux-grow">
+      <div className="ux-search-list ux-panel ux-column ux-grow">
         <List items={ items }
               itemRenderer={ this._itemRenderer }
               highlight={ true }
-              className="ux-search-list ux-grow"
               onItemSelect={ this.handleItemSelect.bind(this) }
               onItemUpdate={ this.handleItemUpdate.bind(this) }/>
       </div>
@@ -141,19 +137,15 @@ export class CardList extends React.Component {
   render() {
     let { items, itemInjector } = this.props;
 
-    // TODO(burdon): Handle mutations (e.g., labels).
-    // TODO(burdon): Warning if no mutation callback provided.
-
-    // TODO(burdon): Avoid merging here? (move logic out of context manager).
+    // TODO(burdon): Avoid merging here? (Move to Redux?)
     if (itemInjector) {
       items = itemInjector(items);
     }
 
     return (
-      <div className="ux-card-deck ux-panel ux-column ux-grow">
+      <div className="ux-card-deck ux-column ux-grow">
         <List items={ items }
               itemRenderer={ this._itemRenderer }
-              className="ux-grow"
               onItemSelect={ this.handleItemSelect.bind(this) }/>
       </div>
     );

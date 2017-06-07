@@ -8,7 +8,7 @@ export const DocumentColumn = (props, context) => {
   let { item: { externalUrl } } = props;
 
   return (
-    <a target="ALIEN_OPEN" href={ externalUrl }>
+    <a className="ux-icon" target="ALIEN_OPEN" href={ externalUrl }>
       <i className="ux-icon">open_in_new</i>
     </a>
   );

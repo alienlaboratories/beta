@@ -55,7 +55,7 @@ export class GoogleDriveClient {
       let params = {
         auth: authClient,
         q: query,
-        fields: 'nextPageToken, files(id, name, webViewLink, iconLink)',
+        fields: 'nextPageToken, files(id, name, webViewLink, mimeType)',
         spaces: 'drive',
         pageSize,
         pageToken
@@ -78,7 +78,7 @@ export class GoogleDriveClient {
    * Convert Drive result to a schema object Item.
    */
   static toItem(file) {
-    let { id, name, iconLink, webViewLink } = file;
+    let { id, name, webViewLink, mimeType } = file;
 
     let item = {
       namespace: NAMESPACE,
@@ -87,9 +87,16 @@ export class GoogleDriveClient {
       title: name
     };
 
-    if (iconLink) {
-      _.set(item, 'meta.iconUrl', iconLink);
-    }
+    // TODO(burdon): Factor out (also check other types; set class instead of icon).
+    const iconTypes = {
+      'default':                                    'link',
+      'application/vnd.google-apps.spreadsheet':    'view_list',
+      'application/vnd.google-apps.document':       'insert_drive_file',
+      'application/vnd.google-apps.presentation':   'tv',
+      'application/pdf':                            'picture_as_pdf'
+    };
+
+    _.set(item, 'meta.icon', iconTypes[mimeType] || iconTypes['default']);
 
     if (webViewLink) {
       item.externalUrl = webViewLink;

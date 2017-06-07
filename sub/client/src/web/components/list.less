@@ -2,6 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
+@import (reference) '../resources/css/ref/mixin.less';
 @import (reference) '../resources/css/ref/theme.less';
 
 .ux-list {
@@ -15,10 +16,13 @@
     overflow-y: scroll;
   }
 
-  // NOTE ux-list-item  also wraps the ux-list-editor.
-  > .ux-list-editor {
+  .ux-list-editor {
+    overflow: hidden;
+  }
+
+  .ux-list-editor-container {
     // Account for list scrollbar.
-    padding-right: @ux-scrollbar-width !important;
+    padding-right: @ux-scrollbar-width;
   }
 
   // Default style (e.g., does not apply to cards).
@@ -30,6 +34,10 @@
     margin: 0;
 
     padding: 0 @ux-list-padding;
+
+    > .ux-text {
+      .ux-text-overflow
+    }
 
     > .ux-icon {
       margin-right: 4px;

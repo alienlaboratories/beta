@@ -3,6 +3,7 @@
 //
 
 import React from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { DragDropContext } from 'react-dnd';
@@ -113,6 +114,16 @@ export class List extends React.Component {
       onItemUpdate:     this.handleItemUpdate.bind(this),
       onItemCancel:     this.handleItemCancel.bind(this)
     };
+  }
+
+  componentDidMount() {
+//    this.scrollTo();
+  }
+
+  scrollTo(pos=0) {
+    // TODO(burdon): -1 for bottom. ID for specific item (scrollIntoView).
+    ReactDOM.findDOMNode(this.refs.scrollContainer).scrollTop = 0;
+    console.log('???');
   }
 
   set itemEditor(itemEditor) {
@@ -335,12 +346,13 @@ export class List extends React.Component {
 
     //
     // Layout.
+    // TODO(burdon): Use lib for infinite scrolling.
     //
 
     return (
       <div className={ DomUtil.className('ux-list', className, highlight && 'ux-list-highlight') }>
 
-        <div className="ux-list-items ux-scroll-container">
+        <div ref="scrollContainer" className="ux-list-items ux-scroll-container">
           <div className="ux-column">
             { rows }
             { lastDropTarget }
@@ -348,7 +360,9 @@ export class List extends React.Component {
         </div>
 
         { showEditor &&
-        <ItemEditor seq={ this.state.seq }/>
+        <div className="ux-list-editor-container">
+          <ItemEditor seq={ this.state.seq }/>
+        </div>
         }
       </div>
     );

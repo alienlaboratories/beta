@@ -84,6 +84,10 @@ const TaskFragment = gql`
     
     project {
       ...ItemFragment
+
+      group {
+        ...KeyFragment
+      }
     }
 
     owner {
@@ -96,10 +100,12 @@ const TaskFragment = gql`
 
     tasks {
       ...ItemFragment
+
       status
     }
   }
 
+  ${KeyFragment}
   ${ItemFragment}
 `;
 
@@ -126,11 +132,16 @@ const ProjectFragment = gql`
   fragment ProjectFragment on Project {
     ...ItemFragment
 
+    group {
+      ...KeyFragment
+    }
+
     tasks {
       ...TaskFragment
     }
   }
 
+  ${KeyFragment}
   ${ItemFragment}
   ${TaskFragment}
 `;

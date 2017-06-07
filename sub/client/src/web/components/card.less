@@ -11,39 +11,29 @@
   .ux-card-deck {
     flex-grow: 0;
     width: @ux-card-width;
-
-    .ux-card {
-      margin: 8px;
-      margin-bottom: 0;
-
-      // TODO(burdon): Style
-      box-shadow: 1px 1px 2px #AAA;
-    }
   }
 }
 
 .ux-card-deck {
   flex-grow: 1;
 
-  // TODO(burdon): Reserve 2px along right side of all components to compensate for internal scrollbars.
-
   background-color: @ux-card-deck-background;
 
-  /*
+  // TODO(burdon): Move to theme.
   .ux-card {
-    .ux-list-items {
-      .ux-list-item {
-        padding-bottom: @ux-card-spacing;
-      }
+    margin: 8px 8px 0;
+
+    &:last-child {
+      margin-bottom: 8px;
     }
+
+    box-shadow: 1px 1px 2px #AAA;
   }
-  */
 
   .ux-card {
     background-color: @ux-panel-background;
 
     .ux-card-header {
-      // TODO(burdon): Use .ux-row mixin uniformly.
       display: flex;
       flex-direction: row;
       justify-content: space-between;
@@ -71,15 +61,13 @@
       .ux-card-section {
 
         .ux-card-section-header {
-          // TODO(burdon): Use .ux-row mixin uniformly.
           display: flex;
           flex-direction: row;
           justify-content: space-between;
           align-items: center;
 
-          padding: 0 @ux-card-padding;
-          padding-right: @ux-scrollbar-width + @ux-list-padding;
-          background-color: #EEE;
+          padding: 0 @ux-scrollbar-width + @ux-list-padding 0 @ux-card-padding;
+          background-color: @ux-card-section-header-background;
 
           h2 {
             .ux-text-noselect;
@@ -98,12 +86,6 @@
           .ux-list-items {
             max-height: 5 * 23px;
           }
-
-          //.ux-list-item {
-          //  .ux-row {
-          //    padding: 0 0 0 2px;
-          //  }
-          //}
         }
 
         .ux-form-row {

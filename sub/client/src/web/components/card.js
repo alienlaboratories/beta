@@ -30,17 +30,18 @@ export class Card extends React.Component {
   /**
    * Type-specific card renderer.
    */
-  static ItemRenderer = (typeRegistry, mutator, viewer) => {
-    return ({ item }) => {
-      let CardComponent = typeRegistry && typeRegistry.card(item.type) || Card;
-      return <CardComponent item={ item } mutator={ mutator } viewer={ viewer }/>;
-    };
+  static ItemRenderer = (typeRegistry, mutator, viewer) => ({ item }) => {
+    let CardComponent = typeRegistry && typeRegistry.card(item.type) || Card;
+
+    return <CardComponent item={ item } mutator={ mutator } viewer={ viewer }/>;
   };
 
   /**
    * Card section.
    */
   static Section = Card.createInlineComponent((props, context) => {
+    //if (props.id === 'tasks') return <div/>;
+
     let { item, setSectionState } = context;
     let { id, title, children, open=true } = props;
 

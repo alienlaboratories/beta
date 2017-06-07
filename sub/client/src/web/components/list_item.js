@@ -169,7 +169,6 @@ export class ListItem extends React.Component {
     return (
       <TextBox ref={ el => { textbox = el; } }
                className="ux-grow"
-               autoFocus={ true }
                value={ value }
                reset={ reset }
                onEnter={ handleSave }

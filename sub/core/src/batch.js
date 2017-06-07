@@ -260,12 +260,17 @@ export class Batch {
         //
 
         // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.writeFragment
-        proxy.writeFragment({
-          id: ID.createStoreId(mutatedItem),
-          fragment,
-          fragmentName,
-          data: mutatedItem
-        });
+        try {
+          let x = proxy.writeFragment({
+            id: ID.createStoreId(mutatedItem),
+            fragment,
+            fragmentName,
+            data: mutatedItem
+          });
+        } catch (err) {
+          logger.error(err);
+          logger.log('Mutation:', JSON.stringify(mutatedItem, null, 2));
+        }
 
         //
         // TODO(burdon): Debug only.
