@@ -6,7 +6,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { DomUtil } from 'alien-util';
-import { MutationUtil } from 'alien-core';
+import { LABEL, MutationUtil } from 'alien-core';
 
 import { TextBox } from './textbox';
 
@@ -91,11 +91,11 @@ export class ListItem extends React.Component {
     let { item, onItemUpdate } = context;
 
     // TODO(burdon): Generalize to toggle any icon.
-    let set = _.indexOf(item.labels, '_favorite') !== -1;
+    let set = _.indexOf(item.labels, LABEL.FAVORITE) !== -1;
     const handleToggleLabel = () => {
       console.assert(onItemUpdate);
       onItemUpdate(item, [
-        MutationUtil.createLabelMutation('_favorite', !set)
+        MutationUtil.createLabelMutation(LABEL.FAVORITE, !set)
       ]);
     };
 

@@ -6,7 +6,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Enum } from 'alien-api';
-import { ID, MutationUtil } from 'alien-core';
+import { LABEL, ID, MutationUtil } from 'alien-core';
 
 import { List } from '../../../components/list';
 import { ListItem, ListItemEditor } from '../../../components/list_item';
@@ -111,7 +111,7 @@ export class TaskList extends React.Component {
     mutator
       .batch(task.bucket)
       .updateItem(task, [
-        MutationUtil.createLabelMutation('_deleted')          // TODO(burdon): Const.
+        MutationUtil.createLabelMutation(LABEL.DELETED)
       ])
       .updateItem(task.project, [
         MutationUtil.createSetMutation('tasks', 'key', ID.key(task), false)

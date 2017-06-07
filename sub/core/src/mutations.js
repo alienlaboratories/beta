@@ -7,6 +7,7 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import { Batch } from './batch';
+import { LABEL } from './defs';
 
 export const BatchMutation = gql`
   mutation BatchMutation($itemMutations: [ItemMutationInput]!) {
@@ -134,7 +135,7 @@ export class MutationUtil {
    * @returns {Mutation}
    */
   static createDeleteMutation(set=true) {
-    return MutationUtil.createLabelMutation('_deleted', set);
+    return MutationUtil.createLabelMutation(LABEL.DELETED, set);
   }
 }
 

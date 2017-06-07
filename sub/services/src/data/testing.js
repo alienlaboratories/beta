@@ -5,7 +5,7 @@
 import _ from 'lodash';
 
 import { Logger } from 'alien-util';
-import { Database, ID, MutationUtil, Transforms } from 'alien-core';
+import { LABEL, Database, ID, MutationUtil, Transforms } from 'alien-core';
 import { Randomizer } from 'alien-core/testing';
 import { Enum } from 'alien-api';
 
@@ -62,7 +62,7 @@ export class TestGenerator {
       Randomizer.property('owner', (item, context) => context.userId),
 
       Randomizer.property('labels', (item, context, randomizer) =>
-        randomizer.chance.bool({ likelihood: 20 }) ? ['_favorite'] : []),
+        randomizer.chance.bool({ likelihood: 20 }) ? [LABEL.FAVORITE] : []),
 
       Randomizer.property('title', (item, context, randomizer) =>
         randomizer.chance.sentence({ words: randomizer.chance.natural({ min: 3, max: 5 }) })),

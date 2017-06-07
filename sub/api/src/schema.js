@@ -23,8 +23,6 @@ export const ITEM_TYPES = [
  */
 export const Enum = {
 
-  // TODO(burdon): Move to API.
-
   /**
    * Task levels.
    */

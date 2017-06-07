@@ -24,3 +24,8 @@ export const Const = {
     REQUEST_ID: 'alien-request'
   }
 };
+
+export const LABEL = {
+  FAVORITE:   '_favorite',
+  DELETED:    '_deleted'
+};

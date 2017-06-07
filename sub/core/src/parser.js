@@ -6,6 +6,8 @@ import _ from 'lodash';
 
 import { TypeUtil } from 'alien-util';
 
+import { LABEL } from './defs';
+
 /**
  * Query parser.
  */
@@ -57,12 +59,12 @@ export class QueryParser {
       if (str[0] === '#') {
         switch (str.substring(1)) {
           case 'fav': {
-            filter.labels.push('_favorite');  // TODO(burdon): Const.
+            filter.labels.push(LABEL.FAVORITE);
             break;
           }
 
           case 'del': {
-            filter.labels.push('_deleted');  // TODO(burdon): Const.
+            filter.labels.push(LABEL.DELETED);
           }
         }
         return;
