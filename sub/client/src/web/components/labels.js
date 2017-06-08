@@ -7,7 +7,9 @@ import PropTypes from 'prop-types';
 
 import { ReactUtil } from '../util/react';
 
-import './labels';
+import { TextBox } from './textbox';
+
+import './labels.less';
 
 /**
  * Label picker.
@@ -19,16 +21,30 @@ export class LabelPicker extends React.Component {
     labels:     PropTypes.arrayOf(PropTypes.string).isRequired,
   };
 
+  handleLabelAdd(label) {
+    this.props.onUpdate(label, true);
+  }
+
+  handleLabelRemove(label) {
+    this.props.onUpdate(label, false);
+  }
+
   render() {
     return ReactUtil.render(this, () => {
       let { labels } = this.props;
 
-      // https://github.com/olahol/react-tagsinput#how-do-i-add-auto-suggestion
-      // https://github.com/prakhar1989/react-tags (DND dep)
-
       return (
         <div className="ux-label-picker">
-          { _.map(labels, label => <span>{ label }</span>) }
+          <div>
+            { _.map(labels, label =>
+            <div key={ label } className="ux-label">
+              <span>{ label }</span>
+              <i className="ux-icon ux-icon-clear" onClick={ this.handleLabelRemove.bind(this, label) }/>
+            </div>
+            ) }
+          </div>
+
+          <TextBox placeholder="Add label" onEnter={ this.handleLabelAdd.bind(this) }/>
         </div>
       );
     });

@@ -265,14 +265,18 @@ class ProjectBoardCanvasComponent extends React.Component {
   }
 
   handleItemUpdate(item, mutations, column) {
-    let { viewer: { user }, mutator } = this.context;
+    let { viewer: { groups }, mutator } = this.context;
 
     if (item) {
-      mutator.batch(item.bucket).updateItem(item, mutations).commit();
+      mutator
+        .batch(groups, item.bucket)
+        .updateItem(item, mutations)
+        .commit();
+
     } else {
       let { item:project } = this.props;
       mutator
-        .batch(project.bucket)
+        .batch(groups, project.bucket)
         .createItem('Task', [
           this.boardAdapter.onCreateMutations(project.bucket, user.id, column),
           MutationUtil.createFieldMutation('owner', 'key', ID.key(user)),

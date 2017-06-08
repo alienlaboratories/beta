@@ -156,6 +156,8 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
 
   const bucket = testData.context.buckets[0];
 
+  const groups = [{ id: bucket }];
+
   function getStoreData(client) {
     // The store field is not defined until the first query.
     return client.store && client.store.getState()['apollo'].data || {};
@@ -499,7 +501,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
   //
   test('Batch create item.', async () => {
 
-    let batch = new Batch(idGenerator, mutate(client), fragmentsMap, bucket)
+    let batch = new Batch(idGenerator, fragmentsMap, mutate(client), groups, bucket)
       .createItem('Task', [
         MutationUtil.createFieldMutation('title', 'string', 'New Task'),
         MutationUtil.createFieldMutation('status', 'int', 0)
@@ -545,7 +547,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     expect(cachedProject.tasks.length).toEqual(project.tasks.length);
 
     // Create task and add to project.
-    let batch = new Batch(idGenerator, mutate(client), fragmentsMap, bucket)
+    let batch = new Batch(idGenerator, fragmentsMap, mutate(client), groups, bucket)
       .createItem('Task', [
         MutationUtil.createFieldMutation('title', 'string', 'New Task'),
         MutationUtil.createFieldMutation('status', 'int', 0)

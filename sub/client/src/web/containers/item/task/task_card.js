@@ -43,12 +43,12 @@ export class TaskCard extends React.Component {
   }
 
   handleSetReference(field, item) {
-    let { mutator, item:task } = this.props;
+    let { mutator, viewer: { groups }, item:task } = this.props;
 
     let key = item && ID.key(item);
 
     let batch = mutator
-      .batch(task.bucket)
+      .batch(groups, task.bucket)
       .updateItem(task, [
         MutationUtil.createFieldMutation(field, 'key', key)
       ])
@@ -62,12 +62,12 @@ export class TaskCard extends React.Component {
   }
 
   handleSetStatus(event) {
-    let { mutator, item:task } = this.props;
+    let { mutator, viewer: { groups }, item:task } = this.props;
 
     let status = event.target.value;
 
     let batch = mutator
-      .batch(task.bucket)
+      .batch(groups, task.bucket)
       .updateItem(task, [
         MutationUtil.createFieldMutation('status', 'int', status)
       ])

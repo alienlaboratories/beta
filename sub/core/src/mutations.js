@@ -190,13 +190,14 @@ export class Mutator {
 
   /**
    * Batch factory.
-   * @param bucket
+   * @param {[{Group}]} groups
+   * @param {string} bucket
    * @returns {Batch}
    */
   // TODO(burdon): Should bucket be required?
-  batch(bucket=undefined) {
+  batch(groups, bucket=undefined) {
     // TODO(burdon): Inject dynamic options (don't leak entire config here).
     let optimistic = _.get(this._config, 'options.optimisticResponse');
-    return new Batch(this._idGenerator, this._mutate, this._fragmentMap, bucket, optimistic);
+    return new Batch(this._idGenerator, this._fragmentMap, this._mutate, groups, bucket, optimistic);
   }
 }

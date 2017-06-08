@@ -191,12 +191,6 @@ export class Resolvers {
           } else {
             return [];
           }
-        },
-
-        contacts: (obj, args, context) => {
-          if (obj.contacts) {
-            return database.getItemStore(Database.NAMESPACE.USER).getItems(context, 'Contact', obj.contacts);
-          }
         }
       }),
 

@@ -72,10 +72,13 @@ export const DebugListItemRenderer = ({ item }) => {
  */
 export class SearchList extends React.Component {
 
+  // TODO(burdon): Remove dependency on context (or use consistently).
+
   static contextTypes = {
     typeRegistry: PropTypes.object.isRequired,
     navigator: PropTypes.object.isRequired,
-    mutator: PropTypes.object.isRequired
+    mutator: PropTypes.object.isRequired,
+    viewer: PropTypes.object.isRequired
   };
 
   constructor() {
@@ -90,7 +93,12 @@ export class SearchList extends React.Component {
   }
 
   handleItemUpdate(item, mutations) {
-    this.context.mutator.batch().updateItem(item, mutations).commit();
+    let { mutator, viewer: { groups } } = this.context;
+
+    mutator
+      .batch(groups)
+      .updateItem(item, mutations)
+      .commit();
   }
 
   render() {

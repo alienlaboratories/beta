@@ -80,19 +80,21 @@ export class TaskList extends React.Component {
   };
 
   handleTaskUpdate(task, mutations) {
-    let { mutator, viewer: { user }, parent } = this.props;
+    let { mutator, viewer: { user, groups }, parent } = this.props;
 
     if (task) {
       mutator
-        .batch(parent.bucket)
+        .batch(groups, parent.bucket)
         .updateItem(task, mutations)
         .commit();
 
     } else {
+      let projectKey = (parent.type === 'Project') && ID.key(parent) || null;
+
       mutator
-        .batch(parent.bucket)
+        .batch(groups, parent.bucket)
         .createItem('Task', _.concat(mutations, [
-          MutationUtil.createFieldMutation('project', 'key',   parent.type === 'Project' && ID.key(parent)),
+          MutationUtil.createFieldMutation('project', 'key',   projectKey),
           MutationUtil.createFieldMutation('owner',   'key',   ID.key(user)),
           MutationUtil.createFieldMutation('status',  'int',   Enum.TASK_LEVEL.UNSTARTED)
         ]), 'task')
@@ -104,10 +106,10 @@ export class TaskList extends React.Component {
   }
 
   handleTaskDelete(task) {
-    let { mutator, parent } = this.props;
+    let { mutator, viewer: { groups }, parent } = this.props;
 
     mutator
-      .batch(parent.bucket)
+      .batch(groups, parent.bucket)
       .updateItem(task, [
         MutationUtil.createLabelMutation(LABEL.DELETED)
       ])

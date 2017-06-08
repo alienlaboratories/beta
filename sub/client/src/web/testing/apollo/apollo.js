@@ -418,8 +418,7 @@ const ListComponentWithApollo = compose(
       // Custom cache update (for particular query; more flexible to use reducer).
       // http://dev.apollodata.com/core/read-and-write.html#updating-the-cache-after-a-mutation
       // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
-      // update: (proxy, { data }) => {
-      // }
+      // update: (proxy, { data }) => {}
     },
 
     // http://dev.apollodata.com/react/mutations.html#custom-arguments
@@ -427,11 +426,12 @@ const ListComponentWithApollo = compose(
 
       /**
        * Creates a batch.
+       * @param groups
        * @param bucket
        * @returns {Batch}
        */
-      createBatch: (bucket) => {
-        return new Batch(idGenerator, mutate, fragmentsMap, bucket, ownProps.options.optimisticResponse);
+      createBatch: (user, bucket) => {
+        return new Batch(idGenerator, fragmentsMap, mutate, groups, bucket, ownProps.options.optimisticResponse);
       }
     })
   })

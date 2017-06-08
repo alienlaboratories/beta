@@ -102,8 +102,6 @@ export class GoogleDriveClient {
       externalUrl: webViewLink
     };
 
-    console.log('###########', JSON.stringify(item, null, 2));
-
     return item;
   }
 }

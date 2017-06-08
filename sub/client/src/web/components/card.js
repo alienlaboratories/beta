@@ -10,6 +10,7 @@ import { MutationUtil } from 'alien-core';
 
 import { ReactUtil } from '../util/react';
 import { TextBox } from '../components/textbox';
+import { LabelPicker } from '../components/labels';
 
 import './card.less';
 
@@ -33,6 +34,7 @@ export class Card extends React.Component {
    * Type-specific card renderer.
    */
   static ItemRenderer = (typeRegistry, mutator, viewer) => ({ item }) => {
+    console.assert(typeRegistry, mutator, viewer);
     let CardComponent = typeRegistry && typeRegistry.card(item.type) || Card;
 
     return <CardComponent item={ item } mutator={ mutator } viewer={ viewer }/>;
@@ -86,7 +88,8 @@ export class Card extends React.Component {
     viewer:       PropTypes.object.isRequired,
     className:    PropTypes.string,
     item:         PropTypes.object,
-    icon:         PropTypes.string
+    icon:         PropTypes.string,
+    showLabels:   PropTypes.bool
   };
 
   static contextTypes = {
@@ -123,11 +126,23 @@ export class Card extends React.Component {
   }
 
   handleEdit(field, value) {
-    let { mutator, item } = this.props;
+    let { mutator, viewer: { groups }, item } = this.props;
 
-    mutator.batch(item.bucket)
+    mutator
+      .batch(groups, item.bucket)
       .updateItem(item, [
         MutationUtil.createFieldMutation(field, 'string', value)
+      ])
+      .commit();
+  }
+
+  handleLabelUpdate(label, add) {
+    let { mutator, viewer: { groups }, item } = this.props;
+
+    mutator
+      .batch(groups, item.bucket)
+      .updateItem(item, [
+        MutationUtil.createSetMutation('labels', 'string', label, add)
       ])
       .commit();
   }
@@ -135,12 +150,12 @@ export class Card extends React.Component {
   render() {
     return ReactUtil.render(this, () => {
       let { config } = this.context;
-      let { children, className, debug=true, item, icon } = this.props;
+      let { children, className, debug=true, item, icon, showLabels } = this.props;
       if (!item) {
         return;
       }
 
-      let { title, description, modified } = item;
+      let { labels, title, description, modified } = item;
 
       //
       // Debug.
@@ -174,6 +189,14 @@ export class Card extends React.Component {
 
           {/* Main */}
           <div className="ux-card-main">
+
+            { showLabels &&
+
+            <Card.Section id="labels">
+              <LabelPicker labels={ labels || [] } onUpdate={ this.handleLabelUpdate.bind(this) }/>
+            </Card.Section>
+
+            }
 
             {/* TODO(burdon): Make extensible. */}
             { description &&

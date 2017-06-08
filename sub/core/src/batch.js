@@ -22,7 +22,7 @@ export class Batch {
   /**
    * Manages batch mutations.
    *
-   * new Batch(idGenerator, mutator, fragments, bucket, true)
+   * new Batch(idGenerator, fragments, mutator, groups, bucket, true)
    *
    *   .createItem('Task', [
    *     MutationUtil.createFieldMutation('title', 'string', 'Test')
@@ -36,21 +36,23 @@ export class Batch {
    *   .commit();
    *
    * @param {IdGenerator} idGenerator.
-   * @param {function.<{Options}>} mutate Mutate function provided by Apollo.
-   * @param {string} bucket All batched operations must belong to the same bucket.
    * @param {FragmentsMap} fragmentMap Map of fragments to which mutations are applied.
+   * @param {function.<{Options}>} mutate Mutate function provided by Apollo.
+   * @param {User} groups
+   * @param {string} bucket All batched operations must belong to the same bucket.
    * @param {boolean} optimistic
    * @private
    */
-  constructor(idGenerator, mutate, fragmentMap=undefined, bucket=undefined, optimistic=false) {
-    console.assert(idGenerator && mutate);
+  constructor(idGenerator, fragmentMap, mutate, groups, bucket=undefined, optimistic=false) {
+    console.assert(idGenerator && fragmentMap && mutate && groups);
 
     // TODO(burdon): Enforce same bucket for entire batch? Otherwise multiple batches (e.g., private task for project).
 
     this._idGenerator = idGenerator;
     this._mutate = mutate;
     this._fragmentMap = fragmentMap;
-    this._bucket = bucket;
+    this._groups = groups;
+    this._bucket = bucket || groups[0].id;        // TODO(burdon): Default group?
     this._optimistic = optimistic;
 
     this._refs = new Map();
@@ -254,12 +256,8 @@ export class Batch {
         let clonedItem = TypeUtil.clone(cachedItem || key);
         let mutatedItem = Transforms.applyObjectMutations({ client: true }, clonedItem, mutations);
 
-        console.log('===', JSON.stringify(mutatedItem, null, 2));
-
         let parser = new FragmentParser(fragment);
         parser.getDefaultObject(mutatedItem);
-
-        console.log('###', JSON.stringify(mutatedItem, null, 2));
 
         //
         // Update cache.

@@ -57,7 +57,8 @@ export class QueryParser {
 
       // Labels.
       if (str[0] === '#') {
-        switch (str.substring(1)) {
+        let label = str.substring(1);
+        switch (label) {
           case 'fav': {
             filter.labels.push(LABEL.FAVORITE);
             break;
@@ -65,6 +66,11 @@ export class QueryParser {
 
           case 'del': {
             filter.labels.push(LABEL.DELETED);
+            break;
+          }
+
+          default: {
+            filter.labels.push(label);
           }
         }
         return;
