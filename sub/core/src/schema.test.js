@@ -4,16 +4,25 @@
 
 import gql from 'graphql-tag';
 
-import { FragmentsMap } from './schema';
+import { FragmentsMap, FragmentParser } from './schema';
+
+const TestMetaFragment = gql`
+  fragment TestMetaFragment on Meta {
+    icon
+  }
+`;
 
 const TestItemFragment1 = gql`
   fragment TestItemFragment1 on Item {
     type
     id
+    
     meta {
-      icon
+      ...TestMetaFragment
     }
   }
+  
+  ${TestMetaFragment}
 `;
 
 const TestItemFragment2 = gql`
@@ -50,23 +59,36 @@ const TestProjectFragment2 = gql`
   ${TestItemFragment1}
 `;
 
-test('Create null object', () => {
-  let fragmentMap = new FragmentsMap()
+test('Create fragment map.', () => {
+  const fragmentsMap = new FragmentsMap()
     .add(TestItemFragment1)
     .add(TestItemFragment2)
     .add(TestProjectFragment1)
     .add(TestProjectFragment2);
 
-  let item = fragmentMap.getDefaultObject('Project');
+  let fragments = fragmentsMap.getFragments('Project');
+  expect(fragments).toHaveLength(2);
+});
+
+test('Create null object.', () => {
+
+  let parser = new FragmentParser(TestProjectFragment1);
+
+  let item = parser.getDefaultObject({ type: 'test', meta: { icon: 'test' } });
 
   expect(item).toEqual({
     __typename: 'Project',
-    type: null,
+    type: 'test',
     id: null,
-    meta: null,
+
+    meta: {
+      __typename: 'Meta',
+      icon: 'test'
+    },
+
     title: null,
+
     labels: null,
-    tasks: null,
-    boards: null
+    tasks: null
   });
 });

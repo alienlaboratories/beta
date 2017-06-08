@@ -258,6 +258,7 @@ const MutationContactFragment = gql`
   }
 
   ${KeyFragment}
+  ${ItemFragment}
 `;
 
 const MutationProjectFragment = gql`

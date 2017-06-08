@@ -251,9 +251,15 @@ export class Batch {
         // Apollo can use the `dataIdFromObject` property to match the associated cached Items.
         //
 
+        let clonedItem = TypeUtil.clone(cachedItem || key);
+        let mutatedItem = Transforms.applyObjectMutations({ client: true }, clonedItem, mutations);
+
+        console.log('===', JSON.stringify(mutatedItem, null, 2));
+
         let parser = new FragmentParser(fragment);
-        let baseItem = _.defaults(TypeUtil.clone(cachedItem || key), parser.getDefaultObject());
-        let mutatedItem = Transforms.applyObjectMutations({ client: true }, baseItem, mutations);
+        parser.getDefaultObject(mutatedItem);
+
+        console.log('###', JSON.stringify(mutatedItem, null, 2));
 
         //
         // Update cache.
@@ -269,7 +275,7 @@ export class Batch {
           });
         } catch (err) {
           logger.error(err);
-          logger.log('Mutation:', JSON.stringify(mutatedItem, null, 2));
+          logger.log('Item:', JSON.stringify(mutatedItem, null, 2));
         }
 
         //

@@ -318,7 +318,7 @@ const ProjectFragment = gql`
   ${TaskFragment}
 `;
 
-const fragments = new FragmentsMap()
+const fragmentsMap = new FragmentsMap()
   .add(ItemFragment)
   .add(ProjectFragment)
   .add(TaskFragment);
@@ -431,7 +431,7 @@ const ListComponentWithApollo = compose(
        * @returns {Batch}
        */
       createBatch: (bucket) => {
-        return new Batch(idGenerator, mutate, fragments, bucket, ownProps.options.optimisticResponse);
+        return new Batch(idGenerator, mutate, fragmentsMap, bucket, ownProps.options.optimisticResponse);
       }
     })
   })

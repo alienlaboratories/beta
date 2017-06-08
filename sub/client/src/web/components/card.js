@@ -109,7 +109,6 @@ export class Card extends React.Component {
   }
 
   setSectionState(key, value) {
-    console.log(key, value);
     let { item } = this.props;
     let state = TypeUtil.defaultMap(Card.state, item.id, Object);
     _.set(state, key, value);

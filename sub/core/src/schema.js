@@ -81,13 +81,16 @@ export class FragmentParser {
     });
   }
 
-  getDefaultObject() {
-    return this._getDefaultsForDefinition({}, this._defaultDefinition);
+  getDefaultObject(value={}) {
+    return this._getDefaultsForDefinition(value, this._defaultDefinition);
   }
 
   _getDefaultsForDefinition(object, definition) {
     console.assert(definition.typeCondition.name.value);
-    object.__typename = definition.typeCondition.name.value;
+    _.defaults(object, {
+      __typename: definition.typeCondition.name.value
+    });
+
     return this._getDefaultsForSelectionSet(object, definition.selectionSet);
   }
 
@@ -100,13 +103,51 @@ export class FragmentParser {
       switch (selection.kind) {
 
         case 'Field': {
-          _.set(object, selection.name.value, null);
+          let value = _.get(object, selection.name.value, null);
+
+          if (value !== null && selection.selectionSet) {
+            let selections = selection.selectionSet.selections;
+            console.assert(selections.length === 1);
+            let fieldSelection = selections[0];
+
+            //
+            // Expand defs if the field is present.
+            //
+            if (_.isObject(value)) {
+              
+              //
+              // Handle inline fragment definitions.
+              //
+              let typename = _.get(fieldSelection, 'typeCondition.name.value');
+              if (typename) {
+                _.defaults(value, {
+                  __typename: typename
+                });
+
+                this._getDefaultsForSelectionSet(value, fieldSelection.selectionSet);
+              } else {
+
+                //
+                // Handle fragment references.
+                //
+                let fragment = this._definitionMap.get(fieldSelection.name.value);
+                let typename = _.get(fragment, 'typeCondition.name.value');
+                _.defaults(value, {
+                  __typename: typename
+                });
+
+                this._getDefaultsForSelectionSet(value, fragment.selectionSet);
+              }
+            }
+          }
+
+          _.set(object, selection.name.value, value);
           break;
         }
 
         case 'FragmentSpread': {
           let definition = this._definitionMap.get(selection.name.value);
-          console.assert(definition);
+          console.assert(definition, 'Unknown fragment: ' + selection.name.value);
           this._getDefaultsForSelectionSet(object, definition.selectionSet);
           break;
         }

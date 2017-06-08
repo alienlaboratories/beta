@@ -141,7 +141,7 @@ const TaskQuery = gql`
   ${TaskFragment}
 `;
 
-const fragments = new FragmentsMap()
+const fragmentsMap = new FragmentsMap()
   .add(ItemFragment)
   .add(ProjectFragment)
   .add(ProjectTasksFragment)
@@ -499,7 +499,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
   //
   test('Batch create item.', async () => {
 
-    let batch = new Batch(idGenerator, mutate(client), fragments, bucket)
+    let batch = new Batch(idGenerator, mutate(client), fragmentsMap, bucket)
       .createItem('Task', [
         MutationUtil.createFieldMutation('title', 'string', 'New Task'),
         MutationUtil.createFieldMutation('status', 'int', 0)
@@ -545,7 +545,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     expect(cachedProject.tasks.length).toEqual(project.tasks.length);
 
     // Create task and add to project.
-    let batch = new Batch(idGenerator, mutate(client), fragments, bucket)
+    let batch = new Batch(idGenerator, mutate(client), fragmentsMap, bucket)
       .createItem('Task', [
         MutationUtil.createFieldMutation('title', 'string', 'New Task'),
         MutationUtil.createFieldMutation('status', 'int', 0)
