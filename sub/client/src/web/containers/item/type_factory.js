@@ -6,7 +6,7 @@ import { TypeRegistry } from '../../common/type_registry';
 
 import { ContactCard, ContactCardContainer } from './contact';
 import { DocumentColumn } from './document';
-import { ProjectCard, ProjectCardContainer } from './project';
+import { ProjectCard, ProjectBoardContainer } from './project';
 import { TaskCard, TaskCardContainer } from './task';
 
 /**
@@ -32,7 +32,7 @@ export const TypeRegistryFactory = () => new TypeRegistry({
   Project: {
     icon: 'assignment',
     card: ProjectCard,
-    container: ProjectCardContainer,
+    container: ProjectBoardContainer,
   },
 
   Task: {

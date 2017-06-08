@@ -120,8 +120,10 @@ type Contact implements Item {
 
   user: User
 
-  # TODO(burdon): Implement as links.
+  # Sub-tasks (do not belong to any Project).
   tasks: [Task]!
+
+  # Synced messages.
   messages: [Message]!
 }
 
@@ -239,12 +241,8 @@ type Project implements Item {
   # All projects are owned by a Group (each User has a private Group).
   group: Group!
 
-  # TODO(burdon): Don't expose "Links" to the GQL. Instead multiple child types (WRITE-UP).
-  # TODO(burdon): Different sub-types (e.g., Pipeline with orgs/contacts and separate boards).
+  # Sub-tasks.
   tasks: [Task]!
-
-  # TODO(burdon): Factor out Pipeline mixin.
-  contacts: [Contact]
 
   # TODO(burdon): Map type (array of typed values).
   boards: [Board]

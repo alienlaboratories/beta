@@ -277,6 +277,7 @@ type Board {
   title: String!
   columns: [BoardColumn]
   itemMeta: [ListItemMeta]    # Map of ID x meta values (i.e., map).
+  filter: String              # JSON Filter format.
 }
 
 #===================================================================================================

@@ -44,15 +44,17 @@ class DetailActivity extends React.Component {
         searchPanel = <SearchListContainer/>;
       }
 
-      // Type-specific cards.
+      // Type-specific containers (card/canvas).
       let itemKey = ID.decodeKey(key);
       let CardContainer = typeRegistry.container(itemKey.type);
 
-      let content = (
+      let container = (
         <div className="ux-card-deck">
           <CardContainer mutator={ mutator } viewer={ viewer } itemKey={ itemKey }/>
         </div>
       );
+
+      // TODO(burdon): Get header.
 
       return (
         <Layout config={ config }
@@ -63,7 +65,7 @@ class DetailActivity extends React.Component {
                 typeRegistry={ typeRegistry }
                 eventListener={ eventListener }>
 
-          <SplitPanel left={ searchPanel } right={ content }/>
+          <SplitPanel left={ searchPanel } right={ container }/>
 
         </Layout>
       );

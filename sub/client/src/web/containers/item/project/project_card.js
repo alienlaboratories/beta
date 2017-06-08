@@ -46,16 +46,20 @@ export class ProjectCard extends React.Component {
   }
 }
 
+//
+// HOC Container.
+//
+
 const ProjectItemQuery = gql`
   query ProjectItemQuery($key: KeyInput!) {
     item(key: $key) {
       ...ItemFragment
-      ...ProjectFragment
+      ...ProjectBoardFragment
     }
   }
 
   ${Fragments.ItemFragment}  
-  ${Fragments.ProjectFragment}  
+  ${Fragments.ProjectBoardFragment}  
 `;
 
 export const ProjectCardContainer = QueryItem(ProjectItemQuery)(ProjectCard);

@@ -375,12 +375,6 @@ export class BaseApp {
    *
    * Routes instantiate activity components, which receive params from the path.
    *
-   * <Activity>
-   *   <Layout>
-   *     <Canvas/>
-   *   </Layout>
-   * </Activity>
-   *
    * @param {React.Component} App Root app class.
    * @return {Promise}
    */

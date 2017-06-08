@@ -71,8 +71,7 @@ export class TaskList extends React.Component {
   static propTypes = {
     mutator:    PropTypes.object.isRequired,
     viewer:     PropTypes.object.isRequired,
-    parent:     PropTypes.object.isRequired,
-    project:    PropTypes.object.isRequired,
+    parent:     PropTypes.object.isRequired,          // Parent object (e.g., Project, Contact).
     tasks:      PropTypes.array.isRequired
   };
 
@@ -81,20 +80,19 @@ export class TaskList extends React.Component {
   };
 
   handleTaskUpdate(task, mutations) {
-    let { mutator, viewer: { user }, parent, project } = this.props;
-    console.assert(mutations && user && parent && project);
+    let { mutator, viewer: { user }, parent } = this.props;
 
     if (task) {
       mutator
-        .batch(project.bucket)
+        .batch(parent.bucket)
         .updateItem(task, mutations)
         .commit();
 
     } else {
       mutator
-        .batch(project.bucket)
+        .batch(parent.bucket)
         .createItem('Task', _.concat(mutations, [
-          MutationUtil.createFieldMutation('project', 'key',   ID.key(project)),
+          MutationUtil.createFieldMutation('project', 'key',   parent.type === 'Project' && ID.key(parent)),
           MutationUtil.createFieldMutation('owner',   'key',   ID.key(user)),
           MutationUtil.createFieldMutation('status',  'int',   Enum.TASK_LEVEL.UNSTARTED)
         ]), 'task')
@@ -106,14 +104,14 @@ export class TaskList extends React.Component {
   }
 
   handleTaskDelete(task) {
-    let { mutator } = this.props;
+    let { mutator, parent } = this.props;
 
     mutator
-      .batch(task.bucket)
+      .batch(parent.bucket)
       .updateItem(task, [
         MutationUtil.createLabelMutation(LABEL.DELETED)
       ])
-      .updateItem(task.project, [
+      .updateItem(parent, [
         MutationUtil.createSetMutation('tasks', 'key', ID.key(task), false)
       ])
       .commit();

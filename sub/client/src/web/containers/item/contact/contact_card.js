@@ -6,11 +6,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 
+import { MutationUtil } from 'alien-core';
 import { Fragments } from 'alien-api';
 
 import { ReactUtil } from '../../../util/react';
 import { Card } from '../../../components/card';
 import { Image } from '../../../components/image';
+import { LabelPicker } from '../../../components/labels';
 
 import { QueryItem } from '../item_container';
 import { TaskList } from '../task/task_list';
@@ -27,6 +29,17 @@ export class ContactCard extends React.Component {
     viewer:     PropTypes.object.isRequired
   };
 
+  handleLabelUpdate(label, add) {
+    let { mutator, item:contact } = this.props;
+
+    mutator
+      .batch(contact.bucket)
+      .updateItem(contact, [
+        MutationUtil.createSetMutation('labels', 'string', label, add)
+      ])
+      .commit();
+  }
+
   render() {
     return ReactUtil.render(this, () => {
       let { mutator, viewer, item:contact } = this.props;
@@ -34,31 +47,25 @@ export class ContactCard extends React.Component {
         return;
       }
 
-      // TODO(burdon): Default project.
-      let project = _.chain(viewer.groups)
-        .map(group => _.get(group, 'projects'))
-        .flatten()
-        .find(project => _.indexOf(project.labels, '_default') !== -1)
-        .value();
-
-      let { meta, email, tasks } = contact;
-      let { thumbnailUrl } = meta || {};
+      let { labels, meta, email, tasks } = contact;
 
       return (
         <Card mutator={ mutator } viewer={ viewer } item={ contact }>
 
+          <Card.Section id="labels">
+            <LabelPicker labels={ labels } onUpdate={ this.handleLabelUpdate.bind(this) }/>
+          </Card.Section>
+
           <Card.Section id="contact" title="Contact">
             <div className="ux-row ux-grow ux-card-padding">
               <div className="ux-grow">{ email }</div>
-              <Image className="ux-avatar" src={ thumbnailUrl }/>
+              <Image className="ux-avatar" src={ _.get(meta, 'thumbnailUrl') }/>
             </div>
           </Card.Section>
 
-          { project &&
           <Card.Section id="tasks" title="Tasks">
-            <TaskList mutator={ mutator } viewer={ viewer } parent={ contact } project={ project } tasks={ tasks }/>
+            <TaskList mutator={ mutator } viewer={ viewer } parent={ contact } tasks={ tasks }/>
           </Card.Section>
-          }
 
         </Card>
       );

@@ -5,7 +5,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'react-apollo';
-import { connect } from 'react-redux';
 import gql from 'graphql-tag';
 
 import { DomUtil } from 'alien-util';
@@ -27,64 +26,6 @@ import { List } from '../../components/list';
 import { Connector } from '../connector';
 
 import { TaskItemEditor, TaskItemRenderer } from './task';
-
-//-------------------------------------------------------------------------------------------------
-// Components.
-//-------------------------------------------------------------------------------------------------
-
-/**
- * Card.
- */
-export class ProjectCard extends React.Component {
-
-  static contextTypes = {
-    navigator: PropTypes.object.isRequired,
-    mutator: PropTypes.object.isRequired
-  };
-
-  handleTaskAdd() {
-    this.refs.tasks.addItem();
-  }
-
-  handleItemSelect(item) {
-    this.context.navigator.push(Path.canvas(ID.key(item)));
-  }
-
-  handleItemUpdate(item, mutations) {
-    let { mutator } = this.context;
-
-    if (item) {
-      mutator.batch(item.bucket).updateItem(item, mutations).commit();
-    } else {
-      // TODO(burdon): Add task to project.
-      console.warn('Not implemented.');
-    }
-  }
-
-  render() {
-    let { item:project } = this.props;
-    let { tasks } = project;
-
-    return (
-      <Card ref="card" item={ project }>
-
-        <div className="ux-list-tasks">
-          <div className="ux-scroll-container">
-            <List ref="tasks"
-                  items={ tasks }
-                  itemEditor={ TaskItemEditor }
-                  itemRenderer={ TaskItemRenderer }
-                  onItemSelect={ this.handleItemSelect.bind(this) }
-                  onItemUpdate={ this.handleItemUpdate.bind(this) }/>
-          </div>
-          {/*
-          <i className="ux-icon ux-icon-add" onClick={ this.handleTaskAdd.bind(this) }/>
-           */}
-        </div>
-      </Card>
-    );
-  }
-}
 
 /**
  * Board canvas.
@@ -295,14 +236,14 @@ class ProjectBoardCanvasComponent extends React.Component {
   };
 
   static contextTypes = {
-    typeRegistry: PropTypes.object.isRequired,
-    navigator: PropTypes.object.isRequired,
-    mutator: PropTypes.object.isRequired,
-    viewer: PropTypes.object.isRequired
+    typeRegistry:   PropTypes.object.isRequired,
+    navigator:      PropTypes.object.isRequired,
+    mutator:        PropTypes.object.isRequired,
+    viewer:         PropTypes.object.isRequired
   };
 
   static propTypes = {
-    item: PropTypes.object
+    item:           PropTypes.object
   };
 
   state = {
@@ -451,6 +392,8 @@ class ProjectBoardCanvasComponent extends React.Component {
   }
 }
 
+// TODO(burdon): Generalze icons.
+
 /**
  * Board toolbar
  */
@@ -466,6 +409,8 @@ export class ProjectCanvasToolbarComponent extends React.Component {
     function className(type) {
       return DomUtil.className('ux-icon', 'ux-icon-action', (type === boardAlias) && 'ux-icon-active' );
     }
+
+    // TODO(burdon): Icon list.
 
     return (
       <div>
@@ -537,22 +482,3 @@ export const ProjectBoardCanvas = compose(
   })
 
 )(ProjectBoardCanvasComponent);
-
-export const ProjectCanvasToolbar = connect(
-
-  (state, ownProps) => {
-    let { canvas: { boardAlias='status' } } = AppAction.getState(state);
-    return {
-      boardAlias
-    };
-  },
-
-  (dispatch, ownProps) => ({
-    setBoardAlias: boardAlias => {
-      dispatch(AppAction.setCanvasState({
-        boardAlias
-      }));
-    }
-  })
-
-)(ProjectCanvasToolbarComponent);
