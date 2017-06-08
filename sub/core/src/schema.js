@@ -114,7 +114,7 @@ export class FragmentParser {
             // Expand defs if the field is present.
             //
             if (_.isObject(value)) {
-              
+
               //
               // Handle inline fragment definitions.
               //
