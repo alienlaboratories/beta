@@ -38,6 +38,9 @@ const ItemFragment = gql`
     fkey
     alias
 
+    created
+    modified
+    
     labels
     title
 

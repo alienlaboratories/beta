@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 
 import { Fragments } from 'alien-api';
+import { ID, MutationUtil } from 'alien-core';
 
 import { ReactUtil } from '../../../util/react';
 
@@ -17,35 +18,9 @@ import { DragOrderModel } from '../../../components/dnd';
 
 import { QueryItem } from '../item_container';
 
+import { TaskStatusBoardAdapter } from './adapters';
+
 import './project.less';
-
-/**
- * Configures the board depending on the current view.
- */
-class BoardAdapter {
-
-  /**
-   * Returns an ordered array of columns.
-   * @param project
-   * @returns {Array.<{ id, value, title }>} Column specs.
-   */
-  getColumns(project) {
-    return [
-      { id: 'C1', value: 'C1', title: 'C1'},
-      { id: 'C2', value: 'C2', title: 'C2'},
-      { id: 'C3', value: 'C3', title: 'C3'}
-    ];
-  }
-
-  /**
-   * Returns a funciton that maps items onto a column (ID).
-   * @param state
-   * @returns {function(*, *)}
-   */
-  getColumnMapper(state) {
-    return (columns, item) => { };
-  }
-}
 
 /**
  * Header.
@@ -66,7 +41,9 @@ export class ProjectBoardHeader extends React.Component {
  */
 export class ProjectBoard extends React.Component {
 
-  // TODO(burdon): Canvas signature.
+  static boardAdapers = [
+    new TaskStatusBoardAdapter()
+  ];
 
   static contextTypes = {
     typeRegistry:   PropTypes.object.isRequired
@@ -74,45 +51,155 @@ export class ProjectBoard extends React.Component {
 
   static propTypes = {
     mutator:        PropTypes.object.isRequired,
-    viewer:         PropTypes.object.isRequired
+    viewer:         PropTypes.object.isRequired,
+    boardAlias:     PropTypes.string
   };
 
-  state = {
-    boardAdapter: new BoardAdapter()
+  static defaultProps = {
+    boardAlias:     TaskStatusBoardAdapter.ALIAS
   };
 
   constructor() {
     super(...arguments);
 
+    let { typeRegistry } = this.context;
+    let { viewer, mutator, boardAlias } = this.props;
+
+    this._itemRenderer = Card.ItemRenderer(typeRegistry, mutator, viewer);
     this._itemOrderModel = new DragOrderModel();
+
+    this.state = {
+      boardAdapter: _.find(ProjectBoard.boardAdapers, adapter => adapter.alias === boardAlias)
+    };
   }
 
-  handleItemDrop() {}
+  handleTaskSelect() {
+    console.log('handleItemSelect', arguments);
+  }
 
-  handleItemSelect() {}
+  handleItemDrop(column, item, changes) {
+    let { viewer: { groups }, item:project, boardAlias, mutator } = this.props;
+    let { boardAdapter } = this.state;
 
-  handleItemUpdate() {}
+    let batch = mutator.batch(groups, project.bucket);
+
+    // Update item for column.
+    let dropMutations = boardAdapter.onDropItem(column);
+    if (dropMutations) {
+      batch.updateItem(item, dropMutations);
+    }
+
+    // Update item order.
+    batch.updateItem(project, _.map(changes, change => ({
+      field: 'boards',
+      value: {
+        map: [{
+
+          // Upsert the given keyed value (in the array).
+          predicate: {
+            key: 'alias',
+            value: {
+              string: boardAlias
+            }
+          },
+
+          value: {
+            object: [{
+              field: 'itemMeta',
+              value: {
+                map: [{
+
+                  // Upsert item.
+                  predicate: {
+                    key: 'itemId',
+                    value: {
+                      string: change.itemId
+                    }
+                  },
+                  value: {
+                    object: [
+                      {
+                        field: 'listId',
+                        value: {
+                          string: change.listId
+                        }
+                      },
+                      {
+                        field: 'order',
+                        value: {
+                          float: change.order
+                        }
+                      }
+                    ]
+                  }
+                }]
+              }
+            }]
+          }
+        }]
+      }
+    })));
+
+    batch.commit();
+  }
+
+  handleTaskUpdate(item, mutations, column) {
+    let { viewer: { user, groups }, mutator } = this.props;
+
+    if (item) {
+      // Update.
+      mutator
+        .batch(groups, item.bucket)
+        .updateItem(item, mutations)
+        .commit();
+
+    } else {
+      let { boardAdapter } = this.state;
+      let { item:project } = this.props;
+
+      // TODO(burdon): Task specific.
+      // TODO(burdon): Remove create button for other types.
+      // Column-specific mutations.
+      let adapterMutations = boardAdapter.onCreateItem(column);
+
+      // Create.
+      mutator
+        .batch(groups, project.bucket)
+        .createItem('Task', [
+          MutationUtil.createFieldMutation('owner', 'key', ID.key(user)),
+          MutationUtil.createFieldMutation('project', 'key', ID.key(project)),
+          adapterMutations,
+          mutations
+        ], 'task')
+        .updateItem(project, [
+          ({ task }) => MutationUtil.createSetMutation('tasks', 'key', ID.key(task))
+        ])
+        .commit();
+    }
+  }
 
   render() {
     return ReactUtil.render(this, () => {
       let { boardAdapter } = this.state;
-      let { typeRegistry } = this.context;
-      let { viewer: { user }, item:project, boardAlias } = this.props;
-      let { tasks:items } = project;
+      let { item:project, boardAlias } = this.props;
+      let { tasks } = project;
 
       let board = _.find(_.get(project, 'boards'), board => board.alias === boardAlias);
 
+      console.log('$$$$ RENDER');
+
+      // TODO(burdon): Lift-up Canvas.
       return (
         <Canvas>
           <Board item={ project }
-                 items={ items }
+                 items={ tasks }
                  columns={ boardAdapter.getColumns(project, board) }
-                 columnMapper={ boardAdapter.getColumnMapper(user.id) }
-                 itemRenderer={ Card.ItemRenderer(typeRegistry) }
+                 columnMapper={ boardAdapter.getColumnMapper() }
+                 itemRenderer={ this._itemRenderer }
                  itemOrderModel={ this._itemOrderModel }
+                 onItemSelect={ this.handleTaskSelect.bind(this) }
                  onItemDrop={ this.handleItemDrop.bind(this) }
-                 onItemSelect={ this.handleItemSelect.bind(this) }
-                 onItemUpdate={ this.handleItemUpdate.bind(this) }/>
+                 onItemUpdate={ this.handleTaskUpdate.bind(this) }/>
 
         </Canvas>
       );
@@ -129,11 +216,13 @@ const ProjectItemQuery = gql`
     item(key: $key) {
       ...ItemFragment
       ...ProjectFragment
+      ...ProjectBoardFragment
     }
   }
 
   ${Fragments.ItemFragment}  
   ${Fragments.ProjectFragment}  
+  ${Fragments.ProjectBoardFragment}  
 `;
 
 export const ProjectBoardContainer = QueryItem(ProjectItemQuery)(ProjectBoard);

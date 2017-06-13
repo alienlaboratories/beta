@@ -29,7 +29,7 @@ const config = _.defaultsDeep(window.config, {
   // Framework debug options.
   options: {
     debugInfo: (window.config.env !== 'production') && false,
-    optimisticResponse: false,
+    optimisticResponse: true,
     invalidations: false,
     networkDelay: 0
   },

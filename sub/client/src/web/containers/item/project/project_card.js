@@ -54,11 +54,13 @@ const ProjectItemQuery = gql`
   query ProjectItemQuery($key: KeyInput!) {
     item(key: $key) {
       ...ItemFragment
+      ...ProjectFragment
       ...ProjectBoardFragment
     }
   }
 
   ${Fragments.ItemFragment}  
+  ${Fragments.ProjectFragment}  
   ${Fragments.ProjectBoardFragment}  
 `;
 

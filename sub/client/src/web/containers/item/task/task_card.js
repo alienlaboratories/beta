@@ -31,13 +31,24 @@ export class TaskCard extends React.Component {
 
   state = {};
 
-  // TODO(burdon): Move state management to MembersPicker.
+  constructor() {
+    super(...arguments);
+
+    this.state = this.getState(this.props);
+  }
+
   componentWillReceiveProps(nextProps) {
-    let { item:task={} } = nextProps;
+    this.setState(this.getState(nextProps));
+  }
+
+  getState(props) {
+    let { item:task={} } = props;
     let { status } = task;
 
-    this.state = {
+    return {
       status,
+
+       // TODO(burdon): Move state management to MembersPicker.
       assignee: _.get(task, 'assignee')
     };
   }
@@ -54,6 +65,7 @@ export class TaskCard extends React.Component {
       ])
       .commit();
 
+    // TODO(burdon): External re-render triggered (can't set state on unmounted component).
     batch.then(() => {
       this.setState({
         [field]: item
@@ -69,10 +81,11 @@ export class TaskCard extends React.Component {
     let batch = mutator
       .batch(groups, task.bucket)
       .updateItem(task, [
-        MutationUtil.createFieldMutation('status', 'int', status)
+        MutationUtil.createFieldMutation('status', 'int', parseInt(status))
       ])
       .commit();
 
+    // TODO(burdon): External re-render triggered (can't set state on unmounted component).
     batch.then(() => {
       this.setState({
         status
@@ -96,7 +109,7 @@ export class TaskCard extends React.Component {
       return (
         <Card mutator={ mutator } viewer={ viewer } item={ task }>
 
-          <Card.Section id="task">
+          <Card.Section id="task" title="Details">
             <div className="ux-card-padding">
 
               <div className="ux-form-row">

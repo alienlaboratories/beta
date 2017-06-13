@@ -55,7 +55,7 @@ export class TextBox extends React.Component {
     this._currentValue = this.props.value;
 
     this.state = {
-      readOnly: false,
+      readOnly: this.props.clickToEdit,
       value: this._currentValue
     };
 

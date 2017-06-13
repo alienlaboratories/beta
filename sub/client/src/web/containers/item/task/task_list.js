@@ -72,7 +72,7 @@ export class TaskList extends React.Component {
     mutator:    PropTypes.object.isRequired,
     viewer:     PropTypes.object.isRequired,
     parent:     PropTypes.object.isRequired,          // Parent object (e.g., Project, Contact).
-    tasks:      PropTypes.array.isRequired
+    tasks:      PropTypes.array
   };
 
   static defaultProps = {

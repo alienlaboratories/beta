@@ -97,7 +97,11 @@
   .ux-drop-target {
 
     .ux-drop-placeholder {
-//    height: 0;
+      height: 0;
+
+      // Debug.
+      // height: 20px;
+      // background-color: lightblue;
 
       // Close quickly.
       //-webkit-transition: height 0s;
@@ -126,6 +130,7 @@
 
     &.ux-last {
       display: flex;
+      flex-direction: column;
       flex-grow: 1;
 
       .ux-drop-placeholder {

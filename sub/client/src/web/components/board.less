@@ -13,7 +13,7 @@
   overflow: hidden;
 
   .ux-board-columns {
-    margin: @ux-board-column-spacing 0;
+    margin: @ux-board-column-spacing;
 
     .ux-board-column {
       display: flex;
@@ -21,11 +21,11 @@
       width: @ux-card-width;
 
       background-color: @ux-board-column-background;
-      border: @ux-board-column-border;
+//    border: @ux-board-column-border;
       border-radius: @ux-board-radius;
+      box-shadow: @ux-box-shadow;
 
-      margin: 0 @ux-board-column-spacing;
-      &:first-child,
+      margin-right: @ux-board-column-spacing;
       &:last-child {
         margin: 0;
       }
@@ -34,8 +34,7 @@
         display: flex;
         flex-direction: row;
         flex-shrink: 0;
-        padding: @ux-board-padding;
-        margin-bottom: @ux-board-padding;
+        padding: @ux-board-padding 2 * @ux-board-padding;
 
         background-color: @ux-board-column-header-background;
 
@@ -49,6 +48,13 @@
         flex-direction: row;
         flex-shrink: 0;
         padding: @ux-board-padding;
+        margin-bottom: 2px;
+      }
+
+      .ux-card-deck.ux-list {
+        > .ux-list-items {
+          padding: 0 @ux-card-spacing;
+        }
       }
     }
   }

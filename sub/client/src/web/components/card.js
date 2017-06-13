@@ -4,6 +4,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 import { DomUtil, TypeUtil } from 'alien-util';
 import { MutationUtil } from 'alien-core';
@@ -50,7 +51,7 @@ export class Card extends React.Component {
    * Type-specific card renderer.
    */
   static ItemRenderer = (typeRegistry, mutator, viewer) => ({ item }) => {
-    console.assert(typeRegistry, mutator, viewer);
+    console.assert(typeRegistry && mutator && viewer);
     let CardComponent = typeRegistry && typeRegistry.card(item.type) || Card;
 
     return <CardComponent item={ item } mutator={ mutator } viewer={ viewer }/>;
@@ -166,7 +167,7 @@ export class Card extends React.Component {
   render() {
     return ReactUtil.render(this, () => {
       let { config } = this.context;
-      let { children, className, debug=true, item, icon, showLabels } = this.props;
+      let { children, className, debug, item, icon, showLabels } = this.props;
       if (!item) {
         return;
       }
@@ -232,7 +233,7 @@ export class Card extends React.Component {
 
           {/* Footer */}
           <div className="ux-card-footer">
-            <span>{ modified }</span>
+            <span>Updated { moment(modified * 1000).calendar() }</span>
           </div>
         </div>
       );

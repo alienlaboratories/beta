@@ -125,6 +125,7 @@ export class Transforms {
 
     // Find the object to mutate (the object in the array that matches the predicate).
     let key = Transforms.scalarValue(context, predicate.value);
+    console.assert(key);
     let idx = _.findIndex(map, v => _.get(v, predicate.key) === key);
 
     // NOTE: Must be object mutation (which mutates to object matching the predicate).

@@ -8,10 +8,15 @@
 .ux-platform-web {
 
   // Constrain on web (otherwise expand).
-  .ux-card-deck {
-    flex-grow: 0;
-    width: @ux-card-width;
-  }
+  //.ux-card-deck {
+  //
+  //}
+}
+
+.ux-canvas.ux-card-deck {
+  flex-grow: 0;
+  padding: 0 @ux-card-spacing;
+  width: @ux-card-width;
 }
 
 .ux-card-deck {
@@ -19,19 +24,9 @@
 
   background-color: @ux-card-deck-background;
 
-  > .ux-list {
-    > .ux-list-items {
-      padding: 0 @ux-card-spacing;
-    }
-  }
-
   .ux-card {
     margin-top: @ux-card-spacing;
     width: 100%;  // Must have no side margin.
-
-    &:last-child {
-      margin-bottom: @ux-card-spacing;
-    }
 
     box-shadow: 1px 1px 2px #AAA;
   }
@@ -48,6 +43,7 @@
       padding: @ux-card-padding - 2px;
       padding-right: @ux-scrollbar-width + @ux-list-padding;
       background-color: @ux-card-header-background;
+      border-bottom: 1px solid @ux-card-section-border;
 
       .ux-title {
         font-size: @ux-font-large;
@@ -73,6 +69,7 @@
 
           padding: 0 @ux-scrollbar-width + @ux-list-padding 0 @ux-card-padding;
           background-color: @ux-card-section-header-background;
+          border-bottom: 1px solid @ux-card-section-border;
 
           h2 {
             .ux-text-noselect;
@@ -106,7 +103,7 @@
     }
 
     .ux-card-footer {
-      padding: @ux-card-padding;
+      padding: @ux-card-padding / 2;
       color: @ux-color-light;
       font-size: @ux-font-xsmall;
     }
