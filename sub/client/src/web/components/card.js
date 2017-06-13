@@ -9,14 +9,30 @@ import { DomUtil, TypeUtil } from 'alien-util';
 import { MutationUtil } from 'alien-core';
 
 import { ReactUtil } from '../util/react';
+
 import { TextBox } from '../components/textbox';
 import { LabelPicker } from '../components/labels';
+
+import { Canvas } from './canvas';
 
 import './card.less';
 
 const CarcChildContextTypes = {
   item: PropTypes.object,
   setSectionState: PropTypes.func.isRequired
+};
+
+/**
+ * Canvas wrapper for cards.
+ * @param Card
+ * @constructor
+ */
+export const CardCanvas = (Card) => (props) => {
+  return (
+    <Canvas className="ux-card-deck">
+      <Card { ...props }/>
+    </Canvas>
+  );
 };
 
 /**

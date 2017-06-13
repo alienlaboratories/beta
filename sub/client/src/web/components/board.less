@@ -10,13 +10,15 @@
   flex-direction: column;
   flex-grow: 1;
 
+  overflow: hidden;
+
   .ux-board-columns {
-    margin: @ux-board-column-spacing;
+    margin: @ux-board-column-spacing 0;
 
     .ux-board-column {
       display: flex;
       flex-direction: column;
-      min-width: @ux-card-width;
+      width: @ux-card-width;
 
       background-color: @ux-board-column-background;
       border: @ux-board-column-border;

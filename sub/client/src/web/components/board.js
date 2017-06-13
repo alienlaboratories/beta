@@ -78,6 +78,7 @@ export class Board extends React.Component {
     }
   }
 
+  // TODO(burdon): Dom.redner
   render() {
     let { columnMapper, itemRenderer, itemOrderModel } = this.props;
     let { items, columns } = this.state;
@@ -119,8 +120,10 @@ export class Board extends React.Component {
 
     return (
       <div className="ux-board">
-        <div className="ux-board-columns ux-row ux-grow">
-          { columnsDivs }
+        <div className="ux-scroll-container ux-row ux-grow">
+          <div className="ux-board-columns ux-row">
+            { columnsDivs }
+          </div>
         </div>
       </div>
     );

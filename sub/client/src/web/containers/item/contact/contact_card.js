@@ -6,11 +6,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 
-import { MutationUtil } from 'alien-core';
 import { Fragments } from 'alien-api';
 
 import { ReactUtil } from '../../../util/react';
-import { Card } from '../../../components/card';
+import { Card, CardCanvas } from '../../../components/card';
 import { Image } from '../../../components/image';
 
 import { QueryItem } from '../item_container';
@@ -69,4 +68,4 @@ const ContactItemQuery = gql`
   ${Fragments.ContactFragment}  
 `;
 
-export const ContactCardContainer = QueryItem(ContactItemQuery)(ContactCard);
+export const ContactCardContainer = QueryItem(ContactItemQuery)(CardCanvas(ContactCard));

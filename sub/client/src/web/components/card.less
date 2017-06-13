@@ -19,12 +19,18 @@
 
   background-color: @ux-card-deck-background;
 
-  // TODO(burdon): Move to theme.
+  > .ux-list {
+    > .ux-list-items {
+      padding: 0 @ux-card-spacing;
+    }
+  }
+
   .ux-card {
-    margin: 8px 8px 0;
+    margin-top: @ux-card-spacing;
+    width: 100%;  // Must have no side margin.
 
     &:last-child {
-      margin-bottom: 8px;
+      margin-bottom: @ux-card-spacing;
     }
 
     box-shadow: 1px 1px 2px #AAA;

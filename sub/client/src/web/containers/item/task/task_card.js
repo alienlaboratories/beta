@@ -10,7 +10,7 @@ import { Link } from 'react-router';
 import { ID, MutationUtil } from 'alien-core';
 import { Enum, Fragments } from 'alien-api';
 
-import { Card } from '../../../components/card';
+import { Card, CardCanvas } from '../../../components/card';
 import { ReactUtil } from '../../../util/react';
 import { Path } from '../../../common/path';
 
@@ -156,4 +156,4 @@ const TaskItemQuery = gql`
   ${Fragments.TaskFragment}  
 `;
 
-export const TaskCardContainer = QueryItem(TaskItemQuery)(TaskCard);
+export const TaskCardContainer = QueryItem(TaskItemQuery)(CardCanvas(TaskCard));

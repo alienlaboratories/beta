@@ -9,7 +9,7 @@ import gql from 'graphql-tag';
 import { Fragments } from 'alien-api';
 
 import { ReactUtil } from '../../../util/react';
-import { Card } from '../../../components/card';
+import { Card, CardCanvas } from '../../../components/card';
 
 import { QueryItem } from '../item_container';
 import { TaskList } from '../task/task_list';
@@ -62,4 +62,4 @@ const ProjectItemQuery = gql`
   ${Fragments.ProjectBoardFragment}  
 `;
 
-export const ProjectCardContainer = QueryItem(ProjectItemQuery)(ProjectCard);
+export const ProjectCardContainer = QueryItem(ProjectItemQuery)(CardCanvas(ProjectCard));

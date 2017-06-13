@@ -10,6 +10,7 @@ import { Const, ID } from 'alien-core';
 
 import { Path } from '../../common/path';
 import { AppDefs } from '../../../common/defs';
+import { ReactUtil } from '../../util/react';
 
 import { DebugPanel } from '../../components/debug';
 import { NavBar, NavButtons } from '../../components/navbar';
@@ -80,83 +81,85 @@ export class Layout extends React.Component {
   };
 
   render() {
-    let { config, debug, viewer, navigator, typeRegistry, eventListener, actions, children } = this.props;
+    return ReactUtil.render(this, () => {
+      let { config, debug, viewer, navigator, typeRegistry, eventListener, actions, children } = this.props;
 
-    let title = AppDefs.APP_NAME;
-    let version = _.get(config, 'app.version');
-    let platform = _.get(config, 'app.platform');
+      let title = AppDefs.APP_NAME;
+      let version = _.get(config, 'app.version');
+      let platform = _.get(config, 'app.platform');
 
-    let links;
-    let navbar;
-    let debugPanel;
+      let links;
+      let navbar;
+      let debugPanel;
 
-    switch (platform) {
-      case Const.PLATFORM.WEB: {
-        links = <Links viewer={ viewer }/>;
-        navbar = <Layout.WebNavbar navigator={ navigator }/>;
-        if (debug.showPanel) {
-          debugPanel = <DebugPanel/>;
+      switch (platform) {
+        case Const.PLATFORM.WEB: {
+          links = <Links viewer={ viewer }/>;
+          navbar = <Layout.WebNavbar navigator={ navigator }/>;
+          if (debug.showPanel) {
+            debugPanel = <DebugPanel/>;
+          }
+          break;
         }
-        break;
+
+        default: {
+          links = <NavButtons navigator={ navigator }/>;
+          navbar = <Layout.MobileNavbar/>;
+          break;
+        }
       }
 
-      default: {
-        links = <NavButtons navigator={ navigator }/>;
-        navbar = <Layout.MobileNavbar/>;
-        break;
-      }
-    }
+      let sidebar = <SidePanel viewer={ viewer } navigator={ navigator } typeRegistry={ typeRegistry }/>;
 
-    let sidebar = <SidePanel viewer={ viewer } navigator={ navigator } typeRegistry={ typeRegistry }/>;
+      return (
+        <div className="ux-fullscreen">
+          <div className="ux-layout">
 
-    return (
-      <div className="ux-fullscreen">
-        <div className="ux-layout">
+            {/*
+              * Header
+              */}
+            <header className="ux-column">
+              <div className="ux-row ux-grow">
+                <SidebarToggle sidebar={ () => this.refs.sidebar }/>
 
-          {/*
-            * Header
-            */}
-          <header className="ux-column">
-            <div className="ux-row ux-grow">
-              <SidebarToggle sidebar={ () => this.refs.sidebar }/>
+                <div className="ux-grow">
+                  <h1>{ title }</h1>
+                </div>
 
-              <div className="ux-grow">
-                <h1>{ title }</h1>
+                { links }
               </div>
 
-              { links }
+              { navbar }
+            </header>
+
+            {/*
+              * Main
+              * TODO(burdon): Option for sidebar to shove over display (e.g., like Inbox, mobile, etc.)
+              */}
+            <main className="ux-row">
+              <Sidebar ref="sidebar" autoClose={ true }>{ sidebar }</Sidebar>
+
+              { children }
+            </main>
+
+            {/* Debug */}
+            <div>
+              { debugPanel }
             </div>
 
-            { navbar }
-          </header>
+            {/*
+              * Footer
+              */}
+            <footer>
+              <StatusBar eventListener={ eventListener } actions={ actions }>
+                <span className="ux-font-xsmall ux-text-noselect">{ version }</span>
+              </StatusBar>
+            </footer>
 
-          {/*
-            * Main
-            * TODO(burdon): Option for sidebar to shove over display (e.g., like Inbox, mobile, etc.)
-            */}
-          <main className="ux-row">
-            <Sidebar ref="sidebar" autoClose={ true }>{ sidebar }</Sidebar>
-
-            { children }
-          </main>
-
-          {/* Debug */}
-          <div>
-            { debugPanel }
           </div>
-
-          {/*
-            * Footer
-            */}
-          <footer>
-            <StatusBar eventListener={ eventListener } actions={ actions }>
-              <span className="ux-font-xsmall ux-text-noselect">{ version }</span>
-            </StatusBar>
-          </footer>
-
         </div>
-      </div>
-    );
+      );
+    });
   }
 }
 

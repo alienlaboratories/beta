@@ -7,6 +7,7 @@
 .ux-fullscreen {
   display: flex;
   position: fixed;
+  overflow: hidden;
 
   justify-content: center;
 
@@ -152,8 +153,10 @@
 
 //
 // Scrollbar
-// NOTE: The outer scroll-container must expand and make the overflow hidden.
-// NOTE: Scrolling requires display:flex in all ancestors.
+// - The outer scroll-container must expand and make the overflow hidden.
+// - Scrolling requires display:flex in all ancestors.
+// - The root node in the hierarchy must have overflow:hidden.
+//
 // https://css-tricks.com/almanac/properties/s/scrollbar
 //
 // <div class="ux-scroll-container ux-column">

@@ -17,6 +17,8 @@ import { DragOrderModel } from '../../../components/dnd';
 
 import { QueryItem } from '../item_container';
 
+import './project.less';
+
 /**
  * Configures the board depending on the current view.
  */
@@ -27,7 +29,13 @@ class BoardAdapter {
    * @param project
    * @returns {Array.<{ id, value, title }>} Column specs.
    */
-  getColumns(project) { return []; }
+  getColumns(project) {
+    return [
+      { id: 'C1', value: 'C1', title: 'C1'},
+      { id: 'C2', value: 'C2', title: 'C2'},
+      { id: 'C3', value: 'C3', title: 'C3'}
+    ];
+  }
 
   /**
    * Returns a funciton that maps items onto a column (ID).
@@ -59,10 +67,12 @@ export class ProjectBoardHeader extends React.Component {
 export class ProjectBoard extends React.Component {
 
   // TODO(burdon): Canvas signature.
-  // TODO(burdon): Render from detail via type registry.
+
+  static contextTypes = {
+    typeRegistry:   PropTypes.object.isRequired
+  };
 
   static propTypes = {
-    typeRegistry:   PropTypes.object.isRequired,
     mutator:        PropTypes.object.isRequired,
     viewer:         PropTypes.object.isRequired
   };
@@ -77,6 +87,8 @@ export class ProjectBoard extends React.Component {
     this._itemOrderModel = new DragOrderModel();
   }
 
+  handleItemDrop() {}
+
   handleItemSelect() {}
 
   handleItemUpdate() {}
@@ -84,7 +96,8 @@ export class ProjectBoard extends React.Component {
   render() {
     return ReactUtil.render(this, () => {
       let { boardAdapter } = this.state;
-      let { typeRegistry, viewer: { user }, item:project, boardAlias } = this.props;
+      let { typeRegistry } = this.context;
+      let { viewer: { user }, item:project, boardAlias } = this.props;
       let { tasks:items } = project;
 
       let board = _.find(_.get(project, 'boards'), board => board.alias === boardAlias);

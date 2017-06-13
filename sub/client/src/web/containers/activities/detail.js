@@ -47,14 +47,9 @@ class DetailActivity extends React.Component {
       // Type-specific containers (card/canvas).
       let itemKey = ID.decodeKey(key);
       let CardContainer = typeRegistry.container(itemKey.type);
+      let container = <CardContainer mutator={ mutator } viewer={ viewer } itemKey={ itemKey }/>;
 
-      let container = (
-        <div className="ux-card-deck">
-          <CardContainer mutator={ mutator } viewer={ viewer } itemKey={ itemKey }/>
-        </div>
-      );
-
-      // TODO(burdon): Get header.
+      // TODO(burdon): Insert header.
 
       return (
         <Layout config={ config }
