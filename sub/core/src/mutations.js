@@ -32,7 +32,7 @@ export const BatchMutationPath = // 'batchMutation'
  */
 export class MutationUtil {
 
-  static DEF_ITEM_KEYS = {
+  static DEFAULT_ITEM_KEYS = {
     'title':              'string',
     'meta.thumbnailUrl':  'string',
     'email':              'string'
@@ -45,7 +45,7 @@ export class MutationUtil {
    * @param {[{ field:type }]} keys to clone.
    * @return {[Mutation]}
    */
-  static cloneItem(item, keys=MutationUtil.DEF_ITEM_KEYS) {
+  static cloneItem(item, keys=MutationUtil.DEFAULT_ITEM_KEYS) {
     console.assert(item && keys);
     let mutations = [];
 
@@ -146,10 +146,13 @@ export class MutationUtil {
 export class Mutator {
 
   /**
+   * Creates the Mutation HOC.
+   *
    * @param {FragmentsMap} fragments
+   * @param {[{string}]} refetchQueries
    * @return Standard mutation wrapper supplied to redux's combine() method.
    */
-  static graphql(fragments=undefined) {
+  static graphql(fragments=undefined, refetchQueries=undefined) {
 
     return graphql(BatchMutation, {
       withRef: true,
@@ -168,25 +171,31 @@ export class Mutator {
         let { idGenerator, config } = ownProps;
 
         return {
-          mutator: new Mutator(idGenerator, mutate, fragments, config)
+          mutator: new Mutator(idGenerator, fragments, refetchQueries, mutate, config)
         };
       }
     });
   }
 
   /**
+   * Batch factory.
+   *
    * @param idGenerator
-   * @param {function} mutate Provided by apollo.
    * @param {FragmentsMap} fragments
+   * @param {[{string}]} refetchQueries
+   * @param {function} mutate Provided by apollo.
    * @param config
    */
-  constructor(idGenerator, mutate, fragments, config) {
-    console.assert(idGenerator && mutate && fragments && config);
+  constructor(idGenerator, fragments, refetchQueries, mutate, config) {
+    console.assert(idGenerator && fragments && refetchQueries && mutate && config);
     this._idGenerator = idGenerator;
-    this._mutate = mutate;
     this._fragmentMap = fragments;
+    this._refetchQueries = refetchQueries;
+    this._mutate = mutate;
     this._config = config;
   }
+
+  // TODO(burdon): Pass mutator into batch?
 
   /**
    * Batch factory.
@@ -196,8 +205,21 @@ export class Mutator {
    */
   // TODO(burdon): Should bucket be required?
   batch(groups, bucket=undefined) {
-    // TODO(burdon): Inject dynamic options (don't leak entire config here).
-    let optimistic = _.get(this._config, 'options.optimisticResponse');
-    return new Batch(this._idGenerator, this._fragmentMap, this._mutate, groups, bucket, optimistic);
+    console.assert(groups);
+
+    // TODO(burdon): Default group?
+    if (!bucket) {
+      bucket = groups[0].id;
+    }
+
+    let options = {
+      // TODO(burdon): Inject dynamic options (don't leak entire config here).
+      optimistic:     _.get(this._config, 'options.optimisticResponse'),
+
+      fragments:      this._fragmentMap,
+      refetchQueries: this._refetchQueries
+    };
+
+    return new Batch(this._idGenerator, this._mutate, bucket, options);
   }
 }

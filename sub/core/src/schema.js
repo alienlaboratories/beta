@@ -7,6 +7,8 @@ import gql from 'graphql-tag';
 
 import { TypeUtil } from 'alien-util';
 
+// TODO(burdon): Needs thorough testing.
+
 //
 // Framework fragments.
 //
@@ -73,7 +75,6 @@ export class FragmentParser {
   constructor(fragment) {
     console.assert(fragment);
     this._defaultDefinition = fragment.definitions[0];
-
     this._definitionMap = new Map();
 
     _.each(fragment.definitions, definition => {
@@ -81,10 +82,24 @@ export class FragmentParser {
     });
   }
 
+  /**
+   * Recursively fill-in null values for partially defined types.
+   *
+   * @param value
+   * @returns {*}
+   */
   getDefaultObject(value={}) {
     return this._getDefaultsForDefinition(value, this._defaultDefinition);
   }
 
+  /**
+   * Recursively fill-in null values for partially defined types.
+   *
+   * @param object
+   * @param definition
+   * @returns {*}
+   * @private
+   */
   _getDefaultsForDefinition(object, definition) {
     console.assert(definition.typeCondition.name.value);
     _.defaults(object, {
@@ -94,6 +109,14 @@ export class FragmentParser {
     return this._getDefaultsForSelectionSet(object, definition.selectionSet);
   }
 
+  /**
+   * Recursively fill-in null values for the given selection set.
+   *
+   * @param object
+   * @param selectionSet
+   * @returns {*}
+   * @private
+   */
   _getDefaultsForSelectionSet(object, selectionSet) {
     if (!selectionSet) {
       return object;
@@ -102,52 +125,36 @@ export class FragmentParser {
     _.each(selectionSet.selections, selection => {
       switch (selection.kind) {
 
+        //
+        // Simple field value (may be scalar or have nested selecton sets)
+        //
         case 'Field': {
+          // Current value for field.
           let value = _.get(object, selection.name.value, null);
 
-          if (value !== null && selection.selectionSet) {
-            let selections = selection.selectionSet.selections;
-            console.assert(selections.length === 1);
-            let fieldSelection = selections[0];
-
-            //
-            // Expand defs if the field is present.
-            //
-            if (_.isObject(value)) {
-
-              //
-              // Handle inline fragment definitions.
-              //
-              let typename = _.get(fieldSelection, 'typeCondition.name.value');
-              if (typename) {
-                _.defaults(value, {
-                  __typename: typename
-                });
-
-                this._getDefaultsForSelectionSet(value, fieldSelection.selectionSet);
-              } else {
-
-                //
-                // Handle fragment references.
-                //
-                let fragment = this._definitionMap.get(fieldSelection.name.value);
-                let typename = _.get(fragment, 'typeCondition.name.value');
-                _.defaults(value, {
-                  __typename: typename
-                });
-
-                this._getDefaultsForSelectionSet(value, fragment.selectionSet);
-              }
-            }
+          // If the value is an object, recursively fill-in the missing values for the selection.
+          if (_.isObject(value)) {
+            this._getDefaultsForSelectionSet(value, selection.selectionSet);
           }
 
           _.set(object, selection.name.value, value);
           break;
         }
 
+        //
+        // Reference a defined fragment (which should be in the map).
+        //
         case 'FragmentSpread': {
           let definition = this._definitionMap.get(selection.name.value);
           console.assert(definition, 'Unknown fragment: ' + selection.name.value);
+
+          let typename = _.get(definition, 'typeCondition.name.value');
+          console.assert(typename);
+          _.defaults(object, {
+            __typename: typename
+          });
+
+          // Recursively fill in the selections for the fragment definition.
           this._getDefaultsForSelectionSet(object, definition.selectionSet);
           break;
         }

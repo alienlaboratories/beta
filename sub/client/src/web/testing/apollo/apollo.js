@@ -99,6 +99,7 @@ class ListComponent extends React.Component {
     let bucket = _.get(project, 'group.id');
     let input = this.refs['INPUT/' + item.id];
     let text = input.value;
+
     if (text) {
       createBatch(bucket)
         .updateItem(item, [
@@ -426,12 +427,16 @@ const ListComponentWithApollo = compose(
 
       /**
        * Creates a batch.
-       * @param groups
        * @param bucket
        * @returns {Batch}
        */
-      createBatch: (user, bucket) => {
-        return new Batch(idGenerator, fragmentsMap, mutate, groups, bucket, ownProps.options.optimisticResponse);
+      createBatch: (bucket) => {
+        let options = {
+          optimistic: ownProps.options.optimisticResponse,
+          fragments: fragmentsMap
+        };
+
+        return new Batch(idGenerator, mutate, bucket, options);
       }
     })
   })

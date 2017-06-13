@@ -134,7 +134,7 @@ export class Activity {
 
       // Apollo mutation.
       // Provides mutator property.
-      Mutator.graphql(MutationFragmentsMap),
+      Mutator.graphql(MutationFragmentsMap, ['ContextQuery']),
 
       // Apollo viewer query.
       graphql(ViewerQuery, {

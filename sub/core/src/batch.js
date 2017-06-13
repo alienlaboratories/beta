@@ -22,7 +22,7 @@ export class Batch {
   /**
    * Manages batch mutations.
    *
-   * new Batch(idGenerator, fragments, mutator, groups, bucket, true)
+   * new Batch(idGenerator, mutator, bucket, { optimistic: true, fragments, refetchQueries })
    *
    *   .createItem('Task', [
    *     MutationUtil.createFieldMutation('title', 'string', 'Test')
@@ -36,24 +36,19 @@ export class Batch {
    *   .commit();
    *
    * @param {IdGenerator} idGenerator.
-   * @param {FragmentsMap} fragmentMap Map of fragments to which mutations are applied.
    * @param {function.<{Options}>} mutate Mutate function provided by Apollo.
-   * @param {User} groups
    * @param {string} bucket All batched operations must belong to the same bucket.
-   * @param {boolean} optimistic
-   * @private
+   * @param {{optimistic, fragments: {FragmentsMap}, refetchQueries: [{string}]}} options
    */
-  constructor(idGenerator, fragmentMap, mutate, groups, bucket=undefined, optimistic=false) {
-    console.assert(idGenerator && fragmentMap && mutate && groups);
+  constructor(idGenerator, mutate, bucket, options={}) {
+    console.assert(idGenerator && mutate && bucket && options);
 
     // TODO(burdon): Enforce same bucket for entire batch? Otherwise multiple batches (e.g., private task for project).
 
     this._idGenerator = idGenerator;
     this._mutate = mutate;
-    this._fragmentMap = fragmentMap;
-    this._groups = groups;
-    this._bucket = bucket || groups[0].id;        // TODO(burdon): Default group?
-    this._optimistic = optimistic;
+    this._bucket = bucket;
+    this._options = options;
 
     this._refs = new Map();
     this._items = new Map();
@@ -142,7 +137,7 @@ export class Batch {
 
     // Create optimistic response.
     let optimisticResponse;
-    if (this._optimistic) {
+    if (this._options.optimistic) {
       logger.log('Creating optimistic response.');
 
       // Create the response (GraphQL mutation API).
@@ -172,7 +167,6 @@ export class Batch {
     logger.log('Batch:', TypeUtil.stringify(this._itemMutations));
     return this._mutate({
 
-      // TODO(burdon): refetchQueries
       // TODO(burdon): updateQueries
 
       // RootMutation.batchMutation([ItemMutationInput]!)
@@ -186,7 +180,11 @@ export class Batch {
       // http://dev.apollodata.com/core/read-and-write.html#updating-the-cache-after-a-mutation
       update: (proxy, { data }) => {
         this._doUpdate(proxy, data);
-      }
+      },
+
+      // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-refetchQueries
+      refetchQueries: this._options.refetchQueries
+
     }).then(({ data }) => {
       // Called when on network response (not optimistic response).
       logger.log('Commit', TypeUtil.stringify(data));
@@ -220,7 +218,7 @@ export class Batch {
       return;
     }
 
-    if (!this._fragmentMap) {
+    if (!this._options.fragments) {
       logger.warn('No fragments defined.');
       return;
     }
@@ -231,7 +229,7 @@ export class Batch {
       let { key, mutations } = itemMutation;
 
       // Apply to each fragment.
-      _.each(this._fragmentMap.getFragments(key.type), fragment => {
+      _.each(this._options.fragments.getFragments(key.type), fragment => {
         let fragmentName = FragmentParser.getFragmentName(fragment);
 
         //
@@ -350,6 +348,7 @@ export class Batch {
           mutations
         );
 
+        // TODO(burdon): Reuse key?
         // TODO(burdon): Add fkey (e.g., email)?
         this.createItem(item.type, clonedMutations, label);
         return true;
@@ -364,6 +363,7 @@ export class Batch {
         logger.log('Cloning item: ' + JSON.stringify(_.pick(item, 'namespace', 'type', 'id')));
 
         let clonedMutations = _.concat(
+          // TODO(burdon): Move to server? (normalize with above).
           // Reference the external item.
           MutationUtil.createFieldMutation('fkey', 'string', ID.getForeignKey(item)),
 

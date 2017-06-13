@@ -5,7 +5,7 @@
 import { compose, graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { Const } from 'alien-core';
+import { BatchMutationName, Const } from 'alien-core';
 import { Fragments } from 'alien-api';
 
 import { ReduxUtil } from '../../util/redux';
@@ -16,6 +16,7 @@ import { ContextAction, ContextManager } from '../../common/context';
 // Context HOC.
 //-------------------------------------------------------------------------------------------------
 
+// TODO(burdon): Merge with main query?
 // TODO(burdon): Broaden fragments, or lazily load them.
 
 export const ContextQuery = gql`
@@ -71,6 +72,21 @@ export function ContextContainer(query, path='context') {
         return {
           variables: {
             filter: contextFilter
+          },
+
+          /**
+           * Transform the current result on mutation
+           * (e.g., replace local namespace context items with the permanent item).
+           *
+           * http://dev.apollodata.com/react/cache-updates.html#resultReducers
+           */
+          // TODO(burdon): Deprecated.
+          reducer: (previousResult, action, variables) => {
+            if (action.type === 'APOLLO_MUTATION_RESULT' && action.operationName === BatchMutationName) {
+              // TODO(burdon): Replace local item; Read item (fragment) from cache? Or transform existing?
+            }
+
+            return previousResult;
           }
         };
       },

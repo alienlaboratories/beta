@@ -7,14 +7,10 @@ import _ from 'lodash';
 import { Batch } from './batch';
 import { ID, IdGenerator } from './id';
 import { MutationUtil } from './mutations';
-import { FragmentsMap } from './schema';
 
 const idGenerator = new IdGenerator();
-const fragmentsMap = new FragmentsMap();
 
 const bucket = 'Group-1';
-
-const groups = [{ id: bucket }];
 
 // TODO(burdon): Test fragments.
 
@@ -28,7 +24,7 @@ test('Null batch.', (done) => {
   }
 
   try {
-    new Batch(idGenerator, fragmentsMap, mutate, groups, bucket).commit();
+    new Batch(idGenerator, mutate, bucket).commit();
   } catch (err) {
     done.fail(err);
   }
@@ -44,7 +40,7 @@ test('Create item.', (done) => {
     });
   }
 
-  new Batch(idGenerator, fragmentsMap, mutate, groups, bucket)
+  new Batch(idGenerator, mutate, bucket)
     .createItem('Task', [
       MutationUtil.createFieldMutation('title', 'string', 'Test')
     ])
@@ -67,7 +63,7 @@ test('Create and insert (with optimistic responses).', (done) => {
     });
   }
 
-  new Batch(idGenerator, fragmentsMap, mutator, groups, bucket, true)
+  new Batch(idGenerator, mutator, bucket, { optimistic: true })
     .createItem('Task', [
       MutationUtil.createFieldMutation('title', 'string', 'Test')
     ], 'task')

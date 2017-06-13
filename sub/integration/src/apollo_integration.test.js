@@ -7,12 +7,17 @@ import gql from 'graphql-tag';
 import ApolloClient from 'apollo-client';
 
 import { Logger, TypeUtil } from 'alien-util';
-import { Batch, BatchMutation, FragmentsMap, ID, IdGenerator, MutationUtil, Transforms } from 'alien-core';
+
+import {
+  Batch, BatchMutation, FragmentsMap, FragmentParser, ID, IdGenerator, MutationUtil, Transforms
+} from 'alien-core';
 import { DatabaseUtil, TestData } from 'alien-core/testing';
+import TEST_DATA from 'alien-core/src/testing/data/data.json';
+
 import { SchemaUtil } from 'alien-api';
+
 import { createFragmentMatcher } from 'alien-client';
 import { LocalNetworkInterface } from 'alien-client/testing';
-import TEST_DATA from 'alien-core/src/testing/data/data.json';
 
 Logger.setLevel({ test: Logger.Level.log }, Logger.Level.warn);
 
@@ -155,8 +160,6 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
   const testData = new TestData(TEST_DATA);
 
   const bucket = testData.context.buckets[0];
-
-  const groups = [{ id: bucket }];
 
   function getStoreData(client) {
     // The store field is not defined until the first query.
@@ -335,14 +338,14 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
       client.writeFragment({
         id: ID.createStoreId(taskKey),
         fragment: TaskFragment,
-        fragmentName: FragmentsMap.getFragmentName(TaskFragment),
+        fragmentName: FragmentParser.getFragmentName(TaskFragment),
         data: mutatedItem
       });
 
       let taskFragment = client.readFragment({
         id: ID.createStoreId(taskKey),
         fragment: TaskFragment,
-        fragmentName: FragmentsMap.getFragmentName(TaskFragment)
+        fragmentName: FragmentParser.getFragmentName(TaskFragment)
       });
 
       // Only updates the fields named in the fragment (i.e., status).
@@ -405,7 +408,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     client.writeFragment({
       id: ID.createStoreId(task),
       fragment: TaskFragment,
-      fragmentName: FragmentsMap.getFragmentName(TaskFragment),
+      fragmentName: FragmentParser.getFragmentName(TaskFragment),
       data: mutatedTask
     });
 
@@ -413,7 +416,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     let cachedTask = client.readFragment({
       id: ID.createStoreId(task),
       fragment: TaskFragment,
-      fragmentName: FragmentsMap.getFragmentName(TaskFragment)
+      fragmentName: FragmentParser.getFragmentName(TaskFragment)
     });
     expect(cachedTask.title).toEqual(title);
 
@@ -462,7 +465,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     client.writeFragment({
       id: ID.createStoreId(task),
       fragment: TaskFragment,
-      fragmentName: FragmentsMap.getFragmentName(TaskFragment),
+      fragmentName: FragmentParser.getFragmentName(TaskFragment),
       data: task
     });
 
@@ -474,7 +477,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     client.writeFragment({
       id: ID.createStoreId(project),
       fragment: ProjectFragment,
-      fragmentName: FragmentsMap.getFragmentName(ProjectFragment),
+      fragmentName: FragmentParser.getFragmentName(ProjectFragment),
       data: mutatedProject
     });
 
@@ -482,7 +485,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     let cachedProject = client.readFragment({
       id: ID.createStoreId(project),
       fragment: ProjectFragment,
-      fragmentName: FragmentsMap.getFragmentName(ProjectFragment)
+      fragmentName: FragmentParser.getFragmentName(ProjectFragment)
     });
     expect(cachedProject.tasks.length).toEqual(project.tasks.length + 1);
 
@@ -490,7 +493,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     cachedProject = client.readFragment({
       id: ID.createStoreId(project),
       fragment: ProjectTasksFragment,
-      fragmentName: FragmentsMap.getFragmentName(ProjectTasksFragment)
+      fragmentName: FragmentParser.getFragmentName(ProjectTasksFragment)
     });
     expect(cachedProject.tasks.length).toEqual(project.tasks.length + 1);
     expect(cachedProject.tasks[cachedProject.tasks.length - 1].title).toEqual(title);
@@ -501,7 +504,11 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
   //
   test('Batch create item.', async () => {
 
-    let batch = new Batch(idGenerator, fragmentsMap, mutate(client), groups, bucket)
+    let options = {
+      fragments: fragmentsMap
+    };
+
+    let batch = new Batch(idGenerator, mutate(client), bucket, options)
       .createItem('Task', [
         MutationUtil.createFieldMutation('title', 'string', 'New Task'),
         MutationUtil.createFieldMutation('status', 'int', 0)
@@ -514,7 +521,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
       let cachedTask = client.readFragment({
         id: taskId,
         fragment: TaskFragment,
-        fragmentName: FragmentsMap.getFragmentName(TaskFragment)
+        fragmentName: FragmentParser.getFragmentName(TaskFragment)
       });
 
       let storeItem = getStoreData(client)[taskId];
@@ -540,14 +547,18 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
     let cachedProject = client.readFragment({
       id: ID.createStoreId(project),
       fragment: ProjectTasksFragment,
-      fragmentName: FragmentsMap.getFragmentName(ProjectTasksFragment)
+      fragmentName: FragmentParser.getFragmentName(ProjectTasksFragment)
     });
 
     // Sanity check cache is consistent.
     expect(cachedProject.tasks.length).toEqual(project.tasks.length);
 
+    let options = {
+      fragments: fragmentsMap
+    };
+
     // Create task and add to project.
-    let batch = new Batch(idGenerator, fragmentsMap, mutate(client), groups, bucket)
+    let batch = new Batch(idGenerator, mutate(client), bucket, options)
       .createItem('Task', [
         MutationUtil.createFieldMutation('title', 'string', 'New Task'),
         MutationUtil.createFieldMutation('status', 'int', 0)
@@ -563,7 +574,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
       let cachedProject = client.readFragment({
         id: ID.createStoreId(project),
         fragment: ProjectTasksFragment,
-        fragmentName: FragmentsMap.getFragmentName(ProjectTasksFragment)
+        fragmentName: FragmentParser.getFragmentName(ProjectTasksFragment)
       });
 
       expect(cachedProject.tasks.length).toEqual(project.tasks.length + 1);

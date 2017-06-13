@@ -9,6 +9,7 @@ import { FragmentsMap, FragmentParser } from './schema';
 const TestMetaFragment = gql`
   fragment TestMetaFragment on Meta {
     icon
+    thumbnailUrl
   }
 `;
 
@@ -83,7 +84,8 @@ test('Create null object.', () => {
 
     meta: {
       __typename: 'Meta',
-      icon: 'test'
+      icon: 'test',
+      thumbnailUrl: null
     },
 
     title: null,
