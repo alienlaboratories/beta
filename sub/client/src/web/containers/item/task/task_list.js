@@ -58,7 +58,7 @@ export const TaskItemRenderer = ({ item }) => {
 export const TaskItemEditor = (props) => {
   return (
     <ListItemEditor { ...props } edi="1">
-      <ListItem.Icon icon="check_box_outline_blank"/>
+      <ListItem.Icon className="ux-icon-checkbox ux-disabled"/>
       <ListItem.Edit field="title"/>
       <ListItem.EditorButtons/>
     </ListItemEditor>

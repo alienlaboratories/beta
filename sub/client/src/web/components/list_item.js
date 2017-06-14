@@ -71,7 +71,7 @@ export class ListItem extends React.Component {
    * <ListItem.Icon className="" icon=""/>
    */
   static Icon = ListItem.createInlineComponent((props, context) => {
-    let { onClick, className, icon='crop_square' } = props;
+    let { onClick, className, icon } = props;
     let { item } = context;
 
     let attrs = {};

@@ -52,6 +52,15 @@
     }
   }
 
+  // Focus.
+  // TODO(burdon): Hide buttons unless focus.
+  // https://css-tricks.com/focus-within-pseudo-class
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=617371 (May 2017, v60)
+  //noinspection CssInvalidPseudoSelector
+  .ux-list-item:focus-within {
+    background-color: yellow;
+  }
+
   // Hovering.
   .ux-list-item {
     .ux-hover {
