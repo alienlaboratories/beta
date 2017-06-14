@@ -46,10 +46,14 @@ class DetailActivity extends React.Component {
 
       // Type-specific containers (card/canvas).
       let itemKey = ID.decodeKey(key);
-      let CardContainer = typeRegistry.container(itemKey.type);
-      let container = <CardContainer mutator={ mutator } viewer={ viewer } itemKey={ itemKey }/>;
 
-      // TODO(burdon): Insert header.
+      let Container = typeRegistry.container(itemKey.type);
+      let container = <Container mutator={ mutator }
+                                 viewer={ viewer }
+                                 itemKey={ itemKey }/>;
+
+      let Header = typeRegistry.header(itemKey.type);
+      let header = Header && <Header itemKey={ itemKey }/>;
 
       return (
         <Layout config={ config }
@@ -58,9 +62,11 @@ class DetailActivity extends React.Component {
                 actions={ actions }
                 navigator={ navigator }
                 typeRegistry={ typeRegistry }
-                eventListener={ eventListener }>
+                eventListener={ eventListener }
+                header={ header }>
 
-          <SplitPanel left={ searchPanel } right={ container }/>
+          <SplitPanel left={ searchPanel }
+                      right={ container }/>
 
         </Layout>
       );

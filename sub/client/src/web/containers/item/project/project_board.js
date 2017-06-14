@@ -18,20 +18,40 @@ import { DragOrderModel } from '../../../components/dnd';
 
 import { QueryItem } from '../item_container';
 
-import { TaskStatusBoardAdapter } from './adapters';
+import { TaskStatusBoardAdapter, TaskAssigneeBoardAdapter } from './adapters';
 
 import './project.less';
 
 /**
  * Header.
  */
-export class ProjectBoardHeader extends React.Component {
+class ProjectBoardHeader extends React.Component {
 
-  // TODO(burdon): Pass up to DetailActivity.
+  static propTypes = {
+    item: PropTypes.object
+  };
+
+  // TODO(burdon): Redux action to select board alias.
+  // TODO(burdon): Icons.
+  // TODO(burdon): Click-to-edit title.
 
   render() {
     return ReactUtil.render(this, () => {
-      return <div>ProjectBoardHeader</div>;
+      let { item:project } = this.props;
+
+      let boards = _.map(project.boards, board => {
+        return (
+          <span key={ board.alias }>{ board.alias }</span>
+        );
+      });
+
+      return (
+        <div className="ux-board-header ux-row ux-grow">
+          <div>{ boards }</div>
+
+          <div className="ux-title ux-grow">{ project.title }</div>
+        </div>
+      );
     });
   }
 }
@@ -39,10 +59,11 @@ export class ProjectBoardHeader extends React.Component {
 /**
  * Project board.
  */
-export class ProjectBoard extends React.Component {
+class ProjectBoard extends React.Component {
 
   static boardAdapers = [
-    new TaskStatusBoardAdapter()
+    new TaskStatusBoardAdapter(),
+    new TaskAssigneeBoardAdapter()
   ];
 
   static contextTypes = {
@@ -50,6 +71,7 @@ export class ProjectBoard extends React.Component {
   };
 
   static propTypes = {
+    item:           PropTypes.object,
     mutator:        PropTypes.object.isRequired,
     viewer:         PropTypes.object.isRequired,
     boardAlias:     PropTypes.string
@@ -186,8 +208,6 @@ export class ProjectBoard extends React.Component {
 
       let board = _.find(_.get(project, 'boards'), board => board.alias === boardAlias);
 
-      console.log('$$$$ RENDER');
-
       // TODO(burdon): Lift-up Canvas.
       return (
         <Canvas>
@@ -210,6 +230,20 @@ export class ProjectBoard extends React.Component {
 //
 // HOC Container.
 //
+
+const ProjectHeaderQuery = gql`
+  query ProjectHeaderQuery($key: KeyInput!) {
+    item(key: $key) {
+      ...ItemFragment
+      ...ProjectBoardFragment
+    }
+  }
+
+  ${Fragments.ItemFragment}  
+  ${Fragments.ProjectBoardFragment}  
+`;
+
+export const ProjectBoardHeaderContainer = QueryItem(ProjectHeaderQuery)(ProjectBoardHeader);
 
 const ProjectItemQuery = gql`
   query ProjectItemQuery($key: KeyInput!) {

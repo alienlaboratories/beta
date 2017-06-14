@@ -62,4 +62,14 @@ export class TypeRegistry {
     console.assert(type);
     return _.get(this._types, `${type}.container`);
   }
+
+  /**
+   * Container's header container.
+   *
+   * @param type
+   */
+  header(type) {
+    console.assert(type);
+    return _.get(this._types, `${type}.header`);
+  }
 }

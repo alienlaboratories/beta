@@ -44,14 +44,17 @@ export class Resolvers {
     return concatenateTypeDefs([ Framework, Schema ]);
   }
 
-  //
-  // TODO(burdon): Better wrapper.
-  //
-
-  static DefaultItem = {
-    // version: (obj, args, context) => {
-    //   return obj.version || 0;
-    // }
+  /**
+   * Set default values for required properties.
+   * @param item
+   * @returns {*}
+   * @constructor
+   */
+  static Defaults = (item) => {
+    return _.defaults(item, {
+      created: Date.now(),
+      modified: Date.now()
+    });
   };
 
   /**
@@ -316,15 +319,20 @@ export class Resolvers {
           // TODO(burdon): Should be from key and/or request (move to client). Or prevent querying directly?
           let namespace = Resolvers.getNamespaceForType(type);
 
-          return database.getItemStore(namespace).getItem(context, type, id);
+          return database.getItemStore(namespace).getItem(context, type, id).then(item => {
+            return Resolvers.Defaults(item);
+          });
         },
 
         search: (obj, args, context) => {
           Resolvers.checkAuthentication(context);
-
           let { filter } = args;
 
-          return database.search(context, obj, filter);
+          return database.search(context, obj, filter).then(result => {
+            _.each(result.items, item => Resolvers.Defaults(item));
+
+            return result;
+          });
         }
       },
 

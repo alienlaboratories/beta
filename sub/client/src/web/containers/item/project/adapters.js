@@ -90,3 +90,34 @@ export class TaskStatusBoardAdapter extends BoardAdapter {
     ];
   }
 }
+
+/**
+ * Adapter for project tasks by status.
+ */
+export class TaskAssigneeBoardAdapter extends BoardAdapter {
+
+  static ALIAS = 'assignee';
+
+  get alias() {
+    return TaskAssigneeBoardAdapter.ALIAS;
+  }
+
+  getColumns() {
+    return [];
+  }
+
+  getColumnMapper() {
+    return (columns, item) => {
+    };
+  }
+
+  onCreateItem(column) {
+    return [
+    ];
+  }
+
+  onDropItem(column) {
+    return [
+    ];
+  }
+}

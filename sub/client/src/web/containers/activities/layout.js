@@ -77,12 +77,12 @@ export class Layout extends React.Component {
     typeRegistry:   PropTypes.object.isRequired,
     eventListener:  PropTypes.object.isRequired,
     actions:        PropTypes.object.isRequired,
-    sidebar:        PropTypes.object
+    header:         PropTypes.object
   };
 
   render() {
     return ReactUtil.render(this, () => {
-      let { config, debug, viewer, navigator, typeRegistry, eventListener, actions, children } = this.props;
+      let { config, debug, viewer, navigator, typeRegistry, eventListener, actions, header, children } = this.props;
 
       let title = AppDefs.APP_NAME;
       let version = _.get(config, 'app.version');
@@ -95,7 +95,7 @@ export class Layout extends React.Component {
       switch (platform) {
         case Const.PLATFORM.WEB: {
           links = <Links viewer={ viewer }/>;
-          navbar = <Layout.WebNavbar navigator={ navigator }/>;
+          navbar = <Layout.WebNavbar navigator={ navigator }>{ header }</Layout.WebNavbar>;
           if (debug.showPanel) {
             debugPanel = <DebugPanel/>;
           }
