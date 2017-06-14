@@ -144,7 +144,7 @@ const ProjectFragment = gql`
     ...ItemFragment
 
     group {
-      ...KeyFragment
+      ...GroupFragment
     }
 
     tasks {
@@ -158,6 +158,7 @@ const ProjectFragment = gql`
 
   ${KeyFragment}
   ${ItemFragment}
+  ${GroupFragment}
   ${TaskFragment}
 `;
 
@@ -167,7 +168,7 @@ const ProjectBoardFragment = gql`
       alias
 
       columns {
-        id
+        listId
         title
         value {
           ...ValueFragment

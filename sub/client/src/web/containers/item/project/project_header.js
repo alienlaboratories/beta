@@ -47,7 +47,6 @@ class ProjectBoardHeader extends React.Component {
   }
 
   handleBoardSelect(alias) {
-    console.log('Select', alias);
     this.props.setBoardAlias(alias);
   }
 

@@ -19,9 +19,10 @@ class BoardAdapter {
   /**
    * Returns an ordered array of columns.
    * @param project
+   * @param board
    * @returns {Array.<{ id, value, title }>} Column specs.
    */
-  getColumns(project) {
+  getColumns(project, board) {
     return [];
   }
 
@@ -78,7 +79,7 @@ export class TaskStatusBoardAdapter extends BoardAdapter {
     return 'Task status.';
   }
 
-  getColumns() {
+  getColumns(project, board) {
     return TaskStatusBoardAdapter.COLUMNS;
   }
 
@@ -110,6 +111,8 @@ export class TaskAssigneeBoardAdapter extends BoardAdapter {
 
   static ALIAS = 'assignee';
 
+  static UNASSINGED = '_UNASSIGNED_';
+
   get alias() {
     return TaskAssigneeBoardAdapter.ALIAS;
   }
@@ -122,22 +125,36 @@ export class TaskAssigneeBoardAdapter extends BoardAdapter {
     return 'Task assignment.';
   }
 
-  getColumns() {
-    return [];
+  // TODO(burdon): Sort by number of assigned tasks.
+  getColumns(project, board) {
+    return _.concat({
+      id:     TaskAssigneeBoardAdapter.UNASSINGED,
+      value:  TaskAssigneeBoardAdapter.UNASSINGED,
+      title:  'Unassigned'
+    }, _.map(_.get(project, 'group.members'), member => ({
+      id:     member.id,
+      value:  member.id,
+      title:  member.title
+    })));
   }
 
   getColumnMapper() {
     return (columns, item) => {
+      let column = _.find(columns, column => column.value === _.get(item, 'assignee.id'));
+      return column ? column.value : TaskAssigneeBoardAdapter.UNASSINGED;
     };
   }
 
+  // TODO(burdon):
   onCreateItem(column) {
-    return [
-    ];
+    return [];
   }
 
   onDropItem(column) {
-    return [
+    return column.value === TaskAssigneeBoardAdapter.UNASSINGED ? [
+      MutationUtil.createFieldMutation('assignee')
+    ] : [
+      MutationUtil.createFieldMutation('assignee', 'key', { type: 'User', id: column.value })
     ];
   }
 }

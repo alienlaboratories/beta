@@ -62,6 +62,14 @@ export class ProjectBoard extends React.Component {
     };
   }
 
+  // TODO(burdon): WHY NOT JUST PROPS?
+  componentWillReceiveProps(nextProps) {
+    let { boardAlias } = nextProps;
+    this.setState({
+      boardAdapter: _.find(ProjectBoard.BOARD_ADAPTERS, adapter => adapter.alias === boardAlias)
+    });
+  }
+
   handleTaskSelect() {
     console.log('handleItemSelect', arguments);
   }
