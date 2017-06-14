@@ -59,7 +59,7 @@ class BoardAdapter {
  */
 export class TaskStatusBoardAdapter extends BoardAdapter {
 
-  static ALIAS = 'status';
+  static ALIAS = '_status';
 
   static COLUMNS = _.map(Enum.TASK_LEVEL.properties, (def, value) => ({
     id: 'C-' + value,
@@ -109,7 +109,7 @@ export class TaskStatusBoardAdapter extends BoardAdapter {
  */
 export class TaskAssigneeBoardAdapter extends BoardAdapter {
 
-  static ALIAS = 'assignee';
+  static ALIAS = '_assignee';
 
   static UNASSINGED = '_UNASSIGNED_';
 
@@ -156,5 +156,51 @@ export class TaskAssigneeBoardAdapter extends BoardAdapter {
     ] : [
       MutationUtil.createFieldMutation('assignee', 'key', { type: 'User', id: column.value })
     ];
+  }
+}
+
+/**
+ * Adapter for items that are defined by the board query (filter).
+ */
+export class QueryBoardAdapter extends BoardAdapter {
+
+  // TODO(burdon): Pre-populate board with filter (label) and column meta data.
+  // TODO(burdon): Resolver returns items.
+  // TODO(burdon): Project board passes items into Baord.
+  // TODO(burdon): Column mapper (look-up meta data).
+  // TODO(burdon): Drop: set column meta.
+
+  constructor(board) {
+    super();
+    console.assert(board);
+    this._board = board;
+  }
+
+  get alias() {
+    return _.get(this._board, 'alias');
+  }
+
+  get icon() {
+    return _.get(this._board, 'icon', 'view_week');
+  }
+
+  get title() {
+    return _.get(this._board, 'title', 'Custom');
+  }
+
+  getColumns(project, board) {
+    return _.get(this._board, 'columns', []);
+  }
+
+  getColumnMapper() {
+    return (columns, item) => {};
+  }
+
+  onCreateItem(column) {
+    return [];
+  }
+
+  onDropItem(column) {
+    return [];
   }
 }

@@ -54,7 +54,8 @@ class ProjectBoardHeader extends React.Component {
     return ReactUtil.render(this, () => {
       let { item:project, boardAlias } = this.props;
 
-      let icons = _.map(ProjectBoard.BOARD_ADAPTERS, adapter => {
+      // TODO(burdon): Cache adapters (or get from Redux).
+      let icons = _.map(ProjectBoard.getAdapters(project), adapter => {
         return (
           <i key={ adapter.alias }
              className={ DomUtil.className('ux-icon', adapter.alias === boardAlias && 'ux-selected') }

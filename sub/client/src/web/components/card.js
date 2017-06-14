@@ -42,6 +42,7 @@ export const CardCanvas = (Card) => (props) => {
  */
 export class Card extends React.Component {
 
+  // TODO(burdon): Only allow delete if Task and part of project?
   static MENU_PANEL = (
     <MenuPanel>
       <MenuItem value="delete">Delete card</MenuItem>
@@ -169,7 +170,7 @@ export class Card extends React.Component {
         MutationUtil.createDeleteMutation()
       ]);
 
-    // TODO(burdon): Hack. Delegate to parent canvas.
+    // TODO(burdon): Hack. Delegate (via context) to parent canvas.
     if (item.project) {
       batch.updateItem(item.project, [
         MutationUtil.createSetMutation('tasks', 'key', ID.key(item), false)

@@ -168,7 +168,7 @@ const ProjectBoardFragment = gql`
       alias
 
       columns {
-        listId
+        id
         title
         value {
           ...ValueFragment

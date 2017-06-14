@@ -111,26 +111,26 @@ input ValueInput {
 
 # Multi-purpose Key x Value pair.
 input KeyValue {
-  key: String!
-  value: ValueInput!
+  key:        String!
+  value:      ValueInput!
 }
 
 # Map (stored as array).
 input MapMutationInput {
-  predicate: KeyValue             # Matcher for array object value.
-  value: ValueInput!
+  predicate:  KeyValue              # Matcher for array object value.
+  value:      ValueInput!
 }
 
 # Ordered set.
 input SetMutationInput {
-  add: Boolean                    # Default is true.
-  value: ValueInput!
+  add:        Boolean               # Default is true.
+  value:      ValueInput!
 }
 
 # Plain array.
 input ArrayMutationInput {
-  index: Int                      # Insert ordinal position (-1 to append; undefined to remove).
-  value: ValueInput!              # Value to input.
+  index:      Int                   # Insert ordinal position (-1 to append; undefined to remove).
+  value:      ValueInput!           # Value to input.
 }
 
 #
@@ -140,8 +140,8 @@ input ArrayMutationInput {
 #
 
 input ObjectMutationInput {
-  field: String!
-  value: ValueInput
+  field:      String!
+  value:      ValueInput
 }
 
 #
@@ -155,7 +155,7 @@ enum Operator {
 }
 
 enum Comparator {
-  EQ,                       # Default
+  EQ,                               # Default
   NE,
   GT,
   GTE,
@@ -165,7 +165,7 @@ enum Comparator {
 }
 
 enum Order {
-  ASC,                      # Default
+  ASC,                              # Default
   DESC
 }
 
@@ -174,20 +174,20 @@ enum Order {
 # { op: 'OR', expr: [{ field: 'owner', ref: 'id' }, { field: 'assignee', ref: 'id' }] }
 
 input ExpressionInput {
-  op: Operator
-  expr: [ExpressionInput]
+  op:         Operator
+  expr:       [ExpressionInput]
 
-  comp: Comparator          # Default: EQ
-  field: String
-  value: ValueInput
+  comp:       Comparator            # Default: EQ
+  field:      String
+  value:      ValueInput
 
   # TODO(burdon): Document (accesses root).
-  ref: String
+  ref:        String
 }
 
 input OrderByInput {
-  field: String
-  order: Order              # Default: ASC
+  field:      String
+  order:      Order                 # Default: ASC
 }
 
 # TODO(burdon): Rename QueryInput.
@@ -195,39 +195,39 @@ input OrderByInput {
 input FilterInput {
 
   # Data store namespace (e.g., system for User, etc.)
-  namespace: String
+  namespace:  String
 
   # TODO(burdon): Part of ID? (bucket/itemId). Or part of Global ID? Need to tell resolver where to find things.
   # TODO(burdon): ID! (User/Group ID). Should be implicit in context? And validated in frontend Auth.
-  bucket: String
+  bucket:     String
 
   # OR
-  ids: [ID]                 # TODO(burdon): Key?
-  fkeys: [String]
+  ids:        [ID]                  # TODO(burdon): Key?
+  fkeys:      [String]
 
   # MUST
-  type: String
-  labels: [String]
-  text: String
-  expr: ExpressionInput     # Expression tree.
+  type:       String
+  labels:     [String]
+  text:       String
+  expr:       ExpressionInput       # Expression tree.
 
   # Match empty filter.
-  matchAll: Boolean
+  matchAll:   Boolean
 
   # Paging.
-  offset: Int
-  count: Int
+  offset:     Int
+  count:      Int
 
   # Sort order.
-  orderBy: OrderByInput
+  orderBy:    OrderByInput
 
   # Group results.
   # TODO(madadam): Specify aggregation key here?
-  groupBy: Boolean
+  groupBy:    Boolean
 
   # Context information, as KeyValue pairs extracted from the user's environment or recent history.
   # Used for "queryless" search or for context-sensitive ranking.
-  context: [KeyValue]
+  context:    [KeyValue]
 }
 
 #===================================================================================================
@@ -249,36 +249,36 @@ type Value {
 }
 
 type Geo {
-  lat: Float!
-  lng: Float!
+  lat:        Float!
+  lng:        Float!
 }
 
 type Address {
-  string: String
-  geo: Geo
+  string:     String
+  geo:        Geo
 }
 
 # Item sort positions.
 type ListItemMeta {
-  itemId: ID!                 # ID of item.
-  listId: String!             # ID of list (i.e., column).
-  order: Float!               # Order value within list.
+  itemId:     ID!                   # ID of item.
+  listId:     String!               # ID of list (i.e., column).
+  order:      Float!                # Order value within list.
 }
 
 type BoardColumn {
-  listId: String!
-  title: String!
-  value: Value!
+  id:         String!               # Used for list ID.
+  title:      String!
+  value:      Value!
 }
 
 # Board metadata.
 type Board {
-  alias: String!              # Type of board.
-  title: String!
-  columns: [BoardColumn]      # Ordered list of columns.
-  itemMeta: [ListItemMeta]    # Map of ID x meta values (i.e., map).
-  filter: String              # JSON Filter format.
-  items: [Item]               # Dynamic query.
+  alias:      String!               # Type of board.
+  title:      String!
+  columns:    [BoardColumn]         # Ordered list of columns.
+  itemMeta:   [ListItemMeta]        # Map of ID x meta values (i.e., map).
+  filter:     String                # JSON Filter format.
+  items:      [Item]                # Dynamic query (based on filter).
 }
 
 #===================================================================================================
@@ -289,15 +289,15 @@ input ItemMutationInput {
 
   # Item to mutate.
   # TODO(burdon): Set key and bucket here (not in mutation).
-  key: KeyInput!
+  key:        KeyInput!
 
   # Array of generic mutations.
-  mutations: [ObjectMutationInput]!
+  mutations:  [ObjectMutationInput]!
 }
 
 type BatchMutationResponse {
 
   # NOTE: Don't return {Item} objects since these will be inserted into the Apollo cache.
   # TODO(burdon): Respond with updated mutations (requires types not inputs).
-  keys: [Key]!
+  keys:       [Key]!
 }

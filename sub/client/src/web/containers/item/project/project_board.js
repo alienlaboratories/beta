@@ -21,7 +21,7 @@ import { DragOrderModel } from '../../../components/dnd';
 
 import { QueryItem } from '../item_container';
 
-import { TaskStatusBoardAdapter, TaskAssigneeBoardAdapter } from './adapters';
+import { TaskStatusBoardAdapter, TaskAssigneeBoardAdapter, QueryBoardAdapter } from './adapters';
 
 import './project.less';
 
@@ -30,10 +30,29 @@ import './project.less';
  */
 export class ProjectBoard extends React.Component {
 
-  static BOARD_ADAPTERS = [
-    new TaskStatusBoardAdapter(),
-    new TaskAssigneeBoardAdapter()
-  ];
+  static getAdapters(project) {
+    if (!project) {
+      return [];
+    }
+
+    let adapters = [
+      new TaskStatusBoardAdapter(),
+      new TaskAssigneeBoardAdapter(),
+    ];
+
+    _.each(_.get(project, 'boards'), board => {
+      switch (board.alias) {
+        case TaskStatusBoardAdapter.alias:
+        case TaskAssigneeBoardAdapter.alias:
+          break;
+
+        default:
+          adapters.push(new QueryBoardAdapter(board));
+      }
+    });
+
+    return adapters;
+  }
 
   static DEFAULT_ALIAS = TaskStatusBoardAdapter.ALIAS;
 
@@ -52,20 +71,25 @@ export class ProjectBoard extends React.Component {
     super(...arguments);
 
     let { typeRegistry } = this.context;
-    let { viewer, mutator, boardAlias } = this.props;
+    let { viewer, mutator, item:project } = this.props;
 
     this._itemRenderer = Card.ItemRenderer(typeRegistry, mutator, viewer);
     this._itemOrderModel = new DragOrderModel();
 
     this.state = {
-      boardAdapter: _.find(ProjectBoard.BOARD_ADAPTERS, adapter => adapter.alias === boardAlias)
+      project
     };
   }
 
   componentWillReceiveProps(nextProps) {
-    let { boardAlias } = nextProps;
+    let { item:project, boardAlias } = nextProps;
+
+    // TODO(burdon): Cache (in redux) for header?
+    let adapters = ProjectBoard.getAdapters(project);
     this.setState({
-      boardAdapter: _.find(ProjectBoard.BOARD_ADAPTERS, adapter => adapter.alias === boardAlias)
+      project,
+      adapters,
+      boardAdapter: _.find(adapters, adapter => adapter.alias === boardAlias)
     });
   }
 
