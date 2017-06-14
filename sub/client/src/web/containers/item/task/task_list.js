@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 
 import { Enum } from 'alien-api';
 import { LABEL, ID, MutationUtil } from 'alien-core';
+import { DomUtil } from 'alien-util';
 
 import { List } from '../../../components/list';
 import { ListItem, ListItemEditor } from '../../../components/list_item';
@@ -18,8 +19,6 @@ const TaskStatus = ListItem.createInlineComponent((props, context) => {
   let { item } = context;
 
   // TODO(burdon): Generalize status (mapping to board column model).
-  // TODO(burdon): Implement icon via className.
-  let icon = (item.status === Enum.TASK_LEVEL.COMPLETE) ? 'done' : 'check_box_outline_blank';
   const toggleStatus = () => {
     let status = (item.status === Enum.TASK_LEVEL.UNSTARTED) ? Enum.TASK_LEVEL.COMPLETE : Enum.TASK_LEVEL.UNSTARTED;
     context.onItemUpdate(item, [
@@ -27,8 +26,11 @@ const TaskStatus = ListItem.createInlineComponent((props, context) => {
     ]);
   };
 
+  const className =
+    DomUtil.className('ux-icon', 'ux-icon-checkbox', (item.status === Enum.TASK_LEVEL.COMPLETE) && 'ux-on');
+
   return (
-    <i className="ux-icon ux-icon-checkbox" onClick={ toggleStatus }>{ icon }</i>
+    <i className={ className } onClick={ toggleStatus }/>
   );
 });
 

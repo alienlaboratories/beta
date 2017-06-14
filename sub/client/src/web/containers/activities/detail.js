@@ -48,12 +48,10 @@ class DetailActivity extends React.Component {
       let itemKey = ID.decodeKey(key);
 
       let Container = typeRegistry.container(itemKey.type);
-      let container = <Container mutator={ mutator }
-                                 viewer={ viewer }
-                                 itemKey={ itemKey }/>;
+      let container = <Container mutator={ mutator } viewer={ viewer } itemKey={ itemKey }/>;
 
       let Header = typeRegistry.header(itemKey.type);
-      let header = Header && <Header itemKey={ itemKey }/>;
+      let header = Header && <Header mutator={ mutator } viewer={ viewer } itemKey={ itemKey }/>;
 
       return (
         <Layout config={ config }

@@ -15,6 +15,7 @@ import { Board } from '../../../components/board';
 import { Card } from '../../../components/card';
 import { Canvas } from '../../../components/canvas';
 import { DragOrderModel } from '../../../components/dnd';
+import { TextBox } from '../../../components/textbox';
 
 import { QueryItem } from '../item_container';
 
@@ -28,12 +29,23 @@ import './project.less';
 class ProjectBoardHeader extends React.Component {
 
   static propTypes = {
-    item: PropTypes.object
+    mutator:        PropTypes.object.isRequired,
+    viewer:         PropTypes.object.isRequired,
+    item:           PropTypes.object
   };
 
   // TODO(burdon): Redux action to select board alias.
   // TODO(burdon): Icons.
-  // TODO(burdon): Click-to-edit title.
+
+  handleTitleUpdate(title) {
+    let { viewer: { groups }, mutator, item:project } = this.props;
+
+    mutator.batch(groups, project.bucket)
+      .updateItem(project, [
+        MutationUtil.createFieldMutation('title', 'string', title)
+      ])
+      .commit();
+  }
 
   render() {
     return ReactUtil.render(this, () => {
@@ -49,7 +61,11 @@ class ProjectBoardHeader extends React.Component {
         <div className="ux-board-header ux-row ux-grow">
           <div>{ boards }</div>
 
-          <div className="ux-title ux-grow">{ project.title }</div>
+          <div className="ux-title ux-grow">
+            <TextBox value={ project.title }
+                     clickToEdit={ true }
+                     onEnter={ this.handleTitleUpdate.bind(this) }/>
+          </div>
         </div>
       );
     });
@@ -71,9 +87,9 @@ class ProjectBoard extends React.Component {
   };
 
   static propTypes = {
-    item:           PropTypes.object,
     mutator:        PropTypes.object.isRequired,
     viewer:         PropTypes.object.isRequired,
+    item:           PropTypes.object,
     boardAlias:     PropTypes.string
   };
 

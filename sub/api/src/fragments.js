@@ -109,10 +109,10 @@ const TaskFragment = gql`
       ...ItemFragment
     }
 
+    # NOTE: ProjectFragment selects full TaskFragments, but we need to declare keys here, 
+    # so that the queries fragment is a super-set of the mutation fragment below.
     tasks {
-      ...ItemFragment
-
-      status
+      ...KeyFragment
     }
   }
 
@@ -149,6 +149,10 @@ const ProjectFragment = gql`
 
     tasks {
       ...TaskFragment
+      
+      tasks {
+        ...TaskFragment
+      }
     }
   }
 
@@ -239,7 +243,7 @@ export const Fragments = {
 };
 
 //
-// Mutaton fragments define the subset of fields that can be mutated.
+// Mutaton fragments define the __subset__ of fields (from query fragments) that can be mutated.
 // In particular, only Keys are declared for sub Items; this enables references to be added in field mutations
 // so that Apollo can use `dataIdFromObject` to match the associated Item. Otherwise there would be
 // "Missing field" warnings when writing the (partial) fragment to the cache (in the batch update).
@@ -271,29 +275,10 @@ const MutationProjectFragment = gql`
     tasks {
       ...KeyFragment
     }
-
-#    boards {
-#      alias
-#
-#      columns {
-#        id
-#        title
-#        value {
-#          ...ValueFragment
-#        }
-#      }
-#
-#      itemMeta {
-#        itemId
-#        listId
-#        order
-#      }
-#    }
   }
 
   ${KeyFragment}
   ${ItemFragment}
-#  ${ValueFragment}
 `;
 
 const MutationTaskFragment = gql`
