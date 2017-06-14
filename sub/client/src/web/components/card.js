@@ -167,7 +167,7 @@ export class Card extends React.Component {
   render() {
     return ReactUtil.render(this, () => {
       let { config } = this.context;
-      let { children, className, debug, item, icon, showLabels } = this.props;
+      let { children, className, debug, item, icon, showLabels=false } = this.props;
       if (!item) {
         return;
       }
@@ -208,11 +208,9 @@ export class Card extends React.Component {
           <div className="ux-card-main">
 
             { showLabels &&
-
             <Card.Section id="labels">
               <LabelPicker labels={ labels || [] } onUpdate={ this.handleLabelUpdate.bind(this) }/>
             </Card.Section>
-
             }
 
             {/* TODO(burdon): Make extensible. */}

@@ -109,7 +109,7 @@ export class TaskCard extends React.Component {
       return (
         <Card mutator={ mutator } viewer={ viewer } item={ task }>
 
-          <Card.Section id="task" title="Details">
+          <Card.Section id="task" title="Details" open={ false }>
             <div className="ux-card-padding">
 
               <div className="ux-form-row">

@@ -261,12 +261,12 @@ type Address {
 # Item sort positions.
 type ListItemMeta {
   itemId: ID!                 # ID of item.
-  listId: String!             # ID of list.
+  listId: String!             # ID of list (i.e., column).
   order: Float!               # Order value within list.
 }
 
 type BoardColumn {
-  id: ID!
+  listId: String!
   title: String!
   value: Value!
 }
@@ -275,7 +275,7 @@ type BoardColumn {
 type Board {
   alias: String!              # Type of board.
   title: String!
-  columns: [BoardColumn]
+  columns: [BoardColumn]      # Ordered list of columns.
   itemMeta: [ListItemMeta]    # Map of ID x meta values (i.e., map).
   filter: String              # JSON Filter format.
 }
