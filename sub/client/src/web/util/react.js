@@ -21,6 +21,7 @@ export class ReactUtil {
    * @return {Element}
    */
   static render(obj, render, showLoading=true) {
+    console.assert(obj && render);
     let { errors, loading } = obj.props;
 
     const blank = () => {

@@ -7,12 +7,13 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import { DomUtil, TypeUtil } from 'alien-util';
-import { MutationUtil } from 'alien-core';
+import { ID, MutationUtil } from 'alien-core';
 
 import { ReactUtil } from '../util/react';
 
 import { TextBox } from '../components/textbox';
 import { LabelPicker } from '../components/labels';
+import { MenuBar, MenuPanel, MenuItem } from '../components/menu';
 
 import { Canvas } from './canvas';
 
@@ -40,6 +41,12 @@ export const CardCanvas = (Card) => (props) => {
  * Card wrapper.
  */
 export class Card extends React.Component {
+
+  static MENU_PANEL = (
+    <MenuPanel>
+      <MenuItem value="delete">Delete card</MenuItem>
+    </MenuPanel>
+  );
 
   /**
    * Map of state objects indexed by item id.
@@ -153,6 +160,25 @@ export class Card extends React.Component {
       .commit();
   }
 
+  handleDelete() {
+    let { mutator, viewer: { groups }, item } = this.props;
+
+    let batch = mutator
+      .batch(groups, item.bucket)
+      .updateItem(item, [
+        MutationUtil.createDeleteMutation()
+      ]);
+
+    // TODO(burdon): Hack. Delegate to parent canvas.
+    if (item.project) {
+      batch.updateItem(item.project, [
+        MutationUtil.createSetMutation('tasks', 'key', ID.key(item), false)
+      ]);
+    }
+
+    batch.commit();
+  }
+
   handleLabelUpdate(label, add) {
     let { mutator, viewer: { groups }, item } = this.props;
 
@@ -162,6 +188,14 @@ export class Card extends React.Component {
         MutationUtil.createSetMutation('labels', 'string', label, add)
       ])
       .commit();
+  }
+
+  handleMenuSelect(value) {
+    switch (value) {
+      case 'delete': {
+        return this.handleDelete();
+      }
+    }
   }
 
   render() {
@@ -193,7 +227,7 @@ export class Card extends React.Component {
         <div className={ DomUtil.className('ux-card', className) }>
 
           {/* Header */}
-          <div className="ux-card-header">
+          <MenuBar className="ux-card-header" panel={ Card.MENU_PANEL } onSelect={ this.handleMenuSelect.bind(this) }>
             { icon && <i className="ux-icon">{ icon }</i> }
 
             <TextBox className="ux-title ux-grow"
@@ -201,8 +235,7 @@ export class Card extends React.Component {
                      clickToEdit={ true }
                      onEnter={ this.handleEdit.bind(this, 'title') }/>
 
-            <i className="ux-icon ux-icon-menu"/>
-          </div>
+          </MenuBar>
 
           {/* Main */}
           <div className="ux-card-main">

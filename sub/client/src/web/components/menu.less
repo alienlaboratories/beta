@@ -1,0 +1,49 @@
+//
+// Copyright 2017 Alien Labs.
+//
+
+@import '../resources/css/ref/theme';
+
+.ux-menu-container {
+
+  .ux-menu-bar {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: space-between;
+    align-items: center;
+
+    border-bottom: 1px solid @ux-menu-border;
+  }
+
+  .ux-menu-popup {
+    position: relative;
+
+    > div {
+      position: absolute;
+      min-width: 150px;
+      right: 0;
+
+      background-color: white;
+      border-left: 1px solid @ux-menu-border;
+      border-bottom: 1px solid @ux-menu-border;
+
+      > input {
+        position: absolute;
+
+        margin: 0;
+        padding: 0;
+        height: 0;
+        border: none;
+      }
+    }
+
+    .ux-menu-item {
+      padding: 2px 4px;
+
+      &:hover {
+        background-color: @ux-list-highlight;
+      }
+    }
+  }
+}

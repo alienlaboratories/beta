@@ -62,7 +62,6 @@ export class ProjectBoard extends React.Component {
     };
   }
 
-  // TODO(burdon): WHY NOT JUST PROPS?
   componentWillReceiveProps(nextProps) {
     let { boardAlias } = nextProps;
     this.setState({
