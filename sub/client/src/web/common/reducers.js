@@ -72,6 +72,7 @@ export class AppAction {
       showInfo: -1                      // true | false | -1 (toggle)
     };
   }
+
   static toggleDebugPanel() {
     return {
       type: AppAction.ACTION.DEBUG,

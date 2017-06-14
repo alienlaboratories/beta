@@ -278,6 +278,7 @@ type Board {
   columns: [BoardColumn]      # Ordered list of columns.
   itemMeta: [ListItemMeta]    # Map of ID x meta values (i.e., map).
   filter: String              # JSON Filter format.
+  items: [Item]               # Dynamic query.
 }
 
 #===================================================================================================

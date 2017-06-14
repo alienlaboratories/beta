@@ -16,10 +16,10 @@ export class ReduxUtil {
    */
   static connect(obj) {
     let {
-      // (state, [ownProps]) => {}
+      // (state, ownProps) => {}
       mapStateToProps,
 
-      // (dispatch, [ownProps]) => {}
+      // (dispatch, ownProps) => {}
       mapDispatchToProps,
 
       // (stateProps, dispatchProps, ownProps) => {}

@@ -2,6 +2,9 @@
 // Copyright 2017 Alien Labs.
 //
 
+@import (reference) '../../../resources/css/ref/mixin';
+@import (reference) '../../../resources/css/ref/theme';
+
 .ux-board {
   display: flex;
   flex-direction: column;
@@ -9,8 +12,28 @@
 }
 
 .ux-board-header {
+
+  .ux-icons {
+
+    i.ux-icon {
+      margin-right: 4px;
+      padding: 4px;
+      border-radius: 4px;
+
+      font-size: @ux-font-large;
+      background-color: #3262BA;
+      color: whitesmoke;
+      opacity: .5;
+    }
+
+    i.ux-icon.ux-selected {
+      opacity: 1;
+    }
+  }
+
   .ux-title {
     justify-content: center;
+    align-items: center;
 
     input.ux-textbox {
       min-width: 200px;

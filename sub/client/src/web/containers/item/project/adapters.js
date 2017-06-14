@@ -12,6 +12,10 @@ class BoardAdapter {
 
   get alias() {}
 
+  get icon() {}
+
+  get title() {}
+
   /**
    * Returns an ordered array of columns.
    * @param project
@@ -66,6 +70,14 @@ export class TaskStatusBoardAdapter extends BoardAdapter {
     return TaskStatusBoardAdapter.ALIAS;
   }
 
+  get icon() {
+    return 'check';
+  }
+
+  get title() {
+    return 'Task status.';
+  }
+
   getColumns() {
     return TaskStatusBoardAdapter.COLUMNS;
   }
@@ -100,6 +112,14 @@ export class TaskAssigneeBoardAdapter extends BoardAdapter {
 
   get alias() {
     return TaskAssigneeBoardAdapter.ALIAS;
+  }
+
+  get icon() {
+    return 'supervisor_account';
+  }
+
+  get title() {
+    return 'Task assignment.';
   }
 
   getColumns() {

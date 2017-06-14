@@ -4,3 +4,4 @@
 
 export * from './project_board';
 export * from './project_card';
+export * from './project_header';

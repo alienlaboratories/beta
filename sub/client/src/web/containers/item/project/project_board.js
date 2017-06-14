@@ -5,17 +5,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
+import { compose } from 'react-apollo';
 
 import { Fragments } from 'alien-api';
 import { ID, MutationUtil } from 'alien-core';
 
+import { AppAction } from '../../../common/reducers';
 import { ReactUtil } from '../../../util/react';
+import { ReduxUtil } from '../../../util/redux';
 
 import { Board } from '../../../components/board';
 import { Card } from '../../../components/card';
 import { Canvas } from '../../../components/canvas';
 import { DragOrderModel } from '../../../components/dnd';
-import { TextBox } from '../../../components/textbox';
 
 import { QueryItem } from '../item_container';
 
@@ -24,63 +26,16 @@ import { TaskStatusBoardAdapter, TaskAssigneeBoardAdapter } from './adapters';
 import './project.less';
 
 /**
- * Header.
- */
-class ProjectBoardHeader extends React.Component {
-
-  static propTypes = {
-    mutator:        PropTypes.object.isRequired,
-    viewer:         PropTypes.object.isRequired,
-    item:           PropTypes.object
-  };
-
-  // TODO(burdon): Redux action to select board alias.
-  // TODO(burdon): Icons.
-
-  handleTitleUpdate(title) {
-    let { viewer: { groups }, mutator, item:project } = this.props;
-
-    mutator.batch(groups, project.bucket)
-      .updateItem(project, [
-        MutationUtil.createFieldMutation('title', 'string', title)
-      ])
-      .commit();
-  }
-
-  render() {
-    return ReactUtil.render(this, () => {
-      let { item:project } = this.props;
-
-      let boards = _.map(project.boards, board => {
-        return (
-          <span key={ board.alias }>{ board.alias }</span>
-        );
-      });
-
-      return (
-        <div className="ux-board-header ux-row ux-grow">
-          <div>{ boards }</div>
-
-          <div className="ux-title ux-grow">
-            <TextBox value={ project.title }
-                     clickToEdit={ true }
-                     onEnter={ this.handleTitleUpdate.bind(this) }/>
-          </div>
-        </div>
-      );
-    });
-  }
-}
-
-/**
  * Project board.
  */
-class ProjectBoard extends React.Component {
+export class ProjectBoard extends React.Component {
 
-  static boardAdapers = [
+  static BOARD_ADAPTERS = [
     new TaskStatusBoardAdapter(),
     new TaskAssigneeBoardAdapter()
   ];
+
+  static DEFAULT_ALIAS = TaskStatusBoardAdapter.ALIAS;
 
   static contextTypes = {
     typeRegistry:   PropTypes.object.isRequired
@@ -93,10 +48,6 @@ class ProjectBoard extends React.Component {
     boardAlias:     PropTypes.string
   };
 
-  static defaultProps = {
-    boardAlias:     TaskStatusBoardAdapter.ALIAS
-  };
-
   constructor() {
     super(...arguments);
 
@@ -107,7 +58,7 @@ class ProjectBoard extends React.Component {
     this._itemOrderModel = new DragOrderModel();
 
     this.state = {
-      boardAdapter: _.find(ProjectBoard.boardAdapers, adapter => adapter.alias === boardAlias)
+      boardAdapter: _.find(ProjectBoard.BOARD_ADAPTERS, adapter => adapter.alias === boardAlias)
     };
   }
 
@@ -247,20 +198,6 @@ class ProjectBoard extends React.Component {
 // HOC Container.
 //
 
-const ProjectHeaderQuery = gql`
-  query ProjectHeaderQuery($key: KeyInput!) {
-    item(key: $key) {
-      ...ItemFragment
-      ...ProjectBoardFragment
-    }
-  }
-
-  ${Fragments.ItemFragment}  
-  ${Fragments.ProjectBoardFragment}  
-`;
-
-export const ProjectBoardHeaderContainer = QueryItem(ProjectHeaderQuery)(ProjectBoardHeader);
-
 const ProjectItemQuery = gql`
   query ProjectItemQuery($key: KeyInput!) {
     item(key: $key) {
@@ -275,4 +212,18 @@ const ProjectItemQuery = gql`
   ${Fragments.ProjectBoardFragment}  
 `;
 
-export const ProjectBoardContainer = QueryItem(ProjectItemQuery)(ProjectBoard);
+export const ProjectBoardContainer = compose(
+
+  ReduxUtil.connect({
+    mapStateToProps: (state, ownProps) => {
+      let { canvas: { boardAlias=ProjectBoard.DEFAULT_ALIAS } } = AppAction.getState(state);
+
+      return {
+        boardAlias
+      };
+    }
+  }),
+
+  QueryItem(ProjectItemQuery)
+
+)(ProjectBoard);

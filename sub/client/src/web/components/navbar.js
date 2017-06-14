@@ -48,7 +48,7 @@ export class NavButtons extends React.Component {
 
   render() {
     return (
-      <div className="ux-nav-buttons">
+      <div className="ux-icons">
         <i className="ux-icon ux-icon-back" onClick={ this.handleBack.bind(this) }/>
         <i className="ux-icon ux-icon-forward" onClick={ this.handleForward.bind(this) }/>
       </div>
