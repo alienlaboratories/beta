@@ -21,14 +21,23 @@
 
 .ux-card-deck {
   flex-grow: 1;
+  margin-top: @ux-card-spacing;
 
   background-color: @ux-card-deck-background;
 
   .ux-card {
-    margin-top: @ux-card-spacing;
+    margin-bottom: @ux-card-spacing;
     width: 100%;  // Must have no side margin.
 
     box-shadow: 1px 1px 2px #AAA;
+  }
+
+  .ux-drop-target {
+    &.ux-active {
+      .ux-drop-placeholder {
+        margin-bottom: @ux-card-spacing;
+      }
+    }
   }
 
   .ux-card {
