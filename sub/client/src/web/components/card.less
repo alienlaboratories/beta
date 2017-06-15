@@ -26,8 +26,8 @@
   background-color: @ux-card-deck-background;
 
   .ux-card {
-    margin-bottom: @ux-card-spacing;
     width: 100%;  // Must have no side margin.
+    margin-bottom: @ux-card-margin;
 
     box-shadow: 1px 1px 2px #AAA;
   }
@@ -35,7 +35,7 @@
   .ux-drop-target {
     &.ux-active {
       .ux-drop-placeholder {
-        margin-bottom: @ux-card-spacing;
+        margin-bottom: @ux-card-margin;
       }
     }
   }
