@@ -209,7 +209,7 @@ export class ProjectBoard extends React.Component {
           <Board item={ project }
                  items={ items }
                  columns={ adapter.getColumns(project, board) }
-                 columnMapper={ adapter.getColumnMapper() }
+                 columnMapper={ adapter.getColumnMapper(project, board) }
                  itemRenderer={ this._itemRenderer }
                  itemOrderModel={ this._itemOrderModel }
                  onItemSelect={ this.handleTaskSelect.bind(this) }

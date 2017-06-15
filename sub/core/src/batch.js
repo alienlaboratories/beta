@@ -271,7 +271,7 @@ export class Batch {
           });
         } catch (err) {
           logger.error(err);
-          logger.log('Item:', JSON.stringify(mutatedItem, null, 2));
+          logger.warn('Mutated item:', JSON.stringify(mutatedItem, null, 2));
         }
 
         //

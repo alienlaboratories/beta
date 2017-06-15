@@ -88,7 +88,7 @@ export class Board extends React.Component {
       //
       // Columns.
       //
-      let columnsDivs = columns.map(column => {
+      let columnElements = columns.map(column => {
 
         // Get items for column (in order).
         let columnItems = _.filter(items, item => column.id === columnMapper(columns, item));
@@ -124,7 +124,7 @@ export class Board extends React.Component {
         <div className="ux-board">
           <div className="ux-scroll-container ux-row ux-grow">
             <div className="ux-board-columns ux-row">
-              { columnsDivs }
+              { columnElements }
             </div>
           </div>
         </div>

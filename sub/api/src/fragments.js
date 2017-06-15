@@ -206,6 +206,8 @@ const ProjectBoardFragment = gql`
   fragment ProjectBoardFragment on Project {
     boards {
       alias
+      title
+      icon
 
       columns {
         id
@@ -282,6 +284,27 @@ const MutationContactFragment = gql`
   ${ItemFragment}
 `;
 
+// TODO(burdon): Try getting type from inline spread? (rather than def per sub-type).
+
+const ListItemMetaFragment = gql`
+  fragment ListItemMetaFragment on ListItemMeta {
+    itemId
+    listId
+    order
+  }
+`;
+
+const BoardFragment = gql`
+  fragment BoardFragment on Board {
+    alias
+    itemMeta {
+      ...ListItemMetaFragment
+    }
+  }
+  
+  ${ListItemMetaFragment}
+`;
+
 const MutationProjectFragment = gql`
   fragment MutationProjectFragment on Project {
     ...ItemFragment
@@ -289,10 +312,15 @@ const MutationProjectFragment = gql`
     tasks {
       ...KeyFragment
     }
+    
+    boards {
+      ...BoardFragment
+    }
   }
 
   ${KeyFragment}
   ${ItemFragment}
+  ${BoardFragment}
 `;
 
 const MutationTaskFragment = gql`

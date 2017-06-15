@@ -97,7 +97,7 @@ export class TypeUtil {
   }
 
   /**
-   * Remove empty fields from object.
+   * Remove empty top-level fields from object.
    * @param {Object} value
    */
   static compact(value) {

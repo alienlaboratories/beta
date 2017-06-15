@@ -4,6 +4,7 @@
 
 import { Enum } from 'alien-api';
 import { MutationUtil } from 'alien-core';
+import { TypeUtil } from 'alien-util';
 
 /**
  * Configures the board depending on the current view.
@@ -34,8 +35,7 @@ class BoardAdapter {
    * Returns a function that maps items onto a column (ID).
    * @returns {function(*, *)}
    */
-  // TODO(burdon): Generalize params (state).
-  getColumnMapper() {
+  getColumnMapper(project, board) {
     return (columns, item) => null;
   }
 
@@ -91,7 +91,7 @@ export class TaskStatusBoardAdapter extends BoardAdapter {
     return TaskStatusBoardAdapter.COLUMNS;
   }
 
-  getColumnMapper() {
+  getColumnMapper(project, board) {
     return (columns, item) => {
       let { status } = item;
       let idx = _.findIndex(columns, column => column.value === status);
@@ -150,16 +150,17 @@ export class TaskAssigneeBoardAdapter extends BoardAdapter {
     })));
   }
 
-  getColumnMapper() {
+  getColumnMapper(project, board) {
     return (columns, item) => {
       let column = _.find(columns, column => column.value === _.get(item, 'assignee.id'));
       return column ? column.value : TaskAssigneeBoardAdapter.UNASSINGED;
     };
   }
 
-  // TODO(burdon):
   onCreateItem(column) {
-    return [];
+    return column.value === TaskAssigneeBoardAdapter.UNASSINGED ? []: [
+      MutationUtil.createFieldMutation('assignee', 'key', { type: 'User', id: column.value })
+    ];
   }
 
   onDropItem(column) {
@@ -176,14 +177,12 @@ export class TaskAssigneeBoardAdapter extends BoardAdapter {
  */
 export class QueryBoardAdapter extends BoardAdapter {
 
-  // TODO(burdon): Column mapper (look-up meta data).
-  // TODO(burdon): Drop: set item:column binding in meta.
   // TODO(burdon): Prevent Add card in custom boards.
 
   constructor(board) {
     super();
     console.assert(board);
-    this._board = board;
+    this._board = TypeUtil.compact(board);
   }
 
   get alias() {
@@ -195,7 +194,7 @@ export class QueryBoardAdapter extends BoardAdapter {
   }
 
   get title() {
-    return _.get(this._board, 'title', 'Custom');
+    return _.get(this._board, 'title', 'Custom board.');
   }
 
   getItems(project, board) {
@@ -206,20 +205,13 @@ export class QueryBoardAdapter extends BoardAdapter {
     return _.get(this._board, 'columns', []);
   }
 
-  // TODO(burdon):
-  getColumnMapper() {
+  // TODO(burdon): Either update mutation (cache) or pass in cached values from board.
+  getColumnMapper(project, board) {
     return (columns, item) => {
-      return columns[0].id;
+      let meta = _.find(board.itemMeta, meta => meta.itemId === item.id);
+      return meta ? meta.listId : columns[0].id;
     };
   }
 
-  // TODO(burdon):
-  onCreateItem(column) {
-    return [];
-  }
-
-  // TODO(burdon):
-  onDropItem(column) {
-    return [];
-  }
+  onDropItem(column) {}
 }

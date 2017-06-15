@@ -7,8 +7,6 @@ import gql from 'graphql-tag';
 
 import { TypeUtil } from 'alien-util';
 
-// TODO(burdon): Needs thorough testing.
-
 //
 // Framework fragments.
 //
@@ -61,6 +59,8 @@ export class FragmentsMap {
  *       selectionSet
  */
 export class FragmentParser {
+
+  // TODO(burdon): Unit tests!
 
   static getFragmentName(fragment) {
     console.assert(fragment);
@@ -148,14 +148,18 @@ export class FragmentParser {
           let definition = this._definitionMap.get(selection.name.value);
           console.assert(definition, 'Unknown fragment: ' + selection.name.value);
 
-          let typename = _.get(definition, 'typeCondition.name.value');
-          console.assert(typename);
-          _.defaults(object, {
-            __typename: typename
+          // Maybe process array.
+          _.each(_.concat([], object), object => {
+            let typename = _.get(definition, 'typeCondition.name.value');
+            console.assert(typename);
+            _.defaults(object, {
+              __typename: typename
+            });
+
+            // Recursively fill in the selections for the fragment definition.
+            this._getDefaultsForSelectionSet(object, definition.selectionSet);
           });
 
-          // Recursively fill in the selections for the fragment definition.
-          this._getDefaultsForSelectionSet(object, definition.selectionSet);
           break;
         }
 
