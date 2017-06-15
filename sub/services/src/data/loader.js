@@ -149,12 +149,12 @@ export class Loader {
           labels:   ['_default'],
           title:    'Default Project',
 
-          // TODO(burdon): Factor out.
+          // TODO(burdon): Factor out (templates).
           boards: [
             {
-              alias:    'funding',
-              title:    'Funding pipeline',
-              columns:  [
+              alias: 'funding',
+              title: 'Funding pipeline',
+              columns: [
                 {
                   id:     'prospect',
                   value:  { string: 'prospect' },
@@ -176,7 +176,30 @@ export class Loader {
                   title:  'Reject'
                 },
               ],
-              filter:   '{ labels: ["funding"] }'
+              filter: { labels: ['funding'] }
+            },
+            {
+              alias: 'recruiting',
+              title: 'Recruiting',
+              icon: 'accessibility',
+              columns: [
+                {
+                  id:     'prospect',
+                  value:  { string: 'prospect' },
+                  title:  'Prospect'
+                },
+                {
+                  id:     'interview',
+                  value:  { string: 'interview' },
+                  title:  'Interview'
+                },
+                {
+                  id:     'offer',
+                  value:  { string: 'offer' },
+                  title:  'Offer'
+                }
+              ],
+              filter: { labels: ['eng'] }
             }
           ]
         });

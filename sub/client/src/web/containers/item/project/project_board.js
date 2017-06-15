@@ -13,6 +13,7 @@ import { ID, MutationUtil } from 'alien-core';
 import { AppAction } from '../../../common/reducers';
 import { ReactUtil } from '../../../util/react';
 import { ReduxUtil } from '../../../util/redux';
+import { SubscriptionWrapper } from '../../../util/subscriptions';
 
 import { Board } from '../../../components/board';
 import { Card } from '../../../components/card';
@@ -37,17 +38,13 @@ export class ProjectBoard extends React.Component {
 
     let adapters = [
       new TaskStatusBoardAdapter(),
-      new TaskAssigneeBoardAdapter(),
+      new TaskAssigneeBoardAdapter()
     ];
 
     _.each(_.get(project, 'boards'), board => {
-      switch (board.alias) {
-        case TaskStatusBoardAdapter.alias:
-        case TaskAssigneeBoardAdapter.alias:
-          break;
-
-        default:
-          adapters.push(new QueryBoardAdapter(board));
+      let adapter = _.find(adapters, adapter => adapter.alias === board.alias);
+      if (!adapter) {
+        adapters.push(new QueryBoardAdapter(board));
       }
     });
 
@@ -89,7 +86,7 @@ export class ProjectBoard extends React.Component {
     this.setState({
       project,
       adapters,
-      boardAdapter: _.find(adapters, adapter => adapter.alias === boardAlias)
+      adapter: _.find(adapters, adapter => adapter.alias === boardAlias)
     });
   }
 
@@ -99,12 +96,12 @@ export class ProjectBoard extends React.Component {
 
   handleItemDrop(column, item, changes) {
     let { viewer: { groups }, item:project, boardAlias, mutator } = this.props;
-    let { boardAdapter } = this.state;
+    let { adapter } = this.state;
 
     let batch = mutator.batch(groups, project.bucket);
 
     // Update item for column.
-    let dropMutations = boardAdapter.onDropItem(column);
+    let dropMutations = adapter.onDropItem(column);
     if (dropMutations) {
       batch.updateItem(item, dropMutations);
     }
@@ -174,13 +171,13 @@ export class ProjectBoard extends React.Component {
         .commit();
 
     } else {
-      let { boardAdapter } = this.state;
+      let { adapter } = this.state;
       let { item:project } = this.props;
 
       // TODO(burdon): Task specific.
       // TODO(burdon): Remove create button for other types.
       // Column-specific mutations.
-      let adapterMutations = boardAdapter.onCreateItem(column);
+      let adapterMutations = adapter.onCreateItem(column);
 
       // Create.
       mutator
@@ -200,19 +197,19 @@ export class ProjectBoard extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { boardAdapter } = this.state;
+      let { adapter } = this.state;
       let { item:project, boardAlias } = this.props;
-      let { tasks } = project;
 
       let board = _.find(_.get(project, 'boards'), board => board.alias === boardAlias);
+      let items = adapter.getItems(project, board);
 
       // TODO(burdon): Lift-up Canvas.
       return (
         <Canvas>
           <Board item={ project }
-                 items={ tasks }
-                 columns={ boardAdapter.getColumns(project, board) }
-                 columnMapper={ boardAdapter.getColumnMapper() }
+                 items={ items }
+                 columns={ adapter.getColumns(project, board) }
+                 columnMapper={ adapter.getColumnMapper() }
                  itemRenderer={ this._itemRenderer }
                  itemOrderModel={ this._itemOrderModel }
                  onItemSelect={ this.handleTaskSelect.bind(this) }
@@ -257,4 +254,4 @@ export const ProjectBoardContainer = compose(
 
   QueryItem(ProjectItemQuery)
 
-)(ProjectBoard);
+)(SubscriptionWrapper(ProjectBoard));

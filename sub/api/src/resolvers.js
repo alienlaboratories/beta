@@ -174,14 +174,26 @@ export class Resolvers {
       Project: _.assign({}, Resolvers.DefaultItem, {
 
         boards: (obj, args, context) => {
-          return _.map(_.get(obj, 'boards'), board => ({
-            alias: board.alias,
-            title: board.title || '',
-            columns: board.columns,
+          return _.map(_.get(obj, 'boards'), board => {
+            let { alias, title, icon, columns, filter } = board;
 
-            // Flatten map to an array.
-            itemMeta: _.map(_.get(board, 'itemMeta'), (value, itemId) => ({ itemId, ...value }))
-          }));
+            // Look-up filtered items (for custom boards).
+            let promise = filter && database.getItemStore(Database.NAMESPACE.USER).queryItems(context, obj, filter);
+            return Promise.resolve(promise).then(items => {
+              return {
+                alias,
+                title,
+                icon,
+                columns,
+
+                // Flatten map to an array.
+                itemMeta: _.map(_.get(board, 'itemMeta'), (value, itemId) => ({ itemId, ...value })),
+
+                // Filtered items.
+                items
+              };
+            });
+          });
         },
 
         group: (obj, args, context) => {

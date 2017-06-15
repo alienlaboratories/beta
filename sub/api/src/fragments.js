@@ -162,30 +162,6 @@ const ProjectFragment = gql`
   ${TaskFragment}
 `;
 
-const ProjectBoardFragment = gql`
-  fragment ProjectBoardFragment on Project {
-    boards {
-      alias
-
-      columns {
-        id
-        title
-        value {
-          ...ValueFragment
-        }
-      }
-
-      itemMeta {
-        itemId
-        listId
-        order
-      }
-    }
-  }
-
-  ${ValueFragment}
-`;
-
 const UserFragment = gql`
   fragment UserFragment on User {
     ...ItemFragment
@@ -204,6 +180,10 @@ const UserFragment = gql`
   ${TaskFragment}
 `;
 
+//
+// Meta item.
+//
+
 const ItemMetaFragment = gql`
   fragment ItemMetaFragment on Item {
     ...ContactFragment
@@ -216,6 +196,39 @@ const ItemMetaFragment = gql`
   ${DocumentFragment}
   ${ProjectFragment}
   ${TaskFragment}
+`;
+
+//
+// Compound types.
+//
+
+const ProjectBoardFragment = gql`
+  fragment ProjectBoardFragment on Project {
+    boards {
+      alias
+
+      columns {
+        id
+        title
+        value {
+          ...ValueFragment
+        }
+      }
+
+      itemMeta {
+        itemId
+        listId
+        order
+      }
+      
+      items {
+        ...ItemMetaFragment
+      }
+    }
+  }
+
+  ${ValueFragment}
+  ${ItemMetaFragment}
 `;
 
 //

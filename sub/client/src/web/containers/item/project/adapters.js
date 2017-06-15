@@ -16,6 +16,10 @@ class BoardAdapter {
 
   get title() {}
 
+  getItems(project, board) {
+    return [];
+  }
+
   /**
    * Returns an ordered array of columns.
    * @param project
@@ -79,6 +83,10 @@ export class TaskStatusBoardAdapter extends BoardAdapter {
     return 'Task status.';
   }
 
+  getItems(project, board) {
+    return project.tasks;
+  }
+
   getColumns(project, board) {
     return TaskStatusBoardAdapter.COLUMNS;
   }
@@ -125,6 +133,10 @@ export class TaskAssigneeBoardAdapter extends BoardAdapter {
     return 'Task assignment.';
   }
 
+  getItems(project, board) {
+    return project.tasks;
+  }
+
   // TODO(burdon): Sort by number of assigned tasks.
   getColumns(project, board) {
     return _.concat({
@@ -164,11 +176,9 @@ export class TaskAssigneeBoardAdapter extends BoardAdapter {
  */
 export class QueryBoardAdapter extends BoardAdapter {
 
-  // TODO(burdon): Pre-populate board with filter (label) and column meta data.
-  // TODO(burdon): Resolver returns items.
-  // TODO(burdon): Project board passes items into Baord.
   // TODO(burdon): Column mapper (look-up meta data).
-  // TODO(burdon): Drop: set column meta.
+  // TODO(burdon): Drop: set item:column binding in meta.
+  // TODO(burdon): Prevent Add card in custom boards.
 
   constructor(board) {
     super();
@@ -188,18 +198,27 @@ export class QueryBoardAdapter extends BoardAdapter {
     return _.get(this._board, 'title', 'Custom');
   }
 
+  getItems(project, board) {
+    return _.get(board, 'items', []);
+  }
+
   getColumns(project, board) {
     return _.get(this._board, 'columns', []);
   }
 
+  // TODO(burdon):
   getColumnMapper() {
-    return (columns, item) => {};
+    return (columns, item) => {
+      return columns[0].id;
+    };
   }
 
+  // TODO(burdon):
   onCreateItem(column) {
     return [];
   }
 
+  // TODO(burdon):
   onDropItem(column) {
     return [];
   }
