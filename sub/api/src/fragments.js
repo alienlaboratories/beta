@@ -120,6 +120,18 @@ const TaskFragment = gql`
   ${ItemFragment}
 `;
 
+const NestedTasksFragment = gql`
+  fragment NestedTasksFragment on Task {
+    ...TaskFragment
+
+    tasks {
+      ...TaskFragment
+    }
+  }
+
+  ${TaskFragment}
+`;
+
 const ContactFragment = gql`
   fragment ContactFragment on Contact {
     ...ItemFragment
@@ -148,18 +160,14 @@ const ProjectFragment = gql`
     }
 
     tasks {
-      ...TaskFragment
-      
-      tasks {
-        ...TaskFragment
-      }
+      ...NestedTasksFragment
     }
   }
 
   ${KeyFragment}
   ${ItemFragment}
   ${GroupFragment}
-  ${TaskFragment}
+  ${NestedTasksFragment}
 `;
 
 const UserFragment = gql`
@@ -181,21 +189,21 @@ const UserFragment = gql`
 `;
 
 //
-// Meta item.
+// Union of Item fragments for search.
 //
 
-const ItemMetaFragment = gql`
-  fragment ItemMetaFragment on Item {
+const SearchItemFragment = gql`
+  fragment SearchItemFragment on Item {
     ...ContactFragment
     ...DocumentFragment
     ...ProjectFragment
-    ...TaskFragment
+    ...NestedTasksFragment
   }
 
   ${ContactFragment}
   ${DocumentFragment}
   ${ProjectFragment}
-  ${TaskFragment}
+  ${NestedTasksFragment}
 `;
 
 //
@@ -224,13 +232,13 @@ const ProjectBoardFragment = gql`
       }
       
       items {
-        ...ItemMetaFragment
+        ...SearchItemFragment
       }
     }
   }
 
   ${ValueFragment}
-  ${ItemMetaFragment}
+  ${SearchItemFragment}
 `;
 
 //
@@ -242,7 +250,7 @@ export const Fragments = {
   // Framework.
 
   ItemFragment,
-  ItemMetaFragment,
+  SearchItemFragment,
 
   // Types
 

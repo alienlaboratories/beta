@@ -16,26 +16,16 @@ import { TypeRegistry } from '../../common/type_registry';
 // Search HOC.
 //-------------------------------------------------------------------------------------------------
 
-// TODO(burdon): Broaden fragments, or lazily load them.
-
 export const SearchQuery = gql`
   query SearchQuery($filter: FilterInput) {
     search(filter: $filter) {
       items {
-        ...ItemFragment
-        ...ContactFragment
-        ...DocumentFragment
-        ...TaskFragment
-        ...ProjectFragment
+        ...SearchItemFragment
       }
     }
   }
 
-  ${Fragments.ItemFragment}
-  ${Fragments.ContactFragment}
-  ${Fragments.DocumentFragment}
-  ${Fragments.TaskFragment}
-  ${Fragments.ProjectFragment}
+  ${Fragments.SearchItemFragment}
 `;
 
 /**

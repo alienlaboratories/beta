@@ -7,12 +7,14 @@
 brew update
 brew outdated | xargs brew upgrade
 
+brew install cask
+brew cask outdated | xargs brew cask reinstall
+
 brew cask install java
 brew cask install minikube
 brew cask install virtualbox
 
 brew install bash-completion
-brew install cask
 brew install docker
 brew install docker-machine
 brew install docker-machine-driver-xhyve
