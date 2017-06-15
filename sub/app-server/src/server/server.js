@@ -241,6 +241,7 @@ export class WebServer {
   /**
    * Handlebars.
    * https://github.com/ericf/express-handlebars
+   * https://www.npmjs.com/package/express-handlebars
    */
   initHandlebars() {
     logger.log('initHandlebars');
@@ -254,6 +255,7 @@ export class WebServer {
       next();
     });
 
+    // Template helpers.
     const helpers = _.assign(ExpressUtil.Helpers, {
 
       // {{ global "env" }}
@@ -270,17 +272,16 @@ export class WebServer {
       }
     });
 
-    this._app.engine('handlebars', handlebars({
+    // https://www.npmjs.com/package/express-handlebars#configuration-and-defaults
+    this._app.engine('hbs', handlebars({
+      extname: '.hbs',
       layoutsDir: path.join(ENV.ALIEN_SERVER_VIEWS_DIR, '/layouts'),
       partialsDir: path.join(ENV.ALIEN_SERVER_VIEWS_DIR, '/partials'),
       defaultLayout: 'main',
-      helpers,
-      partials: {
-        foo: ''
-      }
+      helpers
     }));
 
-    this._app.set('view engine', 'handlebars');
+    this._app.set('view engine', 'hbs');
     this._app.set('views', ENV.ALIEN_SERVER_VIEWS_DIR);
   }
 
