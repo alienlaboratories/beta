@@ -9,7 +9,9 @@ import { ExpressUtil, Logger } from 'alien-util';
 
 // TODO(burdon): Webpack fails.
 // Module not found: Error: Can't resolve 'hiredis'
-// import { Queue } from 'alien-scheduler';
+// https://github.com/liady/webpack-node-externals/issues/34
+// https://github.com/NodeRedis/node_redis/issues/790
+import { Queue } from 'alien-scheduler';
 
 import { isAuthenticated } from 'alien-services';
 

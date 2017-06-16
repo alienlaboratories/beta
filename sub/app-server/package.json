@@ -71,8 +71,12 @@
     "serve-favicon": "^2.4.2",
     "uuid": "^3.0.1"
   },
+  "optionalDependencies": {
+    "bull": "^3.0.0-rc.2"
+  },
   "//": {
-    "dependencies": "MUST include googleapis directly."
+    "dependencies": "MUST include googleapis directly.",
+    "optionalDependencies": "Includes bull to suppress redis warning: https://github.com/liady/webpack-node-externals/issues/34"
   },
   "scripts": {
     "//": [

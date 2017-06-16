@@ -175,6 +175,8 @@ const srvConfig = webpackMerge(baseConfig, {
   // Error: ENOENT: no such file or directory, scandir '/app-server/apis'
   externals: [nodeExternals({
 
+    // TODO(burdon): Use generated package file? (patch to specify file).
+    // https://github.com/liady/webpack-node-externals/blob/82e7240d2df87f7e26dba5c693958924a489cf32/index.js
     modulesFromFile: true,
 
     whitelist: [
