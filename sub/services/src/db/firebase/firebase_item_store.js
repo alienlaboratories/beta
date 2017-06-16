@@ -124,7 +124,7 @@ export class FirebaseItemStore extends BaseItemStore {
               let item = _.get(typeMap, key);
               if (item) {
                 items.push(item);
-                itemMap.push(key, item);
+                itemMap.set(key, item);
               } else {
                 console.warn(`Item not found [${JSON.stringify(context.buckets)}]: ${key}`);
               }
