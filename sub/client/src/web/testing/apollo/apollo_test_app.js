@@ -7,7 +7,7 @@ import { graphql, print } from 'graphql';
 import gql from 'graphql-tag';
 
 import { SchemaUtil } from 'alien-api';
-import { DatabaseUtil, TestData } from 'alien-core/testing';
+import { DatabaseUtil, TestData } from 'alien-core/src/testing';
 
 import TEST_DATA from 'alien-core/src/testing/data/data.json';
 

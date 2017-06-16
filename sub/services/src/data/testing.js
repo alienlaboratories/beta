@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 import { Logger } from 'alien-util';
 import { LABEL, Database, ID, MutationUtil, Transforms } from 'alien-core';
-import { Randomizer } from 'alien-core/testing';
+import { Randomizer } from 'alien-core/src/testing';
 import { Enum } from 'alien-api';
 
 const logger = Logger.get('testing');

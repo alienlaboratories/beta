@@ -3,5 +3,6 @@
 //
 
 export * from './src/fragments';
+export * from './src/mutation';
 export * from './src/resolvers';
 export * from './src/schema';

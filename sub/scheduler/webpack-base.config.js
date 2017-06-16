@@ -2,9 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
-const _ = require('lodash');
 const path = require('path');
-const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
 const nodeExternals = require('webpack-node-externals');
 
@@ -23,14 +21,7 @@ const baseConfig = {
       'node_modules'
     ],
 
-    extensions: ['.js'],
-
-    // Prevent multiple copies.
-    // https://facebook.github.io/react/warnings/refs-must-have-owner.html#multiple-copies-of-react
-    // http://stackoverflow.com/questions/31169760/how-to-avoid-react-loading-twice-with-webpack-when-developing
-    alias: {
-      graphql: path.resolve('./node_modules/graphql')
-    }
+    extensions: ['.js']
   },
 
   module: {
@@ -40,43 +31,40 @@ const baseConfig = {
       // https://github.com/webpack/json-loader
       {
         test: /\.json$/,
-        use: [{
+        use: {
           loader: 'json-loader'
-        }]
+        }
+      },
+
+      // https://www.npmjs.com/package/yaml-loader
+      {
+        test: /\.yml$/,
+        use: {
+          loader: 'yaml-loader'
+        }
       },
 
       // See .babelrc for the presets.
       // https://github.com/babel/babel-loader
       {
         test: /\.js$/,
-        loader: 'babel-loader',
         exclude: /node_modules/,    // Don't transpile deps.
         include: [
           path.resolve('src'),
+          path.resolve(__dirname, '../api/src'),
           path.resolve(__dirname, '../core/src'),
-          path.resolve(__dirname, '../graphql/src'),
+          path.resolve(__dirname, '../services/src'),
+          path.resolve(__dirname, '../util/src')
         ],
-        options: {
-          cacheDirectory: './dist/babel-cache/'
+        use: {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: './dist/babel-cache/'
+          }
         }
-      },
-
-      // Allow direct imports of .graphql files.
-      // http://dev.apollodata.com/react/webpack.html
-      // https://github.com/apollostack/graphql-tag#webpack-preprocessing
-      {
-        test: /\.(graphql|gql)$/,
-        exclude: /node_modules/,
-        loader: 'graphql-tag/loader'
       }
     ]
-  },
-
-  // https://github.com/webpack/docs/wiki/list-of-plugins
-  plugins: [
-
-    new webpack.ProvidePlugin({ _: 'lodash' }),
-  ]
+  }
 };
 
 //
@@ -90,7 +78,7 @@ const srvConfig = webpackMerge(baseConfig, {
   entry: {
     scheduler: [
       'babel-polyfill',
-      path.resolve(baseConfig.context, 'src/main.js')
+      path.resolve(baseConfig.context, 'src/scheduler.js')
     ]
   },
 
@@ -101,6 +89,9 @@ const srvConfig = webpackMerge(baseConfig, {
 
   // https://www.npmjs.com/package/webpack-node-externals
   externals: [nodeExternals({
+
+    modulesFromFile: true,
+
     whitelist: [
       'alien-api',
       'alien-core',

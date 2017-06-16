@@ -8,10 +8,9 @@ import ApolloClient from 'apollo-client';
 
 import { Logger, TypeUtil } from 'alien-util';
 
-import {
-  Batch, BatchMutation, FragmentsMap, FragmentParser, ID, IdGenerator, MutationUtil, Transforms
-} from 'alien-core';
-import { DatabaseUtil, TestData } from 'alien-core/testing';
+import { BatchMutation } from 'alien-api';
+import { Batch, FragmentsMap, FragmentParser, ID, IdGenerator, MutationUtil, Transforms } from 'alien-core';
+import { DatabaseUtil, TestData } from 'alien-core/src/testing';
 import TEST_DATA from 'alien-core/src/testing/data/data.json';
 
 import { SchemaUtil } from 'alien-api';

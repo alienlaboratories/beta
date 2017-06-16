@@ -25,10 +25,10 @@ const baseConfig = {
 
     extensions: ['.js'],
 
-    // Prevent multiple copies (from npm link).
-    // https://facebook.github.io/react/warnings/refs-must-have-owner.html#multiple-copies-of-react
-    // http://stackoverflow.com/questions/31169760/how-to-avoid-react-loading-twice-with-webpack-when-developing
     alias: {
+      // Prevent multiple copies (from npm link).
+      // https://facebook.github.io/react/warnings/refs-must-have-owner.html#multiple-copies-of-react
+      // http://stackoverflow.com/questions/31169760/how-to-avoid-react-loading-twice-with-webpack-when-developing
       'react' : path.resolve('./node_modules/react')
     }
   },
@@ -40,16 +40,15 @@ const baseConfig = {
       // https://github.com/webpack/json-loader
       {
         test: /\.json$/,
-        use: [{
+        use: {
           loader: 'json-loader'
-        }]
+        }
       },
 
       // See .babelrc for the presets.
       // https://github.com/babel/babel-loader
       {
         test: /\.js$/,
-        loader: 'babel-loader',
         exclude: /node_modules/,    // Don't transpile deps.
         include: [
           path.resolve('src'),
@@ -57,17 +56,20 @@ const baseConfig = {
           path.resolve(__dirname, '../core/src'),
           path.resolve(__dirname, '../util/src'),
         ],
-        options: {
-          cacheDirectory: './dist/babel-cache/'
+        use: {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: './dist/babel-cache/'
+          }
         }
       },
 
       // https://github.com/webpack/css-loader
       {
         test: /\.css$/,
-        use: [{
+        use: {
           loader: 'css-loader'
-        }]
+        }
       },
 
       // https://github.com/webpack/less-loader

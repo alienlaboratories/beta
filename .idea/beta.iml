@@ -9,6 +9,7 @@
       <excludeFolder url="file://$MODULE_DIR$/sub/client/dist" />
       <excludeFolder url="file://$MODULE_DIR$/sub/client/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/sub/core/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/sub/scheduler/dist" />
       <excludeFolder url="file://$MODULE_DIR$/sub/scheduler/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/sub/services/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/sub/util/dist" />

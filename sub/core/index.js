@@ -12,7 +12,7 @@ export * from './src/item_util';
 export * from './src/key';
 export * from './src/matcher';
 export * from './src/memory_item_store';
-export * from './src/mutations';
+export * from './src/mutation';
 export * from './src/parser';
 export * from './src/queries';
 export * from './src/schema';

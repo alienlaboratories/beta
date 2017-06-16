@@ -2,4 +2,4 @@
 // Copyright 2017 Alien Labs.
 //
 
-export * from './src/util/bull_queue';
+export * from './src/util/queue';

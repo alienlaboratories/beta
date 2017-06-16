@@ -9,7 +9,7 @@ import { compose, graphql } from 'react-apollo';
 
 import { EventListener, PropertyProvider } from 'alien-util';
 import { Const, IdGenerator, Mutator, QueryRegistry } from 'alien-core';
-import { MutationFragmentsMap, Fragments } from 'alien-api';
+import { BatchMutation, MutationFragmentsMap, Fragments } from 'alien-api';
 
 import { Actions } from '../../common/actions';
 import { Analytics } from '../../common/analytics';
@@ -123,6 +123,8 @@ export const ViewerQuery = gql`
  */
 export class Activity {
 
+  static REFETCH_QUERIES = ['ContextQuery'];
+
   /**
    * Connect properties for activities.
    */
@@ -132,11 +134,32 @@ export class Activity {
       // Redux state.
       connect(mapStateToProps, mapDispatchToProps, mergeProps),
 
-      // Apollo mutation.
-      // Provides mutator property.
-      Mutator.graphql(MutationFragmentsMap, ['ContextQuery']),
+      /**
+       * Creates the Mutation HOC.
+       *
+       * @param {FragmentsMap} fragments
+       * @param {[{string}]} refetchQueries
+       * @return Standard mutation wrapper supplied to redux's combine() method.
+       */
+      graphql(BatchMutation, {
+        withRef: true,
 
-      // Apollo viewer query.
+        //
+        // Injects a mutator instance into the wrapped components' properties.
+        // NOTE: dependencies must previously have been injected into the properties.
+        //
+        props: ({ ownProps, mutate }) => {
+          let { idGenerator, config } = ownProps;
+
+          return {
+            mutator: new Mutator(idGenerator, MutationFragmentsMap, Activity.REFETCH_QUERIES, mutate, config)
+          };
+        }
+      }),
+
+      /**
+       * Main viewer query.
+       */
       graphql(ViewerQuery, {
         props: ({ ownProps, data }) => {
           return _.pick(data, ['errors', 'loading', 'viewer']);

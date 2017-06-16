@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { graphql } from 'graphql';
 
 import { Database } from 'alien-core';
-import { DatabaseUtil } from 'alien-core/testing';
+import { DatabaseUtil } from 'alien-core/src/testing';
 
 import { SchemaUtil } from './schema';
 

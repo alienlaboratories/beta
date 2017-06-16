@@ -19,10 +19,11 @@ for mod in ${PACKAGE_DIRS[@]}; do
 done
 
 #
-# Then Strip devDependencies and alien source modules.
+# Strip devDependencies and alien source modules.
+# Otherwise: npm ERR! 404 'alien-xxx' is not in the npm registry.
 #
 
-MODULES="alien-api alien-core alien-client alien-services alien-util"
+MODULES="alien-api alien-core alien-client alien-scheduler alien-services alien-util"
 
 JQ_DELETE=""
 for mod in ${MODULES[@]}; do

@@ -26,10 +26,10 @@ const baseConfig = {
 
     extensions: ['.js'],
 
-    // Prevent multiple copies (from npm link).
-    // https://facebook.github.io/react/warnings/refs-must-have-owner.html#multiple-copies-of-react
-    // http://stackoverflow.com/questions/31169760/how-to-avoid-react-loading-twice-with-webpack-when-developing
     alias: {
+      // Prevent multiple copies (from npm link).
+      // https://facebook.github.io/react/warnings/refs-must-have-owner.html#multiple-copies-of-react
+      // http://stackoverflow.com/questions/31169760/how-to-avoid-react-loading-twice-with-webpack-when-developing
       'react' : path.resolve('./node_modules/react'),
     }
   },
@@ -50,49 +50,42 @@ const baseConfig = {
       // https://github.com/webpack/json-loader
       {
         test: /\.json$/,
-        use: [{
+        use: {
           loader: 'json-loader'
-        }]
+        }
       },
 
       // https://www.npmjs.com/package/yaml-loader
       {
         test: /\.yml$/,
-        use: [{
+        use: {
           loader: 'yaml-loader'
-        }]
+        }
       },
 
       // See .babelrc for the presets.
       // https://github.com/babel/babel-loader
       {
         test: /\.js$/,
-        loader: 'babel-loader',
         exclude: /node_modules/,    // Don't transpile deps.
         include: [
           path.resolve('src'),
           path.resolve(__dirname, '../util/src'),
         ],
-        options: {
-          cacheDirectory: './dist/babel-cache/'
+        use: {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: './dist/babel-cache/'
+          }
         }
-      },
-
-      // Allow direct imports of .graphql files.
-      // http://dev.apollodata.com/react/webpack.html
-      // https://github.com/apollostack/graphql-tag#webpack-preprocessing
-      {
-        test: /\.(graphql|gql)$/,
-        loader: 'graphql-tag/loader',
-        exclude: /node_modules/
       },
 
       // https://github.com/webpack/css-loader
       {
         test: /\.css$/,
-        use: [{
+        use: {
           loader: 'css-loader'
-        }]
+        }
       },
 
       // https://github.com/webpack/less-loader
@@ -130,20 +123,6 @@ const baseConfig = {
 const srvConfig = webpackMerge(baseConfig, {
 
   target: 'node',
-
-  // https://webpack.github.io/docs/configuration.html#node
-  node: {
-
-    // Otherwise __dirname === '/'
-    __dirname: false,
-
-    // TODO(burdon): Remove?
-    // https://webpack.js.org/configuration/node
-    console: false,
-    fs:  'empty',
-    net: 'empty',
-    tls: 'empty'
-  },
 
   // Source map shows original source and line numbers (and works with hot loader).
   // https://webpack.github.io/docs/configuration.html#devtool

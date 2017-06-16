@@ -3,29 +3,9 @@
 //
 
 import _ from 'lodash';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
 
 import { Batch } from './batch';
 import { LABEL } from './defs';
-
-export const BatchMutation = gql`
-  mutation BatchMutation($itemMutations: [ItemMutationInput]!) {
-    batchMutation(itemMutations: $itemMutations) {
-      keys {
-        bucket
-        type
-        id
-      }
-    }
-  }
-`;
-
-export const BatchMutationName = // 'BatchMutation'
-  _.get(BatchMutation, 'definitions[0].name.value');
-
-export const BatchMutationPath = // 'batchMutation'
-  _.get(BatchMutation, 'definitions[0].selectionSet.selections[0].name.value');
 
 /**
  * Utils to create mutations.
@@ -146,38 +126,6 @@ export class MutationUtil {
 export class Mutator {
 
   /**
-   * Creates the Mutation HOC.
-   *
-   * @param {FragmentsMap} fragments
-   * @param {[{string}]} refetchQueries
-   * @return Standard mutation wrapper supplied to redux's combine() method.
-   */
-  static graphql(fragments=undefined, refetchQueries=undefined) {
-
-    return graphql(BatchMutation, {
-      withRef: true,
-
-      options: {
-        // http://dev.apollodata.com/core/read-and-write.html#updating-the-cache-after-a-mutation
-        // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
-//      update: (proxy, { data }) => {}
-      },
-
-      //
-      // Injects a mutator instance into the wrapped components' properties.
-      // NOTE: dependencies must previously have been injected into the properties.
-      //
-      props: ({ ownProps, mutate }) => {
-        let { idGenerator, config } = ownProps;
-
-        return {
-          mutator: new Mutator(idGenerator, fragments, refetchQueries, mutate, config)
-        };
-      }
-    });
-  }
-
-  /**
    * Batch factory.
    *
    * @param idGenerator
@@ -194,8 +142,6 @@ export class Mutator {
     this._mutate = mutate;
     this._config = config;
   }
-
-  // TODO(burdon): Pass mutator into batch?
 
   /**
    * Batch factory.

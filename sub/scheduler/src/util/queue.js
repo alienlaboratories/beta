@@ -50,13 +50,16 @@ export class Queue {
     this._queue.on('ready', () => {
       logger.info('Ready'); // TODO(burdon): Not called.
     });
+
     this._queue.on('error', (err) => {
       logger.error('Error:', ErrorUtil.message(err));
     });
+
     this._queue.on('failed', (job, err) => {
       logger.error(`Failed[${job.id}]:`, ErrorUtil.message(err), TypeUtil.stringify(job.data));
       logger.error(err);
     });
+
     this._queue.on('completed', (job, result) => {
       logger.log(`Complete[${job.id}]:`, TypeUtil.stringify(result));
     });

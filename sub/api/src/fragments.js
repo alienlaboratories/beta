@@ -4,11 +4,24 @@
 
 import gql from 'graphql-tag';
 
-import { FragmentsMap, ValueFragment } from 'alien-core';
+import { FragmentsMap } from 'alien-core';
 
 //
 // All sub-types should include the Item fragment.
 //
+
+export const ValueFragment = gql`
+  fragment ValueFragment on Value {
+    null
+    int
+    float
+    string
+    boolean
+    id
+    timestamp
+    date
+  }
+`;
 
 const KeyFragment = gql`
   fragment KeyFragment on Item {

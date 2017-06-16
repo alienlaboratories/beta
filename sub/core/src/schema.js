@@ -3,26 +3,8 @@
 //
 
 import _ from 'lodash';
-import gql from 'graphql-tag';
 
 import { TypeUtil } from 'alien-util';
-
-//
-// Framework fragments.
-//
-
-export const ValueFragment = gql`
-  fragment ValueFragment on Value {
-    null
-    int
-    float
-    string
-    boolean
-    id
-    timestamp
-    date
-  }
-`;
 
 /**
  * Map of Fragments by type.

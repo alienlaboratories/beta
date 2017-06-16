@@ -16,13 +16,15 @@ import uuid from 'uuid';
 
 import { ExpressUtil, HttpError, HttpUtil, Logger } from 'alien-util';
 import { AuthUtil, Const, Database, IdGenerator, Matcher, MemoryItemStore, SystemStore } from 'alien-core';
-import { TestItemStore } from 'alien-core/testing';
+import { TestItemStore } from 'alien-core/src/testing';
 import { AppDefs } from 'alien-client';
 import { apiRouter } from 'alien-api/server';
-import { hasJwtHeader, Loader, TestGenerator } from 'alien-services';
+
+import { Loader, TestGenerator } from 'alien-services';
 
 import {
   getIdToken,
+  hasJwtHeader,
   isAuthenticated,
   loginRouter,
   oauthRouter,

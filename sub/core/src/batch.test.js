@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 import { Batch } from './batch';
 import { ID, IdGenerator } from './id';
-import { MutationUtil } from './mutations';
+import { MutationUtil } from './mutation';
 
 const idGenerator = new IdGenerator();
 

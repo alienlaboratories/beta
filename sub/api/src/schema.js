@@ -26,6 +26,7 @@ export const Enum = {
   /**
    * Task levels.
    */
+  // TODO(burdon): Make property of specific board.
   TASK_LEVEL: {
 
     UNSTARTED:  0,

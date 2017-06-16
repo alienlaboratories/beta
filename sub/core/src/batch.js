@@ -8,7 +8,7 @@ import { Logger, TypeUtil } from 'alien-util';
 
 import { Database } from './database';
 import { ID } from './id';
-import { MutationUtil } from './mutations';
+import { MutationUtil } from './mutation';
 import { FragmentParser } from './schema';
 import { Transforms } from './transforms';
 

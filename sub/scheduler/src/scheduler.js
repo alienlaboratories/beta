@@ -10,7 +10,7 @@ import { Logger, TypeUtil } from 'alien-util';
 import { Database, IdGenerator, Matcher, SystemStore } from 'alien-core';
 import { Firebase, FirebaseItemStore, PushManager } from 'alien-services';
 
-import { Queue } from './util/bull_queue';
+import { Queue } from './util/queue';
 
 import { GoogleCalendarSyncTask, GoogleMailSyncTask } from './tasks/sync/google';
 

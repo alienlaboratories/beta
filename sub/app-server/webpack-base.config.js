@@ -26,17 +26,18 @@ const baseConfig = {
 
     extensions: ['.js'],
 
-    // Prevent multiple copies (from npm link).
-    // https://facebook.github.io/react/warnings/refs-must-have-owner.html#multiple-copies-of-react
-    // http://stackoverflow.com/questions/31169760/how-to-avoid-react-loading-twice-with-webpack-when-developing
     alias: {
-      'react'                           : path.resolve('./node_modules/react'),
+      // TODO(burdon): Use lerna hoist or alias?
+      // Prevent multiple copies (from npm link).
+      // https://facebook.github.io/react/warnings/refs-must-have-owner.html#multiple-copies-of-react
+      // http://stackoverflow.com/questions/31169760/how-to-avoid-react-loading-twice-with-webpack-when-developing
+      'react'                         : path.resolve('./node_modules/react'),
 
       // http://stackoverflow.com/questions/40053344/npm-multiple-entry-points
-      'alien-client/web-app'            : path.resolve('./node_modules/alien-client/src/web/app'),
-      'alien-client/web-test-apollo'    : path.resolve('./node_modules/alien-client/src/web/testing/apollo/apollo.js'),
-      'alien-client/crx'                : path.resolve('./node_modules/alien-client/src/crx'),
-      'alien-client/graphiql'           : path.resolve('./node_modules/alien-client/src/graphiql/graphiql'),
+      'alien-client/crx'              : path.resolve('./node_modules/alien-client/src/crx'),
+      'alien-client/graphiql'         : path.resolve('./node_modules/alien-client/src/graphiql/graphiql'),
+      'alien-client/web-app'          : path.resolve('./node_modules/alien-client/src/web/app'),
+      'alien-client/web-test-apollo'  : path.resolve('./node_modules/alien-client/src/web/testing/apollo/apollo.js'),
     }
   },
 
@@ -56,35 +57,16 @@ const baseConfig = {
       // https://github.com/webpack/json-loader
       {
         test: /\.json$/,
-        use: [{
+        use: {
           loader: 'json-loader'
-        }]
+        }
       },
 
       // https://www.npmjs.com/package/yaml-loader
       {
         test: /\.yml$/,
-        use: [{
+        use: {
           loader: 'yaml-loader'
-        }]
-      },
-
-      // See .babelrc for the presets.
-      // https://github.com/babel/babel-loader
-      {
-        test: /\.js$/,
-        loader: 'babel-loader',
-        exclude: /node_modules/,    // Don't transpile deps.
-        include: [
-          path.resolve('src'),
-          path.resolve(__dirname, '../api/src'),
-          path.resolve(__dirname, '../client/src'),
-          path.resolve(__dirname, '../core/src'),
-          path.resolve(__dirname, '../services/src'),
-          path.resolve(__dirname, '../util/src')
-        ],
-        options: {
-          cacheDirectory: './dist/babel-cache/'
         }
       },
 
@@ -93,16 +75,40 @@ const baseConfig = {
       // https://github.com/apollostack/graphql-tag#webpack-preprocessing
       {
         test: /\.(graphql|gql)$/,
-        loader: 'graphql-tag/loader',
-        exclude: /node_modules/
+        exclude: /node_modules/,
+        use: {
+          loader: 'graphql-tag/loader'
+        }
+      },
+
+      // See .babelrc for the presets.
+      // https://github.com/babel/babel-loader
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,    // Don't transpile deps.
+        include: [
+          path.resolve('src'),
+          path.resolve(__dirname, '../api/src'),
+          path.resolve(__dirname, '../client/src'),
+          path.resolve(__dirname, '../core/src'),
+          path.resolve(__dirname, '../scheduler/src'),
+          path.resolve(__dirname, '../services/src'),
+          path.resolve(__dirname, '../util/src')
+        ],
+        use: {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: './dist/babel-cache/'
+          }
+        }
       },
 
       // https://github.com/webpack/css-loader
       {
         test: /\.css$/,
-        use: [{
+        use: {
           loader: 'css-loader'
-        }]
+        }
       },
 
       // https://github.com/webpack/less-loader
@@ -127,6 +133,7 @@ const baseConfig = {
     // https://github.com/webpack/docs/wiki/list-of-plugins#hotmodulereplacementplugin
     new webpack.HotModuleReplacementPlugin(),
 
+    // TODO(burdon): Remove; make explicit.
     // Automatically include packages without import statement.
     new webpack.ProvidePlugin({ _: 'lodash' }),
     new webpack.ProvidePlugin({ $: 'jquery' }),
@@ -141,20 +148,6 @@ const srvConfig = webpackMerge(baseConfig, {
 
   target: 'node',
 
-  // https://webpack.github.io/docs/configuration.html#node
-  node: {
-
-    // Otherwise __dirname === '/'
-    __dirname: false,
-
-    // TODO(burdon): Remove?
-    // https://webpack.js.org/configuration/node
-    console: false,
-    fs:  'empty',
-    net: 'empty',
-    tls: 'empty'
-  },
-
   // Source map shows original source and line numbers (and works with hot loader).
   // https://webpack.github.io/docs/configuration.html#devtool
 //devtool: '#source-map',
@@ -165,7 +158,6 @@ const srvConfig = webpackMerge(baseConfig, {
       // This is automatically loaded when using babel-node, but required for runtime builds.
       // https://babeljs.io/docs/usage/polyfill
       'babel-polyfill',
-
       path.resolve(baseConfig.context, 'src/server/main.js')
     ]
   },
@@ -187,8 +179,11 @@ const srvConfig = webpackMerge(baseConfig, {
 
     whitelist: [
       'alien-api',
+      'alien-api/server',
       'alien-client',
       'alien-core',
+      'alien-core/src/testing',
+      'alien-scheduler',
       'alien-services',
       'alien-util'
     ]}

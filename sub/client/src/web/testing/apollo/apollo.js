@@ -17,8 +17,7 @@ import update from 'immutability-helper';
 
 import { Logger, TypeUtil } from 'alien-util';
 import { Batch, FragmentsMap, ID, IdGenerator, MutationUtil } from 'alien-core';
-import { BatchMutation, BatchMutationName } from 'alien-core';
-import { ITEM_TYPES } from 'alien-api';
+import { BatchMutation, BatchMutationName, ITEM_TYPES } from 'alien-api';
 
 import { createFragmentMatcher } from '../../../util/apollo_tools';
 import { createNetworkInterfaceWithAuth, LocalNetworkInterface } from '../../../testing/apollo_testing';

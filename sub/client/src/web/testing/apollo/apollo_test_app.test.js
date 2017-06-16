@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom';
 
 import { SchemaUtil } from 'alien-api';
 import { Logger, TypeUtil } from 'alien-util';
-import { DatabaseUtil, TestData } from 'alien-core/testing';
+import { DatabaseUtil, TestData } from 'alien-core/src/testing';
 import TEST_DATA from 'alien-core/src/testing/data/data.json';
 
 import { App } from './apollo';

@@ -4,7 +4,7 @@
 
 import _ from 'lodash';
 
-import { MutationUtil } from './mutations';
+import { MutationUtil } from './mutation';
 import { Transforms } from './transforms';
 
 test('Clones item', () => {
