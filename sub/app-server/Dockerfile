@@ -63,7 +63,7 @@ ENV ALIEN_SERVER_URL="https://beta.robotik.io"
 
 ENV ALIEN_CONFIG='alienlabs-beta'
 ENV ALIEN_CONFIG_FIREBASE='firebase/alienlabs-beta'
-ENV ALIEN_CONFIG_GOOGLE='google/alienlabs-beta'
+ENV ALIEN_CONFIG_GOOGLE='google/alienlabs-dev'
 
 ENV ALIEN_SERVER_ASSETS_DIR="$HOME/app/dist"
 ENV ALIEN_SERVER_CONF_DIR="$HOME/app/conf"
