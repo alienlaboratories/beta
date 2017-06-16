@@ -68,26 +68,29 @@ export class ProjectBoard extends React.Component {
     super(...arguments);
 
     let { typeRegistry } = this.context;
-    let { viewer, mutator, item:project } = this.props;
+    let { viewer, mutator } = this.props;
 
     this._itemRenderer = Card.ItemRenderer(typeRegistry, mutator, viewer);
     this._itemOrderModel = new DragOrderModel();
 
-    this.state = {
-      project
-    };
+    this.state = this.getState(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
-    let { item:project, boardAlias } = nextProps;
+    this.setState(this.getState(nextProps));
+  }
 
-    // TODO(burdon): Cache (in redux) for header?
+  getState(props) {
+    let { item:project, boardAlias } = props;
+
+    // TODO(burdon): Cache (in redux); use in header also.
     let adapters = ProjectBoard.getAdapters(project);
-    this.setState({
+
+    return {
       project,
       adapters,
       adapter: _.find(adapters, adapter => adapter.alias === boardAlias)
-    });
+    };
   }
 
   handleTaskSelect() {

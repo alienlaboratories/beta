@@ -114,16 +114,20 @@ export class FirebaseItemStore extends BaseItemStore {
       // TODO(burdon): ID should contain Bucket and Type for direct look-up.
       let bucketKeys = this.getBucketKeys(context, type);
       return Promise.all(_.map(bucketKeys, key => this._getValue(key))).then(buckets => {
+        let itemMap = new Map();
+
         let items = [];
         _.each(buckets, typeMap => {
           _.each(itemIds, itemId => {
             let key = type + '.' + itemId;
-            let item = _.get(typeMap, key);
-            if (item) {
-              items.push(item);
-            } else {
-//            console.log(JSON.stringify(typeMap, null, 2));
-              console.warn('Item not found ' + JSON.stringify(context.buckets) + '.' + key);
+            if (!itemMap.get(key)) {
+              let item = _.get(typeMap, key);
+              if (item) {
+                items.push(item);
+                itemMap.push(key, item);
+              } else {
+                console.warn(`Item not found [${JSON.stringify(context.buckets)}]: ${key}`);
+              }
             }
           });
         });
