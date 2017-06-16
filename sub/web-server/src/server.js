@@ -73,13 +73,14 @@ export class WebServer {
    */
   initHandlebars() {
 
-    this._app.engine('handlebars', handlebars({
+    this._app.engine('hbs', handlebars({
+      extname: '.hbs',
       layoutsDir: path.join(ENV.WEB_SERVER_VIEWS_DIR, '/layouts'),
       defaultLayout: 'main',
       helpers: ExpressUtil.Helpers
     }));
 
-    this._app.set('view engine', 'handlebars');
+    this._app.set('view engine', 'hbs');
     this._app.set('views', ENV.WEB_SERVER_VIEWS_DIR);
   }
 

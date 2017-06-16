@@ -217,8 +217,10 @@ set -x
 if [ ${MINIKUBE} -eq 1 ]; then
   kubectl config set-context minikube
 else
-  kubectl config set-context ${ALIEN_CLUSTER}
+  kubectl config use-context ${ALIEN_CLUSTER}
 fi
+
+kubectl config get-contexts
 
 if [ ${DELETE} -eq 1 ]; then
   set +x

@@ -32,7 +32,7 @@ module.exports = (grunt) => {
         },
         src: [
           'package.json',
-          'src/common/defs.js'
+          'src/server/meta.js'
         ]
       }
     },
