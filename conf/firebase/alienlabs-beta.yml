@@ -8,11 +8,11 @@
 #
 
 app:
-  apiKey: "AIzaSyCjgw6d-JOEFJW7Fj5FKPrqnOvYR93VXqI",
-  authDomain: "alienlabs-beta.firebaseapp.com",
-  databaseURL: "https://alienlabs-beta.firebaseio.com",
-  projectId: "alienlabs-beta",
-  storageBucket: "alienlabs-beta.appspot.com",
+  apiKey: "AIzaSyCjgw6d-JOEFJW7Fj5FKPrqnOvYR93VXqI"
+  authDomain: "alienlabs-beta.firebaseapp.com"
+  databaseURL: "https://alienlabs-beta.firebaseio.com"
+  projectId: "alienlabs-beta"
+  storageBucket: "alienlabs-beta.appspot.com"
   messagingSenderId: "1046955137783"
 
 #
