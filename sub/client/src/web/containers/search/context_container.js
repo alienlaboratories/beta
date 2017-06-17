@@ -64,7 +64,7 @@ export function ContextContainer(query, path='context') {
     }),
 
     graphql(query, {
-      withRef: 'true',
+      withRef: true,
 
       options: (props) => {
         let { contextFilter } = props;

@@ -40,6 +40,8 @@ export class SidePanel extends React.Component {
   onSelect(item) {
     let { navigator } = this.props;
     let { alias, link } = item;
+    // TODO(burdon): Alias links not working.
+    alias = null;
     navigator.push(link || (alias && Path.folder(alias)) || Path.canvas(ID.key(item)));
   }
 

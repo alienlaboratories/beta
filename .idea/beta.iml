@@ -20,9 +20,6 @@
     <orderEntry type="library" name="jest-DefinitelyTyped" level="application" />
     <orderEntry type="library" name="lodash-DefinitelyTyped" level="application" />
     <orderEntry type="library" name="jquery-DefinitelyTyped" level="application" />
-    <orderEntry type="library" name="chrome-DefinitelyTyped" level="application" />
-    <orderEntry type="library" name="express-DefinitelyTyped" level="application" />
-    <orderEntry type="library" name="graphql-DefinitelyTyped" level="application" />
     <orderEntry type="library" name="Chrome Extenions" level="application" />
     <orderEntry type="library" name="aws-lambda-DefinitelyTyped" level="application" />
     <orderEntry type="library" name="react-DefinitelyTyped" level="application" />

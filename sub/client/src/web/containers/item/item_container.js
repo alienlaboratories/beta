@@ -8,7 +8,7 @@ import { compose, graphql } from 'react-apollo';
 import { Fragments } from 'alien-api';
 
 import { ReduxUtil } from '../../util/redux';
-import { Card } from '../../components/card';
+import { Card, CardCanvas } from '../../components/card';
 
 //-------------------------------------------------------------------------------------------------
 // Card HOC.
@@ -42,7 +42,7 @@ export function QueryItem(query, path='item') {
     }),
 
     graphql(query, {
-      withRef: 'true',
+      // withRef: true,   // TODO(burdon): Causes error.
 
       // Map properties to query.
       // http://dev.apollodata.com/react/queries.html#graphql-options
@@ -85,4 +85,4 @@ export function QueryItem(query, path='item') {
 /**
  * Default container.
  */
-export const ItemCardContainer = QueryItem(ItemQuery)(Card);
+export const ItemCardContainer = QueryItem(ItemQuery)(CardCanvas(Card));

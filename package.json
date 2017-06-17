@@ -13,8 +13,7 @@
     "eslint": "^3.19.0",
     "eslint-plugin-react": "^7.0.1",
     "global": "^4.3.2",
-    "lodash": "^4.17.4",
-    "oao": "^0.8.2"
+    "lodash": "^4.17.4"
   },
   "eslintConfig": "eslintrc.yml",
   "scripts": {

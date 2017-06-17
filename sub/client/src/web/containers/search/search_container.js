@@ -54,7 +54,7 @@ export function SearchContainer(query, path='search') {
     }),
 
     graphql(query, {
-      withRef: 'true',
+      withRef: true,
 
       options: (props) => {
         let { filter, search } = props;
