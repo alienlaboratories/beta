@@ -218,7 +218,6 @@ export class ProjectBoard extends React.Component {
                  onItemSelect={ this.handleTaskSelect.bind(this) }
                  onItemDrop={ this.handleItemDrop.bind(this) }
                  onItemUpdate={ this.handleTaskUpdate.bind(this) }/>
-
         </Canvas>
       );
     });

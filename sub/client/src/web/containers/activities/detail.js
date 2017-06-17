@@ -9,6 +9,7 @@ import { Const, ID, QueryParser } from 'alien-core';
 
 import { ReactUtil } from '../../util/react';
 import { AppAction } from '../../common/reducers';
+import { ItemCardContainer } from '../../containers/item/item_container';
 
 import { SearchListContainer } from '../search/search_list';
 
@@ -47,7 +48,7 @@ class DetailActivity extends React.Component {
       // Type-specific containers (card/canvas).
       let itemKey = ID.decodeKey(key);
 
-      let Container = typeRegistry.container(itemKey.type);
+      let Container = typeRegistry.container(itemKey.type) || ItemCardContainer;
       let container = <Container mutator={ mutator } viewer={ viewer } itemKey={ itemKey }/>;
 
       let Header = typeRegistry.header(itemKey.type);
