@@ -13,6 +13,7 @@
 - Updated user/config/testing site pages.
 
 ### 0.0.2 `(06/17/17)`
+- Home activity.
+  - Show current Groups and Project.
+  - Create and delete project.
 - Minimal Loggly logging (server).
-- Minimal home activity (show groups and projects).
-

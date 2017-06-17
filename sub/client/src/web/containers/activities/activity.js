@@ -166,7 +166,7 @@ export class Activity {
         }
       })
     ]);
-    
+
     return compose(...connectors);
   }
 
