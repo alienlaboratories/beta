@@ -135,23 +135,9 @@ export class Logger {
     return _.get(singleton(), this._name, _.get(singleton(), '*', Logger.debug));
   }
 
-  get trace() {
-    return (this.level > Level.trace) ? Logger.noop : this._log;
-  }
-
-  get log() {
-    return (this.level > Level.log) ? Logger.noop : this._log;
-  }
-
-  get info() {
-    return (this.level > Level.info) ? Logger.noop : this._info;
-  }
-
-  get warn() {
-    return (this.level > Level.warn) ? Logger.noop : this._warn;
-  }
-
-  get error() {
-    return (this.level > Level.error) ? Logger.noop : this._error;
-  }
+  get trace() { return (this.level > Level.trace) ? Logger.noop : this._log;    }
+  get log()   { return (this.level > Level.log)   ? Logger.noop : this._log;    }
+  get info()  { return (this.level > Level.info)  ? Logger.noop : this._info;   }
+  get warn()  { return (this.level > Level.warn)  ? Logger.noop : this._warn;   }
+  get error() { return (this.level > Level.error) ? Logger.noop : this._error;  }
 }
