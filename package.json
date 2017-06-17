@@ -6,7 +6,7 @@
   "repository": "https://github.com/alienlabs/beta",
   "devDependencies": {
     "jest": "^20.0.3",
-    "lerna": "^2.0.0-rc.4"
+    "lerna": "^2.0.0-rc.5"
   },
   "dependencies": {
     "babel-eslint": "^7.2.3",

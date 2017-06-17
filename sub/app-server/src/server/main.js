@@ -7,7 +7,7 @@ import yaml from 'node-yaml';
 
 import { ErrorUtil, Logger, TypeUtil } from 'alien-util';
 
-import { WebServer } from './server';
+import { AppServer } from './server';
 
 import ENV from './env';
 
@@ -44,7 +44,7 @@ ErrorUtil.handleErrors(process, error => {
 // - deployed to the test cluster.
 
 config(ENV.ALIEN_SERVER_CONF_DIR).then(config => {
-  global.server = new WebServer(config);
-  logger.info(WebServer.name, TypeUtil.stringify(global.server.info, 2));
+  global.server = new AppServer(config);
+  logger.info(AppServer.name, TypeUtil.stringify(global.server.info, 2));
   global.server.init().then(server => server.start());
 });

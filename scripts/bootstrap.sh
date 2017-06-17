@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
 
-# TODO(burdon): Try using webpack alias (as used for react).
+start=$SECONDS
+
+# TODO(burdon): Webpack alias instead?
 lerna bootstrap --hoist graphql
+
+echo "OK: $(date) [$(( SECONDS - start ))s]"

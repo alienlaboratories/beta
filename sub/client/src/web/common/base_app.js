@@ -47,6 +47,15 @@ export class BaseApp {
     // TODO(burdon): Runtime option. This currently breaks if null.
     this._analytics = new Analytics(this._config); // new SegmentAnalytics(this._config);
 
+    // TODO(burdon): Wrap.
+    window._LTracker.push({
+      token:      _.get(this._config, 'loggly.token'),
+      subdomain:  _.get(this._config, 'loggly.subdomain'),
+      tags:      [_.get(this._config, 'app.platform')]
+    });
+
+    window._LTracker.push('Starting');
+
     // Global error handling.
     ErrorUtil.handleErrors(window, error => this.onError(error));
 

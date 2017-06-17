@@ -41,8 +41,8 @@ export class Application extends React.Component {
         <Router history={ history }>
           {/* v4: <Switch> */}
 
-          <Route exact path={ Path.HOME } component={ TestingActivity }/>
-          <Redirect from="*" to={ Path.HOME }/>
+          <Route exact path={ Path.INBOX } component={ TestingActivity }/>
+          <Redirect from="*" to={ Path.INBOX }/>
 
           {/* </Switch> */}
         </Router>

@@ -13,6 +13,8 @@ import http from 'http';
 import path from 'path';
 import session from 'express-session';
 import uuid from 'uuid';
+import winston from 'winston';
+import 'winston-loggly-bulk';
 
 import { ExpressUtil, HttpError, HttpUtil, Logger } from 'alien-util';
 import { AuthUtil, Const, Database, IdGenerator, Matcher, MemoryItemStore, SystemStore } from 'alien-core';
@@ -64,13 +66,23 @@ const logger = Logger.get('server');
 /**
  * Web server.
  */
-export class WebServer {
+export class AppServer {
 
   constructor(config) {
     console.assert(config);
 
     this._config = config;
     this._app = express();
+
+    // https://alienlabs.loggly.com/dashboards
+    winston.add(winston.transports.Loggly, {
+      inputToken: _.get(this._config, 'alien.loggly.token'),
+      subdomain: _.get(this._config, 'alien.loggly.subdomain'),
+      tags: ['app-server'],
+      json: true
+    });
+
+    winston.log('info', 'Starting', META);
   }
 
   get info() {

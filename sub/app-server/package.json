@@ -69,7 +69,9 @@
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "serve-favicon": "^2.4.2",
-    "uuid": "^3.0.1"
+    "uuid": "^3.0.1",
+    "winston": "^2.3.1",
+    "winston-loggly-bulk": "^2.0.0"
   },
   "optionalDependencies": {
     "bull": "^3.0.0-rc.2"

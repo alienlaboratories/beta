@@ -25,6 +25,7 @@ export const TypeRegistryFactory = () => new TypeRegistry({
     column: DocumentColumn
   },
 
+  // TODO(burdon): Use classnames.
   Group: {
     icon: 'group'
   },

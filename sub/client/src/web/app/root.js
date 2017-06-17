@@ -12,6 +12,7 @@ import { Path } from '../common/path';
 import AdminActivity from '../containers/activities/admin';
 import DetailActivity from '../containers/activities/detail';
 import FolderActivity from '../containers/activities/folder';
+import HomeActivity from '../containers/activities/home';
 import TestingActivity from '../containers/activities/testing';
 
 import '../resources/css/app.less';
@@ -48,6 +49,11 @@ export class Application extends React.Component {
           <Route exact path={ Path.TESTING } component={ TestingActivity }/>
 
           {/*
+            * Home.
+            */}
+          <Route exact path={ Path.ROOT } component={ HomeActivity }/>
+
+          {/*
             * /inbox
             * /favorites
             */}
@@ -62,7 +68,7 @@ export class Application extends React.Component {
           {/*
             * Catch.
             */}
-          <Redirect from="*" to={ Path.HOME }/>
+          <Redirect from="*" to={ Path.ROOT }/>
 
           {/* </Switch> */}
         </Router>

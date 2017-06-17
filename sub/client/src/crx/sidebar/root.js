@@ -39,7 +39,7 @@ export class Application extends React.Component {
           <Route path={ Path.route(['folder']) } component={ FolderActivity }/>
           <Route path={ Path.route(['canvas', 'key']) } component={ DetailActivity }/>
 
-          <Redirect from='*' to={ Path.HOME }/>
+          <Redirect from='*' to={ Path.INBOX }/>
 
         </Router>
       </ApolloProvider>

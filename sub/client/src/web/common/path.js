@@ -32,7 +32,7 @@ export class Path {
   static ROOT     = AppDefs.APP_PATH;
   static TESTING  = AppDefs.APP_PATH + '/testing';
   static ADMIN    = AppDefs.APP_PATH + '/admin';
-  static HOME     = AppDefs.APP_PATH + '/inbox';
+  static INBOX    = AppDefs.APP_PATH + '/inbox';
 
   /**
    * Generates path for router.

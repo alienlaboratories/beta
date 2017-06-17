@@ -106,6 +106,8 @@ export const appRouter = (config, clientManager, options) => {
         // TODO(burdon): Remove unnecessary keys?
         firebase: _.get(config, 'firebase.app'),
 
+        loggly: _.get(config, 'alien.loggly')
+
       }, options.appConfig);
 
       //

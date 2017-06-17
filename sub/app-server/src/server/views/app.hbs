@@ -1,11 +1,12 @@
 {{#section 'head'}}
-  {{! Service worker permissions. }}
+ {{! Service worker permissions. }}
   <link rel="manifest" href="/app/manifest.json">
 
   {{! Webpack bnundle. }}
   <link rel="stylesheet" href="/app/assets/{{ bundle }}.css">
 {{/section}}
 
+{{#section 'body'}}
 <div id="{{ config.root }}" class="ux-platform-{{ platform }}">
 
   {{! Loader gets replaced when app loads. }}
@@ -24,10 +25,15 @@
   {{/if}}
 
 </div>
+{{/section}}
 
+{{#section 'script'}}
 {{! Safestring syntax. }}
 <script>
   window.config = {{{ json config }}};
 </script>
 
+<script src="//cloudfront.loggly.com/js/loggly.tracker-2.1.min.js" async></script>
+
 <script src="/app/assets/{{ bundle }}.bundle.js"></script>
+{{/section}}

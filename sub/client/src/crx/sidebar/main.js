@@ -30,7 +30,7 @@ export class SidebarApp extends BaseApp {
     super(config);
 
     // React Router history.
-    this._history = createMemoryHistory(Path.HOME);
+    this._history = createMemoryHistory(Path.INBOX);
 
     //
     // Messages from Content Script.

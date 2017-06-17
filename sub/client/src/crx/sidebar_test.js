@@ -19,7 +19,7 @@ export class TestSidebarApp extends WebApp {
   constructor(config) {
     super(config);
 
-    this._history = createMemoryHistory(Path.HOME);
+    this._history = createMemoryHistory(Path.INBOX);
   }
 
   get history() {

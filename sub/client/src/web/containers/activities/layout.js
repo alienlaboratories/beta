@@ -77,12 +77,19 @@ export class Layout extends React.Component {
     typeRegistry:   PropTypes.object.isRequired,
     eventListener:  PropTypes.object.isRequired,
     actions:        PropTypes.object.isRequired,
+    nav:            PropTypes.bool,
     header:         PropTypes.object
+  };
+
+  static defaultProps = {
+    nav: true
   };
 
   render() {
     return ReactUtil.render(this, () => {
-      let { config, debug, viewer, navigator, typeRegistry, eventListener, actions, header, children } = this.props;
+      let {
+        config, debug, viewer, navigator, typeRegistry, eventListener, actions, header, nav, children
+      } = this.props;
 
       let title = AppDefs.APP_NAME;
       let version = _.get(config, 'app.version');
@@ -95,7 +102,7 @@ export class Layout extends React.Component {
       switch (platform) {
         case Const.PLATFORM.WEB: {
           links = <Links viewer={ viewer }/>;
-          navbar = <Layout.WebNavbar navigator={ navigator }>{ header }</Layout.WebNavbar>;
+          navbar = nav && <Layout.WebNavbar navigator={ navigator }>{ header }</Layout.WebNavbar>;
           if (debug.showPanel) {
             debugPanel = <DebugPanel/>;
           }
@@ -104,7 +111,7 @@ export class Layout extends React.Component {
 
         default: {
           links = <NavButtons navigator={ navigator }/>;
-          navbar = <Layout.MobileNavbar/>;
+          navbar = nav && <Layout.MobileNavbar/>;
           break;
         }
       }
