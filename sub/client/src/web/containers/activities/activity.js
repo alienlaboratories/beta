@@ -129,7 +129,7 @@ export class Activity {
    * Connect properties for activities.
    */
   static compose() {
-    let connectors = [
+    let connectors = _.concat(...arguments, [
 
       // Redux state.
       connect(mapStateToProps, mapDispatchToProps, mergeProps),
@@ -149,10 +149,10 @@ export class Activity {
         // NOTE: dependencies must previously have been injected into the properties.
         //
         props: ({ ownProps, mutate }) => {
-          let { idGenerator, config } = ownProps;
+          let { idGenerator, config, refetchQueries=Activity.REFETCH_QUERIES } = ownProps;
 
           return {
-            mutator: new Mutator(idGenerator, MutationFragmentsMap, Activity.REFETCH_QUERIES, mutate, config)
+            mutator: new Mutator(idGenerator, MutationFragmentsMap, refetchQueries, mutate, config)
           };
         }
       }),
@@ -165,12 +165,8 @@ export class Activity {
           return _.pick(data, ['errors', 'loading', 'viewer']);
         }
       })
-    ];
-
-    if (arguments) {
-      connectors = _.concat(connectors, arguments);
-    }
-
+    ]);
+    
     return compose(...connectors);
   }
 

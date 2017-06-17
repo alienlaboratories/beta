@@ -163,7 +163,7 @@ export class Mutator {
       optimistic:     _.get(this._config, 'options.optimisticResponse'),
 
       fragments:      this._fragmentMap,
-      refetchQueries: this._refetchQueries
+      refetchQueries: _.isFunction(this._refetchQueries) ? this._refetchQueries() : this._refetchQueries
     };
 
     return new Batch(this._idGenerator, this._mutate, bucket, options);

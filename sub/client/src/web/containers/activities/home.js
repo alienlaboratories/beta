@@ -5,10 +5,12 @@
 import React from 'react';
 import { Link } from 'react-router';
 
-import { ID } from 'alien-core';
+import { ID, MutationUtil } from 'alien-core';
 
-import { Path } from '../../common/path';
 import { ReactUtil } from '../../util/react';
+import { ReduxUtil } from '../../util/redux';
+import { Path } from '../../common/path';
+import { Card } from '../../components/card';
 
 import { Activity } from './activity';
 import { Layout } from './layout';
@@ -26,39 +28,58 @@ class HomeActivity extends React.Component {
     return Activity.getChildContext(this.props);
   }
 
+  handleCreateProject(group) {
+    let { viewer: { groups }, mutator, navigator } = this.props;
+
+    // TODO(burdon): Refresh viewer.
+    mutator.batch(groups, group.id)
+      .createItem('Project', [
+        MutationUtil.createFieldMutation('group', 'key', ID.key(group)),
+        MutationUtil.createFieldMutation('title', 'string', 'New Project')
+      ], 'new')
+      .commit()
+      .then(({ batch }) => {
+        navigator.pushCanvas(batch.refs['new']);
+      });
+  }
+
   render() {
     return ReactUtil.render(this, () => {
-      let { config, debug, viewer, actions, navigator, typeRegistry, eventListener } = this.props;
+      let { config, debug, mutator, viewer, actions, navigator, typeRegistry, eventListener } = this.props;
       if (!viewer) {
         return;
       }
 
-      // TODO(burdon): Use card renderers.
+      let ItemRenderer = Card.ItemRenderer(typeRegistry, mutator, viewer);
 
       let groups = _.map(viewer.groups, group => {
 
+        // Current projects.
         let projects = _.map(group.projects, project => {
           return (
-            <div key={ project.id } className="ux-home-project">
-              <div className="ux-header ux-row">
-                <Link to={ Path.canvas(ID.key(project)) }>
-                  <h3>{ project.title }</h3>
-                </Link>
-              </div>
-            </div>
+            <ItemRenderer key={ project.id } item={ project } readOnly={ true }/>
           );
         });
 
-        // TODO(burdon): Create new.
+        // New Project.
+        projects.push(
+          <div key="_create" className="ux-card ux-home-create"
+               onClick={ this.handleCreateProject.bind(this, group) }>
+            <div className="ux-title">New Project</div>
+          </div>
+        );
 
         return (
           <div key={ group.id } className="ux-home-group">
             <div className="ux-header ux-row">
-              <i className="ux-icon ux-icon-group"/>
+              <Link to={ Path.canvas(ID.key(group)) }>
+                <i className="ux-icon ux-icon-group"/>
+              </Link>
+
               <h2>{ group.title }</h2>
             </div>
 
-            <div className="ux-row">{ projects }</div>
+            <div className="ux-row ux-card-deck">{ projects }</div>
           </div>
         );
       });
@@ -73,7 +94,7 @@ class HomeActivity extends React.Component {
                 eventListener={ eventListener }
                 nav={ false }>
 
-          <div className="ux-home ux-column">
+          <div className="ux-home ux-column ux-grow">
             { groups }
           </div>
 
@@ -87,4 +108,12 @@ class HomeActivity extends React.Component {
 // HOC.
 //-------------------------------------------------------------------------------------------------
 
-export default Activity.compose()(HomeActivity);
+export default Activity.compose(
+  ReduxUtil.connect({
+    mapStateToProps: (state, ownProps) => {
+      return {
+        refetchQueries: () => ['ViewerQuery']
+      };
+    }
+  })
+)(HomeActivity);

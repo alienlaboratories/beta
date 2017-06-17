@@ -237,11 +237,17 @@ export class Batch {
         // http://dev.apollodata.com/core/apollo-client-api.html#DataProxy.readFragment
         //
 
-        let cachedItem = proxy.readFragment({
-          id: ID.createStoreId(key),
-          fragment,
-          fragmentName
-        });
+        let cachedItem;
+        try {
+          cachedItem = proxy.readFragment({
+            id: ID.createStoreId(key),
+            fragment,
+            fragmentName
+          });
+        } catch (err) {
+          logger.error(err);
+          throw err;
+        }
 
         //
         // Apply mutations.

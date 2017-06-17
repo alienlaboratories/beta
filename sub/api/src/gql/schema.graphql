@@ -12,6 +12,9 @@
 # TODO(burdon): Move common fields into meta?
 # http://dev.apollodata.com/tools/graphql-tools/resolvers.html#Unions-and-interfaces
 # https://github.com/apollostack/graphql-server/issues/172
+#
+# Design constraints:
+# - Make non Item fields optional (esp arrays).
 #===================================================================================================
 
 # Common properties.
@@ -70,7 +73,7 @@ type User implements Item {
   contact: Contact
 
   # TODO(burdon): Remove (only query via project links).
-  tasks(filter: FilterInput): [Task]!
+  tasks(filter: FilterInput): [Task]
 
   groups: [Group]
 }
@@ -121,7 +124,7 @@ type Contact implements Item {
   user: User
 
   # Sub-tasks (do not belong to any Project).
-  tasks: [Task]!
+  tasks: [Task]
 
   # Synced messages.
   messages: [Message]!
@@ -242,7 +245,7 @@ type Project implements Item {
   group: Group!
 
   # Sub-tasks.
-  tasks: [Task]!
+  tasks: [Task]
 
   # TODO(burdon): Map type (array of typed values).
   boards: [Board]
@@ -267,7 +270,7 @@ type Task implements Item {
   project: Project
 
   # Sub-tasks.
-  tasks: [Task]!
+  tasks: [Task]
 
   owner: User!
   assignee: User

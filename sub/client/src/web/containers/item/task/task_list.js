@@ -74,10 +74,12 @@ export class TaskList extends React.Component {
     mutator:    PropTypes.object.isRequired,
     viewer:     PropTypes.object.isRequired,
     parent:     PropTypes.object.isRequired,          // Parent object (e.g., Project, Contact).
+    readOnly:   PropTypes.bool,
     tasks:      PropTypes.array
   };
 
   static defaultProps = {
+    readOnly: false,
     tasks: []
   };
 
@@ -122,11 +124,12 @@ export class TaskList extends React.Component {
   }
 
   render() {
-    let { tasks } = this.props;
+    let { readOnly, tasks } = this.props;
 
     return (
       <List ref="tasks"
-            showEditor={ true }
+            showEditor={ !readOnly }
+            readOnly={ readOnly }
             items={ tasks }
             itemRenderer={ TaskItemRenderer }
             itemEditor={ TaskItemEditor }

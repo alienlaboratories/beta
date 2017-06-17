@@ -19,9 +19,9 @@ import { Canvas } from './canvas';
 
 import './card.less';
 
-const CarcChildContextTypes = {
-  item: PropTypes.object,
-  setSectionState: PropTypes.func.isRequired
+const CardChildContextTypes = {
+  item:             PropTypes.object,
+  setSectionState:  PropTypes.func.isRequired
 };
 
 /**
@@ -58,11 +58,11 @@ export class Card extends React.Component {
   /**
    * Type-specific card renderer.
    */
-  static ItemRenderer = (typeRegistry, mutator, viewer) => ({ item }) => {
+  static ItemRenderer = (typeRegistry, mutator, viewer) => ({ item, readOnly }) => {
     console.assert(typeRegistry && mutator && viewer);
     let CardComponent = typeRegistry && typeRegistry.card(item.type) || Card;
 
-    return <CardComponent item={ item } mutator={ mutator } viewer={ viewer }/>;
+    return <CardComponent item={ item } mutator={ mutator } viewer={ viewer } readOnly={ readOnly }/>;
   };
 
   /**
@@ -122,10 +122,10 @@ export class Card extends React.Component {
     navigator:    PropTypes.object
   };
 
-  static childContextTypes = CarcChildContextTypes;
+  static childContextTypes = CardChildContextTypes;
 
   static createInlineComponent(render) {
-    render.contextTypes = CarcChildContextTypes;
+    render.contextTypes = CardChildContextTypes;
     return render;
   }
 
@@ -170,7 +170,7 @@ export class Card extends React.Component {
         MutationUtil.createDeleteMutation()
       ]);
 
-    // TODO(burdon): Hack. Delegate (via context) to parent canvas.
+    // TODO(burdon): Hack. Delegate (via context) to parent canvas since type-specific.
     if (item.project) {
       batch.updateItem(item.project, [
         MutationUtil.createSetMutation('tasks', 'key', ID.key(item), false)
@@ -202,7 +202,7 @@ export class Card extends React.Component {
   render() {
     return ReactUtil.render(this, () => {
       let { config } = this.context;
-      let { children, className, debug, item, icon, showLabels=false } = this.props;
+      let { children, className, debug, item, icon, readOnly, showLabels=false } = this.props;
       if (!item) {
         return;
       }
@@ -231,10 +231,16 @@ export class Card extends React.Component {
           <MenuBar className="ux-card-header" panel={ Card.MENU_PANEL } onSelect={ this.handleMenuSelect.bind(this) }>
             { icon && <i className="ux-icon">{ icon }</i> }
 
+            { readOnly ?
+
+            <div className="ux-title ux-grow"
+                 onClick={ this.handleSelect.bind(this) }>{ title }</div> :
+
             <TextBox className="ux-title ux-grow"
                      value={ title }
-                     clickToEdit={ true }
+                     clickToEdit={ !readOnly }
                      onEnter={ this.handleEdit.bind(this, 'title') }/>
+            }
 
           </MenuBar>
 
