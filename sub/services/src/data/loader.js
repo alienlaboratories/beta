@@ -152,6 +152,29 @@ export class Loader {
           // TODO(burdon): Factor out (templates).
           boards: [
             {
+              alias: 'favorites',
+              title: 'Favorites',
+              icon: 'star',
+              columns: [
+                {
+                  id:     'low',
+                  value:  { string: 'low' },
+                  title:  'Low'
+                },
+                {
+                  id:     'medium',
+                  value:  { string: 'medium' },
+                  title:  'Medium'
+                },
+                {
+                  id:     'high',
+                  value:  { string: 'high' },
+                  title:  'High'
+                }
+              ],
+              filter: { labels: ['_favorite'] }
+            },
+            {
               alias: 'funding',
               title: 'Funding pipeline',
               columns: [
@@ -176,7 +199,7 @@ export class Loader {
                   title:  'Reject'
                 },
               ],
-              filter: { labels: ['_favorite'] }
+              filter: { labels: ['funding'] }
             }
           ]
         });

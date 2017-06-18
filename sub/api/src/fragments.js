@@ -207,12 +207,14 @@ const UserFragment = gql`
 
 const SearchItemFragment = gql`
   fragment SearchItemFragment on Item {
+    ...ItemFragment
     ...ContactFragment
     ...DocumentFragment
     ...ProjectFragment
     ...NestedTasksFragment
   }
 
+  ${ItemFragment}
   ${ContactFragment}
   ${DocumentFragment}
   ${ProjectFragment}

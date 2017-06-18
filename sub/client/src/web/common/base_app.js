@@ -16,6 +16,7 @@ import { ID, IdGenerator, Matcher, QueryParser, QueryRegistry } from 'alien-core
 import { ITEM_TYPES } from 'alien-api';
 
 import { createFragmentMatcher} from '../../util/apollo_tools';
+import { Loggly } from '../util/loggly';
 
 import { Actions } from './actions';
 import { Analytics } from './analytics';
@@ -42,19 +43,14 @@ export class BaseApp {
 
     // TODO(burdon): Experimental (replace with Apollo directives).
     // Manages Apollo query subscriptions.
-    this._queryRegistry = new QueryRegistry(config);
+    this._queryRegistry = new QueryRegistry(this._config);
 
     // TODO(burdon): Runtime option. This currently breaks if null.
     this._analytics = new Analytics(this._config); // new SegmentAnalytics(this._config);
 
-    // TODO(burdon): Wrap.
-    window._LTracker.push({
-      token:      _.get(this._config, 'loggly.token'),
-      subdomain:  _.get(this._config, 'loggly.subdomain'),
-      tags:      [_.get(this._config, 'app.platform')]
-    });
-
-    window._LTracker.push('Starting');
+    // Loggly.
+    this._logger = new Loggly(this._config);
+    this._logger.log('Starting');
 
     // Global error handling.
     ErrorUtil.handleErrors(window, error => this.onError(error));
