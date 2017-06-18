@@ -6,6 +6,8 @@ import yaml from 'node-yaml';
 
 import { App } from './src/app';
 
+// TODO(burdon): Slow start-up. Compile.
+
 global.__ENV__            = _.get(process.env, 'NODE_ENV', 'development');
 global.__PRODUCTION__     = __ENV__ === 'production';
 global.__DEVELOPMENT__    = __ENV__ === 'development';
@@ -13,7 +15,8 @@ global.__TESTING__        = __ENV__ === 'testing';
 
 global.ENV = {
   ALIEN_CONFIG_FIREBASE: __PRODUCTION__ ? 'firebase/alienlabs-beta.yml' : 'firebase/alienlabs-dev.yml',
-  ALIEN_CONFIG_GOOGLE:   __PRODUCTION__ ? 'google/alienlabs-beta.yml'   : 'google/alienlabs-dev.yml',
+
+  ALIEN_CONFIG_GOOGLE: 'google/alienlabs-dev.yml',
 
   ALIEN_SERVER_CONF_DIR: path.join(__dirname, '../../conf'),
   ALIEN_SERVER_DATA_DIR: path.join(__dirname, '../../data'),
