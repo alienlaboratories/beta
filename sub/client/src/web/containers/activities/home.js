@@ -38,10 +38,8 @@ class HomeActivity extends React.Component {
       ], 'new')
       .commit()
       .then(({ batch }) => {
-        // TODO(burdon): Race condition hack.
-        setTimeout(() => {
-          navigator.pushCanvas(batch.refs['new']);
-        }, 1000);
+        // TODO(burdon): Race condition hack?
+        navigator.pushCanvas(batch.refs['new']);
       });
   }
 

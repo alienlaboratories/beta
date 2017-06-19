@@ -65,6 +65,20 @@ export const appRouter = (config, clientManager, options) => {
     let { user } = req;
     let { bundle='web', platform='web' } = req.query;
 
+    // TODO(burdon): Detect mobile (also redirect if detect platform).
+    // https://nodejs.org/docs/v0.4.12/api/http.html#http.ServerRequest
+    let sub = req.hostname.split('.')[0];
+    switch (sub) {
+      case 'mobile': {
+        console.log('### MOBILE ###');
+        break;
+      }
+
+      default: {
+        break;
+      }
+    }
+
     // Create the client.
     // TODO(burdon): Mobile web?
     // TODO(burdon): Client should register after startup? (might store ID -- esp. if has worker, etc.)
