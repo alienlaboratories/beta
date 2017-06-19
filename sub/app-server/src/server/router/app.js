@@ -4,6 +4,7 @@
 
 import _ from 'lodash';
 import express from 'express';
+import { URL } from 'url';
 
 import { Const } from 'alien-core';
 import { AppDefs } from 'alien-client';
@@ -64,6 +65,21 @@ export const appRouter = (config, clientManager, options) => {
   router.get(new RegExp(/(.*)/), isAuthenticated('/user/login'), (req, res, next) => {
     let { user } = req;
     let { bundle='web', platform='web' } = req.query;
+
+    // TODO(burdon): Detect mobile.
+    // https://nodejs.org/docs/v0.4.12/api/http.html#http.ServerRequest
+    let url = new URL(req.hostname);
+    let sub = url.split('.')[0];
+    switch (sub) {
+      case 'mobile': {
+        console.log('!!!!!!!! MOBILE !!!!!!!!');
+        break;
+      }
+
+      default: {
+        break;
+      }
+    }
 
     // Create the client.
     // TODO(burdon): Mobile web?
