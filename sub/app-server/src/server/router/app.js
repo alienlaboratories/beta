@@ -4,7 +4,6 @@
 
 import _ from 'lodash';
 import express from 'express';
-import { URL } from 'url';
 
 import { Const } from 'alien-core';
 import { AppDefs } from 'alien-client';
@@ -66,13 +65,12 @@ export const appRouter = (config, clientManager, options) => {
     let { user } = req;
     let { bundle='web', platform='web' } = req.query;
 
-    // TODO(burdon): Detect mobile.
+    // TODO(burdon): Detect mobile (also redirect if detect platform).
     // https://nodejs.org/docs/v0.4.12/api/http.html#http.ServerRequest
-    let url = new URL(req.hostname);
-    let sub = url.split('.')[0];
+    let sub = req.hostname.split('.')[0];
     switch (sub) {
       case 'mobile': {
-        console.log('!!!!!!!! MOBILE !!!!!!!!');
+        console.log('### MOBILE ###');
         break;
       }
 

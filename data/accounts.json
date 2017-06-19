@@ -1,6 +1,5 @@
 {
   "Group": {
-
     "_": {
       "admin": {
         "admin": true,
@@ -11,8 +10,23 @@
       }
     },
 
+    "_testers": {
+      "rich_burdon_gmail_com" : {
+        "title": "Rich",
+        "whitelist": [
+          "rich.burdon@gmail.com"
+        ]
+      },
+      "lucas_geiger_gmail_com" : {
+        "title": "Lucas",
+        "whitelist": [
+          "lucas.geiger@gmail.com"
+        ]
+      }
+    },
+
     "alienlabs_com": {
-      "eng" : {
+      "eng": {
         "admin": true,
         "title": "Alien Engineering",
         "whitelist": [
@@ -33,25 +47,10 @@
     },
 
     "seedplus_com": {
-      "partners" : {
+      "partners": {
         "title": "SeedPlus",
         "whitelist": [
           "michael@seedplus.com"
-        ]
-      }
-    },
-
-    "private": {
-      "rich_burdon_gmail_com" : {
-        "title": "Rich",
-        "whitelist": [
-          "rich.burdon@gmail.com"
-        ]
-      },
-      "lucas_geiger_gmail_com" : {
-        "title": "Lucas",
-        "whitelist": [
-          "lucas.geiger@gmail.com"
         ]
       }
     }
