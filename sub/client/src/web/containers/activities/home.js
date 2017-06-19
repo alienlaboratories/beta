@@ -31,7 +31,6 @@ class HomeActivity extends React.Component {
   handleCreateProject(group) {
     let { viewer: { groups }, mutator, navigator } = this.props;
 
-    // TODO(burdon): Refresh viewer.
     mutator.batch(groups, group.id)
       .createItem('Project', [
         MutationUtil.createFieldMutation('group', 'key', ID.key(group)),
@@ -39,7 +38,10 @@ class HomeActivity extends React.Component {
       ], 'new')
       .commit()
       .then(({ batch }) => {
-        navigator.pushCanvas(batch.refs['new']);
+        // TODO(burdon): Race condition hack.
+        setTimeout(() => {
+          navigator.pushCanvas(batch.refs['new']);
+        }, 1000);
       });
   }
 
@@ -49,6 +51,8 @@ class HomeActivity extends React.Component {
       if (!viewer) {
         return;
       }
+
+      // TODO(burdon): Search panel (move to SplitLayout)
 
       let ItemRenderer = Card.ItemRenderer(typeRegistry, mutator, viewer);
 
@@ -91,8 +95,7 @@ class HomeActivity extends React.Component {
                 actions={ actions }
                 navigator={ navigator }
                 typeRegistry={ typeRegistry }
-                eventListener={ eventListener }
-                nav={ false }>
+                eventListener={ eventListener }>
 
           <div className="ux-home ux-column ux-grow">
             { groups }
@@ -112,6 +115,8 @@ export default Activity.compose(
   ReduxUtil.connect({
     mapStateToProps: (state, ownProps) => {
       return {
+        // Update query.
+        // TODO(burdon): Replace with subscriptions.
         refetchQueries: () => ['ViewerQuery']
       };
     }
