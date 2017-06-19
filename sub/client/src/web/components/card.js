@@ -11,6 +11,7 @@ import { ID, MutationUtil } from 'alien-core';
 
 import { ReactUtil } from '../util/react';
 
+import { TextArea } from '../components/textarea';
 import { TextBox } from '../components/textbox';
 import { LabelPicker } from '../components/labels';
 import { MenuBar, MenuPanel, MenuItem } from '../components/menu';
@@ -180,6 +181,19 @@ export class Card extends React.Component {
     batch.commit();
   }
 
+  handleDescriptionUpdate(value, initialValue) {
+    if (value !== initialValue) {
+      let { mutator, viewer: { groups }, item } = this.props;
+
+      mutator
+        .batch(groups, item.bucket)
+        .updateItem(item, [
+          MutationUtil.createFieldMutation('description', 'string', value)
+        ])
+        .commit();
+    }
+  }
+
   handleLabelUpdate(label, add) {
     let { mutator, viewer: { groups }, item } = this.props;
 
@@ -249,18 +263,19 @@ export class Card extends React.Component {
 
             { showLabels &&
             <Card.Section id="labels">
-              <LabelPicker labels={ labels || [] } onUpdate={ this.handleLabelUpdate.bind(this) }/>
+              <LabelPicker labels={ labels || [] }
+                           onUpdate={ this.handleLabelUpdate.bind(this) }/>
             </Card.Section>
             }
 
-            {/* TODO(burdon): Make extensible. */}
-            { description &&
-            <Card.Section id="details" title="Details">
+            {/* TODO(burdon): Extend details. */}
+            <Card.Section id="details" title="Description" open={ false }>
               <div className="ux-card-padding">
-                <div className="ux-font-small">{ description }</div>
+                <TextArea className="ux-font-xsmall"
+                          value={ description }
+                          onBlur={ this.handleDescriptionUpdate.bind(this) }/>
               </div>
             </Card.Section>
-            }
 
             {/* Type-specific */}
             { children }

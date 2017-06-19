@@ -107,37 +107,6 @@ ul.ux-inline {
 //
 
 //
-// Text controls.
-//
-// Checkbox: https://codepen.io/bbodine1/pen/novBm
-//
-
-input[type=text], textarea {
-  background-color: transparent;
-}
-
-input[type=text] {
-  spellcheck: none;
-
-  // Keep same height as other controls (e.g., select).
-  border: 1px solid transparent;
-  border-bottom: 1px solid @ux-control-border;
-}
-
-textarea {
-  resize: none;
-  spellcheck: none;
-
-  border: 1px solid @ux-control-border;
-}
-textarea::-webkit-scrollbar {
-  width: @ux-scrollbar-width;
-}
-textarea::-webkit-scrollbar-thumb {
-  background-color: @ux-scrollbar-color;
-}
-
-//
 // Form controls.
 //
 
@@ -176,7 +145,42 @@ select:hover {
 }
 
 select {
+  outline: none;
   -webkit-appearance: none;
   -webkit-border-radius: 0;
-  outline: none;
+}
+
+//
+// Text controls.
+//
+// Checkbox: https://codepen.io/bbodine1/pen/novBm
+//
+
+input[type=text], textarea {
+  background-color: transparent;
+}
+
+input[type=text] {
+  spellcheck: none;
+
+  // Keep same height as other controls (e.g., select).
+  border: 1px solid transparent;
+  border-bottom: 1px solid @ux-control-border;
+}
+
+textarea {
+  display: flex;
+  width: 100%;
+
+  resize: none;
+  spellcheck: none;
+
+  border: 1px solid @ux-control-border-light;
+
+  &::-webkit-scrollbar {
+    width: @ux-scrollbar-width;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: @ux-scrollbar-color;
+  }
 }

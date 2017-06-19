@@ -229,6 +229,7 @@ const ProjectBoardFragment = gql`
   fragment ProjectBoardFragment on Project {
     boards {
       alias
+      filter
       title
       icon
 

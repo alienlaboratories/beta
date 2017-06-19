@@ -175,26 +175,43 @@ export class ProjectBoard extends React.Component {
 
     } else {
       let { adapter } = this.state;
-      let { item:project } = this.props;
+      let { item:project, boardAlias } = this.props;
 
-      // TODO(burdon): Task specific.
-      // TODO(burdon): Remove create button for other types.
       // Column-specific mutations.
       let adapterMutations = adapter.onCreateItem(column);
 
-      // Create.
-      mutator
-        .batch(groups, project.bucket)
-        .createItem('Task', [
-          MutationUtil.createFieldMutation('owner', 'key', ID.key(user)),
-          MutationUtil.createFieldMutation('project', 'key', ID.key(project)),
-          adapterMutations,
-          mutations
-        ], 'task')
-        .updateItem(project, [
-          ({ task }) => MutationUtil.createSetMutation('tasks', 'key', ID.key(task))
-        ])
-        .commit();
+      let board = _.find(_.get(project, 'boards'), board => board.alias === boardAlias);
+      let filter = _.get(board, 'filter');
+      if (filter) {
+        // TODO(burdon): MOVE TO BOARD ADAPTER.
+        filter = JSON.parse(filter);
+        console.assert(filter.type);
+
+        _.each(filter.labels, label => {
+          mutations.push(MutationUtil.createSetMutation('labels', 'string', label));
+        });
+
+        mutator
+          .batch(groups, project.bucket)
+          .createItem(filter.type, [
+            adapterMutations,
+            mutations
+          ])
+          .commit();
+      } else {
+        mutator
+          .batch(groups, project.bucket)
+          .createItem('Task', [
+            MutationUtil.createFieldMutation('owner', 'key', ID.key(user)),
+            MutationUtil.createFieldMutation('project', 'key', ID.key(project)),
+            adapterMutations,
+            mutations
+          ], 'task')
+          .updateItem(project, [
+            ({ task }) => MutationUtil.createSetMutation('tasks', 'key', ID.key(task))
+          ])
+          .commit();
+      }
     }
   }
 

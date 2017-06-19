@@ -96,7 +96,9 @@ class HomeActivity extends React.Component {
                 eventListener={ eventListener }>
 
           <div className="ux-home ux-scroll-container ux-column ux-grow">
-            { groups }
+            <div>
+              { groups }
+            </div>
           </div>
 
         </Layout>

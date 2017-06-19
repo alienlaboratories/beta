@@ -152,6 +152,7 @@ class Card extends React.Component {
           </div>
         </div>
         <div className="ux-main">
+
           { item.description &&
           <div className="ux-card-section ux-padding">
             <div className="ux-row">

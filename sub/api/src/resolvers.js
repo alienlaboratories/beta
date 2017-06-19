@@ -186,6 +186,9 @@ export class Resolvers {
                 icon,
                 columns,
 
+                // Serialize filter.
+                filter: JSON.stringify(filter),
+
                 // Flatten map to an array.
                 itemMeta: _.map(_.get(board, 'itemMeta'), (value, itemId) => ({ itemId, ...value })),
 
