@@ -26,14 +26,13 @@ globals:
 parser: 'babel-eslint'
 
 parserOptions:
-  ecmaFeatures:
-    classes: true
-    experimentalObjectRestSpread: true
-    jsx: true
-
   sourceType: module
 
+  ecmaFeatures:
+    jsx: true
+
 plugins:
+  # https://github.com/yannickcr/eslint-plugin-react
   - react
 
 rules:
@@ -62,9 +61,11 @@ rules:
     - error
     - single
 
+  # https://github.com/yannickcr/eslint-plugin-react
   # https://github.com/eslint/eslint/issues/6303
   react/jsx-uses-react: error
   react/jsx-uses-vars: error
+# react/jsx-indent-props: 0
 
   semi:
     - error

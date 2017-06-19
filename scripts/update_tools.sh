@@ -62,6 +62,8 @@ yarn global add npm
 yarn global add serverless
 yarn global add webpack
 
+yarn global upgrade
+
 #
 # Python
 #
