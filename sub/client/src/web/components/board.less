@@ -2,55 +2,59 @@
 // Copyright 2017 Alien Labs.
 //
 
-@import (reference) '../resources/css/mixin';
-@import '../resources/css/theme';
+@import (reference) '../resources/css/ref/mixin.less';
+@import (reference) '../resources/css/ref/theme.less';
 
 .ux-board {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
 
-  .ux-board-columns {
-    display: flex;
-    flex-direction: row;
-    flex-grow: 1;
+  overflow: hidden;
 
-    padding: 0 6px;
+  .ux-board-columns {
+    margin: @ux-board-column-spacing;
 
     .ux-board-column {
       display: flex;
       flex-direction: column;
+      width: @ux-card-width;
 
-      margin: 2px;
-      padding: 8px 0;
+      background-color: @ux-board-column-background;
+//    border: @ux-board-column-border;
+      border-radius: @ux-board-radius;
+      box-shadow: @ux-box-shadow;
 
-      background-color: #FAFAFA;
-      border: 1px solid #E5E5E5;
-      border-radius: 4px;
+      margin-right: @ux-board-column-spacing;
+      &:last-child {
+        margin: 0;
+      }
 
-      .ux-board-header {
-        margin-bottom: 8px;
+      .ux-board-column-header {
+        display: flex;
+        flex-direction: row;
+        flex-shrink: 0;
+        padding: @ux-board-padding 2 * @ux-board-padding;
+
+        background-color: @ux-board-column-header-background;
 
         h2 {
-          padding: 0 8px;
-          font-weight: 400;
+          font-size: @ux-font-small;
         }
       }
 
-      .ux-board-list {
-        width: @ux-card-width;
-
-        .ux-card {
-          margin: 4px 0;
-        }
-
-        .ux-drop-target {
-          margin: 0 4px;
-        }
+      .ux-board-column-footer {
+        display: flex;
+        flex-direction: row;
+        flex-shrink: 0;
+        padding: @ux-board-padding;
+        margin-bottom: 2px;
       }
 
-      .ux-toolbar {
-        margin: 8px 8px 0;
+      .ux-card-deck.ux-list {
+        > .ux-list-items {
+          padding: 0 @ux-card-spacing;
+        }
       }
     }
   }

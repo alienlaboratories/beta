@@ -6,7 +6,7 @@ import { print } from 'graphql/language/printer';
 import { createNetworkInterface } from 'apollo-client';
 
 import { HttpUtil, TypeUtil, Logger } from 'alien-util';
-import { AuthUtil, Const, ItemStore, UpsertItemsMutationName } from 'alien-core';
+import { AuthUtil, Const } from 'alien-core';
 
 import { ConnectionManager } from './client';
 
@@ -23,14 +23,14 @@ export class NetworkManager {
    * @param {object }config
    * @param {AuthManager} authManager
    * @param {ConnectionManager} connectionManager
-   * @param {EventHandler} eventHandler
+   * @param {EventListener} eventListener
    */
-  constructor(config, authManager, connectionManager, eventHandler) {
-    console.assert(config && authManager && connectionManager && eventHandler);
+  constructor(config, authManager, connectionManager, eventListener) {
+    console.assert(config && authManager && connectionManager && eventListener);
     this._config = config;
     this._authManager = authManager;
     this._connectionManager = connectionManager;
-    this._eventHandler = eventHandler;
+    this._eventListener = eventListener;
 
     // Log and match request/reponses.
     this._requestCount = 0;
@@ -46,10 +46,9 @@ export class NetworkManager {
   /**
    * Initializes the network manager.
    * May be called multiple times -- e.g., after config has changed.
-   * @param {ItemStore} localItemStore
    * @returns {NetworkManager}
    */
-  init(localItemStore=undefined) {
+  init() {
 
     // Reset stats.
     this._requestCount = 0;
@@ -137,7 +136,7 @@ export class NetworkManager {
         });
 
         this._logger.logRequest(requestId, request, options.headers);
-        this._eventHandler.emit({ type: 'network.out' });
+        this._eventListener.emit({ type: 'network.send' });
         next();
       }
     };
@@ -163,9 +162,11 @@ export class NetworkManager {
         // Error handler.
         const onError = errors => {
           this._logger.logErrors(requestId, errors);
-          this._eventHandler.emit({
+          this._eventListener.emit({
             type: 'error',
-            message: NetworkLogger.stringify(errors)
+            error: {
+              message: NetworkLogger.stringify(errors)
+            }
           });
         };
 
@@ -175,6 +176,7 @@ export class NetworkManager {
               onError(payload.errors);
             } else {
               this._logger.logResponse(requestId, payload);
+              this._eventListener.emit({ type: 'network.recv' });
             }
           });
         } else {
@@ -203,15 +205,9 @@ export class NetworkManager {
     // https://github.com/apollographql/apollo-client/blob/master/src/transport/networkInterface.ts
     //
 
-    // TODO(burdon): Configure batching via options.
-    // https://github.com/apollostack/core-docs/blob/master/source/network.md#query-batching
-
-    // TODO(burdon): Testing (mockNetworkInterface).
-    // https://github.com/apollographql/apollo-client/blob/a86acf25df5eaf0fdaab264fd16c2ed22657e65c/test/customResolvers.ts
-
     let middleware = [
       addHeaders,
-      fixFetchMoreBug,
+      fixFetchMoreBug,      // TODO(burdon): Remove.
       logRequest
     ];
 
@@ -224,16 +220,32 @@ export class NetworkManager {
       middleware.push(delayRequest());
     }
 
+    // TODO(burdon): Batching (change middleware).
+    // http://dev.apollodata.com/core/network.html#query-batching
+
+    // http://dev.apollodata.com/core/network.html#network-interfaces
+    let options = {
+      uri: this._config.graphql,
+      batchInterval: 10
+    };
+
     // Create HTTPFetchNetworkInterface
-    let networkInterface = createNetworkInterface({ uri: this._config.graphql })
+    let networkInterface = createNetworkInterface(options)
       .use(middleware)
       .useAfter(afterware);
 
-    if (localItemStore) {
-      this._networkInterface = CachingNetworkInterface.createNetworkInterface(localItemStore, networkInterface);
-    } else {
-      this._networkInterface = networkInterface;
-    }
+    // Error handling.
+    this._networkInterface = {
+      query: request => networkInterface.query(request)
+        .catch(error => {
+          this._eventListener.emit({
+            type: 'error',
+            error
+          });
+
+          throw error;
+        })
+    };
 
     return this;
   }
@@ -310,12 +322,12 @@ export class ChromeNetworkInterface { // extends NetworkInterface {
    * Creates the network interface with the given Chrome channel (to the BG page).
    *
    * @param channel
-   * @param eventHandler
+   * @param eventListener
    */
-  constructor(channel, eventHandler=undefined) {
+  constructor(channel, eventListener=undefined) {
     console.assert(channel);
     this._channel = channel;
-    this._eventHandler = eventHandler;
+    this._eventListener = eventListener;
   }
 
   /**
@@ -325,81 +337,11 @@ export class ChromeNetworkInterface { // extends NetworkInterface {
    * @return {Promise<GraphQLResult>}
    */
   query(gqlRequest) {
-    this._eventHandler && this._eventHandler.emit({ type: 'network.out' });
+    this._eventListener && this._eventListener.emit({ type: 'network.send' });
+    // TODO(burdon): Catch errors.
     return this._channel.postMessage(gqlRequest, true).then(gqlResponse => {
-      this._eventHandler && this._eventHandler.emit({ type: 'network.in' });
+      this._eventListener && this._eventListener.emit({ type: 'network.recv' });
       return gqlResponse;
     });
-  }
-}
-
-/**
- * Implements caching layer for NetworkInterface.
- */
-export class CachingNetworkInterface { // extends NetworkInterface {
-
-  // TODO(burdon): Currently just intercepts local namespace. Should join results from server for other NS.
-
-  // TODO(burdon): Extend NetworkInterface.
-  // https://github.com/apollographql/apollo-client/issues/1403
-  // https://github.com/apollographql/apollo-client/blob/master/src/transport/networkInterface.ts
-
-  /**
-   * Monkey patch existing interface.
-   * @param itemStore
-   * @param networkInterface
-   * @returns {*}
-   */
-  static createNetworkInterface(itemStore, networkInterface) {
-    console.assert(itemStore && networkInterface);
-
-    let originalQuery = networkInterface.query.bind(networkInterface);
-
-    // ExecutionResult { data, errors }
-    // https://github.com/graphql/graphql-js/blob/master/src/execution/execute.js
-    networkInterface.query = (request) => {
-      let { operationName, variables={} } = request;
-
-      switch (operationName) {
-
-        // TODO(burdon): Determine namespace from item when creating mutator.
-
-        // Mutations.
-        case UpsertItemsMutationName: {
-          let { namespace, mutations } = variables;
-          if (namespace === itemStore.namespace) {
-            logger.info('Local mutations: ' + TypeUtil.stringify(mutations));
-            return ItemStore.applyMutations(itemStore, {}, mutations).then(items => ({
-              data: {
-                items: items
-              }
-            }));
-          }
-          break;
-        }
-
-        // Queries.
-        // TODO(burdon): Plugin or generalize queries (like mutations).
-        default: {
-          let { filter } = variables;
-          if (filter) {
-            let { namespace } = filter;
-            if (namespace === itemStore.namespace) {
-              logger.info('Local query: ' + TypeUtil.stringify(filter));
-              return itemStore.queryItems({}, {}, filter).then(items => ({
-                data: {
-                  search: items
-                }
-              }));
-            }
-          }
-          break;
-        }
-      }
-
-      return originalQuery(request);
-    };
-
-    return networkInterface;
   }
 }

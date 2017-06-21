@@ -59,6 +59,7 @@ SERVICE_CONF=${SERVICE_CONF:-"../../ops/conf/k8s/alien-app-server.yml"}
 BUILD=1
 MINIKUBE=0
 DELETE=0
+
 for i in "$@"
 do
 case $i in
@@ -119,8 +120,19 @@ cp -R ../../data dist
 #
 
 set +x
-log "Configure Docker"
+log "Configure Docker (${MINIKUBE_DOCKER_REPO})"
 set -x
+
+#
+# NOTE: minikube must be running (./ops/scripts/minikube_start.sh)
+#
+
+minikube status
+if [ $? -ne 0 ]; then
+  echo "minikube must be running (for docker service)."
+  echo "./ops/scripts/minikube_start.sh"
+  exit 1
+fi
 
 if [ ${MINIKUBE} -eq 1 ]; then
 
@@ -135,9 +147,12 @@ else
   eval $(minikube docker-env)
 # eval $(docker-machine env ${DOCKER_MACHINE})
 
+  # ECS: EC2 Container Service
   # Get token (valid for 12 hours).
+  # https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories
   # http://docs.aws.amazon.com/cli/latest/reference/ecr/get-login.html
-  # Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+  # Errors if minikube's docker service isn't running.
+  # Cannot connect to the Docker daemon... Is the docker daemon running?
   set +x
   eval $(aws ecr get-login)
   set -x
@@ -202,8 +217,10 @@ set -x
 if [ ${MINIKUBE} -eq 1 ]; then
   kubectl config set-context minikube
 else
-  kubectl config set-context ${ALIEN_CLUSTER}
+  kubectl config use-context ${ALIEN_CLUSTER}
 fi
+
+kubectl config get-contexts
 
 if [ ${DELETE} -eq 1 ]; then
   set +x

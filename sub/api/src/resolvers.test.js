@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { graphql } from 'graphql';
 
 import { Database } from 'alien-core';
-import { DatabaseUtil } from 'alien-core/testing';
+import { DatabaseUtil } from 'alien-core/src/testing';
 
 import { SchemaUtil } from './schema';
 
@@ -69,9 +69,11 @@ describe('GraphQL Resolvers:', () => {
     };
 
     let query = `
-      mutation UpsertItemsMutation($itemMutations: [ItemMutationInput]!) {
-        upsertItems(itemMutations: $itemMutations) {
-          id
+      mutation BatchMutation($itemMutations: [ItemMutationInput]!) {
+        batchMutation(itemMutations: $itemMutations) {
+          keys {
+            id
+          }
         }  
       }
     `;

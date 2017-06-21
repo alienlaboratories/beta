@@ -25,8 +25,6 @@ export const appRouter = (config, clientManager, options) => {
 
   const router = express.Router();
 
-  // TODO(burdon): Different path for non app.
-
   //
   // Webpack assets (either from dist or HMR).
   //
@@ -39,6 +37,7 @@ export const appRouter = (config, clientManager, options) => {
   //
   router.get('/manifest.json', (req, res) => {
 
+    // TODO(burdon): Move to Firebase const.
     // Browser sender ID (common among all FCM JS clients -- i.e., not project specific).
     // https://firebase.google.com/docs/cloud-messaging/js/client#configure_the_browser_to_receive_messages
     const GCM_SENDER_ID = '103953800507';
@@ -64,9 +63,24 @@ export const appRouter = (config, clientManager, options) => {
   //
   router.get(new RegExp(/(.*)/), isAuthenticated('/user/login'), (req, res, next) => {
     let { user } = req;
-    let { bundle = 'web' } = req.query;
+    let { bundle='web', platform='web' } = req.query;
+
+    // TODO(burdon): Detect mobile (also redirect if detect platform).
+    // https://nodejs.org/docs/v0.4.12/api/http.html#http.ServerRequest
+    let sub = req.hostname.split('.')[0];
+    switch (sub) {
+      case 'mobile': {
+        console.log('### MOBILE ###');
+        break;
+      }
+
+      default: {
+        break;
+      }
+    }
 
     // Create the client.
+    // TODO(burdon): Mobile web?
     // TODO(burdon): Client should register after startup? (might store ID -- esp. if has worker, etc.)
     clientManager.create(user.id, Const.PLATFORM.WEB).then(client => {
       console.assert(client);
@@ -106,6 +120,8 @@ export const appRouter = (config, clientManager, options) => {
         // TODO(burdon): Remove unnecessary keys?
         firebase: _.get(config, 'firebase.app'),
 
+        loggly: _.get(config, 'alien.loggly')
+
       }, options.appConfig);
 
       //
@@ -115,6 +131,9 @@ export const appRouter = (config, clientManager, options) => {
 
         // Handlebars layout.
         layout: 'app',
+
+        // Const.PLATFORM.
+        platform,
 
         // Loading animation.
         loadingIndicator: __PRODUCTION__,

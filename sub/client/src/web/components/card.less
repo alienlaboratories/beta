@@ -2,36 +2,123 @@
 // Copyright 2017 Alien Labs.
 //
 
-//
-// https://material.io/guidelines/style/color.html
-// TODO(burdon): Share defs with theme? (less-plugin-npm-import)
-//
+@import (reference) '../resources/css/ref/mixin.less';
+@import (reference) '../resources/css/ref/theme.less';
 
-@color-200-red:           #EF9A9A;
-@color-200-pink:          #F48FB1;
-@color-200-purple:        #CE93D8;
-@color-200-deep-purple:   #B39DDB;
-@color-200-indigo:        #9FA8DA;
-@color-200-blue:          #90CAF9;
-@color-200-light-blue:    #81D4FA;
-@color-200-cyan:          #80DEEA;
-@color-200-teal:          #80CBC4;
-@color-200-green:         #A5D6A7;
-@color-200-light-green:   #C5E1A5;
-@color-200-lime:          #E6EE9C;
-@color-200-yellow:        #FFF59D;
-@color-200-amber:         #FFE082;
-@color-200-orange:        #FFCC80;
-@color-200-deep-orange:   #FFAB91;
-@color-200-brown:         #BCAAA4;
-@color-200-gray:          #EEEEEE;
-@color-200-blue-gray:     #B0BEC5;
+.ux-platform-web {
 
-.ux-card-type-contact   .ux-card-header { border-right: 8px solid @color-200-light-blue;  }
-.ux-card-type-document  .ux-card-header { border-right: 8px solid @color-200-light-green; }
-.ux-card-type-folder    .ux-card-header { border-right: 8px solid @color-200-deep-purple; }
-.ux-card-type-group     .ux-card-header { border-right: 8px solid @color-200-lime;        }
-.ux-card-type-place     .ux-card-header { border-right: 8px solid @color-200-indigo;      }
-.ux-card-type-project   .ux-card-header { border-right: 8px solid @color-200-deep-orange; }
-.ux-card-type-task      .ux-card-header { border-right: 8px solid @color-200-green;       }
-.ux-card-type-user      .ux-card-header { border-right: 8px solid @color-200-purple;      }
+  // Constrain on web (otherwise expand).
+  //.ux-card-deck {
+  //
+  //}
+}
+
+.ux-canvas.ux-card-deck {
+  flex-grow: 0;
+  padding: 0 @ux-card-spacing;
+  width: @ux-card-width;
+}
+
+.ux-card-deck {
+  flex-grow: 1;
+  margin-top: @ux-card-spacing;
+
+  background-color: @ux-card-deck-background;
+
+  .ux-card {
+    width: 100%;  // Must have no side margin.
+    margin-bottom: @ux-card-margin;
+
+    box-shadow: 1px 1px 2px #AAA;
+  }
+
+  .ux-drop-target {
+    &.ux-active {
+      .ux-drop-placeholder {
+        margin-bottom: @ux-card-margin;
+      }
+    }
+  }
+
+  .ux-card {
+    display: flex;
+    flex-direction: column;
+    background-color: @ux-panel-background;
+
+    .ux-card-header {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+
+      // TODO(burdon): Menu style.
+      padding: @ux-card-padding - 2px;
+      padding-right: @ux-scrollbar-width + @ux-list-padding;
+      background-color: @ux-card-header-background;
+
+      .ux-title {
+        color: @ux-card-header-color;
+        font-size: @ux-font-large;
+        flex-grow: 1;
+      }
+
+      .ux-icon {
+        color: #999
+      }
+    }
+
+    .ux-card-main {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+
+      .ux-card-section {
+
+        .ux-card-section-header {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+
+          padding: 0 @ux-scrollbar-width + @ux-list-padding 0 @ux-card-padding;
+          background-color: @ux-card-section-header-background;
+          border-bottom: 1px solid @ux-card-section-border;
+
+          h2 {
+            .ux-text-noselect;
+
+            color: @ux-card-section-header-color;
+            font-size: @ux-font-xxsmall;
+            text-transform: uppercase;
+            cursor: pointer;
+          }
+        }
+
+        .ux-list {
+          margin-top: 2px;
+          margin-bottom: 8px;
+
+          .ux-list-items {
+            max-height: 5 * 23px;
+          }
+        }
+
+        .ux-form-row {
+          label {
+            width: 80px;
+          }
+        }
+      }
+
+      .ux-card-padding {
+        padding: @ux-card-padding;
+      }
+    }
+
+    .ux-card-footer {
+      padding: @ux-card-padding / 2;
+      color: @ux-color-light;
+      font-size: @ux-font-xsmall;
+    }
+  }
+}

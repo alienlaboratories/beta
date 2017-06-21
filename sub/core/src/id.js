@@ -5,6 +5,8 @@
 import _ from 'lodash';
 import Random from 'random-seed';
 
+import { TypeUtil } from 'alien-util';
+
 //
 // If Node (i.e., not DOM) then augment global functions.
 // TODO(burdon): Factor out node/web abstraction layer.
@@ -34,26 +36,39 @@ export class ID {
 
   /**
    * ID for Apollo Cache Normalization (i.e., creating a GUID for the Store's index).
-   * "id" is a custom field defined by our framework.
+   *
+   * DO NOT CALL THIS METHOD DRECTLY.
+   *
+   * http://dev.apollodata.com/react/cache-updates.html#cacheRedirect
    * http://dev.apollodata.com/react/cache-updates.html#dataIdFromObject
    * @param obj Data item.
    * @returns {*}
    */
-  // TODO(burdon): This is the default behavior so not necessary.
-  // TODO(burdon): See toIdValue.
-  // http://dev.apollodata.com/react/cache-updates.html#cacheRedirect
   static dataIdFromObject(obj) {
-    if (obj.__typename && obj.id) {
-      return obj.__typename + '/' + obj.id;
+
+    // TODO(burdon): Don't return keys as top-level object (since id confused). Or return nothing from mutation.
+    if (obj.__typename === 'Key') {
+      return;
     }
 
-    return null;
+    // TODO(burdon): Test matches Item types (see fragment matcher).
+    // Determine if cachable object.
+    // NOTE: Other objects return __typename so this isn't reliable.
+    if (obj.__typename && obj.id) {
+      console.assert(!obj.type || obj.type === obj.__typename,
+        'Type mismatch:', JSON.stringify(_.pick(obj, '__typename', 'type')));
+
+      return ID.createStoreId({ type: obj.__typename, id: obj.id });
+    }
   }
 
-  // TODO(burdon): KeyUtil.
+  static createStoreId(obj) {
+    console.assert(obj && obj.type && obj.id, 'Invalid key:', obj);
+    return obj.type + ':' + obj.id;
+  }
 
   static key(item) {
-    console.assert(item && item.type && item.id, 'Invalid item: ' + JSON.stringify(item));
+    console.assert(item.type && item.id, 'Invalid item: ' + JSON.stringify(item));
     return _.pick(item, 'namespace', 'bucket', 'type', 'id');
   }
 

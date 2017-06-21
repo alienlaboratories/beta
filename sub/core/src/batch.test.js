@@ -5,12 +5,14 @@
 import _ from 'lodash';
 
 import { Batch } from './batch';
-import { IdGenerator } from './id';
-import { MutationUtil } from './mutations';
+import { ID, IdGenerator } from './id';
+import { MutationUtil } from './mutation';
+
+const idGenerator = new IdGenerator();
 
 const bucket = 'Group-1';
 
-const idGenerator = new IdGenerator();
+// TODO(burdon): Test fragments.
 
 test('Null batch.', (done) => {
 
@@ -47,23 +49,26 @@ test('Create item.', (done) => {
 
 test('Create and insert (with optimistic responses).', (done) => {
 
+  // TODO(burdon): Opt respomnse.
+
   function mutator(options) {
     return new Promise((resolve, reject) => {
-      let { upsertItems } = _.get(options, 'optimisticResponse');
-      expect(upsertItems).toHaveLength(2);
+      let { batchMutation } = _.get(options, 'optimisticResponse');
+      expect(batchMutation).not.toBeUndefined();
+      expect(batchMutation.keys).toHaveLength(2);
 
       // Check parent has been patched with the inserted item.
-      expect(_.get(upsertItems[0], 'id')).toEqual(_.get(upsertItems[1], 'tasks[0].id'));
+      expect(_.get(batchMutation[0], 'id')).toEqual(_.get(batchMutation[1], 'tasks[0].id'));
       done();
     });
   }
 
-  new Batch(idGenerator, mutator, bucket, true)
+  new Batch(idGenerator, mutator, bucket, { optimistic: true })
     .createItem('Task', [
       MutationUtil.createFieldMutation('title', 'string', 'Test')
     ], 'task')
     .updateItem({ id: 'P-1', type: 'Project' }, [
-      ({ task }) => MutationUtil.createSetMutation('tasks', 'id', task.id)
+      ({ task }) => MutationUtil.createSetMutation('tasks', 'key', ID.key(task))
     ])
     .commit();
 });

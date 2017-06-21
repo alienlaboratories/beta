@@ -6,6 +6,11 @@ import _ from 'lodash';
 import express from 'express';
 
 import { ExpressUtil, Logger } from 'alien-util';
+
+// TODO(burdon): Webpack fails.
+// Module not found: Error: Can't resolve 'hiredis'
+// https://github.com/liady/webpack-node-externals/issues/34
+// https://github.com/NodeRedis/node_redis/issues/790
 import { Queue } from 'alien-scheduler';
 
 import { isAuthenticated } from 'alien-services';
@@ -20,10 +25,10 @@ export const adminRouter = (config, systemStore, clientManager, options) => {
   let router = express.Router();
 
   let queue;
-  let queueConfig = _.get(config, 'alien.tasks', {});
-  if (queueConfig.active) {
-    queue = new Queue(queueConfig.name, queueConfig.options);
-  }
+  // let queueConfig = _.get(config, 'alien.tasks', {});
+  // if (queueConfig.active) {
+  //   queue = new Queue(queueConfig.name, queueConfig.options);
+  // }
 
   //
   // Admin pages.

@@ -13,16 +13,20 @@ import http from 'http';
 import path from 'path';
 import session from 'express-session';
 import uuid from 'uuid';
+import winston from 'winston';
+import 'winston-loggly-bulk';
 
 import { ExpressUtil, HttpError, HttpUtil, Logger } from 'alien-util';
 import { AuthUtil, Const, Database, IdGenerator, Matcher, MemoryItemStore, SystemStore } from 'alien-core';
-import { TestItemStore } from 'alien-core/testing';
+import { TestItemStore } from 'alien-core/src/testing';
 import { AppDefs } from 'alien-client';
-import { apiRouter } from 'alien-api';
-import { hasJwtHeader, Loader, TestGenerator } from 'alien-services';
+import { apiRouter } from 'alien-api/server';
+
+import { Loader } from 'alien-services';
 
 import {
   getIdToken,
+  hasJwtHeader,
   isAuthenticated,
   loginRouter,
   oauthRouter,
@@ -62,13 +66,23 @@ const logger = Logger.get('server');
 /**
  * Web server.
  */
-export class WebServer {
+export class AppServer {
 
   constructor(config) {
     console.assert(config);
 
     this._config = config;
     this._app = express();
+
+    // https://alienlabs.loggly.com/dashboards
+    winston.add(winston.transports.Loggly, {
+      inputToken: _.get(this._config, 'alien.loggly.token'),
+      subdomain: _.get(this._config, 'alien.loggly.subdomain'),
+      tags: ['app-server'],
+      json: true
+    });
+
+    winston.log('info', 'Starting', META);
   }
 
   get info() {
@@ -241,6 +255,7 @@ export class WebServer {
   /**
    * Handlebars.
    * https://github.com/ericf/express-handlebars
+   * https://www.npmjs.com/package/express-handlebars
    */
   initHandlebars() {
     logger.log('initHandlebars');
@@ -254,6 +269,7 @@ export class WebServer {
       next();
     });
 
+    // Template helpers.
     const helpers = _.assign(ExpressUtil.Helpers, {
 
       // {{ global "env" }}
@@ -270,17 +286,16 @@ export class WebServer {
       }
     });
 
-    this._app.engine('handlebars', handlebars({
+    // https://www.npmjs.com/package/express-handlebars#configuration-and-defaults
+    this._app.engine('hbs', handlebars({
+      extname: '.hbs',
       layoutsDir: path.join(ENV.ALIEN_SERVER_VIEWS_DIR, '/layouts'),
       partialsDir: path.join(ENV.ALIEN_SERVER_VIEWS_DIR, '/partials'),
       defaultLayout: 'main',
-      helpers,
-      partials: {
-        foo: ''
-      }
+      helpers
     }));
 
-    this._app.set('view engine', 'handlebars');
+    this._app.set('view engine', 'hbs');
     this._app.set('views', ENV.ALIEN_SERVER_VIEWS_DIR);
   }
 
@@ -557,12 +572,7 @@ export class WebServer {
         Database.NAMESPACE.SETTINGS, /^(Folder)\.(.+)$/)
     ]).then(() => {
       logger.log('Initializing groups...');
-      return loader.initGroups().then(() => {
-        if (__TESTING__ && false) {
-          logger.log('Generating test data...');
-          return new TestGenerator(this._database).generate();
-        }
-      });
+      return loader.initGroups();
     });
   }
 

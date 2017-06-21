@@ -1,192 +1,168 @@
 //
-// Copyright 2017 Alien Labs.
+// Copyright 2017 Minder Labs.
 //
 
 import React from 'react';
-import { connect } from 'react-redux';
-import { Link } from 'react-router';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router';
 
-import { DomUtil, TypeUtil } from 'alien-util';
 import { Const, ID } from 'alien-core';
 
-import { AppDefs } from '../../../common/defs';
-
-import { AppAction } from '../../common/reducers';
 import { Path } from '../../common/path';
-
-import { NetUtil } from '../../util/net';
+import { AppDefs } from '../../../common/defs';
 import { ReactUtil } from '../../util/react';
 
 import { DebugPanel } from '../../components/debug';
-import { Sidebar, SidebarToggle } from '../../components/sidebar';
+import { NavBar, NavButtons } from '../../components/navbar';
 import { StatusBar } from '../../components/statusbar';
+import { Sidebar, SidebarToggle } from '../../components/sidebar';
+import { SidePanel } from '../../components/sidepanel';
 
-import SidePanel from '../sidepanel';
+import { SearchPanelContainer } from '../search/search_panel';
 
 import './layout.less';
 
 /**
- * Layout for all containers.
+ * Split panel (for open/closed search panel).
  */
-export class LayoutComponent extends React.Component {
+export class SplitPanel extends React.Component {
 
-  static contextTypes = {
-    config: PropTypes.object.isRequired,
-    typeRegistry: PropTypes.object.isRequired,
-    queryRegistry: PropTypes.object.isRequired,
-    eventHandler: PropTypes.object.isRequired,
+  render() {
+    let { left, right } = this.props;
 
-    viewer: PropTypes.object
-  };
-
-  static propTypes = {
-    navbar: PropTypes.object.isRequired,
-    finder: PropTypes.object,
-    className: PropTypes.string
-  };
-
-  constructor() {
-    super(...arguments);
-
-    this.context.eventHandler
-      .listen('error',        event => { this.refs.status && this.refs.status.error(event); })
-      .listen('network.in',   event => { this.refs.status && this.refs.status.networkIn(); })
-      .listen('network.out',  event => { this.refs.status && this.refs.status.networkOut(); });
-  }
-
-  // TODO(burdon): Dispatch to ActionHandler (Toolbar introspects to show buttons).
-  handleToolbarAction(action) {
-    let { config } = this.context;
-
-    switch (action) {
-
-      // Debug info.
-      case 'bug': {
-        this.props.toggleDebugPanel();
-        break;
-      }
-
-      // Refresh JWT.
-      case 'refresh_id_token': {
-        // TODO(burdon): Dispatch to ActionHandler (callback to set config (and timer)). Redux?
-        // https://medium.com/javascript-and-opinions/redux-side-effects-and-you-66f2e0842fc3
-        // http://stackoverflow.com/questions/35411423/how-to-dispatch-a-redux-action-with-a-timeout/35415559#35415559
-        if (_.get(config, 'app.platform') === 'CRX') {
-          console.warn('Invalid for CRX.');
-          break;
+    return (
+      <div className="ux-row ux-grow">
+        { left &&
+        <div className="ux-layout-side-panel">
+          { left }
+        </div>
         }
 
-        NetUtil.getJson('/user/refresh_id_token', {}, {}, true).then(result => {
-          _.assign(config, { credentials: _.get(result, 'credentials') });
-          console.log('Updated credentials: ' + TypeUtil.stringify(config.credentials, 2));
-        });
-        break;
-      }
-
-      // Refresh queries.
-      case 'invalidate_queries': {
-        this.context.queryRegistry.invalidate();
-        break;
-      }
-    }
+        <div className="ux-grow">
+          { right }
+        </div>
+      </div>
+    );
   }
+}
+
+/**
+ * Main column layout.
+ */
+export class Layout extends React.Component {
+
+  static WebNavbar = ({ navigator, children }) => (
+    <NavBar navigator={ navigator }>
+      <div className="ux-web-search-panel">
+        <SearchPanelContainer/>
+      </div>
+
+      <div className="ux-grow">
+        { children }
+      </div>
+    </NavBar>
+  );
+
+  static MobileNavbar = () => (
+    <NavBar>
+      <SearchPanelContainer className="ux-grow"/>
+    </NavBar>
+  );
+
+  static propTypes = {
+    config:         PropTypes.object.isRequired,
+    debug:          PropTypes.object.isRequired,
+    viewer:         PropTypes.object.isRequired,
+    navigator:      PropTypes.object.isRequired,
+    typeRegistry:   PropTypes.object.isRequired,
+    eventListener:  PropTypes.object.isRequired,
+    actions:        PropTypes.object.isRequired,
+    nav:            PropTypes.bool,
+    header:         PropTypes.object
+  };
+
+  static defaultProps = {
+    nav: true
+  };
 
   render() {
     return ReactUtil.render(this, () => {
-      let { config, typeRegistry, viewer={} } = this.context;
-      let { debug, navbar, finder, search, children, className } = this.props;
+      let {
+        config, debug, viewer, navigator, typeRegistry, eventListener, actions, header, nav, children
+      } = this.props;
+
+      let title = AppDefs.APP_NAME;
+      let version = _.get(config, 'app.version');
       let platform = _.get(config, 'app.platform');
 
-      let sidePanel = <SidePanel typeRegistry={ typeRegistry }/>;
+      let links;
+      let navbar;
+      let debugPanel;
 
-      let content;
-      let showFinder = finder && (platform !== Const.PLATFORM.WEB || search.text);
-      if (showFinder) {
-        if (children) {
-          content = (
-            <div className="app-layout-finder ux-columns">
-              { finder }
-
-              <div className="ux-column">
-                { children }
-              </div>
-            </div>
-          );
-        } else {
-          content = finder;
+      switch (platform) {
+        case Const.PLATFORM.WEB: {
+          links = <Links viewer={ viewer }/>;
+          navbar = nav && <Layout.WebNavbar navigator={ navigator }>{ header }</Layout.WebNavbar>;
+          if (debug.showPanel) {
+            debugPanel = <DebugPanel/>;
+          }
+          break;
         }
-      } else {
-        content = children;
+
+        default: {
+          links = <NavButtons navigator={ navigator }/>;
+          navbar = nav && <Layout.MobileNavbar/>;
+          break;
+        }
       }
 
-      let links = _.compact(_.map(viewer.groups, group => {
-        // Don't show private group.
-        if (group.bucket !== viewer.user.id) {
-          return (
-            <li key={ group.id }>
-              <Link to={ Path.canvas(ID.key(group)) }>{ group.title }</Link>
-            </li>
-          );
-        }
-      }));
-
-      let debugPanel = debug.showPanel && <DebugPanel/>;
+      let sidebar = <SidePanel viewer={ viewer } navigator={ navigator } typeRegistry={ typeRegistry }/>;
 
       return (
         <div className="ux-fullscreen">
-          <div className={ DomUtil.className('ux-main-layout', 'ux-column', 'app-layout-' + platform, className) }>
+          <div className="ux-layout">
 
-            {/* Header */}
-            { platform !== Const.PLATFORM.CRX &&
-            <div className="ux-header ux-row">
-              <div className="ux-row ux-expand">
+            {/*
+              * Header
+              */}
+            <header className="ux-column">
+              <div className="ux-row ux-grow">
                 <SidebarToggle sidebar={ () => this.refs.sidebar }/>
-                <h1>{ AppDefs.APP_NAME }</h1>
+
+                <div className="ux-grow">
+                  <h1>{ title }</h1>
+                </div>
+
+                { links }
               </div>
-              <div>
-                <ul className="ux-inline">
-                  { links }
 
-                  <li>
-                    <a target="ALIEN_PROFILE" href="/profile">{ _.get(viewer, 'user.title') }</a>
-                  </li>
-                  <li>
-                    <a href="/user/logout">Logout</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            }
+              { navbar }
+            </header>
 
-            {/* Navbar */}
-            { navbar }
+            {/*
+              * Main
+              * TODO(burdon): Option for sidebar to shove over display (e.g., like Inbox, mobile, etc.)
+              */}
+            <main className="ux-row">
+              <Sidebar ref="sidebar" autoClose={ true }>{ sidebar }</Sidebar>
 
-            {/* Main Layout */}
-            <div className="ux-columns">
-
-              {/* Sidebar */}
-              { platform !== Const.PLATFORM.CRX &&
-              <Sidebar ref="sidebar">
-                { sidePanel }
-              </Sidebar>
-              }
-
-              {/* Main Content */}
-              <div className="app-layout ux-column">
-                { content }
-              </div>
-            </div>
+              { children }
+            </main>
 
             {/* Debug */}
-            <div className="app-debug-panel-container">
+            <div>
               { debugPanel }
             </div>
 
-            {/* Footer */}
-            <div className="app-footer">
-              <StatusBar ref="status" onAction={ this.handleToolbarAction.bind(this) }/>
-            </div>
+            {/*
+              * Footer
+              */}
+            <footer>
+              <StatusBar eventListener={ eventListener } actions={ actions }>
+                <span className="ux-font-xsmall ux-text-noselect">{ version }</span>
+              </StatusBar>
+            </footer>
+
           </div>
         </div>
       );
@@ -194,18 +170,40 @@ export class LayoutComponent extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
-  let { debug, search } = AppAction.getState(state);
-  return {
-    debug,
-    search
-  };
-};
+/**
+ * Header links.
+ */
+class Links extends React.Component {
 
-const mapDispatchToProps = (dispatch, ownProps) => {
-  return {
-    toggleDebugPanel: () => { dispatch(AppAction.toggleDebugPanel()); }
+  static propTypes = {
+    viewer: PropTypes.object.isRequired,
   };
-};
 
-export const Layout = connect(mapStateToProps, mapDispatchToProps)(LayoutComponent);
+  render() {
+    let { viewer } = this.props;
+
+    let links = _.compact(_.map(viewer.groups, group => {
+      // Don't show private group.
+      if (group.bucket !== viewer.user.id) {
+        return (
+          <li key={ group.id }>
+            <Link to={ Path.canvas(ID.key(group)) }>{ group.title }</Link>
+          </li>
+        );
+      }
+    }));
+
+    return (
+      <ul className="ux-inline">
+        { links }
+
+        <li>
+          <a target="ALIEN_PROFILE" href="/profile">{ _.get(viewer, 'user.title') }</a>
+        </li>
+        <li>
+          <a href="/user/logout">Logout</a>
+        </li>
+      </ul>
+    );
+  }
+}

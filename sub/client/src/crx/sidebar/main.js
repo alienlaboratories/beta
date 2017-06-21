@@ -11,12 +11,13 @@ import {
 import { Path } from '../../web/common/path';
 import { BaseApp } from '../../web/common/base_app';
 import { ChromeNetworkInterface } from '../../web/common/network';
-import { AppAction, AppReducer, ContextAction, ContextReducer } from '../../web/common/reducers';
+import { AppAction, AppReducer } from '../../web/common/reducers';
+import { ContextAction, ContextReducer } from '../../web/common/context';
 
 import { SystemChannel, SidebarCommand } from '../common';
 import { SidebarAction, SidebarReducer } from '../sidebar/reducers';
 
-import { TypeRegistryFactory } from '../../web/containers/type_factory';
+import { TypeRegistryFactory } from '../../web/containers/item/type_factory';
 
 const logger = Logger.get('sidebar');
 
@@ -29,7 +30,7 @@ export class SidebarApp extends BaseApp {
     super(config);
 
     // React Router history.
-    this._history = createMemoryHistory(Path.HOME);
+    this._history = createMemoryHistory(Path.INBOX);
 
     //
     // Messages from Content Script.
@@ -116,7 +117,7 @@ export class SidebarApp extends BaseApp {
 
     // Proxy to BG page.
     this._networkInterface = new ChromeNetworkInterface(
-      new ChromeMessageChannel(ChromeNetworkInterface.CHANNEL, this._router), this._eventHandler);
+      new ChromeMessageChannel(ChromeNetworkInterface.CHANNEL, this._router), this._eventListener);
   }
 
   postInit() {

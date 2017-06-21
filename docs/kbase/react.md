@@ -213,11 +213,24 @@ Alternatively, make elements conditionally visible. E.g.,
 ~~~~
 
 
+### References
+
+- https://facebook.github.io/react/docs/refs-and-the-dom.html#legacy-api-string-refs
+  - ref callbacks are called with null when the component unmounts.
+  - Cannot work on functional components (since no instance).
+    - https://facebook.github.io/react/docs/refs-and-the-dom.html#refs-and-functional-components
+  - Don't use string refs.
+
+~~~~
+    <Component ref={ el => { this.el = el; } }/>
+~~~~
+
 ### Rendering
 
 - INPUT being reset
   - http://stackoverflow.com/questions/36267844/how-is-react-able-to-suppress-the-change-of-the-input-field-value
   - https://facebook.github.io/react/docs/react-component.html
+
 
 ### Gotchas
 

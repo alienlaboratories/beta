@@ -9,6 +9,34 @@ import { DomUtil } from 'alien-util';
 
 import { TextBox } from './textbox';
 
+import './search.less';
+
+/**
+ * Search panel includes search bar and other controls.
+ */
+export class SearchPanel extends React.Component {
+
+  static propTypes = {
+    className:  PropTypes.string,
+    text:       PropTypes.string,
+    onSearch:   PropTypes.func.isRequired
+  };
+
+  handleSearch(text) {
+    this.props.onSearch(text);
+  }
+
+  render() {
+    let { className, text } = this.props;
+
+    return (
+      <div className={ DomUtil.className('ux-search-panel', 'ux-panel', className) }>
+        <SearchBar className="ux-grow" value={ text } onSearch={ this.handleSearch.bind(this) }/>
+      </div>
+    );
+  }
+}
+
 /**
  * Search bar.
  */
@@ -16,8 +44,8 @@ export class SearchBar extends React.Component {
 
   static propTypes = {
     className:  PropTypes.string,
-    onSearch:   PropTypes.func.isRequired,
-    value:      PropTypes.string
+    text:       PropTypes.string,
+    onSearch:   PropTypes.func.isRequired
   };
 
   reset() {
@@ -25,33 +53,34 @@ export class SearchBar extends React.Component {
   }
 
   set value(value) {
-    this.refs.text.value = value;
+    this.refs.textBox.value = value;
   }
 
   handleSearch(event) {
-    this.props.onSearch(this.refs.text.value);
+    this.props.onSearch(this.refs.textBox.value);
   }
 
   handleClear(event) {
-    this.refs.text.value = '';
-    this.refs.text.focus();
+    this.refs.textBox.value = '';
+    this.refs.textBox.focus();
   }
 
   render() {
-    let { value, className } = this.props;
+    let { text, className } = this.props;
 
     return (
-      <div className={ DomUtil.className(className, 'ux-search', 'ux-row') }>
-        <TextBox ref="text"
-                 className='ux-expand'
+      <div className={ DomUtil.className('ux-searchbar', 'ux-toolbar', className) }>
+        <i className="ux-icon ux-icon-search" onClick={ this.handleSearch.bind(this) }/>
+
+        <TextBox ref="textBox"
+                 className='ux-grow'
                  autoFocus={ true }
                  placeholder='Search...'
-                 value={ value }
+                 value={ text }
                  onCancel={ this.handleClear.bind(this) }
                  onChange={ this.handleSearch.bind(this) }/>
 
-        <i className="ux-icon ux-search-icon" onClick={ this.handleSearch.bind(this) }>search</i>
-        <i className="ux-icon ux-search-icon" onClick={ this.handleClear.bind(this) }>clear</i>
+        <i className="ux-icon ux-icon-clear" onClick={ this.handleClear.bind(this) }/>
       </div>
     );
   }

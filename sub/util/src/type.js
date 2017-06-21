@@ -56,6 +56,7 @@ export class TypeUtil {
   /**
    * Concise stringify.
    */
+  // TODO(burdon): Options (e.g., depth).
   static stringify(json, indent=0, verbose=false) {
     let str = JSON.stringify(json, (key, value) => {
       if (_.isArray(value) && !verbose) {
@@ -96,8 +97,8 @@ export class TypeUtil {
   }
 
   /**
-   * Remove empty fields from object.
-   * @param value
+   * Remove empty top-level fields from object.
+   * @param {Object} value
    */
   static compact(value) {
     return _.omitBy(value, v => _.isNil(v)    // Null/undefined scalar.

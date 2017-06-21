@@ -63,16 +63,24 @@ export class SlackQueryProcessor extends QueryProcessor {
    * @private
    */
   static resultToItem(idGenerator, match) {
+    let { username, channel, text, permalink } = match;
+
+    // TODO(madadam): set foreign key -- permalink, or {channel.id}.{ts}.;
+    let id = idGenerator.createId();
+
     return {
       namespace: SlackQueryProcessor.NAMESPACE,
       type: 'Document',
-      id: idGenerator.createId(), // TODO(madadam): set foreign key -- permalink, or {channel.id}.{ts}.
-      title: `@${match.username} on #${match.channel.name}: ${match.text}`,
+      id,
 
-      // TODO(madadam): Snippet.
-      //snippet: match.text,
-      url: match.permalink,
-      iconUrl: '/img/slack-icon-24px.png'
+      title: `@${username} on #${channel.name}`,
+      description: text,
+
+      meta: {
+        iconClassName: 'chat'
+      },
+
+      externalUrl: permalink,
     };
   }
 

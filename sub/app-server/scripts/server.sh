@@ -5,6 +5,7 @@
 #
 
 BUILD=0
+
 for i in "$@"
 do
 case $i in

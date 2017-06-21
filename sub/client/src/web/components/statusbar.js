@@ -14,136 +14,153 @@ import './statusbar.less';
  */
 export class StatusBar extends React.Component {
 
-  static contextTypes = {
-    config: PropTypes.object.isRequired
+  static propTypes = {
+    eventListener: PropTypes.object.isRequired,
+    actions: PropTypes.object.isRequired,
   };
 
+  render() {
+    let { eventListener, actions, children } = this.props;
+
+    const Action = ({ action }) => {
+      function handleAction() {
+        console.assert(action.handler);
+        action.handler(action);
+      }
+
+      return (
+        <i className="ux-icon ux-icon-action" title={ action.title } onClick={ handleAction }>{ action.icon }</i>
+      );
+    };
+
+    let id = 0;
+    return (
+      <div className="ux-status-bar ux-toolbar">
+        <div className="ux-icons">
+          { _.map(actions.debug, action => <Action key={ ++id } action={ action }/>) }
+        </div>
+
+        <div className="ux-grow ux-center">{ children }</div>
+
+        <div className="ux-icons">
+          { _.map(actions.runtime, action => <Action key={ ++id } action={ action }/>) }
+        </div>
+
+        <NetworkIndicator eventListener={ eventListener }/>
+
+        <ErrorIndicator eventListener={ eventListener }/>
+      </div>
+    );
+  }
+}
+
+/**
+ * Network indicator.
+ */
+class NetworkIndicator extends React.Component {
+
   static propTypes = {
-    onAction: PropTypes.func.isRequired
+    eventListener: PropTypes.object.isRequired
+  };
+
+  state = {
+    send: false,
+    recv: false
   };
 
   constructor() {
     super(...arguments);
 
     this._timer = {
-      networkIn: Async.delay(750),
-      networkOut: Async.delay(500)
+      send: Async.delay(750),
+      recv: Async.delay(500)
     };
 
-    this.state = {
-      error: false,
-      networkIn: false,
-      networkOut: false
+    const trigger = (type) => {
+      this.setState({
+        [type]: true
+      });
+
+      // Off-timer.
+      this._timer[[type]](() => {
+        this.setState({
+          [type]: false
+        });
+      });
+    };
+
+    this._listeners = {
+      send: this.props.eventListener.listen('network.send', event => { trigger('send'); }),
+      recv: this.props.eventListener.listen('network.recv', event => { trigger('recv'); })
     };
   }
 
   componentWillUnmount() {
-    // TODO(burdon): Statusbar should be part of outer component (so isn't rerenderes on nav).
+
+    // Unregister.
+    this._listeners.send();
+    this._listeners.recv();
+
     // Cancel timers to avoid setState on unmounted component.
     // JS Error: Warning: setState(...): Can only update a mounted or mounting component.
     // https://facebook.github.io/react/blog/2015/12/16/ismounted-antipattern.html
-    this._timer.networkIn();
-    this._timer.networkOut();
+    this._timer.send();
+    this._timer.recv();
   }
 
-  error(error) {
-    this.setState({
-      error
-    });
+  render() {
+    let { send, recv } = this.state;
+
+    return (
+      <div className="ux-icons">
+        <i className={ DomUtil.className('ux-icon', 'ux-icon-network-recv', recv && 'ux-on') }/>
+        <i className={ DomUtil.className('ux-icon', 'ux-icon-network-send', send && 'ux-on') }/>
+      </div>
+    );
   }
+}
 
-  networkIn() { this.network('networkIn'); }
-  networkOut() { this.network('networkOut'); }
+/**
+ * Cancellable error indicator.
+ */
+class ErrorIndicator extends React.Component {
 
-  network(type) {
-    this.setState({
-      [type]: true
-    });
+  static propTypes = {
+    eventListener: PropTypes.object.isRequired
+  };
 
-    this._timer[[type]](() => {
+  state = {
+    error: null
+  };
+
+  constructor() {
+    super(...arguments);
+
+    this._listener = this.props.eventListener.listen('error', event => {
       this.setState({
-        [type]: false
+        error: event.error
       });
     });
   }
 
-  handleAction(icon) {
-    this.props.onAction(icon);
+  componentWillUnmount() {
+
+    // Unregister.
+    this._listener();
   }
 
-  handleClickError() {
-    this.error(false);
-  }
-
-  showHelp(showHelp=true) {
-    if (showHelp) {
-      window.Intercom('show');
-    } else {
-      window.Intercom('hide');
-    }
+  handleReset() {
+    this.setState({ error: null });
   }
 
   render() {
-    let { config } = this.context;
-    let { error, networkIn, networkOut } = this.state;
-
-    // TODO(burdon): Get all links from config.
-    const links = [
-      {
-        href: 'https://console.firebase.google.com/project/alien-dev/database/data',
-        title: 'Firebase',
-        icon: 'cloud_circle'
-      },
-      {
-        href: '/graphiql',
-        title: 'GraphiQL',
-        icon: 'language'
-      },
-      {
-        href: '/admin',
-        title: 'Admin console',
-        icon: 'graphic_eq'
-      },
-      {
-        href: '/profile',
-        title: 'Profile',
-        icon: 'settings'
-      }
-    ];
+    let { error } = this.state;
 
     return (
-      <div className="app-status-toolbar ux-toolbar">
-        <div>
-          <i className="ux-icon ux-icon-action" title="Debug info"
-             onClick={ this.handleAction.bind(this, 'bug') }>bug_report</i>
-
-          {
-            _.map(links, link => (
-            <a key={ link.href } href={ link.href } target="ALIEN_CONSOLE">
-              <i className="ux-icon ux-icon-action" title={ link.title }>{ link.icon }</i>
-            </a>
-            ))
-          }
-
-          <i className="ux-icon ux-icon-action" title="Get help"
-             onClick={ this.showHelp.bind(this) }>live_help</i>
-        </div>
-
-        <div className="app-status-info">{ config.app.version }</div>
-
-        <div>
-          <i className="ux-icon ux-icon-action" title="Refresh JWT"
-             onClick={ this.handleAction.bind(this, 'refresh_id_token') }>security</i>
-
-          <i className="ux-icon ux-icon-action" title="Refresh queries"
-             onClick={ this.handleAction.bind(this, 'invalidate_queries') }>refresh</i>
-
-          <i className={ DomUtil.className('app-icon-network-in', 'ux-icon', networkIn && 'ux-icon-on') }></i>
-          <i className={ DomUtil.className('app-icon-network-out', 'ux-icon', networkOut && 'ux-icon-on') }></i>
-          <i className={ DomUtil.className('ux-icon-error', 'ux-icon', error && 'ux-icon-on') }
-             title={ ErrorUtil.message(error.message) }
-             onClick={ this.handleClickError.bind(this, 'error') }></i>
-        </div>
+      <div className="ux-icons">
+        <i className={ DomUtil.className('ux-icon-error', 'ux-icon', error && 'ux-on') }
+           title={ ErrorUtil.message(error) || '' }
+           onClick={ this.handleReset.bind(this) }/>
       </div>
     );
   }

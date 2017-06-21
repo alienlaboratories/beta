@@ -9,8 +9,9 @@ import { ArgumentParser } from 'argparse';
 
 import { TypeUtil } from 'alien-util';
 
-import { Command, DatabaseCommand, LoginCommand, QueryCommand, StatusCommand } from './command';
+import { Command, DatabaseCommand, LoginCommand, QueryCommand, StatusCommand, TaskCommand } from './command';
 
+// TODO(burdon): Move parsers into Commands.
 // TODO(burdon): Logging.
 
 /**
@@ -37,9 +38,10 @@ export class App {
 
     let commands = this._parser.addSubparsers({ title: 'commands', dest: 'command' });
 
-    commands.addParser('config', { addHelp: true });
-    commands.addParser('login', { addHelp: true });
-    commands.addParser('status', { addHelp: true, aliases: ['stat'] });
+    commands.addParser('config',  { addHelp: true });
+    commands.addParser('login',   { addHelp: true });
+    commands.addParser('status',  { addHelp: true, aliases: ['stat'] });
+    commands.addParser('task',    { addHelp: true });
 
     //
     // Query commands.
@@ -59,11 +61,11 @@ export class App {
       dest: 'db_command'
     });
 
-    dbCommand.addParser('users', { addHelp: true });
-    dbCommand.addParser('groups', { addHelp: true });
-    dbCommand.addParser('init', { addHelp: true });
-    dbCommand.addParser('reset', { addHelp: true });
-    dbCommand.addParser('testing', { addHelp: true });
+    dbCommand.addParser('users',    { addHelp: true });
+    dbCommand.addParser('groups',   { addHelp: true });
+    dbCommand.addParser('init',     { addHelp: true });
+    dbCommand.addParser('reset',    { addHelp: true });
+    dbCommand.addParser('testing',  { addHelp: true });
 
     //
     // Handlers.
@@ -79,6 +81,7 @@ export class App {
     this._handlers.set(['query', 'q'], new QueryCommand(config));
     this._handlers.set(['status', 'stat'], new StatusCommand(config));
     this._handlers.set(['db'], () => new DatabaseCommand(config));
+    this._handlers.set(['task'], () => new TaskCommand(config));
   }
 
   processCommand(args) {
@@ -126,7 +129,7 @@ export class App {
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
-      prompt: '> '
+      prompt: `[${global.__ENV__}]> `
     });
 
     return new Promise((resolve, reject) => {
@@ -159,7 +162,10 @@ export class App {
                 rl.prompt();
               });
             } catch(err) {
-              console.error(err);
+              console.error(err.message, '\n');
+
+              this._parser.printHelp();
+              console.log();
               rl.prompt();
             }
           }

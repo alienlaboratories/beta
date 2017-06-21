@@ -4,6 +4,8 @@
 
 import { Analytics } from './analytics';
 
+// TODO(burdon): Split reducers (e.g., factor out search, registration/server, widget state).
+
 //-------------------------------------------------------------------------------------------------
 // Global.
 // The global reducer listens for Apollo query results and updates the App state.
@@ -70,6 +72,7 @@ export class AppAction {
       showInfo: -1                      // true | false | -1 (toggle)
     };
   }
+
   static toggleDebugPanel() {
     return {
       type: AppAction.ACTION.DEBUG,
@@ -93,11 +96,13 @@ export class AppAction {
 
   /**
    * Set search state (preserved across navigation).
+   * @param {{ text }} filter GQL filter.
    */
-  static search(text) {
+  static search(filter) {
+    console.assert(_.isObject(filter));
     return {
       type: AppAction.ACTION.SEARCH,
-      value: text
+      value: filter
     };
   }
 
@@ -141,7 +146,7 @@ export const AppReducer = (injector, config, apolloClient) => {
 
     // Search bar.
     search: {
-      text: ''
+      filter: { text: '' }
     },
 
     // Board type.
@@ -170,16 +175,13 @@ export const AppReducer = (injector, config, apolloClient) => {
         return _.assign({}, state, _.pick(action.value, ['userProfile', 'server']));
       }
 
-      // TODO(burdon): Get search query (not just text).
       case AppAction.ACTION.SEARCH: {
         // TODO(madadam): Sanitize logs for privacy; Remove user query from analytics events.
         let analytics = state.injector.get(Analytics.INJECTOR_KEY);
-        analytics.track('search', { text: action.value });
+        analytics.track('search', { filter: action.value });
 
         return _.assign({}, state, {
-          search: {
-            text: action.value
-          }
+          search: { filter: action.value }
         });
       }
 
@@ -194,55 +196,3 @@ export const AppReducer = (injector, config, apolloClient) => {
     }
   };
 };
-
-//-------------------------------------------------------------------------------------------------
-// Context.
-//-------------------------------------------------------------------------------------------------
-
-const CONTEXT_NAMESPACE = 'ALIEN_CONTEXT';
-
-/**
- * Application context (e.g., current page for CRX, location, time, etc.)
- * NOTE: This isn't limited to the CRX.
- */
-export class ContextAction {
-
-  static initialState = {};
-
-  static ACTION = {
-    UPDATE_CONTEXT: `${CONTEXT_NAMESPACE}/UPDATE`,
-  };
-
-  static get namespace() {
-    return CONTEXT_NAMESPACE;
-  }
-
-  static getState(state, field=undefined) {
-    state = _.get(state, ContextAction.namespace, {});
-    return field ? _.get(state, field) : state;
-  }
-
-  /**
-   * Received context events from content script.
-   * @param context
-   */
-  static updateContext(context) {
-    return {
-      type: ContextAction.ACTION.UPDATE_CONTEXT,
-      context
-    };
-  }
-}
-
-export const ContextReducer = (state=ContextAction.initialState, action) => {
-  switch (action.type) {
-
-    case ContextAction.ACTION.UPDATE_CONTEXT: {
-      return _.assign({}, state, action.context);
-    }
-
-    default:
-      return state;
-  }
-};
-

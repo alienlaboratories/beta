@@ -8,6 +8,8 @@ import ReactDOM from 'react-dom';
 
 import { DomUtil } from 'alien-util';
 
+import { Image } from '../../components/image';
+
 import Data from './data/data.json';
 
 import './test_layout.less';
@@ -18,14 +20,17 @@ class Root extends React.Component {
     let { items } = Data;
 
     return (
-      <Layout>
-        <div className="tx-row tx-grow">
-          <div className="tx-scroll-container tx-column tx-panel-dark">
-            <CardDeck items={ items }/>
+      <div className="ux-fullscreen">
+        <Layout>
+          <div className="ux-row ux-grow">
+            <div className="ux-scroll-container ux-column">
+              <CardDeck items={ items }/>
+            </div>
+
+            <div className="ux-grow"/>
           </div>
-          <div className="tx-grow tx-panel-blank"/>
-        </div>
-      </Layout>
+        </Layout>
+      </div>
     );
   }
 }
@@ -34,16 +39,24 @@ class Layout extends React.Component {
   render() {
     let { children } = this.props;
     return (
-      <div className="tx-layout tx-fullscreen tx-column">
-        <div className="tx-header">
+      <div className="ux-column ux-grow">
+        <header>
           <h1>Header</h1>
-        </div>
-        <div className="tx-body">
+        </header>
+
+        <main>
           { children }
-        </div>
-        <div className="tx-header">
-          <span>Footer</span>
-        </div>
+        </main>
+
+        <footer>
+          <div className="ux-row ux-grow ux-center">
+            <ul className="ux-inline">
+              <li>(c) Alien Labs</li>
+              <li>Footer</li>
+              <li>Testing</li>
+            </ul>
+          </div>
+        </footer>
       </div>
     );
   }
@@ -53,7 +66,7 @@ class CardDeck extends React.Component {
   render() {
     let { items } = this.props;
     return (
-      <div className="tx-card-deck __tx-card-deck-floating">
+      <div className="ux-card-deck __ux-card-deck-floating">
         {
           _.map(items, item => (
             <Card key={ item.id } item={ item }/>
@@ -97,17 +110,17 @@ class Card extends React.Component {
       };
 
       return (
-        <div className="tx-card-section">
-          <div className="tx-card-section-header">
+        <div className="ux-card-section">
+          <div className="ux-card-section-header">
             <h2 onClick={ onClick }>{ title }</h2>
-            <i className={ DomUtil.className('tx-icon', 'tx-icon-toggle', !closed && 'tx-open') } onClick={ onClick }/>
+            <i className={ DomUtil.className('ux-icon', 'ux-icon-toggle', !closed && 'ux-open') } onClick={ onClick }/>
           </div>
           { !closed &&
-          <div className="tx-body">
-            <div className="tx-list">
+          <div className="ux-main">
+            <div className="ux-list">
               { _.map(items, item =>
-              <div key={ item.id } className="tx-list-item tx-row">
-                <i className="tx-icon">{ icon }</i>
+              <div key={ item.id } className="ux-list-item ux-row">
+                <i className="ux-icon">{ icon }</i>
                 <span>{ item.title }</span>
               </div>
               ) }
@@ -118,52 +131,46 @@ class Card extends React.Component {
       );
     };
 
-    const Img = (props) => {
-      let { url, className } = props;
-      return (
-        <div className={ DomUtil.className('tx-image', className) } style={{ backgroundImage: `url(${url})` }}/>
-      );
-    };
-
     const Participants = (props) => {
       let { items } = props;
       return (
-        <div className="tx-row">
+        <div className="ux-row">
           { _.map(items, item =>
-          <Img key={ item.id } className="tx-item-avatar" url={ item.imgUrl }/>
+          <Image key={ item.id } className="ux-item-avatar" src={ item.imgUrl }/>
           ) }
         </div>
       );
     };
 
     return (
-      <div className="tx-card">
-        <div className="tx-header">
-          <div className="tx-toolbar">
-            <i className={ DomUtil.className('tx-icon', 'tx-icon-pin', selected && 'tx-selected') }/>
-            <h1 className="tx-grow">{ item.title }</h1>
-            <i className="tx-icon tx-icon-menu"/>
+      <div className="ux-card">
+        <div className="ux-header">
+          <div className="ux-toolbar">
+            <i className={ DomUtil.className('ux-icon', 'ux-icon-pin', selected && 'ux-selected') }/>
+            <h1 className="ux-grow">{ item.title }</h1>
+            <i className="ux-icon ux-icon-menu"/>
           </div>
         </div>
-        <div className="tx-body">
+        <div className="ux-main">
+
           { item.description &&
-          <div className="tx-card-section tx-padding">
-            <div className="tx-row">
-              <div className="tx-column tx-grow">
+          <div className="ux-card-section ux-padding">
+            <div className="ux-row">
+              <div className="ux-column ux-grow">
                 <div>{ item.description }</div>
-                <div className="tx-font-small">{ item.email }</div>
+                <div className="ux-font-small">{ item.email }</div>
               </div>
               { item.avatarUrl &&
-              <Img className="tx-item-avatar" url={ item.avatarUrl }/>
+              <Image className="ux-item-avatar" src={ item.avatarUrl }/>
               }
             </div>
           </div>
           }
 
           { item.location &&
-          <div className="tx-card-section">
-            <Img className="tx-item-map" url={ item.location.mapImgUrl }/>
-            <div className="tx-padding">
+          <div className="ux-card-section">
+            <Image className="ux-item-map" src={ item.location.mapImgUrl }/>
+            <div className="ux-padding">
               { item.location.title }
             </div>
 
@@ -180,7 +187,7 @@ class Card extends React.Component {
           <Section id="messages" items={ item.messages } title="Messages" icon="mail"/>
           <Section id="tasks" items={ item.tasks } title="Tasks" icon="check_box_outline_blank"/>
         </div>
-        <div className="tx-footer">
+        <div className="ux-footer">
           <span>Modified 02:00pm</span>
         </div>
       </div>

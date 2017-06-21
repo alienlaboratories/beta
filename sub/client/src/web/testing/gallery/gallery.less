@@ -2,59 +2,18 @@
 // Copyright 2017 Alien Labs.
 //
 
-@import '../../resources/css/core';
+@import '../../resources/css/app';
 
 body {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
   margin: 0;
-
-  .ux-fullscreen;
+  overflow: hidden;
 }
 
-#app-root {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-
-  background-color: whitesmoke;
-  box-shadow: 4px 4px 16px #999;
-}
-
-.test-panel {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-}
-
-.test-header {
+header {
   background-color: #90CAF9;
-  padding: 16px;
-
-  a {
-    padding: 4px;
-  }
-  a:hover {
-    background-color: cornflowerblue;
-  }
+  padding: 8px;
 }
 
-.test-container {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-
-  .ux-bar {
-    background-color: #F5F5F5;
-    padding: 4px;
-  }
-
-  .ux-list {
-    background-color: white;
-  }
-
-  .test-content {
-    padding: 16px;
-  }
+main {
+  background-color: white;
 }

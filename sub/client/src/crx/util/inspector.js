@@ -158,13 +158,16 @@ export class TestInspector extends Inspector {
         let name = root.text();
         let email = root.attr('email');
         let thumbnailUrl = root.find('img').attr('src');
+
         if (name && email) {
           context = {
             items: [{
               type: 'Contact',
               title: name,
-              email,
-              thumbnailUrl
+              meta: {
+                thumbnailUrl
+              },
+              email
             }]
           };
 
@@ -285,8 +288,10 @@ export class GoogleInboxInspector extends Inspector {
               return {
                 type: 'Contact',
                 title,
-                email,
-                thumbnailUrl
+                meta: {
+                  thumbnailUrl
+                },
+                email
               };
             }
           }))

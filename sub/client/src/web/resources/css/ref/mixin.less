@@ -1,0 +1,49 @@
+//
+// Copyright 2017 Alien Labs.
+//
+
+//
+// Mixins are included by other less files.
+// @import (reference) './mixin.less';
+// .ux-foo { .ux-text-noselect }
+//
+
+// Prevent text selection.
+.ux-text-noselect {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+// Truncate text with ellipsis.
+.ux-text-nowrap {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+}
+
+.ux-text-overflow {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+// Prevent collapse of empty div by appending &nbsp;
+.ux-text-nocollapse::after {
+  content: '\00a0';
+}
+
+.ux-noborder {
+  border: none !important;
+}
+
+.ux-press {
+  cursor: pointer;
+}
+
+.ux-on {}
+
+.ux-open {}
+
+.ux-selected {}

@@ -1,0 +1,27 @@
+{{#section 'header'}}
+  <div class="site-user">
+    <h1>Services</h1>
+  </div>
+
+  <div class="site-toolbar">
+    {{> user/menu }}
+  </div>
+{{/section}}
+
+{{#section 'body'}}
+  <div class="site-services">
+    {{#each providers}}
+    <div class="site-service">
+      <div class="site-header">
+        <img class="{{ meta.class }}"/>
+      </div>
+      <div class="site-body">
+        <h2>{{ meta.title }}</h2>
+        <div>
+          <a href="{{ link }}">Enable</a>
+        </div>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+{{/section}}

@@ -20,7 +20,7 @@ import { concatenateTypeDefs, mockServer } from 'graphql-tools';
 import { introspectionQuery } from 'graphql/utilities';
 
 import { Database } from 'alien-core';
-import { DatabaseUtil } from 'alien-core/testing';
+import { DatabaseUtil } from 'alien-core/src/testing';
 
 import { SchemaUtil } from './schema';
 

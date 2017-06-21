@@ -14,6 +14,8 @@
 
 NOTE: `lerna` is deprecated; `yarn` may subsume capabilities:
   - https://github.com/lerna/lerna/issues/408
+  - https://github.com/lerna/lerna/issues/884 [burdon]
+  - https://github.com/yarnpkg/yarn/issues/946 [burdon]
   - https://github.com/yarnpkg/yarn/issues/3294
   - https://github.com/yarnpkg/yarn/issues/2863
     - https://github.com/yarnpkg/rfcs/pull/34

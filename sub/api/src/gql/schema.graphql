@@ -12,17 +12,24 @@
 # TODO(burdon): Move common fields into meta?
 # http://dev.apollodata.com/tools/graphql-tools/resolvers.html#Unions-and-interfaces
 # https://github.com/apollostack/graphql-server/issues/172
+#
+# Design constraints:
+# - Make non Item fields optional (esp arrays).
 #===================================================================================================
 
-# TODO(burdon): Move to framework.
-# TODO(burdon): Event as type AND item (i.e., enable inline).
+# Common properties.
+type Meta {
+  icon: String                # Material icon name.
+  iconClassName: String       # Item classname.
+  thumbnailUrl: String        # External thumbnail URL.
+}
 
 interface Item {
   namespace: String           # External namespace (query provider).
   bucket: ID                  # ID of User or Group (null for system item).
   type: String!
   id: ID!
-  seq: Int
+  version: Int                # TODO(burdon): Version (separate monotonic seq for mutations).
 
   # TODO(burdon): Multiple foreign keys (e.g., emails, linkedin).
   fkey: String                # Opaque foreign key (i.e., not Key).
@@ -30,10 +37,12 @@ interface Item {
   alias: String               # Short-name for URLs (unique, human-readable).
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
 
   title: String!
   description: String
-  labels: [String]
+
+  meta: Meta
 }
 
 #===================================================================================================
@@ -45,14 +54,15 @@ type User implements Item {
   bucket: ID
   type: String!
   id: ID!
-  seq: Int
+  version: Int
   fkey: String
   alias: String
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
   title: String!
   description: String
-  labels: [String]
+  meta: Meta
 
   active: Boolean
 
@@ -63,7 +73,7 @@ type User implements Item {
   contact: Contact
 
   # TODO(burdon): Remove (only query via project links).
-  tasks(filter: FilterInput): [Task]!
+  tasks(filter: FilterInput): [Task]
 
   groups: [Group]
 }
@@ -73,14 +83,15 @@ type Group implements Item {
   bucket: ID
   type: String!
   id: ID!
-  seq: Int
+  version: Int
   fkey: String
   alias: String
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
   title: String!
   description: String
-  labels: [String]
+  meta: Meta
 
   whitelist: [String]
   members: [User]!
@@ -98,22 +109,24 @@ type Contact implements Item {
   bucket: ID
   type: String!
   id: ID!
-  seq: Int
+  version: Int
   fkey: String
   alias: String
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
   title: String!
   description: String
-  labels: [String]
+  meta: Meta
 
   email: String
-  thumbnailUrl: String
 
   user: User
 
-  # TODO(burdon): Implement as links.
-  tasks: [Task]!
+  # Sub-tasks (do not belong to any Project).
+  tasks: [Task]
+
+  # Synced messages.
   messages: [Message]!
 }
 
@@ -122,19 +135,17 @@ type Document implements Item {
   bucket: ID
   type: String!
   id: ID!
-  seq: Int
+  version: Int
   fkey: String
   alias: String
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
   title: String!
   description: String
-  labels: [String]
+  meta: Meta
 
-  # TODO(burdon): Move url, iconUrl, thumbnailUrl (avatar) to ItemFragment
-  url: String
-  iconUrl: String
-  thumbnailUrl: String
+  externalUrl: String
 }
 
 type Event implements Item {
@@ -142,14 +153,15 @@ type Event implements Item {
   bucket: ID
   type: String!
   id: ID!
-  seq: Int
+  version: Int
   fkey: String
   alias: String
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
   title: String!
   description: String
-  labels: [String]
+  meta: Meta
 
   location: Location
   participants: [Contact]
@@ -162,16 +174,15 @@ type Folder implements Item {
   bucket: ID
   type: String!
   id: ID!
-  seq: Int
+  version: Int
   fkey: String
   alias: String
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
   title: String!
   description: String
-  labels: [String]
-
-  icon: String
+  meta: Meta
 
   # JSON serialized FilterInput.
   filter: String!
@@ -182,14 +193,15 @@ type Location implements Item {
   bucket: ID
   type: String!
   id: ID!
-  seq: Int
+  version: Int
   fkey: String
   alias: String
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
   title: String!
   description: String
-  labels: [String]
+  meta: Meta
 
   address: Address
 }
@@ -199,14 +211,15 @@ type Message implements Item {
   bucket: ID
   type: String!
   id: ID!
-  seq: Int
+  version: Int
   fkey: String
   alias: String
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
   title: String!
   description: String
-  labels: [String]
+  meta: Meta
 
   snippet: String
   from: String!
@@ -218,24 +231,21 @@ type Project implements Item {
   bucket: ID
   type: String!
   id: ID!
-  seq: Int
+  version: Int
   fkey: String
   alias: String
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
   title: String!
   description: String
-  labels: [String]
+  meta: Meta
 
   # All projects are owned by a Group (each User has a private Group).
   group: Group!
 
-  # TODO(burdon): Don't expose "Links" to the GQL. Instead multiple child types (WRITE-UP).
-  # TODO(burdon): Different sub-types (e.g., Pipeline with orgs/contacts and separate boards).
-  tasks: [Task]!
-
-  # TODO(burdon): Factor out Pipeline mixin.
-  contacts: [Contact]
+  # Sub-tasks.
+  tasks: [Task]
 
   # TODO(burdon): Map type (array of typed values).
   boards: [Board]
@@ -246,20 +256,21 @@ type Task implements Item {
   bucket: ID
   type: String!
   id: ID!
-  seq: Int
+  version: Int
   fkey: String
   alias: String
   created: Timestamp!
   modified: Timestamp!
+  labels: [String]
   title: String!
   description: String
-  labels: [String]
+  meta: Meta
 
   # All tasks belong to a project.
   project: Project
 
   # Sub-tasks.
-  tasks: [Task]!
+  tasks: [Task]
 
   owner: User!
   assignee: User
@@ -334,7 +345,6 @@ type RootQuery {
   item(key: KeyInput!): Item!
 
   # Search.
-  # TODO(burdon): Rename items.
   search(filter: FilterInput): SearchResult!
 }
 
@@ -343,29 +353,10 @@ type RootQuery {
 # NOTE: The namespace is provided in the resolver context.
 #===================================================================================================
 
-# TODO(burdon): Move to framework.
-
-input ItemMutationInput {
-
-  # Item to mutate.
-  # TODO(burdon): Set key and bucket here (not in mutation).
-  key: KeyInput!
-
-  # Array of generic mutations.
-  mutations: [ObjectMutationInput]!
-}
-
-type ItemMutationResponse {
-
-  # TODO(burdon): Sequence numbers of each Item?
-  status: Int!
-}
-
 type RootMutation {
 
-  # TODO(burdon): Rename itemMutations.
-  # TODO(burdon): Return status and or mutation diffs (client should perform mutations directly).
-  upsertItems(namespace: String, itemMutations: [ItemMutationInput]!): [Item]!
+  # TODO(burdon): Set bucket?
+  batchMutation(namespace: String, itemMutations: [ItemMutationInput]!): BatchMutationResponse!
 }
 
 #===================================================================================================

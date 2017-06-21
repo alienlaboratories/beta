@@ -55,11 +55,11 @@ app.init().then(() => {
 //
 
 window.ITEMS = {
-  t1: { type: 'Contact', title: 'Alice',          email: 'alice.braintree@gmail.com'  },
-  t2: { type: 'Contact', title: 'Bob',            email: 'bob@example.com'            },
-  t3: { type: 'Contact', title: 'Catherine',      email: 'catherine@example.com'      },
-  t4: { type: 'Contact', title: 'David',          email: 'david@example.com'          },
-  t5: { type: 'Contact', title: 'Emiko',          email: 'emiko@example.com'          },
+  t1: { type: 'Contact', title: 'Alice',          email: 'alice.braintree@gmail.com', meta: { thumbnailUrl: '/img/testing/avatar/p1.png' } },
+  t2: { type: 'Contact', title: 'Bob',            email: 'bob@example.com',           meta: { thumbnailUrl: '/img/testing/avatar/p2.png' } },
+  t3: { type: 'Contact', title: 'Catherine',      email: 'catherine@example.com',     meta: { thumbnailUrl: '/img/testing/avatar/p3.png' } },
+  t4: { type: 'Contact', title: 'David',          email: 'david@example.com',         meta: { thumbnailUrl: '/img/testing/avatar/p4.png' } },
+  t5: { type: 'Contact', title: 'Eric',           email: 'eric@example.com',          meta: { thumbnailUrl: '/img/testing/avatar/p5.png' } },
 
   t6: { type: 'Contact', title: 'Rich',           email: 'rich.burdon@gmail.com'      },
   t7: { type: 'Contact', title: 'Lucas',          email: 'lucas.geiger@gmail.com'     },

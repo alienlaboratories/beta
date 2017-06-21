@@ -7,6 +7,8 @@ import PropTypes from 'prop-types';
 
 import { Async, DomUtil } from 'alien-util';
 
+import './textbox.less';
+
 /**
  * Text box.
  */
@@ -53,7 +55,7 @@ export class TextBox extends React.Component {
     this._currentValue = this.props.value;
 
     this.state = {
-      readOnly: false,
+      readOnly: this.props.clickToEdit,
       value: this._currentValue
     };
 
@@ -65,8 +67,8 @@ export class TextBox extends React.Component {
    * https://facebook.github.io/react/docs/react-component.html#componentwillreceiveprops
    */
   componentWillReceiveProps(nextProps) {
-    let { value } = nextProps;
-    if (this.state.readOnly || value !== this._currentValue) {
+    let { value, reset } = nextProps;
+    if (reset || this.state.readOnly || value !== this._currentValue) {
       this._currentValue = value;
     } else {
       value = this.state.value;
@@ -79,7 +81,7 @@ export class TextBox extends React.Component {
   }
 
   get value() {
-    return this.state.value;
+    return this.state.value || '';
   }
 
   set value(value) {
@@ -88,6 +90,10 @@ export class TextBox extends React.Component {
     }, () => {
       this.fireTextChange(true);
     });
+  }
+
+  clear() {
+    this.value = '';
   }
 
   focus() {
@@ -137,10 +143,10 @@ export class TextBox extends React.Component {
       // ESCAPE
       case 27: {
         this.setState({
-          readOnly: true,
+          readOnly: this.props.clickToEdit,
           value: this.props.value
         }, () => {
-          this.props.onCancel && this.props.onCancel(this.props.value, event);
+          this.props.onCancel && this.props.onCancel(this.props.value, event) && this.clear();
         });
         break;
       }

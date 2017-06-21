@@ -9,9 +9,10 @@ import PropTypes from 'prop-types';
 
 import { Path } from '../../web/common/path';
 
-import FinderActivity from '../../web/containers/activities/finder';
+import DetailActivity from '../../web/containers/activities/detail';
+import FolderActivity from '../../web/containers/activities/folder';
 
-import '../../web/resources/css/core.less';
+import '../../web/resources/css/app.less';
 
 /**
  * The Application must be a pure React component since HOCs may cause the component to be re-rendered,
@@ -25,7 +26,7 @@ export class Application extends React.Component {
     injector: PropTypes.object.isRequired,
     client: PropTypes.object.isRequired,
     store: PropTypes.object.isRequired,
-    history: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired
   };
 
   render() {
@@ -35,8 +36,10 @@ export class Application extends React.Component {
       <ApolloProvider client={ client } store={ store }>
         <Router history={ history }>
 
-          <Route path={ Path.route(['folder']) } component={ FinderActivity }/>
-          <Redirect from='*' to={ Path.HOME }/>
+          <Route path={ Path.route(['folder']) } component={ FolderActivity }/>
+          <Route path={ Path.route(['canvas', 'key']) } component={ DetailActivity }/>
+
+          <Redirect from='*' to={ Path.INBOX }/>
 
         </Router>
       </ApolloProvider>

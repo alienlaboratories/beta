@@ -30,6 +30,8 @@
   curl $(minikube service hello-minikube --url)
 
   minikube stop
+  
+  minikube ssh
 ~~~~
 
 ## Accessing Services

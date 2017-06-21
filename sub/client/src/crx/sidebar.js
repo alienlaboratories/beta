@@ -6,12 +6,10 @@ import { HttpUtil, KeyListener } from 'alien-util';
 import { Const } from 'alien-core';
 
 import { KeyCodes } from './common';
-
 import { AppDefs } from '../common/defs';
 
 import { SidebarApp } from './sidebar/main';
 import { SidebarAction } from './sidebar/reducers';
-
 import Application from './sidebar/root';
 
 //

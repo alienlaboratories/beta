@@ -6,38 +6,35 @@ import React from 'react';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { Fragments } from 'alien-core';
+import { Fragments } from 'alien-api';
 
 import { ReactUtil } from '../../util/react';
-import { Activity } from '../../common/activity';
+import { List } from '../../components/list';
+import { ListItem } from '../../components/list_item';
 
-import { List, ListItem } from '../../components/list';
-import { Navbar } from '../../components/navbar';
-
+import { Activity } from './activity';
 import { Layout } from './layout';
 
 import './admin.less';
 
 /**
- * Testing Activity.
- * For experimental features and components.
+ * Admin Activity.
  */
 class AdminActivity extends React.Component {
+
+  static ItemRenderer = (item) => (
+    <ListItem item={ item }>
+      <div className="ux-text">{ _.get(item, 'title') }</div>
+      <div className="ux-text">{ _.get(item, 'user.title') }</div>
+      <div>{ _.get(item, 'user') && 'Active' }</div>
+    </ListItem>
+  );
 
   static childContextTypes = Activity.childContextTypes;
 
   getChildContext() {
     return Activity.getChildContext(this.props);
   }
-
-  static ItemRenderer = (item) => (
-    <ListItem item={ item }>
-      <ListItem.Icon icon="person_outline"/>
-      <div className="app-admin-email">{ _.get(item, 'title') }</div>
-      <div className="app-admin-name">{ _.get(item, 'user.title') }</div>
-      <div>{ _.get(item, 'user') && 'Active' }</div>
-    </ListItem>
-  );
 
   state = {
     // Active Group.
@@ -52,8 +49,13 @@ class AdminActivity extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { groups } = this.props;
+      let { config, debug, actions, typeRegistry, eventListener, viewer, navigator } = this.props;
+      if (!viewer) {
+        return;
+      }
+
       let { groupId } = this.state;
+      let { groups } = this.props;
 
       // Join email whitelist with actual members.
       let whitelist = null;
@@ -69,31 +71,35 @@ class AdminActivity extends React.Component {
         });
       }
 
-      let navbar = (
-        <Navbar>
-          <h2>Groups</h2>
-        </Navbar>
-      );
+      let sidebar = <SidePanelContainer navigator={ navigator } typeRegistry={ typeRegistry }/>;
 
       return (
-        <Layout navbar={ navbar } search={ false } className="app-admin-activity">
+        <Layout config={ config }
+                debug={ debug }
+                viewer={ viewer }
+                sidebar={ sidebar }
+                actions={ actions }
+                typeRegistry={ typeRegistry }
+                eventListener={ eventListener }>
 
-          <div className="ux-columns">
+          <div className="ux-panel ux-columns ux-grow">
 
             {/* Master */}
-            <div className="ux-column app-admin-groups">
+            <div className="ux-admin-groups ux-column">
               <List ref="groups"
+                    highlight={ true }
                     items={ groups }
                     onItemSelect={ this.handleSelectGroup.bind(this) }/>
             </div>
 
             {/* Detail */}
-            <div className="ux-column">
+            <div className="ux-admin-whitelist ux-column ux-grow">
               <List ref="whitelist"
                     items={ whitelist }
                     itemRenderer={ AdminActivity.ItemRenderer }/>
             </div>
           </div>
+
         </Layout>
       );
     });
@@ -108,17 +114,11 @@ const AdminQuery = gql`
   query AdminQuery($groupFilter: FilterInput) { 
     search(filter: $groupFilter) {
       items {
-        ...ItemFragment
         ...GroupFragment
-
-        ... on Group {
-          whitelist
-        }
       }
     }
   }
 
-  ${Fragments.ItemFragment}
   ${Fragments.GroupFragment}
 `;
 

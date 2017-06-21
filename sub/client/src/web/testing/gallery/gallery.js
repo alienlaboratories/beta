@@ -6,19 +6,28 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Link, Router, Route, hashHistory } from 'react-router';
 
-import TestBoard from './test_board';
-import TestList from './test_list';
-import TestSidebar from './test_sidebar';
-import TestText from './test_text';
+import { TestBoard, TestCards, TestD3, TestList, TestSidebar, TestText } from './testing';
 
 import './gallery.less';
 
-
+//
+// Components.
+//
 const Components = [
   {
-    id: 'text',
-    name: 'Text',
-    render: () => <TestText/>
+    id: 'board',
+    name: 'Board',
+    render: () => <TestBoard/>
+  },
+  {
+    id: 'cards',
+    name: 'Cards',
+    render: () => <TestCards/>
+  },
+  {
+    id: 'd3',
+    name: 'D3',
+    render: () => <TestD3/>
   },
   {
     id: 'list',
@@ -26,18 +35,20 @@ const Components = [
     render: () => <TestList/>
   },
   {
-    id: 'board',
-    name: 'Board',
-    render: () => <TestBoard/>
-  },
-  {
     id: 'sidebar',
     name: 'Sidebar',
     render: () => <TestSidebar/>
+  },
+  {
+    id: 'text',
+    name: 'Text',
+    render: () => <TestText/>
   }
 ];
 
-
+/**
+ * Gallery.
+ */
 class Gallery extends React.Component {
 
   render() {
@@ -47,16 +58,26 @@ class Gallery extends React.Component {
     let c = _.find(Components, c => c.id === component) || Components[0];
 
     return (
-      <div className="test-panel">
-        <div className="test-header">
+      <div className="ux-fullscreen ux-column">
+        <header>
+          <ul className="ux-inline">
           { _.map(Components, component => (
-            <Link key={ component.id } to={ '/' + component.id }>{ component.name }</Link>
+            <li key={ component.id }>
+              <Link to={ '/' + component.id }>{ component.name }</Link>
+            </li>
           ))}
-        </div>
+          </ul>
+        </header>
 
-        <div className="test-container">
+        <main>
           { c.render() }
-        </div>
+        </main>
+
+        <footer>
+          <ul className="ux-inline">
+            <li>Gallery</li>
+          </ul>
+        </footer>
       </div>
     );
   }

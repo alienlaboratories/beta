@@ -10,11 +10,12 @@ import PropTypes from 'prop-types';
 import { Path } from '../common/path';
 
 import AdminActivity from '../containers/activities/admin';
-import CanvasActivity from '../containers/activities/canvas';
-import FinderActivity from '../containers/activities/finder';
+import DetailActivity from '../containers/activities/detail';
+import FolderActivity from '../containers/activities/folder';
+import HomeActivity from '../containers/activities/home';
 import TestingActivity from '../containers/activities/testing';
 
-import '../resources/css/core.less';
+import '../resources/css/app.less';
 
 /**
  * The Application must be a pure React component since HOCs may cause the component to be re-rendered,
@@ -35,36 +36,39 @@ export class Application extends React.Component {
     let { client, store, history } = this.props;
 
     // https://github.com/ReactTraining/react-router
-    // TODO(burdon): onEnter/onLeave.
 
     return (
       <ApolloProvider client={ client } store={ store }>
         <Router history={ history }>
           {/* v4: <Switch> */}
 
-            {/*
-              * Must come first.
-              */}
-            <Route exact path={ Path.TESTING } component={ TestingActivity }/>
-            <Route exact path={ Path.ADMIN } component={ AdminActivity }/>
+          {/*
+            * Must come first.
+            */}
+          <Route exact path={ Path.ADMIN } component={ AdminActivity }/>
+          <Route exact path={ Path.TESTING } component={ TestingActivity }/>
 
-            {/*
-              * /inbox
-              * /favorites
-              */}
-            <Route path={ Path.route(['folder']) } component={ FinderActivity }/>
+          {/*
+            * Home.
+            */}
+          <Route exact path={ Path.ROOT } component={ HomeActivity }/>
 
-            {/*
-              * /project/xxx
-              * /project/board/xxx
-             */}
-            <Route path={ Path.route(['type', 'key']) } component={ CanvasActivity }/>
-            <Route path={ Path.route(['type', 'canvas', 'key']) } component={ CanvasActivity }/>
+          {/*
+            * /inbox
+            * /favorites
+            */}
+          <Route path={ Path.route(['folder']) } component={ FolderActivity }/>
 
-            {/*
-              * Catch.
-              */}
-            <Redirect from="*" to={ Path.HOME }/>
+          {/*
+            * /project/xxx
+            * /project/board/xxx
+           */}
+          <Route path={ Path.route(['canvas', 'key']) } component={ DetailActivity }/>
+
+          {/*
+            * Catch.
+            */}
+          <Redirect from="*" to={ Path.ROOT }/>
 
           {/* </Switch> */}
         </Router>

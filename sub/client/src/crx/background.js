@@ -8,7 +8,7 @@ Logger.setLevel({
 
 import moment from 'moment';
 
-import { Async, ChromeMessageChannelDispatcher, ErrorUtil, EventHandler, Listeners, Logger, TypeUtil } from 'alien-util';
+import { Async, ChromeMessageChannelDispatcher, ErrorUtil, EventListener, Listeners, Logger, TypeUtil } from 'alien-util';
 import { Const } from 'alien-core';
 
 import { AuthManager } from '../web/common/auth';
@@ -85,13 +85,13 @@ class BackgroundApp {
 
     // Errors and notifications.
     this._notification = new Notification();
-    this._eventHandler = new EventHandler();
+    this._eventListener = new EventListener();
 
     ErrorUtil.handleErrors(window, error => {
       logger.error(error);
-      this._eventHandler.emit({
+      this._eventListener.emit({
         type: 'error',
-        message: ErrorUtil.message(error)
+        error
       });
     });
 
@@ -103,7 +103,7 @@ class BackgroundApp {
 
     this._authManager = new AuthManager(this._config);
 
-    this._cloudMessenger = new GoogleCloudMessenger(this._config, this._eventHandler).listen(message => {
+    this._cloudMessenger = new GoogleCloudMessenger(this._config, this._eventListener).listen(message => {
 
       // Push invalidation to clients.
       this._systemChannel.postMessage(null, {
@@ -114,7 +114,7 @@ class BackgroundApp {
     this._connectionManager = new ConnectionManager(this._config, this._authManager, this._cloudMessenger);
 
     this._networkManager =
-      new NetworkManager(this._config, this._authManager, this._connectionManager, this._eventHandler);
+      new NetworkManager(this._config, this._authManager, this._connectionManager, this._eventListener);
 
     // Channel for system messages between components.
     this._systemChannel = null;

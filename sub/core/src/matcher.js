@@ -7,6 +7,8 @@ import moment from 'moment';
 
 import { ErrorUtil, Logger, TypeUtil } from 'alien-util';
 
+import { LABEL } from './defs';
+
 const logger = Logger.get('matcher');
 
 /**
@@ -77,8 +79,8 @@ export class Matcher {
 
     // Deleted.
     // TODO(burdon): Intersection.
-    if (_.indexOf(item.labels, '_deleted') !== -1 &&
-        _.indexOf(filter.labels, '_deleted') === -1) { // TODO(burdon): Const.
+    if (_.indexOf(item.labels, LABEL.DELETED) !== -1 &&
+        _.indexOf(filter.labels, LABEL.DELETED) === -1) {
       return false;
     }
 
@@ -284,7 +286,6 @@ export class Matcher {
   }
 
   // NOTE: See ValueInput in schema.
-  // TODO(burdon): Move to SchemaUtil.
   static SCALARS = ['id', 'timestamp', 'date', 'int', 'float', 'string', 'boolean'];
 
   static scalarValue(inputValue) {

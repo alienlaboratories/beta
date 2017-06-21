@@ -2,41 +2,89 @@
 // Copyright 2017 Alien Labs.
 //
 
-@import '../resources/css/theme';
+@import (reference) '../resources/css/ref/mixin.less';
+@import (reference) '../resources/css/ref/theme.less';
 
 .ux-list {
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
 
-  // Outer class should expand and overflow:hidden
-  overflow-y: scroll;
+  > .ux-list-items {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow-y: scroll;
+  }
 
-  // .ux-list.ux-list-highlight
+  .ux-list-editor {
+    overflow: hidden;
+  }
+
+  .ux-list-editor-container {
+    // Account for list scrollbar.
+    padding-right: @ux-scrollbar-width;
+  }
+
+  // Default style (e.g., does not apply to cards).
+  .ux-list-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    margin: 0;
+
+    padding: 0 @ux-list-padding;
+
+    > .ux-text {
+      .ux-text-overflow
+    }
+
+    > .ux-icon {
+      margin-right: 4px;
+
+      &:last-child {
+        margin: 0;
+      }
+    }
+
+    .ux-icons {
+      margin-left: 4px;
+    }
+  }
+
+  // Focus.
+  // TODO(burdon): Hide buttons unless focus.
+  // https://css-tricks.com/focus-within-pseudo-class
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=617371 (May 2017, v60)
+  //noinspection CssInvalidPseudoSelector
+  .ux-list-item:focus-within {
+    background-color: yellow;
+  }
+
+  // Hovering.
+  .ux-list-item {
+    .ux-hover {
+      display: none;
+    }
+    .ux-no-hover {
+      display: block;
+    }
+
+    &:hover {
+      .ux-hover {
+        display: block;
+      }
+      .ux-no-hover {
+        display: none;
+      }
+    }
+  }
+
+  // Highlight.
   &.ux-list-highlight {
     .ux-list-item:hover {
       background-color: @ux-list-highlight;
     }
-  }
-
-  .ux-list-item {
-    padding: 0 4px;
-
-    i.ux-icon-hover {
-      visibility: hidden;
-    }
-  }
-
-  // Only hover icons in rows directly under the list item.
-  // Prevents grandchildren from being activated when grandfather list-item has mouse over.
-  .ux-list-item > .ux-row:hover {
-    i.ux-icon-hover {
-      visibility: visible;
-    }
-  }
-
-  .ux-list-editor { // Undo hover.
-    background-color: transparent !important;
   }
 
   //
@@ -44,27 +92,30 @@
   //
 
   .ux-drag-source {
+
+    &.ux-dragging {
+      display: none;
+    }
+
     > .ux-debug {
       display: none;
       text-align: right;
     }
   }
-  .ux-drag-source.ux-dragging {
-    display: none;
-    background-color: pink;
-  }
 
   .ux-drop-target {
+
     .ux-drop-placeholder {
       height: 0;
 
-      // Close quickly.
-      -webkit-transition: height 0s;
-      -moz-transition: height 0s;
-      transition: height 0s;
+      // Debug.
+      // height: 20px;
+      // background-color: lightblue;
 
-      font-size: 12px;
-      font-family: Monaco, monospace;
+      // Close quickly.
+      //-webkit-transition: height 0s;
+      //-moz-transition: height 0s;
+      //transition: height 0s;
 
       > .ux-debug {
         display: none;
@@ -72,38 +123,34 @@
         color: blue;
       }
     }
-  }
-  .ux-drop-target.ux-active {
-    .ux-drop-placeholder {
+
+    &.ux-active {
+
+      // Height is set by DND from dragging element.
+      .ux-drop-placeholder {
+        background-color: @ux-list-drop-active-background;
+
+        // Animate open.
+        //-webkit-transition: height .2s;
+        //-moz-transition: height .2s;
+        //transition: height .2s;
+      }
+    }
+
+    &.ux-last {
       display: flex;
-      min-height: 40px;
+      flex-direction: column;
+      flex-grow: 1;
 
-      -webkit-transition: height 0.2s;
-      -moz-transition: height 0.2s;
-      transition: height 0.2s;
+      .ux-drop-placeholder {
+        display: flex;
+        flex-grow: 1;
 
-      margin: 8px 0;
-      background-color: #EEE;
-      border-radius: 2px;
+        // Show immediately.
+        //-webkit-transition: height 0s !important;
+        //-moz-transition: height 0s !important;
+        //transition: height 0s !important;
+      }
     }
   }
-  .ux-drop-target.ux-last {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-
-    .ux-drop-placeholder {
-      // Show immediately.
-      -webkit-transition: height 0s !important;
-      -moz-transition: height 0s !important;
-      transition: height 0s !important;
-    }
-  }
-}
-
-.ux-list::-webkit-scrollbar {
-  width: 2px;
-}
-.ux-list::-webkit-scrollbar-thumb {
-  background-color: #333;
 }

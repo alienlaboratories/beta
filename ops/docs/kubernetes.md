@@ -84,7 +84,8 @@ Auth:
   # Install.
   kubectl create -f https://raw.githubusercontent.com/kubernetes/kops/master/addons/kubernetes-dashboard/v1.5.0.yaml
 
-  # Access via proxy.
+  # Access dashboard via proxy.
+  # https://api.beta.kube.robotik.io/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard
   kubectl proxy
   open http://localhost:8001/ui
 
@@ -106,11 +107,6 @@ NOTE: The UI shows the HTTPS Not Secure Warning (proceed via the Advanced option
 * ELB doesn't have an external endpoint.
   - `kubectl describe services alien-web-server` to see error (e.g., invalid certificate)
   - Check exposed port matches container port.
-
-
-
-
-
 
 
 ## SSL Certificates

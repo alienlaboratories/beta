@@ -1,8 +1,8 @@
 {
   "Group": {
-
     "_": {
       "admin": {
+        "admin": true,
         "title": "Admin",
         "whitelist": [
           "eng-admin@alienlabs.io"
@@ -10,23 +10,54 @@
       }
     },
 
-    "alienlabs_com": {
-      "eng" : {
-        "title": "Alien Labs",
+    "_testers": {
+      "rich_burdon_gmail_com": {
+        "title": "Rich",
         "whitelist": [
-          "rich@alienlabs.io"
+          "rich.burdon@gmail.com"
+        ]
+      },
+      "lucas_geiger_gmail_com": {
+        "title": "Lucas",
+        "whitelist": [
+          "lucas.geiger@gmail.com"
+        ]
+      },
+      "thomasplunkett_gmail_com": {
+        "title": "Tom",
+        "whitelist": [
+          "thomasplunkett@gmail.com"
         ]
       }
     },
 
-    "testers": {
-      "blackops": {
+    "alienlabs_com": {
+      "eng": {
         "admin": true,
-        "title": "Blackops",
+        "title": "Alien Engineering",
         "whitelist": [
-          "alice.braintree@gmail.com",
+          "rich@alienlabs.io",
+          "alice.braintree@gmail.com"
+        ]
+      },
+      "advisors": {
+        "admin": true,
+        "title": "Alien Advisors",
+        "whitelist": [
+          "rich@alienlabs.io",
           "rich.burdon@gmail.com",
-          "lucas.geiger@gmail.com"
+          "lucas.geiger@gmail.com",
+          "michael@seedplus.com",
+          "thomasplunkett@gmail.com"
+        ]
+      }
+    },
+
+    "seedplus_com": {
+      "partners": {
+        "title": "SeedPlus",
+        "whitelist": [
+          "michael@seedplus.com"
         ]
       }
     }

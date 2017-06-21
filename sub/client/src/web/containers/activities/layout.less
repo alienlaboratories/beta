@@ -1,36 +1,92 @@
 //
-// Copyright 2017 Alien Labs.
+// Copyright 2017 Minder Labs.
 //
 
-.app-layout {
+@import (reference) '../../resources/css/ref/theme';
 
-  // Margin below Nav drop shadow.
-  margin-top: 8px;
 
-  .app-layout-finder {
-    .app-finder {
-      // TODO(burdon): Factor out (match SearchBar).
-      width: 350px;
-      max-width: 350px;
-      flex-shrink: 0;
+//
+// Platform specific.
+//
 
-      background-color: #FAFAFA;
-      border-right: 1px solid #EEE;
+body > div {
+  // For testing (e.g., mobile, CRX), don't expand screen.
+  &.ux-platform-mobile-testing .ux-layout {
+    width: 400px;
+    flex-grow: 0;
+  }
+
+  &:not(.ux-platform-web) {
+    .ux-layout {
+      header {
+        padding-bottom: 4px;
+      }
     }
   }
 }
 
-// TODO(burdon): Hack to match inbox.
-.app-layout-crx {
-  .ux-navbar {
-    height: 56px;
-  }
-}
+//
+// Main layout.
+//
 
-// TODO(burdon): Hack for sidebar testing.
-.app-web {
-  .app-layout-crx {
-    flex-grow: 0;
-    width: 400px;
+.ux-layout {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+  overflow: hidden;
+
+  .ux-layout-side-panel {
+    display: flex;
+    flex-shrink: 0;
+
+    // Only constrain on web.
+    width: @ux-card-width;
+  }
+
+  header {
+    color: @ux-header-color;
+    background-color: @ux-header-background;
+
+    > div {
+      padding: 2px;
+      align-items: center;
+
+      i.ux-icon-sidebar-toggle {
+        font-size: 24px;
+        color: @ux-header-color;
+        margin-right: 8px;
+      }
+
+      h1 {
+        opacity: .5;
+      }
+
+      ul {
+        padding: 0 4px;
+
+        li a {
+          color: @ux-header-color;
+        }
+      }
+    }
+
+    nav.ux-navbar {
+      color: @ux-navbar-color;
+      background-color: @ux-navbar-background;
+
+      .ux-web-search-panel {
+        width: @ux-card-width;
+        padding: 6px;
+      }
+
+      .ux-icons {
+        margin: 0 4px;
+
+        i.ux-icon {
+          color: @ux-navbar-color;
+        }
+      }
+    }
   }
 }

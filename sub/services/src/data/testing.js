@@ -5,8 +5,9 @@
 import _ from 'lodash';
 
 import { Logger } from 'alien-util';
-import { Database, Enum, ID, MutationUtil, Transforms } from 'alien-core';
-import { Randomizer } from 'alien-core/testing';
+import { LABEL, Database, ID, MutationUtil, Transforms } from 'alien-core';
+import { Randomizer } from 'alien-core/src/testing';
+import { Enum } from 'alien-api';
 
 const logger = Logger.get('testing');
 
@@ -61,7 +62,7 @@ export class TestGenerator {
       Randomizer.property('owner', (item, context) => context.userId),
 
       Randomizer.property('labels', (item, context, randomizer) =>
-        randomizer.chance.bool({ likelihood: 20 }) ? ['_favorite'] : []),
+        randomizer.chance.bool({ likelihood: 20 }) ? [LABEL.FAVORITE] : []),
 
       Randomizer.property('title', (item, context, randomizer) =>
         randomizer.chance.sentence({ words: randomizer.chance.natural({ min: 3, max: 5 }) })),
@@ -138,7 +139,7 @@ export class TestGenerator {
       return {
         key: ID.key({ type: 'Group', id: item.group }),
         mutations: [
-          MutationUtil.createSetMutation('projects', 'id', item.id)
+          MutationUtil.createSetMutation('projects', 'key', ID.key(item))
         ]
       };
     },
@@ -149,7 +150,7 @@ export class TestGenerator {
         return {
           key: ID.key({ type: 'Project', id: item.project }),
           mutations: [
-            MutationUtil.createSetMutation('tasks', 'id', item.id)
+            MutationUtil.createSetMutation('tasks', 'key', ID.key(item))
           ]
         };
       }
@@ -242,7 +243,7 @@ export class TestGenerator {
               return itemStore.getItem(context, type, id).then(item => {
                 console.assert(item);
 
-                Transforms.applyObjectMutations(item, itemMutation.mutations);
+                Transforms.applyObjectMutations({}, item, itemMutation.mutations);
                 return itemStore.upsertItem(context, item);
               });
             }));

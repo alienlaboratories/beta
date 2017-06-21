@@ -4,10 +4,10 @@
 
 import _ from 'lodash';
 
-// import { Logger } from 'alien-util';
+import { Logger } from 'alien-util';
 import { BaseItemStore } from 'alien-core';
 
-// const logger = Logger.get('store.firebase');
+const logger = Logger.get('store.firebase');
 
 /**
  * Item store.
@@ -115,17 +115,25 @@ export class FirebaseItemStore extends BaseItemStore {
       let bucketKeys = this.getBucketKeys(context, type);
       return Promise.all(_.map(bucketKeys, key => this._getValue(key))).then(buckets => {
         let items = [];
+        let itemMap = new Map();
         _.each(buckets, typeMap => {
           _.each(itemIds, itemId => {
             let key = type + '.' + itemId;
-            let item = _.get(typeMap, key);
-            if (item) {
-              items.push(item);
-            } else {
-              console.log(JSON.stringify(typeMap, null, 2));
-              console.warn('Item not found ' + JSON.stringify(context.buckets) + '.' + key);
+            if (!itemMap.get(key)) {
+              let item = _.get(typeMap, key);
+              if (item) {
+                items.push(item);
+                itemMap.set(key, item);
+              }
             }
           });
+        });
+
+        _.each(itemIds, itemId => {
+          let key = type + '.' + itemId;
+          if (!itemMap.get(key)) {
+            console.warn(`Item not found [${JSON.stringify(context.buckets)}]: ${key}`);
+          }
         });
 
         return items;
@@ -156,7 +164,12 @@ export class FirebaseItemStore extends BaseItemStore {
         // https://firebase.google.com/docs/database/web/read-and-write
         let ref = this._db.ref(key);
         ref.set(item, error => {
-          if (error) { reject(error); } else { resolve(item); }
+          if (error) {
+            logger.error('Invalid item: ' + JSON.stringify(item));
+            reject(error);
+          } else {
+            resolve(item);
+          }
         });
       }));
     });

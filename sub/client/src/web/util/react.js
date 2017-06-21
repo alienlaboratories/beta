@@ -13,24 +13,19 @@ export class ReactUtil {
    * React.Component render wrapper.
    * Returns empty <div> if loading; wraps errors.
    *
-   * NOTE: Same-key warning is not caught here.
+   * NOTE: Element key warning is not caught here.
    *
-   * @param cls
-   * @param render
+   * @param obj Component instance.
+   * @param {function} render Render function.
    * @param showLoading
    * @return {Element}
    */
-  static render(cls, render, showLoading=true) {
-    let { errors, loading } = cls.props;
+  static render(obj, render, showLoading=true) {
+    console.assert(obj && render);
+    let { errors, loading } = obj.props;
 
-    if (errors) {
-      // Network errors are already logged.
-      // Internal Apollo errors are swallowed.
-      return (
-        <div className="ux-error">{ cls.constructor.name + ': ' + String(errors) }</div>
-      );
-    } else if (loading) {
-      // React components are rendered before and after requesting Apollo queries.
+    // Blank output.
+    const blank = () => {
       if (showLoading) {
         return (
           <div className="ux-loading">
@@ -40,16 +35,30 @@ export class ReactUtil {
       } else {
         return <div/>;
       }
+    };
+
+    if (errors) {
+      // Network errors are already logged.
+      // Internal Apollo errors are swallowed.
+      return (
+        <div className="ux-error">{ obj.constructor.name + ': ' + String(errors) }</div>
+      );
+    } else if (loading) {
+
+      // React components are rendered on each Rudux update (i.e., before and after requesting Apollo queries.)
+      return blank();
     } else {
+
       try {
         // Call the component's renderer.
-        return render(cls.props, cls.context);
+        let dom = render(obj.props, obj.context);
+        return dom || blank();
       } catch(error) {
         // TODO(burdon): Log if prod and show standard error.
         console.error(error);
         let message = error.message || 'Error rendering.';
         return (
-          <div className="ux-error">{ cls.constructor.name + ': ' + message }</div>
+          <div className="ux-error">{ obj.constructor.name + ': ' + message }</div>
         );
       }
     }

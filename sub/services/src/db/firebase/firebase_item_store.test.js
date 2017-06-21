@@ -9,7 +9,7 @@ import yaml from 'node-yaml';
 import admin from 'firebase-admin';
 
 import { IdGenerator, Matcher } from 'alien-core';
-import { ItemStoreTests } from 'alien-core/testing';
+import { ItemStoreTests } from 'alien-core/src/testing';
 
 import { FirebaseItemStore } from './firebase_item_store';
 

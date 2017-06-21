@@ -70,7 +70,7 @@
       border-top-left-radius: 2px;
       border-top-right-radius: 2px;
     }
-    .test-card-container .test-card .test-card-header > div i {
+    .test-card-container .test-card .test-card-header > div i.pin {
       padding-right: 4px;
       color: cornflowerblue;
       opacity: .5;
@@ -132,6 +132,19 @@
       display: flex;
       flex-direction: column;
     }
+
+    .test-menu-popup {
+      position: relative;
+    }
+    .test-menu {
+      position: absolute;
+      right: 0;
+      width: 150px;
+      padding: 4px;
+      background-color: #DDD;
+      border: 1px solid #CCC;
+      border-top: none;
+    }
   </style>
 </head>
 <body>
@@ -141,13 +154,26 @@
 
       <div class="test-card-container">
         <div class="test-card">
-          <div class="test-card-header">
-            <div class="test-row">
-              <i class="material-icons pinned">label</i>
-              <h1>Alice Braintree</h1>
+
+          <div class="test-menu-bar">
+            <div class="test-card-header">
+              <div class="test-row">
+                <i class="material-icons pin pinned">label</i>
+                <h1>Alice Braintree</h1>
+              </div>
+
+              <i class="material-icons">menu</i>
             </div>
-            <i class="material-icons">menu</i>
+
+            <div class="test-menu-popup">
+              <div class="test-menu">
+                <div>Edit</div>
+                <div>Save</div>
+                <div>Delete</div>
+              </div>
+            </div>
           </div>
+
           <div class="test-card-section">
             <div class="test-row">
               <div>
@@ -206,7 +232,7 @@
         <div class="test-card">
           <div class="test-card-header">
             <div class="test-row">
-              <i class="material-icons">label_outline</i>
+              <i class="material-icons pin">label_outline</i>
               <h1>Lunch</h1>
             </div>
             <i class="material-icons">menu</i>
@@ -270,8 +296,13 @@
         <div class="test-card">
           <div class="test-card-header">
             <div class="test-row">
+<<<<<<< HEAD
               <i class="material-icons">label_outline</i>
               <h1>Recruiting Drive</h1>
+=======
+              <i class="material-icons pin">label_outline</i>
+              <h1>Recruiting Calendar</h1>
+>>>>>>> rb-mutations
             </div>
             <i class="material-icons">menu</i>
           </div>
@@ -315,7 +346,7 @@
         <div class="test-card">
           <div class="test-card-header">
             <div class="test-row">
-              <i class="material-icons">label_outline</i>
+              <i class="material-icons pin">label_outline</i>
               <h1>Fred Bott</h1>
             </div>
             <i class="material-icons">menu</i>

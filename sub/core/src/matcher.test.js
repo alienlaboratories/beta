@@ -175,6 +175,8 @@ test('Matches boolean expressions.', () => {
   expect(matcher.matchItems(context, root, filter, items)).toHaveLength(3);
 });
 
+// TODO(burdon): Test 'IN' with IDs. (see services/src/data/testing.js)
+
 /**
  * References.
  */
@@ -189,11 +191,11 @@ test('Matches references.', () => {
     id: 'b'
   };
 
-  expect(matcher.matchItems(
-    context, root, { expr: { field: 'owner', ref: '$CONTEXT.userId'} }, items)).toHaveLength(2);
+  // expect(matcher.matchItems(
+  //   context, root, { expr: { field: 'owner', ref: '$CONTEXT.userId' } }, items)).toHaveLength(2);
 
   expect(matcher.matchItems(
-    context, root, { expr: { field: 'assignee', ref: 'id'} }, items)).toHaveLength(1);
+    context, root, { expr: { field: 'assignee', ref: 'id' } }, items)).toHaveLength(1);
 });
 
 /**

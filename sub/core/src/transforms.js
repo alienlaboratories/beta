@@ -13,19 +13,19 @@ import { Matcher } from './matcher';
 export class Transforms {
 
   // TODO(burdon): Do basic validation (e.g., check scalars are not objects).
-  // TODO(burdon): Unit tests.
 
   /**
    * Applies the mutations to the given object.
    *
+   * @param {{}} context
    * @param {Item} object
    * @param {ObjectMutationInput} mutations
    */
-  static applyObjectMutations(object, mutations) {
+  static applyObjectMutations(context, object, mutations) {
     console.assert(object && mutations);
 
     _.each(mutations, mutation => {
-      Transforms.applyObjectMutation(object, mutation);
+      Transforms.applyObjectMutation(context, object, mutation);
     });
 
     return object;
@@ -34,11 +34,12 @@ export class Transforms {
   /**
    * Update object.
    *
+   * @param {{}} context
    * @param {Item} object
    * @param {ObjectMutationInput} mutation
    * @returns {*}
    */
-  static applyObjectMutation(object, mutation) {
+  static applyObjectMutation(context, object, mutation) {
     console.assert(object && mutation);
     let { field, value } = mutation;
 
@@ -54,7 +55,7 @@ export class Transforms {
     // Map delta.
     if (value.map !== undefined) {
       _.each(value.map, value => {
-        object[field] = Transforms.applyMapMutation(object[field] || [], value);
+        object[field] = Transforms.applyMapMutation(context, object[field] || [], value);
       });
       return object;
     }
@@ -62,7 +63,7 @@ export class Transforms {
     // Set delta.
     if (value.set !== undefined) {
       _.each(value.set, value => {
-        object[field] = Transforms.applySetMutation(object[field] || [], value);
+        object[field] = Transforms.applySetMutation(context, object[field] || [], value);
       });
       return object;
     }
@@ -70,7 +71,7 @@ export class Transforms {
     // Array delta.
     if (value.array !== undefined) {
       _.each(value.array, value => {
-        object[field] = Transforms.applyArrayMutation(object[field] || [], value);
+        object[field] = Transforms.applyArrayMutation(context, object[field] || [], value);
       });
       return object;
     }
@@ -78,7 +79,7 @@ export class Transforms {
     // Object delta.
     if (value.object !== undefined) {
       _.each(value.object, value => {
-        object[field] = Transforms.applyObjectMutation(object[field] || {}, value);
+        object[field] = Transforms.applyObjectMutation(context, object[field] || {}, value);
       });
       return object;
     }
@@ -87,7 +88,7 @@ export class Transforms {
     // NOTE: This overwrites existing values.
     if (value.values) {
       object[field] = _.map(value.values, value => {
-        let scalar = Matcher.scalarValue(value.value);
+        let scalar = Transforms.scalarValue(context, value.value);
         console.assert(scalar !== undefined);
         return scalar;
       });
@@ -95,9 +96,9 @@ export class Transforms {
     }
 
     // Scalars.
-    let scalar = Matcher.scalarValue(value);
+    let scalar = Transforms.scalarValue(context, value);
     if (scalar !== undefined) {
-      object[field] = scalar;
+      _.set(object, field, scalar);
       return object;
     }
 
@@ -114,15 +115,17 @@ export class Transforms {
    * Instead we declare arrays of typed objects and use Map mutations to update them.
    * (See comment in the schema document).
    *
+   * @param {{}} context
    * @param map
    * @param {MapMutationInput} mutation
    * @returns updated map.
    */
-  static applyMapMutation(map, mutation) {
+  static applyMapMutation(context, map, mutation) {
     let predicate = mutation.predicate;
 
     // Find the object to mutate (the object in the array that matches the predicate).
-    let key = Matcher.scalarValue(predicate.value);
+    let key = Transforms.scalarValue(context, predicate.value);
+    console.assert(key);
     let idx = _.findIndex(map, v => _.get(v, predicate.key) === key);
 
     // NOTE: Must be object mutation (which mutates to object matching the predicate).
@@ -135,12 +138,12 @@ export class Transforms {
     } else {
       if (idx === -1) {
         // Append.
-        map.push(Transforms.applyObjectMutations({
+        map.push(Transforms.applyObjectMutations(context, {
           [predicate.key]: key
         }, value));
       } else {
         // Update.
-        Transforms.applyObjectMutations(map[idx], value);
+        Transforms.applyObjectMutations(context, map[idx], value);
       }
     }
 
@@ -150,25 +153,32 @@ export class Transforms {
   /**
    * Update set.
    *
+   * @param {{}} context
    * @param set
    * @param {SetMutationInput} mutation
    * @returns updated set.
    */
-  static applySetMutation(set, mutation) {
-    // NOTE: non-scalar sets don't make sense.
-    let value = Matcher.scalarValue(mutation.value);
+  static applySetMutation(context, set, mutation) {
+    // NOTE: non-scalar sets don't make sense without key.
+    let value = Transforms.scalarValue(context, mutation.value);
     console.assert(value !== undefined);
 
-    // Remove or add.
-    if (mutation.add === false) {
+    // Special handling for IDs.
+    if (context.client && value.id) {
+      console.assert(value.type);
 
-      // NOTE: Local transformations my involve removing keys from arrays that contain resolved items.
-      // In this case test if the object value has a matching ID.
-      if (mutation.value.id) {
-        _.pullAllWith(set, [value], (setValue, value) => { return setValue === value || setValue.id === value; });
+      // Client has vector of resolved objects.
+      if (mutation.add === false) {
+        _.pullAllBy(set, [value], 'id');
       } else {
-        _.pull(set, value);
+        set = _.unionBy(set, [{ __typename: value.type, ...value }], 'id');
       }
+
+      return set;
+    }
+
+    if (mutation.add === false) {
+      _.pull(set, value);
     } else {
       set = _.union(set, [value]);
     }
@@ -179,18 +189,19 @@ export class Transforms {
   /**
    * Update array.
    *
+   * @param {{}} context
    * @param array
    * @param {ArrayMutationInput} mutation
    * @returns updated array.
    */
-  static applyArrayMutation(array, mutation) {
+  static applyArrayMutation(context, array, mutation) {
     console.assert(array && mutation);
 
     // Clip range.
     let idx = Math.min(mutation.index, _.size(array) - 1);
 
     // TODO(burdon): Handle non scalar types?
-    let value = Matcher.scalarValue(mutation.value);
+    let value = Transforms.scalarValue(context, mutation.value);
     if (value === undefined) {
       array.splice(idx, 1);
     } else {
@@ -202,5 +213,23 @@ export class Transforms {
     }
 
     return array;
+  }
+
+  /**
+   *
+   * @param context
+   * @param value
+   * @returns {*}
+   */
+  static scalarValue(context, value) {
+    if (value.key) {
+      if (context.client) {
+        return { __typename: value.key.type, ...value.key };
+      } else {
+        return value.key.id;
+      }
+    }
+
+    return Matcher.scalarValue(value);
   }
 }

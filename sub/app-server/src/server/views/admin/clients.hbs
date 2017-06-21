@@ -1,0 +1,105 @@
+{{#section 'header'}}
+  <div class="site-admin">
+    <h1>Clients</h1>
+  </div>
+
+  <div class="site-toolbar">
+    {{> admin/menu }}
+  </div>
+{{/section}}
+
+{{#section 'body'}}
+
+  <div class="site-panel">
+    <h2>Clients</h2>
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>Platform</th>
+            <th>Client ID</th>
+            <th>User ID</th>
+            <th>Message Token</th>
+            <th>Registered</th>
+          </tr>
+        </thead>
+        <tbody>
+        {{#each clients}}
+          <tr>
+            <td class="site-data">{{ platform }}</td>
+            <td class="site-data">{{ id }}</td>
+            <td class="site-data">{{ userId }}</td>
+            <td class="site-data">{{ short messageToken }}</td>
+            <td class="site-data site-expand">{{ time registered }}</td>
+            <td>
+              <button onclick="invalidate('{{ id }}')">Ping</button>
+            </td>
+          </tr>
+        {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="site-panel">
+    <div class="site-toolbar">
+      <div>
+        <a class="site-button" onclick="flush()">Flush Clients</a>
+
+        {{#if testing }}
+        <a class="site-button" onclick="dumpDatabase()">Dump Database</a>
+        <a class="site-button" onclick="resetDatabase()">Reset Database</a>
+        {{/if}}
+      </div>
+
+      <div>
+        <label>Auto-update <input id="auto-update" type="checkbox" checked/></label>
+      </div>
+    </div>
+  </div>
+
+{{/section}}
+
+{{#section 'script'}}
+  <script>
+    $(document).ready(() => {
+      let interval = null;
+
+      const setRefresh = (on) => {
+        clearInterval(interval);
+        if (on) {
+          interval = setInterval(() => {
+            document.location.reload();
+          }, 5000);
+        }
+      };
+
+      setRefresh($('#auto-update').change((event) => {
+        setRefresh($(event.target).is(':checked'));
+      }).is(':checked'));
+    });
+
+    function refresh() {
+      document.location.reload();
+    }
+
+    function flush() {
+      Site.postJson('/admin/api', { action: 'client.flush' }).then(() => {
+        document.location.reload();
+      });
+    }
+
+    function invalidate(clientId) {
+      Site.postJson('/admin/api', { action: 'client.invalidate', clientId: clientId });
+    }
+
+    {{#if testing }}
+    function dumpDatabase() {
+      Site.postJson('/admin/api', { action: 'database.dump' });
+    }
+    function resetDatabase() {
+      Site.postJson('/admin/api', { action: 'database.reset' });
+    }
+    {{/if}}
+  </script>
+{{/section}}

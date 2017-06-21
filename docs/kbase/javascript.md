@@ -183,10 +183,9 @@ Examples:
 ## Troubleshooting
 
 - TypeError: undefined is not a constructor
-    - Check class is exported.
+  - Check class is exported.
     
-    
-
-
-
-
+- Uncaught ReferenceError: regeneratorRuntime is not defined
+  - Transform async functions
+  - check .babelrc and plugins.
+  - webpack entry point should include 'babel-polyfill'

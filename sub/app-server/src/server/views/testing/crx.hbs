@@ -1,0 +1,70 @@
+{{#section 'header'}}
+  <div class="site-testing">
+    <h1>CRX Testing</h1>
+  </div>
+
+  <div class="site-toolbar">
+    <div>
+      <a class="site-button" href="/testing/graphiql" target="ALIEN_GRAPHIQL">GraphiQL</a>
+      <a class="site-button" href="/testing/crx">CRX</a>
+      <a class="site-button" href="/app?bundle=test_sidebar">Sidebar</a>
+      <a class="site-button" href="/app?bundle=test_apollo">Apollo</a>
+    </div>
+  </div>
+{{/section}}
+
+{{#section 'body'}}
+  <div class="site-panel">
+    <label>
+      <select id="content-select">
+        <option>Empty</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="site-panel">
+    <div id="content" class="test-content"></div>
+  </div>
+
+  <!-- Triggers CRX to open automatically. -->
+  <div id="crx-testing"></div>
+{{/section}}
+
+{{#section 'script'}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+
+<script>
+
+  // TODO(burdon): Merge with sidebar tester.
+
+  const ITEMS = {
+    t1: { type: 'Contact', title: 'Alice',      email: 'alice.braintree@gmail.com', meta: { thumbnailUrl: '/img/testing/avatar/p1.png' } },
+    t2: { type: 'Contact', title: 'Bob',        email: 'bob@example.com',           meta: { thumbnailUrl: '/img/testing/avatar/p2.png' } },
+    t3: { type: 'Contact', title: 'Catherine',  email: 'catherine@example.com',     meta: { thumbnailUrl: '/img/testing/avatar/p3.png' } },
+    t4: { type: 'Contact', title: 'David',      email: 'david@example.com',         meta: { thumbnailUrl: '/img/testing/avatar/p4.png' } },
+    t5: { type: 'Contact', title: 'Eric',       email: 'eric@example.com',          meta: { thumbnailUrl: '/img/testing/avatar/p5.png' } },
+  };
+
+  $(document).ready(() => {
+    _.each(ITEMS, (value, key) => {
+      $('#content-select').append($('<option>').attr('value', key).text(value.title));
+    });
+
+    $('#content-select').change(event => {
+      let item = ITEMS[$(event.target).val()];
+      console.log('Selected: ' + JSON.stringify(item));
+      let content = $('#content').empty();
+      if (item) {
+        let { title, email, meta: { thumbnailUrl } } = item;
+
+        // Triggers DOM change for TestInspector.
+        content.append($('<div>')
+            .text(title)
+            .attr('email', email)
+            .append($('<img>').attr('src', window.location.origin + thumbnailUrl)));
+      }
+    });
+  });
+</script>
+{{/section}}

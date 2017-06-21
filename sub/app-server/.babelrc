@@ -12,6 +12,9 @@
 
   "plugins": [
 
+    // https://babeljs.io/docs/plugins/transform-regenerator
+    "transform-regenerator",
+
     // http://babeljs.io/docs/plugins/transform-async-to-generator
     "transform-async-to-generator"
   ],

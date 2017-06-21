@@ -38,7 +38,6 @@ export function createNetworkInterfaceWithAuth(config={}) {
   }).use(middleware);
 }
 
-
 /**
  * Test Apollo Client NetworkInterface.
  */
@@ -48,6 +47,10 @@ export class LocalNetworkInterface {
    * @param schema GraphQL schema.
    * @param {{ userId, buckets }} context
    * @param {{}|function} options Provide callback for dynamic options.
+   *
+   * Options {
+   *  {number} networkDelay
+   * }
    */
   constructor(schema, context, options={}) {
     console.assert(schema && context && options);
@@ -59,6 +62,10 @@ export class LocalNetworkInterface {
     this._requestCount = 0;
   }
 
+  get count() {
+    return this._requestCount;
+  }
+
   //
   // NetworkInterface
   //
@@ -68,21 +75,28 @@ export class LocalNetworkInterface {
   // https://github.com/apollographql/apollo-client/blob/master/src/transport/networkInterface.ts
   //
 
-  query({ operationName, query, variables }) {
-    logger.log('Query:', operationName);
+  query(request) {
+    let { operationName, query, variables } = request;
+    if (!operationName) {
+      operationName = _.get(query, 'definitions[0].name.value');
+    }
 
-    let { networkDelay=0 } = _.isFunction(this._options) ? this._options() : this._options;
+    let { debug, networkDelay=0 } = _.isFunction(this._options) ? this._options() : this._options;
+
+    let stringify = debug ?
+      (value) => JSON.stringify(value || {}, null, 2) :
+      (value) => TypeUtil.stringify(value || {});
 
     let requestCount = ++this._requestCount;
-    logger.info(`REQ[${operationName}:${requestCount}]`, variables && TypeUtil.stringify(variables) || {});
 
-    let root = {};
-
+    logger.info(`REQ[${operationName}:${requestCount}]`, stringify(variables));
     return Async.timeout(networkDelay).then(() => {
+
+      let root = {};
 
       // https://github.com/graphql/graphql-js/blob/master/src/graphql.js
       return graphql(this._schema, print(query), root, this._context, variables, operationName).then(result => {
-        logger.info(`RES[${operationName}:${requestCount}]`, TypeUtil.stringify(result));
+        logger.info(`RES[${operationName}:${requestCount}]`, stringify(result));
         if (result.errors) {
           logger.error(result.errors[0]);
           throw new Error(result.errors[0]);

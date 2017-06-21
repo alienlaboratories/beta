@@ -1,0 +1,56 @@
+//
+// Copyright 2017 Alien Labs.
+//
+
+@import (reference) '../../resources/css/ref/theme';
+
+.ux-home {
+  padding: 32px;
+
+  .ux-home-group {
+    margin-bottom: 16px;
+
+    > .ux-header {
+      align-items: center;
+
+      h2 {
+        font-size: @ux-font-xlarge;
+        font-weight: 400;
+      }
+
+      .ux-icon {
+        padding-right: 8px;
+        font-size: @ux-font-xlarge;
+      }
+
+      padding: 8px;
+    }
+
+    .ux-card-deck {
+      flex-wrap: wrap;
+
+      background-color: transparent;
+
+      .ux-card {
+        width: 250px;
+        min-height: 120px;
+        margin-right: 16px;
+
+        .ux-title {
+          cursor: pointer;
+        }
+      }
+
+      .ux-card.ux-home-create {
+        padding: @ux-card-padding - 2px;
+
+        background-color: @ux-card-header-background;
+        color: @ux-card-header-color;
+
+        .ux-title {
+          color: @ux-color-light;
+        }
+      }
+    }
+  }
+}

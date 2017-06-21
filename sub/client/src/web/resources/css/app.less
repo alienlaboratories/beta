@@ -1,0 +1,36 @@
+//
+// Copyright 2017 Alien Labs.
+//
+
+//
+// - Component's root element has class name (prefex-class-name) and root layout.
+// - Themes must be strictly scoped to allow for nesting.
+// - Tag semantics are local (e.g., <h1> in Card).
+// - Order style rules (layout, fonts, colors, misc).
+// - Style defs for all colors, sizes, padding, etc.
+//
+
+//
+// Resources
+// http://getbootstrap.com/css
+// http://lesscss.org/features
+//
+
+//
+// Find all styles in use.
+// grep -Ehro "[\"\' ](ux-|app-)[a-zA-Z0-0_\-]+" * | cut -c 2- | sort --unique
+//
+// Find class defs.
+// grep -Ehro "\.(ux-|app-)[a-zA-Z0-0_\-]+" * | sort --unique
+//
+// Find less defs.
+// grep -Ehro "@(ux-|app-)[a-zA-Z0-0_\-]+" * | sort --unique
+//
+// TODO(burdon): Find usages for classes that have no definition.
+//
+
+@import './core';
+@import './dom';
+@import './icon';
+@import './layout';
+@import './loading';

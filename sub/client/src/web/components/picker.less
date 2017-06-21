@@ -2,8 +2,8 @@
 // Copyright 2017 Alien Labs.
 //
 
-@import (reference) '../resources/css/mixin';
-@import '../resources/css/theme';
+@import (reference) '../resources/css/ref/mixin.less';
+@import (reference) '../resources/css/ref/theme.less';
 
 .ux-picker {
 
@@ -60,14 +60,5 @@
     > div::-webkit-scrollbar-thumb {
       background-color: #666;
     }
-  }
-}
-
-.ux-toolbar {
-  .ux-picker {
-    margin-left: @ux-toolbar-padding;
-  }
-  .ux-picker:first-child {
-    margin-left: 0;
   }
 }

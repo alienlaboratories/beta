@@ -5,18 +5,20 @@
 import _ from 'lodash';
 import { IntrospectionFragmentMatcher } from 'react-apollo';
 
-import { ITEM_TYPES } from 'alien-core';
-
 /**
  * Testing (schema brings in server deps).
- * @param schema
+ *
+ * @param {[{string}]|{Schema}} itemTypes Array of type names, or schema (for testing).
  */
-export function createFragmentMatcher(schema=undefined) {
+export function createFragmentMatcher(itemTypes) {
+  console.assert(itemTypes);
 
-  // NOTE: List Item types from schema.
-  const possibleTypes = schema ? _.map(_.get(schema, '_implementations.Item')) : ITEM_TYPES;
+  if (!_.isArray(itemTypes)) {
+    itemTypes = _.map(_.get(itemTypes, '_implementations.Item'), i => String(i));
+  }
 
   // http://dev.apollodata.com/react/initialization.html#fragment-matcher
+  console.assert(!_.isEmpty(itemTypes));
   return new IntrospectionFragmentMatcher({
     introspectionQueryResultData: {
       __schema: {
@@ -24,7 +26,7 @@ export function createFragmentMatcher(schema=undefined) {
           {
             kind: 'INTERFACE',
             name: 'Item',
-            possibleTypes
+            possibleTypes: _.map(itemTypes, itemType => ({ name: itemType }))
           }
         ]
       }

@@ -10,26 +10,34 @@ const logger = Logger.get('event');
 /**
  * Injectable event handler.
  */
-// TODO(burdon): Rename EventListener.
-export class EventHandler {
+export class EventListener {
 
   constructor() {
+    this._counter = 0;
+
     // Map of callbacks by ID (so can be revoked).
-    this._callbacks = [];
+    this._callbacks = new Map();
   }
 
   /**
    * Listen for events.
    * @param type Filter by type (or '*').
    * @param callback Listener callback.
+   *
+   * @returns {function} Function to unregister listener.
    */
   listen(type, callback) {
     console.assert(type && callback);
-    this._callbacks.push({
+
+    let id = 'C-' + ++this._counter;
+    this._callbacks.set(id, {
       type: type,
       callback: callback
     });
-    return this;
+
+    return () => {
+      this._callbacks.delete(id);
+    };
   }
 
   /**
@@ -39,9 +47,10 @@ export class EventHandler {
   emit(event) {
     console.assert(event.type);
     logger.log('Emit: ' + TypeUtil.stringify(event));
-    _.each(this._callbacks, config => {
-      if (config.type === '*' || config.type === event.type) {
-        config.callback(event);
+
+    this._callbacks.forEach(spec => {
+      if (spec.type === '*' || spec.type === event.type) {
+        spec.callback(event);
       }
     });
   }

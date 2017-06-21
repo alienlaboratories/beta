@@ -1,0 +1,39 @@
+{{#section 'head'}}
+ {{! Service worker permissions. }}
+  <link rel="manifest" href="/app/manifest.json">
+
+  {{! Webpack bnundle. }}
+  <link rel="stylesheet" href="/app/assets/{{ bundle }}.css">
+{{/section}}
+
+{{#section 'body'}}
+<div id="{{ config.root }}" class="ux-platform-{{ platform }}">
+
+  {{! Loader gets replaced when app loads. }}
+  {{#if loadingIndicator}}
+  <div class="ux-loading" style="display: none">
+    <div class="ux-loading-bar">
+      <div class="ux-load-bar"></div>
+      <div class="ux-load-bar"></div>
+      <div class="ux-load-bar"></div>
+    </div>
+
+    <div class="ux-loading-title">
+      <h1>robotik</h1>
+    </div>
+  </div>
+  {{/if}}
+
+</div>
+{{/section}}
+
+{{#section 'script'}}
+{{! Safestring syntax. }}
+<script>
+  window.config = {{{ json config }}};
+</script>
+
+<script src="//cloudfront.loggly.com/js/loggly.tracker-2.1.min.js" async></script>
+
+<script src="/app/assets/{{ bundle }}.bundle.js"></script>
+{{/section}}

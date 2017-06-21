@@ -8,7 +8,12 @@ import { Kind } from 'graphql';
 import { concatenateTypeDefs } from 'graphql-tools';
 
 import { Logger, HttpError, TypeUtil } from 'alien-util';
-import { Database, ItemStore } from 'alien-core';
+import { Database, ID, ItemStore } from 'alien-core';
+
+//
+// WARNING: GQL fles may be cached by babel-node/jest
+// BABEL_DISABLE_CACHE=1 and/or jest --no-cache to troubleshoot.
+//
 
 import Framework from './gql/framework.graphql';
 import Schema from './gql/schema.graphql';
@@ -38,6 +43,19 @@ export class Resolvers {
   static get typeDefs() {
     return concatenateTypeDefs([ Framework, Schema ]);
   }
+
+  /**
+   * Set default values for required properties.
+   * @param item
+   * @returns {*}
+   * @constructor
+   */
+  static Defaults = (item) => {
+    return _.defaults(item, {
+      created: Date.now(),
+      modified: Date.now()
+    });
+  };
 
   /**
    * GraphQL Resolvers.
@@ -111,7 +129,7 @@ export class Resolvers {
       // field: (obj, args, context, info) => {null|[]|Promise|scalar|Object} result
       //
 
-      Group: {
+      Group: _.assign({}, Resolvers.DefaultItem, {
 
         members: (obj, args, context) => {
           return database.getItemStore(Database.NAMESPACE.SYSTEM).getItems(context, 'User', obj.members);
@@ -129,9 +147,9 @@ export class Resolvers {
 
           return database.getQueryProcessor(Database.NAMESPACE.USER).queryItems(context, obj, filter);
         }
-      },
+      }),
 
-      User: {
+      User: _.assign({}, Resolvers.DefaultItem, {
 
         title: (obj) => {
           if (!obj.displayName) {
@@ -151,19 +169,34 @@ export class Resolvers {
           // TODO(madadam): Different interface to get SystemStore. getGroup() is not a method of ItemStore interface.
           return database.getItemStore(Database.NAMESPACE.SYSTEM).getGroups(obj.id);
         }
-      },
+      }),
 
-      Project: {
+      Project: _.assign({}, Resolvers.DefaultItem, {
 
         boards: (obj, args, context) => {
-          return _.map(_.get(obj, 'boards'), board => ({
-            alias: board.alias,
-            title: board.title || '',
-            columns: board.columns,
+          return _.map(_.get(obj, 'boards'), board => {
+            let { alias, title, icon, columns, filter } = board;
 
-            // Flatten map to an array.
-            itemMeta: _.map(_.get(board, 'itemMeta'), (value, itemId) => ({ itemId, ...value }))
-          }));
+            // Look-up filtered items (for custom boards).
+            let promise = filter && database.getItemStore(Database.NAMESPACE.USER).queryItems(context, obj, filter);
+            return Promise.resolve(promise).then(items => {
+              return {
+                alias,
+                title,
+                icon,
+                columns,
+
+                // Serialize filter.
+                filter: JSON.stringify(filter),
+
+                // Flatten map to an array.
+                itemMeta: _.map(_.get(board, 'itemMeta'), (value, itemId) => ({ itemId, ...value })),
+
+                // Filtered items.
+                items
+              };
+            });
+          });
         },
 
         group: (obj, args, context) => {
@@ -176,16 +209,10 @@ export class Resolvers {
           } else {
             return [];
           }
-        },
-
-        contacts: (obj, args, context) => {
-          if (obj.contacts) {
-            return database.getItemStore(Database.NAMESPACE.USER).getItems(context, 'Contact', obj.contacts);
-          }
         }
-      },
+      }),
 
-      Task: {
+      Task: _.assign({}, Resolvers.DefaultItem, {
 
         status: (obj, args, context) => {
           return obj.status || 0;
@@ -215,9 +242,9 @@ export class Resolvers {
             return database.getItemStore(Database.NAMESPACE.SYSTEM).getItem(context, 'User', obj.assignee);
           }
         }
-      },
+      }),
 
-      Contact: {
+      Contact: _.assign({}, Resolvers.DefaultItem, {
 
         tasks: (obj, args, context) => {
           if (obj.tasks) {
@@ -259,7 +286,7 @@ export class Resolvers {
               });
           }
         }
-      },
+      }),
 
       //
       // Root Viewer.
@@ -307,15 +334,20 @@ export class Resolvers {
           // TODO(burdon): Should be from key and/or request (move to client). Or prevent querying directly?
           let namespace = Resolvers.getNamespaceForType(type);
 
-          return database.getItemStore(namespace).getItem(context, type, id);
+          return database.getItemStore(namespace).getItem(context, type, id).then(item => {
+            return Resolvers.Defaults(item);
+          });
         },
 
         search: (obj, args, context) => {
           Resolvers.checkAuthentication(context);
-
           let { filter } = args;
 
-          return database.search(context, obj, filter);
+          return database.search(context, obj, filter).then(result => {
+            _.each(result.items, item => Resolvers.Defaults(item));
+
+            return result;
+          });
         }
       },
 
@@ -327,7 +359,7 @@ export class Resolvers {
 
       RootMutation: {
 
-        upsertItems: (obj, args, context) => {
+        batchMutation: (obj, args, context) => {
           Resolvers.checkAuthentication(context);
 
           // TODO(burdon): Enforce bucket.
@@ -345,7 +377,18 @@ export class Resolvers {
 
               // TODO(burdon): Move mutation notifications to Notifier/QueryRegistry.
               database.fireMutationNotification(context, itemMutations, items);
+
               return items;
+            })
+
+            //
+            // Response.
+            //
+            .then(items => {
+              // TODO(burdon): Don't return keys at top-level (confused with items).
+              return {
+                keys: _.map(items, item => ID.key(item))
+              };
             });
         }
       }

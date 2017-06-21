@@ -2,10 +2,12 @@
 // Copyright 2017 Alien Labs.
 //
 
-.app-debug-panel-container {
+@import '../resources/css/ref/mixin';
+
+.ux-debug-panel-container {
   position: relative;
 
-  .app-debug-panel {
+  .ux-debug-panel {
     position: absolute;
     left: 0;
     bottom: 0;
@@ -13,14 +15,26 @@
 
     color: darkgray;
     background-color: #333;
-    font-family: Monaco, monospace;
-    font-size: 12px;
 
     opacity: .8;
-    padding: 4px;
 
-    label {
-      cursor: pointer;
+    h4 {
+      padding: 3px;
+      background-color: #222;
+    }
+
+    > div {
+      padding: 1px;
+      font-size: 12px;
+
+      input {
+        font-size: 12px;
+      }
+
+      label {
+        .ux-text-noselect;
+        .ux-press;
+      }
     }
   }
 }

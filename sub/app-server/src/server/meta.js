@@ -7,6 +7,6 @@
  */
 export default {
 
-  // Changed via grunt:version
-  APP_VERSION: '0.0.5'
+  // grunt version:app:patch
+  APP_VERSION: '0.0.3'
 };

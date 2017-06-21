@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@google-cloud/language": "^0.10.3",
+    "alien-api": "0.0.1",
     "alien-core": "0.0.1",
     "alien-util": "0.0.1",
     "email-addresses": "^2.0.2",
@@ -48,12 +49,13 @@
   },
   "jest": {
     "verbose": false,
+    "cacheDirectory": "/tmp/jest",
     "transformIgnorePatterns": [
       "/node_modules/(?!alien-)"
     ]
   },
   "scripts": {
-    "lint": "eslint -c ../../.eslintrc.yml ./src",
+    "lint": "eslint -c ../../eslintrc.yml ./src",
     "test": "jest --silent --testNamePattern='^((?!Integration).)*$'",
     "all-tests": "jest --verbose",
     "admin": "babel-node src/admin.js"

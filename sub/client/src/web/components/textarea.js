@@ -13,18 +13,28 @@ import { DomUtil } from 'alien-util';
 export class TextArea extends React.Component {
 
   static propTypes = {
-    className:    PropTypes.string,
-    onChange:     PropTypes.func,
-    placeholder:  PropTypes.string,
-    value:        PropTypes.string
+    className:      PropTypes.string,
+    onBlur:         PropTypes.func,
+    onChange:       PropTypes.func,
+    placeholder:    PropTypes.string,
+    value:          PropTypes.string,
+    rows:           PropTypes.number
   };
 
-  state = {};
+  static defaultProps = {
+    rows:           4
+  };
+
+  state = {
+    initialValue:   undefined,
+    value:          undefined
+  };
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.value !== this.state.value) {
       this.setState({
-        value: nextProps.value || ''
+        initialValue:   nextProps.value,
+        value:          nextProps.value
       });
     }
   }
@@ -37,6 +47,10 @@ export class TextArea extends React.Component {
     this.setState({
       value: value
     });
+  }
+
+  handleBlur(event) {
+    this.props.onBlur && this.props.onBlur(this.state.value, this.state.initialValue);
   }
 
   handleTextChange(event) {
@@ -56,7 +70,8 @@ export class TextArea extends React.Component {
                 placeholder={ placeholder }
                 spellCheck={ false }
                 rows={ rows }
-                value={ value }
+                value={ value || '' }
+                onBlur={ this.handleBlur.bind(this) }
                 onChange={ this.handleTextChange.bind(this) }/>
     );
   }

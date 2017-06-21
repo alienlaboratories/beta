@@ -7,6 +7,8 @@ import PropTypes from 'prop-types';
 
 import { MutationUtil } from 'alien-core';
 
+import { ReactUtil } from '../util/react';
+
 import { DragOrderModel } from './dnd';
 import { DragDropList } from './list';
 import { TextBox } from './textbox';
@@ -25,14 +27,14 @@ import './board.less';
 export class Board extends React.Component {
 
   static propTypes = {
-    items: PropTypes.array.isRequired,              // [{ id: {string}, title: {string} }]
-    itemOrderModel: PropTypes.object.isRequired,    // [{DragOrderModel}]
-    itemRenderer: PropTypes.func,
-    columns: PropTypes.array.isRequired,            // [{ id: {string}, title: {string} }]
-    columnMapper: PropTypes.func.isRequired,        // (columns, item) => column.id
-    onItemSelect: PropTypes.func,                   // (item) => {}
-    onItemUpdate: PropTypes.func,                   // (item, mutations) => {}
-    onItemDrop: PropTypes.func                      // (column, item) => {}
+    items:            PropTypes.array.isRequired,       // [{ id: {string}, title: {string} }]
+    itemOrderModel:   PropTypes.object.isRequired,      // [{DragOrderModel}]
+    itemRenderer:     PropTypes.func,
+    columns:          PropTypes.array.isRequired,       // [{ id: {string}, title: {string} }]
+    columnMapper:     PropTypes.func.isRequired,        // (columns, item) => column.id
+    onItemSelect:     PropTypes.func,                   // (item) => {}
+    onItemUpdate:     PropTypes.func,                   // (item, mutations) => {}
+    onItemDrop:       PropTypes.func                    // (column, item) => {}
   };
 
   static defaultProps = {
@@ -79,50 +81,54 @@ export class Board extends React.Component {
   }
 
   render() {
-    let { columnMapper, itemRenderer, itemOrderModel } = this.props;
-    let { items, columns } = this.state;
+    return ReactUtil.render(this, () => {
+      let { columnMapper, itemRenderer, itemOrderModel } = this.props;
+      let { items, columns } = this.state;
 
-    //
-    // Columns.
-    //
-    let columnsDivs = columns.map(column => {
+      //
+      // Columns.
+      //
+      let columnElements = columns.map(column => {
 
-      // Get items for column (in order).
-      let columnItems = _.filter(items, item => column.id === columnMapper(columns, item));
+        // Get items for column (in order).
+        let columnItems = _.filter(items, item => column.id === columnMapper(columns, item));
+
+        return (
+          <div key={ column.id } className="ux-board-column">
+            <div className="ux-board-column-header ux-text-noselect">
+              <h2>{ column.title }</h2>
+            </div>
+
+            <div className="ux-column ux-grow">
+              <DragDropList className="ux-card-deck ux-grow"
+                            highlight={ false }
+                            data={ column.id }
+                            items={ columnItems }
+                            itemClassName="ux-card-list-item"
+                            itemRenderer={ itemRenderer }
+                            itemOrderModel={ itemOrderModel }
+                            onItemDrop={ this.handleItemDrop.bind(this) }
+                            onItemSelect={ this.handleItemSelect.bind(this) }/>
+            </div>
+
+            <div className="ux-board-column-footer">
+              <TextBox className="ux-grow"
+                       placeholder="Add Card..."
+                       onEnter={ this.handleItemCreate.bind(this, column) }/>
+            </div>
+          </div>
+        );
+      });
 
       return (
-        <div key={ column.id } className="ux-board-column">
-          <div className="ux-board-header ux-text-noselect">
-            <h2>{ column.title }</h2>
-          </div>
-
-          <DragDropList className="ux-board-list"
-                        highlight={ false }
-                        data={ column.id }
-                        items={ columnItems }
-                        itemClassName="ux-board-list-item"
-                        itemRenderer={ itemRenderer }
-                        itemOrderModel={ itemOrderModel }
-                        onItemDrop={ this.handleItemDrop.bind(this) }
-                        onItemSelect={ this.handleItemSelect.bind(this) }/>
-
-          <div className="ux-toolbar">
-            <TextBox className="ux-expand"
-                     placeholder="Add Card..."
-                     onEnter={ this.handleItemCreate.bind(this, column) }/>
+        <div className="ux-board">
+          <div className="ux-scroll-container ux-row ux-grow">
+            <div className="ux-board-columns ux-row">
+              { columnElements }
+            </div>
           </div>
         </div>
       );
     });
-
-    return (
-      <div className="ux-board ux-scroll-container">
-        <div className="ux-scroll-x-panel">
-          <div className="ux-board-columns">
-            { columnsDivs }
-          </div>
-        </div>
-      </div>
-    );
   }
 }

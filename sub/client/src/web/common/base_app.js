@@ -5,21 +5,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { syncHistoryWithStore, routerMiddleware, routerReducer } from 'react-router-redux';
-import { IntrospectionFragmentMatcher } from 'react-apollo';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import ReduxThunk from 'redux-thunk';
 import reduceReducers from 'reduce-reducers';
 import ApolloClient from 'apollo-client';
 import moment from 'moment';
 
-import {
-  ErrorUtil, EventHandler, Logger, Injector, TypeUtil
-} from 'alien-util';
+import { ErrorUtil, EventListener, Logger, Injector, TypeUtil } from 'alien-util';
+import { ID, IdGenerator, Matcher, QueryParser, QueryRegistry } from 'alien-core';
+import { ITEM_TYPES } from 'alien-api';
 
-import {
-  ID, IdGenerator, Matcher, QueryParser, QueryRegistry
-} from 'alien-core';
+import { createFragmentMatcher} from '../../util/apollo_tools';
+import { Loggly } from '../util/loggly';
 
+import { Actions } from './actions';
 import { Analytics } from './analytics';
 import { ContextManager } from './context';
 
@@ -40,14 +39,18 @@ export class BaseApp {
     this._initialized = false;
 
     // Event bus propagates events (e.g., error messages) to components.
-    this._eventHandler = new EventHandler();
+    this._eventListener = new EventListener();
 
     // TODO(burdon): Experimental (replace with Apollo directives).
     // Manages Apollo query subscriptions.
-    this._queryRegistry = new QueryRegistry(config);
+    this._queryRegistry = new QueryRegistry(this._config);
 
     // TODO(burdon): Runtime option. This currently breaks if null.
     this._analytics = new Analytics(this._config); // new SegmentAnalytics(this._config);
+
+    // Loggly.
+    this._logger = new Loggly(this._config);
+    this._logger.log('Starting');
 
     // Global error handling.
     ErrorUtil.handleErrors(window, error => this.onError(error));
@@ -68,9 +71,9 @@ export class BaseApp {
   onError(error) {
     logger.error(error);
     let message = ErrorUtil.message(error);
-    this._eventHandler.emit({
+    this._eventListener.emit({
       type: 'error',
-      message: message
+      error
     });
 
     this._analytics.track('error', { message });
@@ -117,8 +120,9 @@ export class BaseApp {
       Injector.provide(new Matcher()),
       Injector.provide(new QueryParser()),
       Injector.provide(new ContextManager(idGenerator)),
-      Injector.provide(this._eventHandler),
-      Injector.provide(this._queryRegistry)
+      Injector.provide(new Actions((action) => this.store.dispatch(action), this._queryRegistry)),
+      Injector.provide(this._eventListener),
+      Injector.provide(this._queryRegistry),
     ], this.providers);
 
     // TODO(burdon): Move to Redux?
@@ -137,26 +141,6 @@ export class BaseApp {
   initApollo() {
     console.assert(this.networkInterface);
 
-    // NOTE: List Item types from schema.
-    const ITEM_TYPES = [
-      'User', 'Group', 'Contact', 'Document', 'Event', 'Folder', 'Location', 'Message', 'Project', 'Task'
-    ];
-
-    // http://dev.apollodata.com/react/initialization.html#fragment-matcher
-    const fragmentMatcher = new IntrospectionFragmentMatcher({
-      introspectionQueryResultData: {
-        __schema: {
-          types: [
-            {
-              kind: 'INTERFACE',
-              name: 'Item',
-              possibleTypes: _.map(ITEM_TYPES, type => ({ name: type }))
-            }
-          ],
-        },
-      }
-    });
-
     //
     // http://dev.apollodata.com/react/initialization.html
     // http://dev.apollodata.com/core/apollo-client-api.html#apollo-client
@@ -166,21 +150,20 @@ export class BaseApp {
 
     this._client = new ApolloClient({
 
+      // Adds __typename to results.
+      addTypename: true,
+
       // http://dev.apollodata.com/react/cache-updates.html
       dataIdFromObject: ID.dataIdFromObject,
-      addTypename: true,
 
       // Support validation for fragments of interfaces.
       // Otherwise: WARNING: heuristic fragment matching going on!
-      fragmentMatcher,
-
-      // TODO(burdon): Need to update reducers to accept multiple results.
-      // https://dev-blog.apollodata.com/query-batching-in-apollo-63acfd859862
-//    shouldBatch: true,
+      // http://dev.apollodata.com/react/initialization.html#fragment-matcher
+      fragmentMatcher: createFragmentMatcher(ITEM_TYPES),
 
       // Map identical queries to the same request.
       // http://dev.apollodata.com/core/network.html#query-deduplication
-//    queryDeduplication: true,
+      queryDeduplication: true,
 
       // http://dev.apollodata.com/core/network.html
       networkInterface: this.networkInterface,
@@ -198,11 +181,7 @@ export class BaseApp {
       // customResolvers: {
       //   RootQuery: {                // Root query type name.
       //     item: (_, args) => {
-      //
-      //       console.log('#####################<><><><><><>#', args);
-      //
       //       // toIdValue(dataIdFromObject({ __typename: 'book', id: args['id'] })),
-      //
       //       return {
       //         type: 'id',
       //         id: args['itemId']    // GraphQL query-soecific.
@@ -400,12 +379,6 @@ export class BaseApp {
    * </Application>
    *
    * Routes instantiate activity components, which receive params from the path.
-   *
-   * <Activity>
-   *   <Layout>
-   *     <Canvas/>
-   *   </Layout>
-   * </Activity>
    *
    * @param {React.Component} App Root app class.
    * @return {Promise}

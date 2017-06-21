@@ -22,12 +22,12 @@ class CloudMessenger {
    * Registers client (and push socket).
    *
    * @param {object} config
-   * @param {EventHandler} eventHandler
+   * @param {EventListener} eventListener
    */
-  constructor(config, eventHandler) {
-    console.assert(config && eventHandler);
+  constructor(config, eventListener) {
+    console.assert(config && eventListener);
     this._config = config;
-    this._eventHandler = eventHandler;
+    this._eventListener = eventListener;
     this._onTokenUpdate = null;
     this._onMessage = null;
 
@@ -75,7 +75,7 @@ class CloudMessenger {
    */
   fireMessage(data) {
     logger.info('Received: ' + JSON.stringify(data));
-    this._eventHandler.emit({ type: 'network.in' });
+    this._eventListener.emit({ type: 'network.recv' });
 
     // Ignore invalidations from self.
     if (_.get(this._config, 'registration.clientId') !== data.senderId || data.force) {
@@ -123,7 +123,7 @@ export class FirebaseCloudMessenger extends CloudMessenger {
       // NOTE: Currently warnings (5/4/17): FB service ticket.
       // firebase-messaging.js:26 Event handler of 'push' event must be added on the initial evaluation of worker script.
       //
-      console.log('Loading Service Worker...');
+      logger.log('Loading Service Worker...');
       return navigator.serviceWorker.register('/service_worker.js').then(registration => {
 
         // https://console.firebase.google.com/project/alien-dev/overview
@@ -195,8 +195,8 @@ export class GoogleCloudMessenger extends CloudMessenger {
 
   // TODO(burdon): Store token?
 
-  constructor(config, eventHandler) {
-    super(config, eventHandler);
+  constructor(config, eventListener) {
+    super(config, eventListener);
 
     // https://developer.chrome.com/apps/gcm#event-onMessage
     chrome.gcm.onMessage.addListener(message => {

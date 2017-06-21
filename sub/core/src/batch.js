@@ -3,46 +3,16 @@
 //
 
 import _ from 'lodash';
-// import gql from 'graphql-tag';
 
 import { Logger, TypeUtil } from 'alien-util';
 
 import { Database } from './database';
 import { ID } from './id';
-import { MutationUtil, UpsertItemsMutationName } from './mutations';
+import { MutationUtil } from './mutation';
+import { FragmentParser } from './schema';
 import { Transforms } from './transforms';
 
-import { Fragments } from './fragments';
-
 const logger = Logger.get('batch');
-
-// TODO(burdon): Items.
-// TODO(burdon): Custom resolver?
-// export const SearchQuery = gql`
-//   query SearchQuery($filter: FilterInput) {
-//     search(filter: $filter) {
-//       items {
-//         id
-//         title
-//
-//         ... on Project {
-//           tasks {
-//             id
-//             title
-//           }
-//         }
-//       }
-//     }
-//   }
-// `;
-// const ItemQuery = gql`
-//   query ItemQuery($key: Key) {
-//     item(key: $key) {
-//       id
-//       title
-//     }
-//   }
-// `;
 
 /**
  * Batch mutations.
@@ -52,7 +22,7 @@ export class Batch {
   /**
    * Manages batch mutations.
    *
-   * new Batch(idGenerator, mutator, bucket, true)
+   * new Batch(idGenerator, mutator, bucket, { optimistic: true, fragments, refetchQueries })
    *
    *   .createItem('Task', [
    *     MutationUtil.createFieldMutation('title', 'string', 'Test')
@@ -60,7 +30,7 @@ export class Batch {
    *
    *   .updateItem({ id: 'P-1', type: 'Project' }, [
    *     MutationUtil.createSetMutation('labels', 'string', 'foo')
-   *     ({ task }) => MutationUtil.createSetMutation('tasks', 'id', task.id)
+   *     ({ task }) => MutationUtil.createSetMutation('tasks', 'key', ID.key(task))
    *   ])
    *
    *   .commit();
@@ -68,18 +38,17 @@ export class Batch {
    * @param {IdGenerator} idGenerator.
    * @param {function.<{Options}>} mutate Mutate function provided by Apollo.
    * @param {string} bucket All batched operations must belong to the same bucket.
-   * @param {boolean} optimistic
-   * @private
+   * @param {{optimistic, fragments: {FragmentsMap}, refetchQueries: [{string}]}} options
    */
-  constructor(idGenerator, mutate, bucket, optimistic=false) {
-    console.assert(idGenerator && mutate && bucket);
+  constructor(idGenerator, mutate, bucket, options={}) {
+    console.assert(idGenerator && mutate && bucket && options);
 
     // TODO(burdon): Enforce same bucket for entire batch? Otherwise multiple batches (e.g., private task for project).
 
     this._idGenerator = idGenerator;
     this._mutate = mutate;
     this._bucket = bucket;
-    this._optimistic = optimistic;
+    this._options = options;
 
     this._refs = new Map();
     this._items = new Map();
@@ -113,8 +82,9 @@ export class Batch {
     mutations = _.compact(_.flattenDeep(mutations));
 
     let id = this._idGenerator.createId();
-    let key = { bucket: this._bucket, type, id };
-    this._items.set(id, key);
+    let key = { namespace: null, bucket: this._bucket, type, id };
+    let item = { __typename: type, ...key, verson: 0 };
+    this._items.set(id, item);
 
     this._itemMutations.push({
       key,
@@ -167,58 +137,25 @@ export class Batch {
 
     // Create optimistic response.
     let optimisticResponse;
-    if (this._optimistic) {
-
-      // Apply the mutations to the current (cloned) items.
-      let upsertItems = _.map(this._itemMutations, mutation => {
-        let { key, mutations } = mutation;
-        let item = this._items.get(key.id);
-        console.assert(item);
-
-        // Patch IDs with items.
-        // Clone mutations, iterate tree and replace id with object value.
-        // NOTE: This isn't 100% clean since theoretically some value mutations may legitimately deal with IDs.
-        // May need to "mark" ID values when set in batch mutation API call.
-        mutations = _.cloneDeep(mutations);
-        TypeUtil.traverse(mutations, (value, key, root) => {
-          if (key === 'id') {
-            let referencedItem = this._items.get(value);
-            if (referencedItem) {
-              root[key] = referencedItem;
-            }
-          }
-        });
-
-        // TODO(burdon): Move to batch.update below.
-        // TODO(burdon): Mutation patching above isn't right since patching Item into "id" field?
-        // http://dev.apollodata.com/react/optimistic-ui.html
-        // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-optimisticResponse
-        // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
-        let updatedItem = Transforms.applyObjectMutations(_.cloneDeep(item), mutations);
-
-        // Update the batch's cache for patching above.
-        this._items.set(item.id, updatedItem);
-
-        // Important for update.
-        _.assign(updatedItem, {
-          __typename: item.type
-        });
-
-        return updatedItem;
-      });
+    if (this._options.optimistic) {
+      logger.log('Creating optimistic response.');
 
       // Create the response (GraphQL mutation API).
+      // NOTE: __typename is required to avoid warnings.
       // http://dev.apollodata.com/react/mutations.html#optimistic-ui
       // http://dev.apollodata.com/react/optimistic-ui.html#optimistic-basics
       // http://dev.apollodata.com/react/cache-updates.html
       optimisticResponse = {
-        __typename: UpsertItemsMutationName,
+        batchMutation: {
+
+          // TODO(burdon): Use def.
+          __typename: 'BatchMutationResponse',
+
+          keys: _.map(this._itemMutations, itemMutation => ({ __typename: 'Key', ...itemMutation.key }))
+        },
 
         // Add hint for batch.update.
-        optimistic: true,
-
-        // status: 200
-        upsertItems
+        optimistic: true
       };
     }
 
@@ -230,110 +167,137 @@ export class Batch {
     logger.log('Batch:', TypeUtil.stringify(this._itemMutations));
     return this._mutate({
 
-      // RootMutation.upsertItems([ItemMutationInput]!)
+      // TODO(burdon): updateQueries
+
+      // RootMutation.batchMutation([ItemMutationInput]!)
       variables: {
         itemMutations: this._itemMutations
       },
 
+      // http://dev.apollodata.com/react/optimistic-ui.html
       optimisticResponse,
 
-      // TODO(burdon): refetchQueries
-      // TODO(burdon): updateQueries
-
-      /**
-       * Updates the cache.
-       * By default the cache is updates items that match ApolloClient.dataIdFromObject.
-       * This method allows for the update of cached queries (and replaces deprecated reducers).
-       *
-       * Called for both optimistic and network mutation response.
-       * Once immediately after client.mutate with the optimisticResponse.
-       * After the network response the optimistic changes are rolled back and update called with the actual data.
-       *
-       * http://dev.apollodata.com/react/cache-updates.html#directAccess
-       * http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
-       * http://dev.apollodata.com/core/read-and-write.html#updating-the-cache-after-a-mutation
-       *
-       * @param {DataProxy} proxy http://dev.apollodata.com/core/apollo-client-api.html#DataProxy
-       * @param {Object} data Mutation result.
-       */
+      // http://dev.apollodata.com/core/read-and-write.html#updating-the-cache-after-a-mutation
       update: (proxy, { data }) => {
-        logger.log('Batch.mutate.update', data);
+        this._doUpdate(proxy, data);
+      },
 
-        // TODO(burdon): Move Transforms.applyObjectMutations (from above) here.
-
-        // TODO(burdon): Worst case: run mutations against all queries?
-        // But fragments returned are empty.
-
-        let key = this._itemMutations[0].key;
-        console.log('Key', key);
-
-        // http://dev.apollodata.com/core/apollo-client-api.html#DataProxy.readFragment
-        let item1 = proxy.readFragment({
-          fragment: Fragments.ItemFragment,
-          fragmentName: 'ItemFragment',
-          id: 'Task:T-1'
-        });
-        console.log('############', item1);
-
-        let item2 = proxy.readFragment({
-          fragment: Fragments.ItemFragment,
-          fragmentName: 'ItemFragment',
-          id: 'Project:P-1'
-        });
-        console.log('############', item2);
-
-        // proxy.writeFragment({
-        //   fragment: Fragments.ItemFragment,
-        //   fragmentName: 'ItemFragment',
-        //   id: key.type + ':' + key.id,
-        //   data: {
-        //     __typename: 'Task',
-        //     title: 'xxx'
-        //   }
-        // });
-
-        // TODO(burdon): Error with optimistic updates (selection set doesn't match).
-        // TypeError: Cannot read property 'variables' of undefined
-        // https://github.com/apollographql/apollo-client/issues/1708
-
-//         console.log(this._itemMutations[0]);
-//         // Read the data from our cache for this query.
-//         let filter = { type, ids: [ id ] };
-//         console.log('>>>>', JSON.stringify(filter));
-//
-//         // TODO(burdon): readQuery only matches exact query (otherwise throws error).
-//         const ProjectFilter = {
-//           type: 'Project',
-//           expr: {
-//             comp: 'IN',
-//             field: 'labels',
-//             value: {
-//               string: '_default'
-//             }
-//           }
-//         };
-//
-// //      let d2 = proxy.readQuery({ query: SearchQuery, variables: { filter:ProjectFilter } });
-//         let d2 = proxy.readQuery({ query: ItemQuery, variables: { key: ID.key(this._itemMutations[0]) } });
-//
-//         let tasks = _.get(d2,'search.items[0].tasks');
-//         console.log('#########', d2, tasks);
-//
-//         tasks[0].title = 'xxx';
-
-        // proxy.writeQuery({
-        //   query: SearchQuery,
-        //   data: d2
-        // });
-      }
+      // http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-refetchQueries
+      refetchQueries: this._options.refetchQueries
 
     }).then(({ data }) => {
       // Called when on network response (not optimistic response).
       logger.log('Commit', TypeUtil.stringify(data));
-      return true;
+      return { batch:this };
     }).catch(err => {
       logger.error(err);
-      return false;
+      return { batch:this, error: err };
+    });
+  }
+
+  /**
+   * Updates the cache.
+   * By default the cache is updates items that match ApolloClient.dataIdFromObject.
+   * This method allows for the update of cached queries (and replaces deprecated reducers).
+   *
+   * Called for both optimistic and network mutation response.
+   * Once immediately after client.mutate with the optimisticResponse.
+   * After the network response the optimistic changes are rolled back and update called with the actual data.
+   *
+   * http://dev.apollodata.com/react/cache-updates.html#directAccess
+   * http://dev.apollodata.com/react/api-mutations.html#graphql-mutation-options-update
+   * http://dev.apollodata.com/core/read-and-write.html#updating-the-cache-after-a-mutation
+   *
+   * @param {DataProxy} proxy http://dev.apollodata.com/core/apollo-client-api.html#DataProxy
+   * @param {Object} data Mutation result.
+   */
+  _doUpdate(proxy, data) {
+    logger.log('Batch.mutate.update', JSON.stringify(data));
+    if (_.isEmpty(this._itemMutations)) {
+      logger.warn('Empty batch: ' + JSON.stringify(data));
+      return;
+    }
+
+    if (!this._options.fragments) {
+      logger.warn('No fragments defined.');
+      return;
+    }
+
+    // Process mutations.
+    // TODO(burdon): Use actual mutations returned from optimisticResponse and server..
+    _.each(this._itemMutations, itemMutation => {
+      let { key, mutations } = itemMutation;
+
+      // Apply to each fragment.
+      _.each(this._options.fragments.getFragments(key.type), fragment => {
+        let fragmentName = FragmentParser.getFragmentName(fragment);
+
+        //
+        // Read currently cached item (if exists).
+        // http://dev.apollodata.com/core/apollo-client-api.html#DataProxy.readFragment
+        //
+
+        let cachedItem;
+        try {
+          cachedItem = proxy.readFragment({
+            id: ID.createStoreId(key),
+            fragment,
+            fragmentName
+          });
+        } catch (err) {
+          logger.error(err);
+          throw err;
+        }
+
+        //
+        // Apply mutations.
+        // The FragmentParser provides a template item (with null fields for each fragment).
+        // This avoids the "Missing fields" warnings.
+        // Additionally nested Items are defined (in the fragments) only by key fields.
+        // Apollo can use the `dataIdFromObject` property to match the associated cached Items.
+        //
+
+        let clonedItem = TypeUtil.clone(cachedItem || key);
+        let mutatedItem = Transforms.applyObjectMutations({ client: true }, clonedItem, mutations);
+
+        let parser = new FragmentParser(fragment);
+        parser.getDefaultObject(mutatedItem);
+
+        //
+        // Update cache.
+        //
+
+        // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.writeFragment
+        try {
+          proxy.writeFragment({
+            id: ID.createStoreId(mutatedItem),
+            fragment,
+            fragmentName,
+            data: mutatedItem
+          });
+        } catch (err) {
+          logger.error(err);
+          logger.warn('Mutated item:', JSON.stringify(mutatedItem, null, 2));
+        }
+
+        //
+        // TODO(burdon): Debug only.
+        // Check updated.
+        //
+
+        const debug = true;
+        if (debug) {
+          cachedItem = proxy.readFragment({
+            id: ID.createStoreId(mutatedItem),
+            fragment,
+            fragmentName
+          });
+
+          let storeItem = proxy.data[ ID.createStoreId(cachedItem) ];
+          console.assert(cachedItem && storeItem);
+          console.assert(cachedItem.id === storeItem.id);
+        }
+      });
     });
   }
 
@@ -345,6 +309,7 @@ export class Batch {
    */
   _resolve(mutation) {
     if (_.isFunction(mutation)) {
+      // TODO(burdon): Read args and check ref exists.
       return mutation.call(this, this.refs);
     } else {
       return mutation;
@@ -389,6 +354,7 @@ export class Batch {
           mutations
         );
 
+        // TODO(burdon): Reuse key?
         // TODO(burdon): Add fkey (e.g., email)?
         this.createItem(item.type, clonedMutations, label);
         return true;
@@ -403,6 +369,7 @@ export class Batch {
         logger.log('Cloning item: ' + JSON.stringify(_.pick(item, 'namespace', 'type', 'id')));
 
         let clonedMutations = _.concat(
+          // TODO(burdon): Move to server? (normalize with above).
           // Reference the external item.
           MutationUtil.createFieldMutation('fkey', 'string', ID.getForeignKey(item)),
 

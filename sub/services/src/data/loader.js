@@ -117,9 +117,6 @@ export class Loader {
         return this.initProjects(group);
       });
 
-      // TODO(burdon): Create default project for each User.
-      // TODO(burdon): Do test data generation after this.
-
       return Promise.all(promises).then(() => {
         return systemStore.upsertItems({}, groups);
       });
@@ -146,11 +143,42 @@ export class Loader {
 
         // Create it.
         return itemStore.upsertItem(context, {
-          bucket: group.id,
-          group: group.id,
-          type: 'Project',
-          labels: ['_default'],
-          title: 'Default Project'
+          bucket:   group.id,
+          group:    group.id,
+          type:     'Project',
+          labels:   ['_default'],
+          title:    'Default Project',
+
+          // TODO(burdon): Factor out (templates).
+          boards: [
+            {
+              alias: 'pipeline',
+              title: 'Pipeline',
+              columns: [
+                {
+                  id:     'prospect',
+                  value:  { string: 'prospect' },
+                  title:  'Prospect'
+                },
+                {
+                  id:     'active',
+                  value:  { string: 'active' },
+                  title:  'Active'
+                },
+                {
+                  id:     'commit',
+                  value:  { string: 'commit' },
+                  title:  'Commit'
+                },
+                {
+                  id:     'reject',
+                  value:  { string: 'reject' },
+                  title:  'Reject'
+                },
+              ],
+              filter: { type: 'Contact', labels: ['funding'] }
+            }
+          ]
         });
       }
     });

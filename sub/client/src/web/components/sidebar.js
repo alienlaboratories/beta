@@ -56,7 +56,7 @@ export class Sidebar extends React.Component {
     this.state.open ? this.close() : this.open();
   }
 
-  onBlur() {
+  handleBlur() {
     if (this.props.autoClose) {
       this.close();
     }
@@ -70,7 +70,7 @@ export class Sidebar extends React.Component {
       <div className="ux-sidebar">
         <div className={ DomUtil.className('ux-sidebar-drawer', open && 'ux-open') }>
           <div>
-            <input ref="hidden" onBlur={ this.onBlur.bind(this) }/>
+            <input ref="hidden" onBlur={ this.handleBlur.bind(this) }/>
           </div>
 
           { children }

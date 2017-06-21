@@ -4,9 +4,12 @@
 
 import { goBack, goForward, push } from 'react-router-redux';
 
+import { Logger } from 'alien-util';
 import { ID } from 'alien-core';
 
 import { AppDefs } from '../../common/defs';
+
+const logger = Logger.get('path');
 
 /**
  * Router paths.
@@ -29,7 +32,7 @@ export class Path {
   static ROOT     = AppDefs.APP_PATH;
   static TESTING  = AppDefs.APP_PATH + '/testing';
   static ADMIN    = AppDefs.APP_PATH + '/admin';
-  static HOME     = AppDefs.APP_PATH + '/inbox';
+  static INBOX    = AppDefs.APP_PATH + '/inbox';
 
   /**
    * Generates path for router.
@@ -56,13 +59,9 @@ export class Path {
    * @return {string}
    */
   static canvas(key, canvas=undefined) {
-    console.assert(key && key.id && key.type);
-    let type = key.type.toLowerCase();
-    if (canvas) {
-      return `${Path.ROOT}/${type}/${canvas}/${ID.encodeKey(key)}`;
-    } else {
-      return `${Path.ROOT}/${type}/${ID.encodeKey(key)}`;
-    }
+    console.assert(key && key.type && key.id);
+    let type = canvas || key.type.toLowerCase();
+    return `${Path.ROOT}/${type}/${ID.encodeKey(key)}`;
   }
 }
 
@@ -91,6 +90,7 @@ export class Navigator {
 
   // TODO(burdon): Standardize usage.
   push(path) {
+    logger.log('Push:', path);
     this.dispatch(push(path));
   }
 
@@ -115,6 +115,7 @@ export class WindowNavigator {
 
   pushCanvas(item) {
     let path = this._serverProvider.value + Path.canvas(ID.key(item));
+    logger.log('Open:', path);
     window.open(path, 'ALIEN');
   }
 }

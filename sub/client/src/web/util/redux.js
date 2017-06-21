@@ -5,8 +5,30 @@
 import { connect } from 'react-redux';
 
 /**
- * Preserve access to root component via getWrappedInstance (see react.js).
+ * Redux utils.
  */
-export function connectWithRef(mapStateToProps, mapDispatchToProps) {
-  return connect(mapStateToProps, mapDispatchToProps, null, { withRef: true });
+export class ReduxUtil {
+
+  /**
+   * Wraps Redux connect method to make inline functions self-documenting (like GraphQL).
+   * https://github.com/reactjs/react-redux/blob/master/docs/api.md
+   * @param {{ mapStateToProps, mapDispatchToProps, mergeProps, options }} obj
+   */
+  static connect(obj) {
+    let {
+      // (state, ownProps) => {}
+      mapStateToProps,
+
+      // (dispatch, ownProps) => {}
+      mapDispatchToProps,
+
+      // (stateProps, dispatchProps, ownProps) => {}
+      mergeProps,
+
+      // { pure: true }
+      options
+    } = obj;
+
+    return connect.call(null, mapStateToProps, mapDispatchToProps, mergeProps, options);
+  }
 }

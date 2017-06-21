@@ -6,8 +6,8 @@
 export const Defs = {
 
   SERVER: {
-    DEV:  { value: 'http://localhost:3000',        title: 'localhost' },
-    PROD: { value: 'https://beta.alienlabs.com',   title: 'https://beta.alienlabs.com' }
+    DEV:  { value: 'http://localhost:3000', title: 'localhost' },
+    BETA: { value: 'https://beta.robotik.io', title: 'https://beta.robotik.io' }
   }
 };
 
@@ -18,7 +18,7 @@ export const Defs = {
 export const DefaultSettings = {
 
   // App server (e.g., dev, prod).
-  server: Defs.SERVER.PROD.value,
+  server: Defs.SERVER.BETA.value,
 
   // TODO(burdon): Overlay on config: crx: {},
   crx: {

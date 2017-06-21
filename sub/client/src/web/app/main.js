@@ -13,7 +13,7 @@ import { FirebaseCloudMessenger } from '../common/cloud_messenger';
 import { NetworkManager } from '../common/network';
 import { AppAction, AppReducer, GlobalAppReducer } from '../common/reducers';
 
-import { TypeRegistryFactory } from '../containers/type_factory';
+import { TypeRegistryFactory } from '../containers/item/type_factory';
 
 /**
  * Base class for Web apps.
@@ -29,7 +29,7 @@ export class WebApp extends BaseApp {
     this._authManager = new AuthManager(this._config);
 
     // FCM Push Messenger.
-    this._cloudMessenger = new FirebaseCloudMessenger(this._config, this._eventHandler).listen(message => {
+    this._cloudMessenger = new FirebaseCloudMessenger(this._config, this._eventListener).listen(message => {
       if (_.get(this._config, 'options.invalidate')) {
         this._queryRegistry.invalidate();
       }
@@ -48,7 +48,7 @@ export class WebApp extends BaseApp {
 
     // Apollo network requests.
     this._networkManager =
-      new NetworkManager(this._config, this._authManager, this._connectionManager, this._eventHandler)
+      new NetworkManager(this._config, this._authManager, this._connectionManager, this._eventListener)
         .init(this._itemStore);
   }
 
