@@ -59,7 +59,7 @@ class HomeActivity extends React.Component {
         // Current projects.
         let projects = _.map(group.projects, project => {
           return (
-            <ItemRenderer key={ project.id } item={ project } readOnly={ true }/>
+            <ItemRenderer key={ project.id } item={ project } readOnly={ true } sections={ false }/>
           );
         });
 

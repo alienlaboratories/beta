@@ -53,6 +53,7 @@ class ProjectBoardHeader extends React.Component {
   render() {
     return ReactUtil.render(this, () => {
       let { item:project, boardAlias } = this.props;
+      console.assert(project);
 
       // TODO(burdon): Cache adapters (or get from Redux).
       let icons = _.map(ProjectBoard.getAdapters(project), adapter => {

@@ -5,6 +5,7 @@
 import React from 'react';
 
 import { TextBox } from '../../../components/textbox';
+import { TextArea } from '../../../components/textarea';
 
 /**
  * Test List.
@@ -42,7 +43,8 @@ export class TestText extends React.Component {
     //
 
     return (
-      <div className="ux-panel">
+      <div className="ux-panel ux-column">
+
         <div className="ux-toolbar ux-padding">
           <div className="ux-grow">
             <TextBox className="ux-grow" autoFocus={ true } value={ text } onCancel={ () => true }/>
@@ -53,6 +55,11 @@ export class TestText extends React.Component {
             <button onClick={ this.handleChange.bind(this) }>Change</button>
           </div>
         </div>
+
+        <div>
+          <TextArea value={ text }/>
+        </div>
+
       </div>
     );
   }

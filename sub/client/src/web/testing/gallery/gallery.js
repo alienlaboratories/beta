@@ -6,7 +6,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Link, Router, Route, hashHistory } from 'react-router';
 
-import { TestBoard, TestCards, TestList, TestSidebar, TestText } from './testing';
+import { TestBoard, TestCards, TestD3, TestList, TestSidebar, TestText } from './testing';
 
 import './gallery.less';
 
@@ -23,6 +23,11 @@ const Components = [
     id: 'cards',
     name: 'Cards',
     render: () => <TestCards/>
+  },
+  {
+    id: 'd3',
+    name: 'D3',
+    render: () => <TestD3/>
   },
   {
     id: 'list',

@@ -12,7 +12,7 @@ import { ErrorUtil, Logger, TypeUtil } from 'alien-util';
 import { DataUtil } from '../../util/data';
 import { OAuthServiceProvider } from '../service';
 
-import { GoogleSyncer } from './sync';
+import { GoogleSyncer } from './google_syncer';
 import { GoogleApiUtil } from './util';
 
 const NAMESPACE = 'google.com/mail';

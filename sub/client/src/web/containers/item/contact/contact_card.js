@@ -29,7 +29,7 @@ export class ContactCard extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { mutator, viewer, item:contact } = this.props;
+      let { mutator, viewer, item:contact, sections } = this.props;
       if (!contact) {
         return;
       }
@@ -37,7 +37,7 @@ export class ContactCard extends React.Component {
       let { meta, email, tasks } = contact;
 
       return (
-        <Card mutator={ mutator } viewer={ viewer } item={ contact } showLabels={ true }>
+        <Card mutator={ mutator } viewer={ viewer } item={ contact } showLabels={ true } sections={ sections }>
 
           <Card.Section id="contact" title="Contact">
             <div className="ux-row ux-grow ux-card-padding">

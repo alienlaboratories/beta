@@ -56,6 +56,7 @@ const ItemFragment = gql`
     
     labels
     title
+    description
 
     meta {
       ...MetaFragment

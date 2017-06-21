@@ -59,11 +59,15 @@ export class Card extends React.Component {
   /**
    * Type-specific card renderer.
    */
-  static ItemRenderer = (typeRegistry, mutator, viewer) => ({ item, readOnly }) => {
+  static ItemRenderer = (typeRegistry, mutator, viewer) => ({ item, readOnly, sections=true }) => {
     console.assert(typeRegistry && mutator && viewer);
     let CardComponent = typeRegistry && typeRegistry.card(item.type) || Card;
 
-    return <CardComponent item={ item } mutator={ mutator } viewer={ viewer } readOnly={ readOnly }/>;
+    return <CardComponent item={ item }
+                          mutator={ mutator }
+                          viewer={ viewer }
+                          readOnly={ readOnly }
+                          sections={ sections }/>;
   };
 
   /**
@@ -216,7 +220,8 @@ export class Card extends React.Component {
   render() {
     return ReactUtil.render(this, () => {
       let { config } = this.context;
-      let { children, className, debug, item, icon, readOnly, showLabels=false } = this.props;
+      // TODO(burdon): Generalize visibility of sections.
+      let { children, className, debug, item, icon, readOnly, sections=true, showLabels=false } = this.props;
       if (!item) {
         return;
       }
@@ -269,6 +274,7 @@ export class Card extends React.Component {
             }
 
             {/* TODO(burdon): Extend details. */}
+            { sections &&
             <Card.Section id="details" title="Description" open={ false }>
               <div className="ux-card-padding">
                 <TextArea className="ux-font-xsmall"
@@ -276,6 +282,7 @@ export class Card extends React.Component {
                           onBlur={ this.handleDescriptionUpdate.bind(this) }/>
               </div>
             </Card.Section>
+            }
 
             {/* Type-specific */}
             { children }

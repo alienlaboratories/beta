@@ -13,7 +13,7 @@ export class ReactUtil {
    * React.Component render wrapper.
    * Returns empty <div> if loading; wraps errors.
    *
-   * NOTE: Same-key warning is not caught here.
+   * NOTE: Element key warning is not caught here.
    *
    * @param obj Component instance.
    * @param {function} render Render function.
@@ -24,6 +24,7 @@ export class ReactUtil {
     console.assert(obj && render);
     let { errors, loading } = obj.props;
 
+    // Blank output.
     const blank = () => {
       if (showLoading) {
         return (
@@ -43,9 +44,11 @@ export class ReactUtil {
         <div className="ux-error">{ obj.constructor.name + ': ' + String(errors) }</div>
       );
     } else if (loading) {
-      // React components are rendered before and after requesting Apollo queries.
+
+      // React components are rendered on each Rudux update (i.e., before and after requesting Apollo queries.)
       return blank();
     } else {
+
       try {
         // Call the component's renderer.
         let dom = render(obj.props, obj.context);

@@ -26,16 +26,18 @@ export class ProjectCard extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { mutator, viewer, item:project, readOnly } = this.props;
+      let { mutator, viewer, item:project, readOnly, sections } = this.props;
       if (!project) {
         return;
       }
 
       let { tasks } = project;
 
+      // TODO(burdon): Pass all args.
       return (
-        <Card mutator={ mutator } viewer={ viewer } item={ project } readOnly={ readOnly }>
+        <Card mutator={ mutator } viewer={ viewer } item={ project } readOnly={ readOnly } sections={ sections }>
 
+          { sections &&
           <Card.Section id="tasks" title="Tasks">
             <TaskList mutator={ mutator }
                       viewer={ viewer }
@@ -44,6 +46,7 @@ export class ProjectCard extends React.Component {
                       tasks={ tasks }
                       readOnly={ readOnly }/>
           </Card.Section>
+          }
 
         </Card>
       );

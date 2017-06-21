@@ -6,6 +6,7 @@ import _ from 'lodash';
 
 import { TypeUtil, Logger } from 'alien-util';
 
+import { Syncer } from '../syncer';
 import { GoogleOAuthProvider } from './google_oauth';
 
 const logger = Logger.get('google.sync');
@@ -13,15 +14,7 @@ const logger = Logger.get('google.sync');
 /**
  * Base class for Google syncers.
  */
-export class GoogleSyncer {
-
-  // TODO(burdon): Base class for syncers (e.g., store state).
-
-  constructor(config, database) {
-    console.assert(config && database);
-    this._config = config;
-    this._database = database;
-  }
+export class GoogleSyncer extends Syncer {
 
   async sync(user) {
     // TODO(burdon): Store sync status.

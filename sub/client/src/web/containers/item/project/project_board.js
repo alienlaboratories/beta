@@ -219,6 +219,7 @@ export class ProjectBoard extends React.Component {
     return ReactUtil.render(this, () => {
       let { adapter } = this.state;
       let { item:project, boardAlias } = this.props;
+      console.assert(project);
 
       let board = _.find(_.get(project, 'boards'), board => board.alias === boardAlias);
       let items = adapter.getItems(project, board);

@@ -11,16 +11,22 @@
     },
 
     "_testers": {
-      "rich_burdon_gmail_com" : {
+      "rich_burdon_gmail_com": {
         "title": "Rich",
         "whitelist": [
           "rich.burdon@gmail.com"
         ]
       },
-      "lucas_geiger_gmail_com" : {
+      "lucas_geiger_gmail_com": {
         "title": "Lucas",
         "whitelist": [
           "lucas.geiger@gmail.com"
+        ]
+      },
+      "thomasplunkett_gmail_com": {
+        "title": "Tom",
+        "whitelist": [
+          "thomasplunkett@gmail.com"
         ]
       }
     },
@@ -41,7 +47,8 @@
           "rich@alienlabs.io",
           "rich.burdon@gmail.com",
           "lucas.geiger@gmail.com",
-          "michael@seedplus.com"
+          "michael@seedplus.com",
+          "thomasplunkett@gmail.com"
         ]
       }
     },

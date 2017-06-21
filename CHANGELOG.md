@@ -1,5 +1,22 @@
 # Change Log
 
+### 0.0.4 RC
+- Fix `project_header` bug (null adapter).
+- Chrome extension download.
+- Editable custom boards (edit title, icon, filter).
+- Basic events/error logging.
+
+### 0.0.3 `(06/17/20)`
+- Clean-up custom boards.
+  - Adds item of appropriate type (with labels) for custom board.
+- Show description section.
+
+### 0.0.2 `(06/17/17)`
+- Home activity.
+  - Show current Groups and Project.
+  - Create and delete project.
+- Minimal Loggly logging (server).
+
 ### 0.0.1 `(06/16/17)`
 - UX rewrite.
     - Cards with collapsible sections.
@@ -11,9 +28,3 @@
 - Experimental Project boards with custom view (query).
     - Not yet editable (i.e., fixed #fav label demo query).
 - Updated user/config/testing site pages.
-
-### 0.0.2 `(06/17/17)`
-- Home activity.
-  - Show current Groups and Project.
-  - Create and delete project.
-- Minimal Loggly logging (server).

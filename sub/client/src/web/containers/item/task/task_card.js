@@ -95,7 +95,7 @@ export class TaskCard extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { mutator, viewer, item:task } = this.props;
+      let { mutator, viewer, item:task, sections } = this.props;
       if (!task) {
         return;
       }
@@ -107,7 +107,7 @@ export class TaskCard extends React.Component {
         <option key={ level } value={ level }>{ Enum.TASK_LEVEL.properties[level].title }</option>);
 
       return (
-        <Card mutator={ mutator } viewer={ viewer } item={ task }>
+        <Card mutator={ mutator } viewer={ viewer } item={ task } sections={ sections }>
 
           <Card.Section id="task" title="Details" open={ false }>
             <div className="ux-card-padding">
