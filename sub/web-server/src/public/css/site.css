@@ -2,8 +2,53 @@
  * TODO(burdon): Replace wth webpack app.
  */
 
+@font-face {
+  font-family: 'Alien';
+  src: url('/fonts/aurebesh.ttf') format('truetype');
+}
+
 body {
   margin: 0;
+  font-family: Roboto, Ariel, sans-serif;
+  font-weight: 100;
+  background-color: #F5F5F5;
+  color: #555;
+}
+
+h1, h2, h3, h4, h5 {
+  font-weight: 100;
+  color: darkcyan;
+}
+
+h1 {
+  text-transform: uppercase;
+}
+h2 {
+  margin-top: 30px;
+}
+h3 {
+  margin-top: 20px;
+}
+h4 {
+  margin: 0;
+  color: #333;
+  font-weight: 400;
+}
+
+a {
+  color: #000;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+ul {
+  padding: 0;
+}
+li {
+  list-style-type: square;
+}
+
+div.site-home {
   background-color: #1da1f2;
 }
 
@@ -20,19 +65,46 @@ div.site-container {
 div.site-column {
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+  align-items: center;
+  overflow-y: scroll;
+}
+div.site-column::-webkit-scrollbar {
+  width: 4px;
+}
+div.site-column::-webkit-scrollbar-thumb {
+  background-color: #666;
 }
 
 div.site-center {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  max-width: 600px;
 }
 
-h1 {
+div.site-spacer {
+  display: flex;
+  flex-grow: 1;
+}
+
+div.site-home h1 {
   margin: 60px;
 /*font-family: Monaco, "Lucida Console", monospace;*/
-  font-family: monospace;
+/*font-family: monospace;*/
+  font-family: Alien, monospace;
   font-size: 60px;
   color: #148ad6;
+}
+div.site-home h2 {
+  margin-top: 80px;
+  font-family: Alien, monospace;
+  font-size: 20px;
+  color: #148ad6;
+}
+
+div.site-hiring > div {
+  margin-bottom: 30px;
 }
 
 img {

@@ -244,7 +244,7 @@ export class Batch {
             fragment,
             fragmentName
           });
-        } catch (err) {
+        } catch(err) {
           logger.error(err);
           throw err;
         }
@@ -269,13 +269,14 @@ export class Batch {
 
         // http://dev.apollodata.com/core/apollo-client-api.html#ApolloClient.writeFragment
         try {
+          logger.log('Writing:', ID.key(mutatedItem));
           proxy.writeFragment({
             id: ID.createStoreId(mutatedItem),
             fragment,
             fragmentName,
             data: mutatedItem
           });
-        } catch (err) {
+        } catch(err) {
           logger.error(err);
           logger.warn('Mutated item:', JSON.stringify(mutatedItem, null, 2));
         }
@@ -294,7 +295,6 @@ export class Batch {
           });
 
           let storeItem = proxy.data[ ID.createStoreId(cachedItem) ];
-          console.assert(cachedItem && storeItem);
           console.assert(cachedItem.id === storeItem.id);
         }
       });

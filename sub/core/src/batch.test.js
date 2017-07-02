@@ -25,7 +25,7 @@ test('Null batch.', (done) => {
 
   try {
     new Batch(idGenerator, mutate, bucket).commit();
-  } catch (err) {
+  } catch(err) {
     done.fail(err);
   }
 });

@@ -8,6 +8,43 @@
 #
 
 #===================================================================================================
+# Basic types.
+# Not entities (i.e., only composite objects).
+# TODO(burdon): Consider third-party extensibility?
+#===================================================================================================
+
+type Geo {
+  lat:              Float!
+  lng:              Float!
+}
+
+type Address {
+  street:           String
+  city:             String
+  code:             String
+  country:          String
+  geo:              Geo
+}
+
+type Location {
+  type:             String              # e.g., airport
+  code:             String              # Type-specific ID (e.g., JFK).
+  address:          Address
+}
+
+type Leg {
+  transaction:      String              # Transaction ID.
+  ticket:           String
+  conf:             String
+  carrier:          String
+  number:           String              # E.g., flight #
+  start:            DateTime
+  end:              DateTime
+  from:             Location
+  to:               Location
+}
+
+#===================================================================================================
 # Item.
 # TODO(burdon): Move common fields into meta?
 # http://dev.apollodata.com/tools/graphql-tools/resolvers.html#Unions-and-interfaces
@@ -19,30 +56,30 @@
 
 # Common properties.
 type Meta {
-  icon: String                # Material icon name.
-  iconClassName: String       # Item classname.
-  thumbnailUrl: String        # External thumbnail URL.
+  icon:             String              # Material icon name.
+  iconClassName:    String              # Item classname.
+  thumbnailUrl:     String              # External thumbnail URL.
 }
 
 interface Item {
-  namespace: String           # External namespace (query provider).
-  bucket: ID                  # ID of User or Group (null for system item).
-  type: String!
-  id: ID!
-  version: Int                # TODO(burdon): Version (separate monotonic seq for mutations).
+  namespace:        String              # External namespace (query provider).
+  bucket:           ID                  # ID of User or Group (null for system item).
+  type:             String!
+  id:               ID!
+  version:          Int                 # TODO(burdon): Version (separate monotonic seq for mutations).
 
   # TODO(burdon): Multiple foreign keys (e.g., emails, linkedin).
-  fkey: String                # Opaque foreign key (i.e., not Key).
+  fkey:             String              # Opaque foreign key (i.e., not Key).
 
-  alias: String               # Short-name for URLs (unique, human-readable).
-  created: Timestamp!
-  modified: Timestamp!
-  labels: [String]
+  alias:            String              # Short-name for URLs (unique, human-readable).
+  created:          Timestamp!
+  modified:         Timestamp!
+  labels:           [String]
 
-  title: String!
-  description: String
+  title:            String!
+  description:      String
 
-  meta: Meta
+  meta:             Meta
 }
 
 #===================================================================================================
@@ -50,54 +87,54 @@ interface Item {
 #===================================================================================================
 
 type User implements Item {
-  namespace: String
-  bucket: ID
-  type: String!
-  id: ID!
-  version: Int
-  fkey: String
-  alias: String
-  created: Timestamp!
-  modified: Timestamp!
-  labels: [String]
-  title: String!
-  description: String
-  meta: Meta
+  namespace:        String
+  bucket:           ID
+  type:             String!
+  id:               ID!
+  version:          Int
+  fkey:             String
+  alias:            String
+  created:          Timestamp!
+  modified:         Timestamp!
+  labels:           [String]
+  title:            String!
+  description:      String
+  meta:             Meta
 
-  active: Boolean
+  active:           Boolean
 
   # TODO(burdon): Part of contact?
-  email: String
+  email:            String
 
   # TODO(burdon): Bi-directional? (ref from User to System store?)
-  contact: Contact
+  contact:          Contact
+
+  groups:           [Group]
 
   # TODO(burdon): Remove (only query via project links).
   tasks(filter: FilterInput): [Task]
-
-  groups: [Group]
 }
 
 type Group implements Item {
-  namespace: String
-  bucket: ID
-  type: String!
-  id: ID!
-  version: Int
-  fkey: String
-  alias: String
-  created: Timestamp!
-  modified: Timestamp!
-  labels: [String]
-  title: String!
-  description: String
-  meta: Meta
+  namespace:        String
+  bucket:           ID
+  type:             String!
+  id:               ID!
+  version:          Int
+  fkey:             String
+  alias:            String
+  created:          Timestamp!
+  modified:         Timestamp!
+  labels:           [String]
+  title:            String!
+  description:      String
+  meta:             Meta
 
-  whitelist: [String]
-  members: [User]!
+  whitelist:        [String]
+  members:          [User]!
 
   # TODO(burdon): Shouldn't be part of Group (i.e., span namespaces). Instead link (since many-to-may).
-  projects: [Project]!
+  projects:         [Project]!
 }
 
 #===================================================================================================
@@ -105,176 +142,200 @@ type Group implements Item {
 #===================================================================================================
 
 type Contact implements Item {
-  namespace: String
-  bucket: ID
-  type: String!
-  id: ID!
-  version: Int
-  fkey: String
-  alias: String
-  created: Timestamp!
-  modified: Timestamp!
-  labels: [String]
-  title: String!
-  description: String
-  meta: Meta
+  namespace:        String
+  bucket:           ID
+  type:             String!
+  id:               ID!
+  version:          Int
+  fkey:             String
+  alias:            String
+  created:          Timestamp!
+  modified:         Timestamp!
+  labels:           [String]
+  title:            String!
+  description:      String
+  meta:             Meta
 
-  email: String
+  user:             User
 
-  user: User
+  email:            String
 
   # Sub-tasks (do not belong to any Project).
-  tasks: [Task]
+  tasks:            [Task]
 
   # Synced messages.
-  messages: [Message]!
+  messages:         [Message]!
 }
 
 type Document implements Item {
-  namespace: String
-  bucket: ID
-  type: String!
-  id: ID!
-  version: Int
-  fkey: String
-  alias: String
-  created: Timestamp!
-  modified: Timestamp!
-  labels: [String]
-  title: String!
-  description: String
-  meta: Meta
+  namespace:        String
+  bucket:           ID
+  type:             String!
+  id:               ID!
+  version:          Int
+  fkey:             String
+  alias:            String
+  created:          Timestamp!
+  modified:         Timestamp!
+  labels:           [String]
+  title:            String!
+  description:      String
+  meta:             Meta
 
-  externalUrl: String
+  externalUrl:      String
 }
 
 type Event implements Item {
-  namespace: String
-  bucket: ID
-  type: String!
-  id: ID!
-  version: Int
-  fkey: String
-  alias: String
-  created: Timestamp!
-  modified: Timestamp!
-  labels: [String]
-  title: String!
-  description: String
-  meta: Meta
+  namespace:        String
+  bucket:           ID
+  type:             String!
+  id:               ID!
+  version:          Int
+  fkey:             String
+  alias:            String
+  created:          Timestamp!
+  modified:         Timestamp!
+  labels:           [String]
+  title:            String!
+  description:      String
+  meta:             Meta
 
-  location: Location
-  participants: [Contact]
-  start: DateTime!
-  end: DateTime!
+  location:         Location
+  participants:     [Contact]
+  start:            DateTime!
+  end:              DateTime!
 }
 
 type Folder implements Item {
-  namespace: String
-  bucket: ID
-  type: String!
-  id: ID!
-  version: Int
-  fkey: String
-  alias: String
-  created: Timestamp!
-  modified: Timestamp!
-  labels: [String]
-  title: String!
-  description: String
-  meta: Meta
+  namespace:        String
+  bucket:           ID
+  type:             String!
+  id:               ID!
+  version:          Int
+  fkey:             String
+  alias:            String
+  created:          Timestamp!
+  modified:         Timestamp!
+  labels:           [String]
+  title:            String!
+  description:      String
+  meta:             Meta
 
   # JSON serialized FilterInput.
   filter: String!
 }
 
-type Location implements Item {
-  namespace: String
-  bucket: ID
-  type: String!
-  id: ID!
-  version: Int
-  fkey: String
-  alias: String
-  created: Timestamp!
-  modified: Timestamp!
-  labels: [String]
-  title: String!
-  description: String
-  meta: Meta
-
-  address: Address
-}
-
 type Message implements Item {
-  namespace: String
-  bucket: ID
-  type: String!
-  id: ID!
-  version: Int
-  fkey: String
-  alias: String
-  created: Timestamp!
-  modified: Timestamp!
-  labels: [String]
-  title: String!
-  description: String
-  meta: Meta
+  namespace:        String
+  bucket:           ID
+  type:             String!
+  id:               ID!
+  version:          Int
+  fkey:             String
+  alias:            String
+  created:          Timestamp!
+  modified:         Timestamp!
+  labels:           [String]
+  title:            String!
+  description:      String
+  meta:             Meta
 
-  snippet: String
-  from: String!
-  to: [String]!
+  snippet:          String
+  from:             String!
+  to:               [String]!
 }
 
 type Project implements Item {
-  namespace: String
-  bucket: ID
-  type: String!
-  id: ID!
-  version: Int
-  fkey: String
-  alias: String
-  created: Timestamp!
-  modified: Timestamp!
-  labels: [String]
-  title: String!
-  description: String
-  meta: Meta
+  namespace:        String
+  bucket:           ID
+  type:             String!
+  id:               ID!
+  version:          Int
+  fkey:             String
+  alias:            String
+  created:          Timestamp!
+  modified:         Timestamp!
+  labels:           [String]
+  title:            String!
+  description:      String
+  meta:             Meta
 
   # All projects are owned by a Group (each User has a private Group).
-  group: Group!
+  group:            Group!
 
   # Sub-tasks.
-  tasks: [Task]
+  tasks:            [Task]
 
   # TODO(burdon): Map type (array of typed values).
-  boards: [Board]
+  boards:           [Board]
 }
 
 type Task implements Item {
-  namespace: String
-  bucket: ID
-  type: String!
-  id: ID!
-  version: Int
-  fkey: String
-  alias: String
-  created: Timestamp!
-  modified: Timestamp!
-  labels: [String]
-  title: String!
-  description: String
-  meta: Meta
+  namespace:        String
+  bucket:           ID
+  type:             String!
+  id:               ID!
+  version:          Int
+  fkey:             String
+  alias:            String
+  created:          Timestamp!
+  modified:         Timestamp!
+  labels:           [String]
+  title:            String!
+  description:      String
+  meta:             Meta
 
   # All tasks belong to a project.
-  project: Project
+  project:          Project
 
   # Sub-tasks.
-  tasks: [Task]
+  tasks:            [Task]
 
-  owner: User!
-  assignee: User
-  status: Int!
+  owner:            User!
+  assignee:         User
+  status:           Int!
+}
+
+type Transaction implements Item {
+  namespace:        String
+  bucket:           ID
+  type:             String!
+  id:               ID!
+  version:          Int
+  fkey:             String
+  alias:            String
+  created:          Timestamp!
+  modified:         Timestamp!
+  labels:           [String]
+  title:            String!
+  description:      String
+  meta:             Meta
+
+  vendor:           String              # e.g., "Air France" or Company Item ID.
+  paymentType:      String              # e.g., "amex"
+  paymentNumber:    String              # e.g., "0721-222-0718"
+  date:             DateTime
+  currency:         String
+  amount:           Float
+}
+
+type Trip implements Item {
+  namespace:        String
+  bucket:           ID
+  type:             String!
+  id:               ID!
+  version:          Int
+  fkey:             String
+  alias:            String
+  created:          Timestamp!
+  modified:         Timestamp!
+  labels:           [String]
+  title:            String!
+  description:      String
+  meta:             Meta
+
+  # TODO(burdon): Event? E.g., hotel, car rental.
+  legs:             [Leg]
 }
 
 #===================================================================================================

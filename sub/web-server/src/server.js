@@ -76,6 +76,7 @@ export class WebServer {
     this._app.engine('hbs', handlebars({
       extname: '.hbs',
       layoutsDir: path.join(ENV.WEB_SERVER_VIEWS_DIR, '/layouts'),
+      partialsDir: path.join(ENV.WEB_SERVER_VIEWS_DIR, '/partials'),
       defaultLayout: 'main',
       helpers: ExpressUtil.Helpers
     }));
@@ -95,6 +96,10 @@ export class WebServer {
 
     this._app.get('/home', (req, res) => {
       res.render('home', {});
+    });
+
+    this._app.get('/hiring', (req, res) => {
+      res.render('hiring', {});
     });
   }
 

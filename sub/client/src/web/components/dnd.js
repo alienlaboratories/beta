@@ -13,7 +13,12 @@ import { DomUtil } from 'alien-util';
 // Examples:
 // https://github.com/react-dnd/react-dnd/issues/384
 //
-
+// Troubleshooting:
+// - Uncaught Error: Cannot call hover after drop. (Unrecoverable after this).
+//   - https://github.com/react-dnd/react-dnd/issues/442
+//   - https://github.com/react-dnd/react-dnd/issues/789 (06/17) [Chrome 59]
+//     - https://github.com/react-dnd/react-dnd/pull/801
+//
 
 /**
  * Drag container wraps the list item.
@@ -132,10 +137,13 @@ class ItemDropContainer extends React.Component {
 }
 
 //
-// http://gaearon.github.io/react-dnd/docs-drop-target.html
+// https://react-dnd.github.io/react-dnd/docs-drop-target.html
+// https://github.com/react-dnd/react-dnd/blob/master/examples/04%20Sortable/Simple/Card.js
 //
 
 const dropSpec = {
+
+  // TODO(burdon): hover, canDrop
 
   drop(props, monitor, connect) {
     let { data, order } = props;
@@ -149,13 +157,13 @@ const dropSpec = {
 const dropCollect = (connect, monitor) => ({
 
   // Call this function inside render() to let React DnD handle the drag events.
-  connectDropTarget: connect.dropTarget(),
+  connectDropTarget:  connect.dropTarget(),
 
   // Drag state.
-  isOver: monitor.isOver(),
-  isOverCurrent: monitor.isOver({ shallow: true }),
-  canDrop: monitor.canDrop(),
-  itemType: monitor.getItemType()
+  isOver:             monitor.isOver(),
+  isOverCurrent:      monitor.isOver({ shallow: true }),
+  canDrop:            monitor.canDrop(),
+  itemType:           monitor.getItemType()
 });
 
 export const ItemDropTarget = (type) => DropTarget(type, dropSpec, dropCollect)(ItemDropContainer);

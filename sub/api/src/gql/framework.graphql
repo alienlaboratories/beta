@@ -248,16 +248,6 @@ type Value {
   date:       Date
 }
 
-type Geo {
-  lat:        Float!
-  lng:        Float!
-}
-
-type Address {
-  string:     String
-  geo:        Geo
-}
-
 # Item sort positions.
 type ListItemMeta {
   itemId:     ID!                   # ID of item.

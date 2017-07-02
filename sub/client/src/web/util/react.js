@@ -53,6 +53,7 @@ export class ReactUtil {
         // Call the component's renderer.
         let dom = render(obj.props, obj.context);
         return dom || blank();
+
       } catch(error) {
         // TODO(burdon): Log if prod and show standard error.
         console.error(error);

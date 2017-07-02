@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Sandbox" pattern="!file[beta]:*/||file[beta]:sub/client/sandbox//*" />
+</component>

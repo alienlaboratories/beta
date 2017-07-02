@@ -1,0 +1,46 @@
+{
+  "Transaction": {
+    "id": "transaction-1",
+    "vendor": "Lufthansa",
+    "currency": "USD",
+    "amount": 2000.5
+  },
+  "trip": {
+    "id": "trip-1",
+    "title": "Romania Ball",
+    "legs": [
+      {
+        "transaction": "transaction-1",
+        "conf": "HQLBHG",
+        "carrier": "Lufthansa",
+        "ticket": "1234-5678",
+        "number": "LH 404",
+        "start": {
+          "datetime": "2017-06-11T10:30:00-05:00"
+        },
+        "from": {
+          "type": "airport",
+          "code": "JFK"
+        },
+        "to": {
+          "type": "airport",
+          "code": "FRA"
+        }
+      },
+      {
+        "transaction": "transaction-1",
+        "start": {
+          "datetime": "2017-06-12T10:30:00-05:00"
+        },
+        "from": {
+          "type": "airport",
+          "code": "FRA"
+        },
+        "to": {
+          "type": "airport",
+          "code": "OTP"
+        }
+      }
+    ]
+  }
+}

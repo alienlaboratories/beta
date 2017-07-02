@@ -37,14 +37,6 @@ const baseConfig = {
 
     rules: [
 
-      // https://github.com/webpack/json-loader
-      {
-        test: /\.json$/,
-        use: {
-          loader: 'json-loader'
-        }
-      },
-
       // See .babelrc for the presets.
       // https://github.com/babel/babel-loader
       {
@@ -61,6 +53,14 @@ const baseConfig = {
           options: {
             cacheDirectory: './dist/babel-cache/'
           }
+        }
+      },
+
+      // https://github.com/webpack/json-loader
+      {
+        test: /\.json$/,
+        use: {
+          loader: 'json-loader'
         }
       },
 
@@ -118,32 +118,38 @@ const web = webpackMerge(baseConfig, {
   // https://webpack.github.io/docs/configuration.html#devtool
   devtool: '#source-map',
 
+  // TODO(burdon): Split into separate configs.
   // http://localhost:8080/assets/
   entry: {
 
-    test_apollo: [
+    // test_apollo: [
+    //   'babel-polyfill',
+    //   path.resolve(baseConfig.context, './src/web/testing/apollo/apollo_test_app.js'),
+    // ],
+
+    test_d3: [
       'babel-polyfill',
-      path.resolve(baseConfig.context, 'src/web/testing/apollo/apollo_test_app.js'),
+      path.resolve(baseConfig.context, './src/web/testing/d3/test_d3.js'),
     ],
 
     test_gallery: [
       'babel-polyfill',
-      path.resolve(baseConfig.context, 'src/web/testing/gallery/gallery.js'),
+      path.resolve(baseConfig.context, './src/web/testing/gallery/gallery.js'),
     ],
 
     test_layout: [
       'babel-polyfill',
-      path.resolve(baseConfig.context, 'src/web/testing/layout/test_layout.js'),
+      path.resolve(baseConfig.context, './src/web/testing/layout/test_layout.js'),
     ],
 
     test_router: [
       'babel-polyfill',
-      path.resolve(baseConfig.context, 'src/web/testing/router/test_router.js'),
-    ]
+      path.resolve(baseConfig.context, './src/web/testing/router/test_router.js'),
+    ],
   },
 
   output: {
-    path: path.resolve(baseConfig.context, 'dist'),
+    path: path.resolve(baseConfig.context, './dist'),
     filename: '[name].bundle.js',
     publicPath: '/assets/' // Path for webpack-dev-server
   }
@@ -164,32 +170,32 @@ const crx = webpackMerge(baseConfig, {
 
     background: [
       'babel-polyfill',
-      path.resolve(baseConfig.context, 'src/crx/background.js')
+      path.resolve(baseConfig.context, './src/crx/background.js')
     ],
 
     content_script: [
       'babel-polyfill',
-      path.resolve(baseConfig.context, 'src/crx/content_script.js')
+      path.resolve(baseConfig.context, './src/crx/content_script.js')
     ],
 
     browser_action: [
       'babel-polyfill',
-      path.resolve(baseConfig.context, 'src/crx/browser_action.js')
+      path.resolve(baseConfig.context, './src/crx/browser_action.js')
     ],
 
     sidebar: [
       'babel-polyfill',
-      path.resolve(baseConfig.context, 'src/crx/sidebar.js')
+      path.resolve(baseConfig.context, './src/crx/sidebar.js')
     ],
 
     options: [
       'babel-polyfill',
-      path.resolve(baseConfig.context, 'src/crx/options.js')
+      path.resolve(baseConfig.context, './src/crx/options.js')
     ]
   },
 
   output: {
-    path: path.resolve(baseConfig.context, 'dist/crx/robotik/assets'),
+    path: path.resolve(baseConfig.context, './dist/crx/robotik/assets'),
     filename: '[name].bundle.js'
   }
 });

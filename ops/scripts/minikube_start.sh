@@ -20,4 +20,3 @@ minikube status
 
 set +x
 echo "OK [$(( SECONDS - start ))s]"
-h
