@@ -77,5 +77,4 @@ of large data sets in order to provide timely information and insights to our us
 
 ## Contact
 
-The best way to reach us is via a referral from your LinkedIn professional network (http://linkedin.com/in/richburdon); 
-ideally, please include your Github profile.
+The best way to reach us is via a referral from your [professional network](http://linkedin.com/in/richburdon); ideally, please include your Github profile.

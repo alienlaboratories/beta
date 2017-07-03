@@ -67,6 +67,42 @@ const ItemFragment = gql`
 `;
 
 //
+// TODO(burdon): Try getting type from inline spread? (rather than def per sub-type).
+//
+
+const ListItemMetaFragment = gql`
+  fragment ListItemMetaFragment on ListItemMeta {
+    itemId
+    listId
+    order
+  }
+`;
+
+const BoardFragment = gql`
+  fragment BoardFragment on Board {
+    alias
+    filter
+    title
+    icon
+
+    columns {
+      id
+      title
+      value {
+        ...ValueFragment
+      }
+    }
+
+    itemMeta {
+      ...ListItemMetaFragment
+    }
+  }
+  
+  ${ValueFragment}
+  ${ListItemMetaFragment}
+`;
+
+//
 // Item Type fragments.
 //
 // WARNING: "undefined" Compile error if not acyclic.
@@ -229,34 +265,19 @@ const SearchItemFragment = gql`
 const ProjectBoardFragment = gql`
   fragment ProjectBoardFragment on Project {
     boards {
-      alias
-      filter
-      title
-      icon
+      ...BoardFragment
 
-      columns {
-        id
-        title
-        value {
-          ...ValueFragment
-        }
-      }
-
-      itemMeta {
-        itemId
-        listId
-        order
-      }
-      
-      items {
-        ...SearchItemFragment
-      }
+# NOTE: Must match query fragments.
+#      items {
+#        ...SearchItemFragment
+#      }
     }
   }
 
-  ${ValueFragment}
-  ${SearchItemFragment}
+  ${BoardFragment}
 `;
+
+// ${SearchItemFragment}
 
 //
 // Exported fragment defs.
@@ -289,9 +310,12 @@ export const Fragments = {
 // so that Apollo can use `dataIdFromObject` to match the associated Item. Otherwise there would be
 // "Missing field" warnings when writing the (partial) fragment to the cache (in the batch update).
 //
+// NOTE: Mutation fragments must match query fragments otherwise null is returned after the mutation.
+// https://github.com/apollographql/apollo-client/issues/1830
+//
 
-const MutationContactFragment = gql`
-  fragment MutationContactFragment on Contact {
+const ContactMutationFragment = gql`
+  fragment ContactMutationFragment on Contact {
     ...ItemFragment
 
     email
@@ -309,29 +333,8 @@ const MutationContactFragment = gql`
   ${ItemFragment}
 `;
 
-// TODO(burdon): Try getting type from inline spread? (rather than def per sub-type).
-
-const ListItemMetaFragment = gql`
-  fragment ListItemMetaFragment on ListItemMeta {
-    itemId
-    listId
-    order
-  }
-`;
-
-const BoardFragment = gql`
-  fragment BoardFragment on Board {
-    alias
-    itemMeta {
-      ...ListItemMetaFragment
-    }
-  }
-  
-  ${ListItemMetaFragment}
-`;
-
-const MutationProjectFragment = gql`
-  fragment MutationProjectFragment on Project {
+const ProjectMutationFragment = gql`
+  fragment ProjectMutationFragment on Project {
     ...ItemFragment
 
     tasks {
@@ -348,8 +351,8 @@ const MutationProjectFragment = gql`
   ${BoardFragment}
 `;
 
-const MutationTaskFragment = gql`
-  fragment MutationTaskFragment on Task {
+const TaskMutationFragment = gql`
+  fragment TaskMutationFragment on Task {
     ...ItemFragment
 
     status
@@ -376,6 +379,6 @@ const MutationTaskFragment = gql`
 `;
 
 export const MutationFragmentsMap = new FragmentsMap()
-  .add(MutationContactFragment)
-  .add(MutationProjectFragment)
-  .add(MutationTaskFragment);
+  .add(ContactMutationFragment)
+  .add(ProjectMutationFragment)
+  .add(TaskMutationFragment);

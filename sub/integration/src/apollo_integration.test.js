@@ -208,7 +208,6 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
 
       dataIdFromObject: ID.dataIdFromObject,
 
-//    fragmentMatcher: createFragmentMatcher(['Project', 'Task']),
       fragmentMatcher: createFragmentMatcher(schema),
 
       networkInterface
@@ -393,7 +392,7 @@ describe('End-to-end Apollo-GraphQL Resolver:', () => {
       }
     });
 
-    let { data: { item:project }} = projectResult;
+    let { data: { item:project } } = projectResult;
     let task = project.tasks[0];
 
     // Change fields (clone item since it's immutable).

@@ -24,12 +24,16 @@ brew install kops
 brew install kubectl
 brew install kubernetes-cli
 brew install memcached
-brew install npm
+brew install node
 brew install python
 brew install redis
 brew install watchman
 brew install yarn
 brew install --HEAD xhyve
+
+# NOTE: npm 4 required for lerna
+# https://github.com/lerna/lerna/issues/903
+npm install -g npm@4
 
 #
 # Requires Java.

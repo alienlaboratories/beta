@@ -110,55 +110,8 @@ export class ProjectBoard extends React.Component {
     }
 
     // Update item order.
-    batch.updateItem(project, _.map(changes, change => ({
-      field: 'boards',
-      value: {
-        map: [{
-
-          // Upsert the given keyed value (in the array).
-          predicate: {
-            key: 'alias',
-            value: {
-              string: boardAlias
-            }
-          },
-
-          value: {
-            object: [{
-              field: 'itemMeta',
-              value: {
-                map: [{
-
-                  // Upsert item.
-                  predicate: {
-                    key: 'itemId',
-                    value: {
-                      string: change.itemId
-                    }
-                  },
-                  value: {
-                    object: [
-                      {
-                        field: 'listId',
-                        value: {
-                          string: change.listId
-                        }
-                      },
-                      {
-                        field: 'order',
-                        value: {
-                          float: change.order
-                        }
-                      }
-                    ]
-                  }
-                }]
-              }
-            }]
-          }
-        }]
-      }
-    })));
+    batch.updateItem(project, _.map(changes, change =>
+      MutationUtil.createProjectBoardMutation(boardAlias, change.listId, change.itemId, change.order)));
 
     batch.commit();
   }

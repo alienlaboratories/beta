@@ -50,9 +50,6 @@ export function QueryItem(query, path='item') {
         let { itemKey:key } = props;
         console.assert(key);
 
-        // TODO(burdon): Fix.
-        console.log('>>>>>>>>>>>>>', key);
-
         return {
           variables: {
             key
@@ -65,8 +62,6 @@ export function QueryItem(query, path='item') {
       props: ({ ownProps, data }) => {
         let { errors, loading, refetch } = data;
         let item = _.get(data, path);
-
-        console.log('==============', item);
 
         // https://github.com/apollographql/apollo-client/issues/1830
         // Create repro.

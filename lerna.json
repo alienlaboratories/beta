@@ -3,6 +3,6 @@
   "packages": [
     "sub/*"
   ],
-  "npmClient": "yarn",
+  "__npmClient": "yarn",
   "version": "0.0.1"
 }

@@ -333,7 +333,6 @@ export class Resolvers {
 
           // TODO(burdon): Should be from key and/or request (move to client). Or prevent querying directly?
           let namespace = Resolvers.getNamespaceForType(type);
-
           return database.getItemStore(namespace).getItem(context, type, id).then(item => {
             return Resolvers.Defaults(item);
           });

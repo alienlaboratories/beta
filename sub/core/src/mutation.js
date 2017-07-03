@@ -117,6 +117,61 @@ export class MutationUtil {
   static createDeleteMutation(set=true) {
     return MutationUtil.createLabelMutation(LABEL.DELETED, set);
   }
+
+  /**
+   * Board mutation.
+   */
+  static createProjectBoardMutation(boardAlias, listId, itemId, order) {
+    return {
+      field: 'boards',
+      value: {
+        map: [{
+
+          // Upsert the given keyed value (in the array).
+          predicate: {
+            key: 'alias',
+            value: {
+              string: boardAlias
+            }
+          },
+
+          value: {
+            object: [{
+              field: 'itemMeta',
+              value: {
+                map: [{
+
+                  // Upsert item.
+                  predicate: {
+                    key: 'itemId',
+                    value: {
+                      string: itemId
+                    }
+                  },
+                  value: {
+                    object: [
+                      {
+                        field: 'listId',
+                        value: {
+                          string: listId
+                        }
+                      },
+                      {
+                        field: 'order',
+                        value: {
+                          float: order
+                        }
+                      }
+                    ]
+                  }
+                }]
+              }
+            }]
+          }
+        }]
+      }
+    };
+  }
 }
 
 /**

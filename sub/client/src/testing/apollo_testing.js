@@ -91,7 +91,6 @@ export class LocalNetworkInterface {
 
     logger.info(`REQ[${operationName}:${requestCount}]`, stringify(variables));
     return Async.timeout(networkDelay).then(() => {
-
       let root = {};
 
       // https://github.com/graphql/graphql-js/blob/master/src/graphql.js
