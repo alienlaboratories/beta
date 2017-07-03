@@ -20,6 +20,8 @@ NOTE: `lerna` is deprecated; `yarn` may subsume capabilities:
   - https://github.com/yarnpkg/yarn/issues/2863
     - https://github.com/yarnpkg/rfcs/pull/34
 
+07-03-17 tried learn with npm: still doesn't work
+
 
 ### Cold start
 
