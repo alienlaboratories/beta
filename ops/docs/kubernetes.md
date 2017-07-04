@@ -127,10 +127,12 @@ NOTE: The UI shows the HTTPS Not Secure Warning (proceed via the Advanced option
   DomainName=admin.robotik.io,ValidationDomain=robotik.io
 ~~~~
 
+# TODO(burdon): *.domain
+
 
 ## Ingress Controller
 
-### Traefic
+### Traefik
 
 - https://medium.com/@alex__richards/getting-started-with-traefik-43fb7302b224
 - https://docs.traefik.io/user-guide/kubernetes/

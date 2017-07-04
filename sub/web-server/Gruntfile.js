@@ -13,9 +13,30 @@ module.exports = (grunt) => {
   defaults.init(grunt);
 
   grunt.config.init(_.assign(defaults.config(grunt), {
+    // Version: "grunt version:app:patch" (to inc version).
+    version: {
+      options: {
+        // Matches ["version": "0.0.1"] and [__version__ = '0.0.1']
+        prefix: '[^\\-]((version)|(VERSION))[\'"]?[_\\s]*[:=]\\s*[\'"]'
+      },
+      app: {
+        options: {
+          release: 'patch'
+        },
+        src: [
+          'package.json',
+          'src/meta.js'
+        ]
+      }
+    }
   }));
+
+  // https://www.npmjs.com/package/grunt-version
+  grunt.loadNpmTasks('grunt-version');
 
   //
   // Tasks
   //
+
+  grunt.registerTask('bump', ['version:app:patch']);
 };

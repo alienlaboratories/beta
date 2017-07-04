@@ -7,7 +7,7 @@ export const Defs = {
 
   SERVER: {
     DEV:  { value: 'http://localhost:3000', title: 'localhost' },
-    BETA: { value: 'https://beta.robotik.io', title: 'https://beta.robotik.io' }
+    BETA: { value: 'https://app.robotik.io', title: 'https://app.robotik.io' }
   }
 };
 

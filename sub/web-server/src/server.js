@@ -14,6 +14,7 @@ import path from 'path';
 import { ExpressUtil, HttpError, Logger } from 'alien-util';
 
 import { Const } from './const';
+import META from './meta';
 
 const __ENV__ = _.get(process.env, 'NODE_ENV', 'development');
 
@@ -25,6 +26,51 @@ const ENV = {
 
   WEB_SERVER_VIEWS_DIR:  _.get(process.env, 'WEB_SERVER_VIEWS_DIR',  path.join(__dirname, './views')),
   WEB_SERVER_PUBLIC_DIR: _.get(process.env, 'WEB_SERVER_PUBLIC_DIR', path.join(__dirname, './public')),
+};
+
+const sites = {
+
+  alienlabs: {
+    hosts: ['alienlabs.io', 'alienlaboratories.com'],
+    home: 'sites/alienlabs',
+    defs: {
+      css: '/css/alienlabs.css',
+      title: 'Alien Labs'
+    }
+  },
+
+  minderlabs: {
+    hosts: ['minderlabs.com'],
+    home: 'sites/minderlabs',
+    defs: {
+      css: '/css/minderlabs.css',
+      title: 'Minder Labs'
+    }
+  },
+
+  robotik: {
+    hosts: ['robotik.io'],
+    home: 'sites/robotik',
+    defs: {
+      css: '/css/robotik.css',
+      title: 'Robotik'
+    }
+  }
+};
+
+const getDomain = (hostname) => {
+  let parts = hostname.split('.');
+  parts.splice(0, parts.length - 2);
+  return parts.join('.');
+}
+
+const getSite = (hostname=undefined) => {
+  let site = hostname && _.find(sites, site => _.indexOf(site.hosts, getDomain(hostname)) !== -1);
+  return _.defaultsDeep(site || sites.robotik, {
+    defs: {
+      version: META.APP_VERSION
+    }
+  });
 };
 
 const logger = Logger.get('server');
@@ -95,11 +141,13 @@ export class WebServer {
     });
 
     this._app.get('/home', (req, res) => {
-      res.render('home', {});
+      let site = getSite(req.hostname);
+      res.render(site.home, site.defs);
     });
 
     this._app.get('/hiring', (req, res) => {
-      res.render('hiring', {});
+      let site = getSite();
+      res.render('hiring', site.defs);
     });
   }
 

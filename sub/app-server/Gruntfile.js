@@ -47,4 +47,6 @@ module.exports = (grunt) => {
   //
   // Tasks
   //
+
+  grunt.registerTask('bump', ['version:app:patch']);
 };
