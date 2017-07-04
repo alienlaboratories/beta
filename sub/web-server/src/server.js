@@ -14,6 +14,7 @@ import path from 'path';
 import { ExpressUtil, HttpError, Logger } from 'alien-util';
 
 import { Const } from './const';
+import META from './meta';
 
 const __ENV__ = _.get(process.env, 'NODE_ENV', 'development');
 
@@ -39,7 +40,7 @@ const sites = {
   },
 
   minderlabs: {
-    hosts: ['minderlabs.io'],
+    hosts: ['minderlabs.com'],
     home: 'sites/minderlabs',
     defs: {
       css: '/css/minderlabs.css',
@@ -57,9 +58,19 @@ const sites = {
   }
 };
 
-const getSite = (hostname) => {
-  let site = _.find(sites, site => _.indexOf(site.hosts, hostname) !== -1);
-  return site || sites.robotik;
+const getDomain = (hostname) => {
+  let parts = hostname.split('.');
+  parts.splice(0, parts.length - 2);
+  return parts.join('.');
+}
+
+const getSite = (hostname=undefined) => {
+  let site = hostname && _.find(sites, site => _.indexOf(site.hosts, getDomain(hostname)) !== -1);
+  return _.defaultsDeep(site || sites.robotik, {
+    defs: {
+      version: META.APP_VERSION
+    }
+  });
 };
 
 const logger = Logger.get('server');
@@ -135,7 +146,7 @@ export class WebServer {
     });
 
     this._app.get('/hiring', (req, res) => {
-      let site = getSite(req.hostname);
+      let site = getSite();
       res.render('hiring', site.defs);
     });
   }

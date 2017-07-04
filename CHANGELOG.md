@@ -1,10 +1,14 @@
 # Change Log
 
-### 0.0.4 RC
-- Fix `project_header` bug (null adapter).
+- Add https for alienlabs and minderlabs, then change DNS.
+
+### 0.0.5 RC
 - Chrome extension download.
 - Editable custom boards (edit title, icon, filter).
 - Basic events/error logging.
+
+### 0.0.4 `(07/03/20)`
+- Fix Project board bug (mutation fragments).
 
 ### 0.0.3 `(06/17/20)`
 - Clean-up custom boards.

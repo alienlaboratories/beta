@@ -1,6 +1,9 @@
 #
 # https://medium.com/@patrickeasters/using-traefik-with-tls-on-kubernetes-cb67fb43a948
+# https://docs.traefik.io/toml
 #
+
+# https://docs.traefik.io/toml/#entrypoints-definition
 
 [entryPoints]
   [entryPoints.http]

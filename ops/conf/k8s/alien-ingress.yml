@@ -28,20 +28,6 @@ spec:
   # TODO(burdon): AWS link.
   #
 
-  - host: www.robotik.io
-    http:
-      paths:
-      - backend:
-          serviceName: alien-web-server
-          servicePort: 80
-
-  - host: beta.robotik.io
-    http:
-      paths:
-      - backend:
-          serviceName: alien-app-server
-          servicePort: 80
-
   - host: app.robotik.io
     http:
       paths:
@@ -54,4 +40,29 @@ spec:
       paths:
       - backend:
           serviceName: alien-app-server
+          servicePort: 80
+
+  #
+  # Web
+  #
+
+  - host: www.robotik.io
+    http:
+      paths:
+      - backend:
+          serviceName: alien-web-server
+          servicePort: 80
+
+  - host: www.alienlabs.io
+    http:
+      paths:
+      - backend:
+          serviceName: alien-web-server
+          servicePort: 80
+
+  - host: www.minderlabs.com
+    http:
+      paths:
+      - backend:
+          serviceName: alien-web-server
           servicePort: 80

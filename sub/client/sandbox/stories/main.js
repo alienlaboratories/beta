@@ -5,9 +5,7 @@
 "use strict";
 
 let META = {
-
   VERSION: '0.0.1'
-
 };
 
 class App {
