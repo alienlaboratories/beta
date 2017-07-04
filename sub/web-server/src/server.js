@@ -27,6 +27,41 @@ const ENV = {
   WEB_SERVER_PUBLIC_DIR: _.get(process.env, 'WEB_SERVER_PUBLIC_DIR', path.join(__dirname, './public')),
 };
 
+const sites = {
+
+  alienlabs: {
+    hosts: ['alienlabs.io', 'alienlaboratories.com'],
+    home: 'sites/alienlabs',
+    defs: {
+      css: '/css/alienlabs.css',
+      title: 'Alien Labs'
+    }
+  },
+
+  minderlabs: {
+    hosts: ['minderlabs.io'],
+    home: 'sites/minderlabs',
+    defs: {
+      css: '/css/minderlabs.css',
+      title: 'Minder Labs'
+    }
+  },
+
+  robotik: {
+    hosts: ['robotik.io'],
+    home: 'sites/robotik',
+    defs: {
+      css: '/css/robotik.css',
+      title: 'Robotik'
+    }
+  }
+};
+
+const getSite = (hostname) => {
+  let site = _.find(sites, site => _.indexOf(site.hosts, hostname) !== -1);
+  return site || sites.robotik;
+};
+
 const logger = Logger.get('server');
 
 logger.info('ENV = ' + JSON.stringify(ENV, null, 2));
@@ -95,11 +130,13 @@ export class WebServer {
     });
 
     this._app.get('/home', (req, res) => {
-      res.render('home', {});
+      let site = getSite(req.hostname);
+      res.render(site.home, site.defs);
     });
 
     this._app.get('/hiring', (req, res) => {
-      res.render('hiring', {});
+      let site = getSite(req.hostname);
+      res.render('hiring', site.defs);
     });
   }
 

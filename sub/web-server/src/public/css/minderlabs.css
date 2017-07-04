@@ -1,0 +1,55 @@
+/*
+ * TODO(burdon): Replace wth webpack app.
+ */
+
+body {
+  border: 0;
+  overflow: hidden;
+  font-family: Roboto, sans-serif;
+  background-color: #1da1f2;
+  color: #005493;
+}
+
+div.site-container {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+div.site-column {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+  align-items: center;
+}
+
+div.site-center {
+  display: flex;
+  flex-direction: column;
+}
+
+div.site-spacer {
+  display: flex;
+  flex-grow: 1;
+}
+
+img {
+  opacity: .3;
+}
+
+h1 {
+  font-family: Poiret One, sans-serif;
+  font-size: 80px;
+  font-weight: 100;
+  opacity: .7;
+}
+
+h2 {
+  font-size: 16px;
+  font-weight: 100;
+}

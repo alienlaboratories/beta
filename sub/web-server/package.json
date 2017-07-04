@@ -71,12 +71,9 @@
     "lint": "eslint -c ../../eslintrc.yml ./src",
     "test": "jest --silent",
     "webpack": "webpack --watch",
-    "webpack-server": "webpack --config webpack.config.js",
     "markdown": "hilite nodemon --config nodemon.json --ext md --exec babel-node src/tools/markdown.js",
-    "babel-node": "BABEL_DISABLE_CACHE=1 babel-node src/main.js",
-    "nodemon": "hilite nodemon --config nodemon.json --exec npm run babel-node",
-    "server": "webpack --config webpack.config.js && node dist/server.bundle.js",
     "hot": "BABEL_DISABLE_CACHE=1 BABEL_ENV=hot NODE_ENV=hot hilite babel-node src/main.js",
-    "start": "npm run hot"
+    "server": "BABEL_DISABLE_CACHE=1 babel-node src/main.js",
+    "start": "hilite nodemon --exec npm run server"
   }
 }
