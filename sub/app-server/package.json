@@ -1,6 +1,6 @@
 {
   "name": "alien-app-server",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Alien App Server.",
   "license": "UNLICENSED",
   "repository": "https://github.com/alienlabs/beta/tree/master/sub/app-server",

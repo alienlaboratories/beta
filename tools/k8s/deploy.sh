@@ -104,6 +104,9 @@ fi
 
 #===============================================================================
 # Docker: Build and push image.
+#
+# Error: no space left on device
+# - eval $(minikube docker-env) docker info (see memory footprint)
 #===============================================================================
 
 set -x
