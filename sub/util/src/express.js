@@ -15,6 +15,21 @@ import { TypeUtil } from './type';
  */
 export class ExpressUtil {
 
+  /**
+   * Redirect http to https.
+   *
+   * Requires: app.enable('trust proxy');
+   */
+  static HttpRedirect = (req, res, next) => {
+    // req.headers["x-forwarded-proto"] === 'https'
+    // https://stackoverflow.com/questions/7450940/automatic-https-connection-redirect-with-node-js-express
+    if (req.secure || req.hostname === 'localhost') {
+      return next();
+    } else {
+      res.redirect('https://' + req.hostname + req.url);
+    }
+  }
+
   static Helpers = {
 
     /**

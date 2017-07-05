@@ -1,12 +1,31 @@
 #
-# https://medium.com/@patrickeasters/using-traefik-with-tls-on-kubernetes-cb67fb43a948
+# Ingress controller (reverse proxy).
 # https://docs.traefik.io/toml
 #
 
-# https://docs.traefik.io/toml/#entrypoints-definition
+# TODO(burdon): Use nginx?
+# https://github.com/kubernetes/ingress/tree/master/controllers
 
-[entryPoints]
-  [entryPoints.http]
-  address = ":80"
-    [entryPoints.http.redirect]
-      entryPoint = "https"
+# NOTE: Since TLS termination is handled by the ELB, we cannot redirect http=>https here.
+# Therefore, we are using traefik just as a reverse proxy (configured by the k8s ingress rules).
+#
+# Slack:
+# @dtomcej: "if you terminate at the ELB, redirect at the ELB"
+# https://traefik.slack.com/archives/C0CDT22PJ/p1499282645285227
+#
+# https://docs.traefik.io/toml/#entrypoints-definition
+# https://medium.com/@patrickeasters/using-traefik-with-tls-on-kubernetes-cb67fb43a948
+# https://github.com/nginxinc/kubernetes-ingress/issues/115
+# Sent: https://twitter.com/patrickeasters
+#
+# https://github.com/kubernetes/ingress/issues/71
+# https://stackoverflow.com/questions/44915563/traefik-https-redirect-via-kubernetes-deployment
+
+#[entryPoints]
+#  [entryPoints.http]
+#  address = ":80"
+#    [entryPoints.http.redirect]
+#      entryPoint = "https"
+#
+#  [entryPoints.https]
+#  address = ":443"

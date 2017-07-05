@@ -62,7 +62,7 @@ const getDomain = (hostname) => {
   let parts = hostname.split('.');
   parts.splice(0, parts.length - 2);
   return parts.join('.');
-}
+};
 
 const getSite = (hostname=undefined) => {
   let site = hostname && _.find(sites, site => _.indexOf(site.hosts, getDomain(hostname)) !== -1);
@@ -101,6 +101,11 @@ export class WebServer {
    * Express middleware.
    */
   initMiddleware() {
+
+    // Http redirect.
+    // TODO(burdon): Move to ELB?
+    this._app.enable('trust proxy');
+    this._app.use(ExpressUtil.HttpRedirect);
 
     // https://expressjs.com/en/starter/static-files.html
     this._app.use(favicon(path.join(ENV.WEB_SERVER_PUBLIC_DIR, 'favicon.ico')));

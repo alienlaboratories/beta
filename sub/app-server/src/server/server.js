@@ -231,6 +231,11 @@ export class AppServer {
   initMiddleware() {
     logger.log('initMiddleware');
 
+    // Http redirect.
+    // TODO(burdon): Move to ELB?
+    this._app.enable('trust proxy');
+    this._app.use(ExpressUtil.HttpRedirect);
+
     // https://expressjs.com/en/starter/static-files.html
     this._app.use(favicon(path.join(ENV.ALIEN_SERVER_PUBLIC_DIR, 'favicon.ico')));
 

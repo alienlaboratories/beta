@@ -1,5 +1,7 @@
 #
 # Expose services (via Traefik).
+# https://docs.traefik.io/user-guide/kubernetes
+#
 # kubectl apply -f ./conf/k8s/alien-ingress.yml
 #
 # Traefik dashboard:
@@ -14,8 +16,11 @@ metadata:
 
   # Preserve root URL.
   # https://medium.com/@Oskarr3/setting-up-ingress-on-minikube-6ae825e98f82
-#  annotations:
-#    ingress.kubernetes.io/rewrite-target: /
+  annotations:
+    kubernetes.io/ingress.class: traefik
+
+#   ingress.kubernetes.io/rewrite-target: /
+#   ingress.kubernetes.io/ssl-redirect: "true"    # TODO(burdon): Doesn't work.
 
 spec:
   rules:
@@ -23,9 +28,11 @@ spec:
   #
   # NOTE: host must match DNS CNAME (directed to AWS Route 53).
   # https://domains.google.com/registrar#z=a&d=1022025,robotik.io
+  # https://medium.com/@patrickeasters/using-traefik-with-tls-on-kubernetes-cb67fb43a948
   #
-  # NOTE: HTTPS Cert must also be configured:
-  # TODO(burdon): AWS link.
+
+  #
+  # App server.
   #
 
   - host: app.robotik.io
@@ -43,7 +50,7 @@ spec:
           servicePort: 80
 
   #
-  # Web
+  # Web server.
   #
 
   - host: www.robotik.io
