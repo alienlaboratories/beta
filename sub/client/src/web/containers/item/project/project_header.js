@@ -8,7 +8,7 @@ import gql from 'graphql-tag';
 import { compose } from 'react-apollo';
 
 import { Fragments } from 'alien-api';
-import { MutationUtil } from 'alien-core';
+import { MutationUtil, QueryParser } from 'alien-core';
 import { DomUtil } from 'alien-util';
 
 import { AppAction } from '../../../common/reducers';
@@ -50,9 +50,60 @@ class ProjectBoardHeader extends React.Component {
     this.props.setBoardAlias(alias);
   }
 
+  handleBoardAdd() {
+    let { viewer: { groups }, mutator, item:project, search } = this.props;
+    if (!QueryParser.isEmpty(search.filter)) {
+
+      let mutations = [
+        {
+          field: 'boards',
+          value: {
+            array: [{
+              value: {
+                // TODO(burdon): Missing fields (use FragmentParser.getDefaultObject)
+                // TODO(burdon): Wrapper.
+                json: JSON.stringify({                          // TODO(burdon): Document.
+                  __typename: 'Board',
+                  alias: 'query_' + _.size(project.boards),
+                  title: 'Query',
+                  icon: 'star',
+                  columns: [
+                    {
+                      __typename: 'BoardColumn',
+                      id:         'prospect',
+                      value:      { __typename: 'ValueInput', string: 'prospect' },
+                      title:      'Prospect'
+                    },
+                    {
+                      __typename: 'BoardColumn',
+                      id:         'active',
+                      value:      { __typename: 'ValueInput', string: 'active' },
+                      title:      'Active'
+                    },
+                    {
+                      __typename: 'BoardColumn',
+                      id:         'commit',
+                      value:      { __typename: 'ValueInput', string: 'commit' },
+                      title:      'Commit'
+                    }
+                  ],
+                  filter: search.filter                         // ???
+                })
+              }
+            }]
+          }
+        }
+      ];
+
+      mutator.batch(groups, project.bucket)
+        .updateItem(project, mutations)
+        .commit();
+    }
+  }
+
   render() {
     return ReactUtil.render(this, () => {
-      let { item:project, boardAlias } = this.props;
+      let { item:project, search, boardAlias } = this.props;
       console.assert(project);
 
       // TODO(burdon): Cache adapters (or get from Redux).
@@ -64,6 +115,12 @@ class ProjectBoardHeader extends React.Component {
              onClick={ this.handleBoardSelect.bind(this, adapter.alias) }>{ adapter.icon }</i>
         );
       });
+
+      if (!QueryParser.isEmpty(search.filter)) {
+        icons.push(
+          <i key="_add" className="ux-icon ux-icon-add" onClick={ this.handleBoardAdd.bind(this) }/>
+        );
+      }
 
       return (
         <div className="ux-board-header ux-row ux-grow">
@@ -100,9 +157,10 @@ export const ProjectBoardHeaderContainer = compose(
 
   ReduxUtil.connect({
     mapStateToProps: (state, ownProps) => {
-      let { canvas: { boardAlias=ProjectBoard.DEFAULT_ALIAS } } = AppAction.getState(state);
+      let { search, canvas: { boardAlias=ProjectBoard.DEFAULT_ALIAS } } = AppAction.getState(state);
 
       return {
+        search,
         boardAlias
       };
     },

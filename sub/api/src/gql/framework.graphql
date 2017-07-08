@@ -35,6 +35,14 @@ type DateTime {
 
 scalar Timestamp
 
+#
+# Opaque objects.
+# NOTE: Input types cannot be used as regular types.
+# E.g., FilterInput is used to define queries, but Project.board.filter is an opaque string.
+#
+
+scalar JSON
+
 #===================================================================================================
 # TODO(burdon): Use
 # TODO(burdon): Move Item def here?
@@ -96,6 +104,9 @@ input ValueInput {
   set:        [SetMutationInput]
   array:      [ArrayMutationInput]
   object:     [ObjectMutationInput]
+
+  # TODO(burdon): Define custom type/scalar?
+  json:       String                        # Serialized object.
 }
 
 #
@@ -268,7 +279,7 @@ type Board {
   icon:       String
   columns:    [BoardColumn]         # Ordered list of columns.
   itemMeta:   [ListItemMeta]        # Map of ID x meta values (i.e., map).
-  filter:     String                # JSON Filter format.
+  filter:     JSON                  # JSON Filter format (since only FilterInput defined).
   items:      [Item]                # Dynamic query (based on filter).
 }
 

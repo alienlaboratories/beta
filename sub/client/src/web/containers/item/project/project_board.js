@@ -83,12 +83,15 @@ export class ProjectBoard extends React.Component {
   getState(props) {
     let { item:project, boardAlias } = props;
 
+    // TODO(burdon): Reset if doesn't exist.
+
     // TODO(burdon): Cache (in redux); use in header also.
     let adapters = ProjectBoard.getAdapters(project);
 
     return {
       project,
       adapters,
+//    boardAlias,
       adapter: _.find(adapters, adapter => adapter.alias === boardAlias)
     };
   }
@@ -134,11 +137,13 @@ export class ProjectBoard extends React.Component {
       let adapterMutations = adapter.onCreateItem(column);
 
       let board = _.find(_.get(project, 'boards'), board => board.alias === boardAlias);
-      let filter = _.get(board, 'filter');
+      let filter = JSON.parse(_.get(board, 'filter', null));
       if (filter) {
         // TODO(burdon): MOVE TO BOARD ADAPTER.
-        filter = JSON.parse(filter);
-        console.assert(filter.type);
+        if (!filter.type) {
+          console.warn('No type for filter:', JSON.stringify(filter));
+          return;
+        }
 
         _.each(filter.labels, label => {
           mutations.push(MutationUtil.createSetMutation('labels', 'string', label));

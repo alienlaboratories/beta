@@ -52,6 +52,12 @@ export class Transforms {
       return object;
     }
 
+    // JSON object.
+    if (value.json !== undefined) {
+      object[field] = JSON.parse(value.json);
+      return object;
+    }
+
     // Map delta.
     if (value.map !== undefined) {
       _.each(value.map, value => {
@@ -200,8 +206,14 @@ export class Transforms {
     // Clip range.
     let idx = Math.min(mutation.index, _.size(array) - 1);
 
-    // TODO(burdon): Handle non scalar types?
-    let value = Transforms.scalarValue(context, mutation.value);
+    // Handle JSON object or scalars.
+    let value;
+    if (mutation.value.json) {
+      value = JSON.parse(mutation.value.json);
+    } else {
+      value = Transforms.scalarValue(context, mutation.value);
+    }
+
     if (value === undefined) {
       array.splice(idx, 1);
     } else {
@@ -216,6 +228,10 @@ export class Transforms {
   }
 
   /**
+   * Returns a scalar value.
+   * If a key is specified, then:
+   * - on the server this is treated as a GUID.
+   * - on the client this is converted to a { key } object that will match objects in the Apollo cache.
    *
    * @param context
    * @param value

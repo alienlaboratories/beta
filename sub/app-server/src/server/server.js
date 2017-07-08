@@ -324,6 +324,7 @@ export class AppServer {
 
     //
     // Web app.
+    // TODO(burdon): Add mobile path.
     //
     this._app.use(AppDefs.APP_PATH, appRouter(this._config, this._clientManager, {
 

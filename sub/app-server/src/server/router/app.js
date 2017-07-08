@@ -59,13 +59,14 @@ export const appRouter = (config, clientManager, options) => {
   });
 
   //
-  // Web app.
+  // /app/xxx
   //
   router.get(new RegExp(/(.*)/), isAuthenticated('/user/login'), (req, res, next) => {
     let { user } = req;
     let { bundle='web', platform='web' } = req.query;
 
     // TODO(burdon): Detect mobile (also redirect if detect platform).
+    // mobile.robotik.io
     // https://nodejs.org/docs/v0.4.12/api/http.html#http.ServerRequest
     let sub = req.hostname.split('.')[0];
     switch (sub) {

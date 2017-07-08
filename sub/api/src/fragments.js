@@ -267,17 +267,15 @@ const ProjectBoardFragment = gql`
     boards {
       ...BoardFragment
 
-# NOTE: Must match query fragments.
-#      items {
-#        ...SearchItemFragment
-#      }
+      items {
+        ...SearchItemFragment
+      }
     }
   }
 
   ${BoardFragment}
+  ${SearchItemFragment}
 `;
-
-// ${SearchItemFragment}
 
 //
 // Exported fragment defs.
@@ -343,12 +341,17 @@ const ProjectMutationFragment = gql`
     
     boards {
       ...BoardFragment
+
+      items {
+        ...SearchItemFragment
+      }
     }
   }
 
   ${KeyFragment}
   ${ItemFragment}
   ${BoardFragment}
+  ${SearchItemFragment}
 `;
 
 const TaskMutationFragment = gql`

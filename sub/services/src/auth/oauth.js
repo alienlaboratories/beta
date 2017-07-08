@@ -4,7 +4,6 @@
 
 import _ from 'lodash';
 import express from 'express';
-import moment from 'moment';
 import passport from 'passport';
 
 import { Logger, HttpError, HttpUtil } from 'alien-util';
@@ -252,7 +251,8 @@ export const oauthRouter = (userManager, systemStore, oauthRegistry, config={}) 
     });
 
     //
-    // Registered OAuth request flow callback.
+    // Registered OAuth request flow callback (for each subdomain).
+    // https://stackoverflow.com/questions/24342338/google-oauth-subdomains
     //
     router.get('/callback/' + provider.providerId, passport.authenticate(provider.providerId, {
       // TODO(burdon): Handle JSONP/CRX failure.
@@ -419,6 +419,8 @@ export class OAuthProvider {
   constructor(providerId, serverUrl) {
     console.assert(providerId && serverUrl);
     this._providerId = providerId;
+
+    // Auth is limited to registered domain (e.g., app.robotik.io).
     this._callbackUrl = HttpUtil.joinUrl(serverUrl, '/oauth/callback/' + SystemStore.sanitizeKey(providerId));
   }
 

@@ -95,6 +95,17 @@ export class Resolvers {
         }
       },
 
+      /**
+       * Serialized object.
+       */
+      JSON: {
+        __serialize: value => JSON.stringify(value),
+        __parseValue: value => JSON.parse(value || null),
+        __parseLiteral: ast => {
+          return (ast.kind === Kind.STRING) ? JSON.parse(ast.value) : null;
+        }
+      },
+
       // Bucket: {
       //   __serialize: value => value,
       //   __parseValue: value => value,
@@ -186,8 +197,8 @@ export class Resolvers {
                 icon,
                 columns,
 
-                // Serialize filter.
-                filter: JSON.stringify(filter),
+                // NOTE: The filter is serialized (via the custom JSON type).
+                filter,
 
                 // Flatten map to an array.
                 itemMeta: _.map(_.get(board, 'itemMeta'), (value, itemId) => ({ itemId, ...value })),
