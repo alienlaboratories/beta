@@ -5,7 +5,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { compose } from 'react-apollo';
+import { compose, graphql } from 'react-apollo';
 
 import { Fragments } from 'alien-api';
 import { ID, MutationUtil } from 'alien-core';
@@ -83,16 +83,20 @@ export class ProjectBoard extends React.Component {
   getState(props) {
     let { item:project, boardAlias } = props;
 
-    // TODO(burdon): Reset if doesn't exist.
-
+    // Get adapter; use default if alias is incorrect for this item.
     // TODO(burdon): Cache (in redux); use in header also.
     let adapters = ProjectBoard.getAdapters(project);
+    let adapter = _.find(adapters, adapter => adapter.alias === boardAlias);
+    if (!adapter && _.size(adapters) > 0) {
+      adapter = adapters[0];
+      boardAlias = adapter.alias;
+    }
 
     return {
       project,
+      boardAlias,
       adapters,
-//    boardAlias,
-      adapter: _.find(adapters, adapter => adapter.alias === boardAlias)
+      adapter
     };
   }
 
@@ -101,8 +105,8 @@ export class ProjectBoard extends React.Component {
   }
 
   handleItemDrop(column, item, changes) {
-    let { viewer: { groups }, item:project, boardAlias, mutator } = this.props;
-    let { adapter } = this.state;
+    let { viewer: { groups }, item:project, mutator } = this.props;
+    let { boardAlias, adapter } = this.state;
 
     let batch = mutator.batch(groups, project.bucket);
 
@@ -130,8 +134,8 @@ export class ProjectBoard extends React.Component {
         .commit();
 
     } else {
-      let { adapter } = this.state;
-      let { item:project, boardAlias } = this.props;
+      let { boardAlias, adapter } = this.state;
+      let { item:project } = this.props;
 
       // Column-specific mutations.
       let adapterMutations = adapter.onCreateItem(column);
@@ -175,12 +179,20 @@ export class ProjectBoard extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { adapter } = this.state;
-      let { item:project, boardAlias } = this.props;
-      console.assert(project);
+      let { boardAlias, adapter } = this.state;
+      let { item:project, links } = this.props;
 
+      // Might be null if ProjectBoardItemsQuery completes first.
+      if (!project) { return; }
+
+      // TODO(burdon): Get tasks from board query.
+      let showAdd = true;
       let board = _.find(_.get(project, 'boards'), board => board.alias === boardAlias);
       let items = adapter.getItems(project, board);
+      if (!items) {
+        items = links;
+        showAdd = false;
+      }
 
       // TODO(burdon): Lift-up Canvas.
       return (
@@ -193,7 +205,8 @@ export class ProjectBoard extends React.Component {
                  itemOrderModel={ this._itemOrderModel }
                  onItemSelect={ this.handleTaskSelect.bind(this) }
                  onItemDrop={ this.handleItemDrop.bind(this) }
-                 onItemUpdate={ this.handleTaskUpdate.bind(this) }/>
+                 onItemUpdate={ this.handleTaskUpdate.bind(this) }
+                 showAdd={ showAdd }/>
         </Canvas>
       );
     });
@@ -218,6 +231,16 @@ const ProjectItemQuery = gql`
   ${Fragments.ProjectBoardFragment}  
 `;
 
+const ProjectBoardItemsQuery = gql`
+  query ProjectBoardItemsQuery($source: KeyInput!, $kind: String!) {
+    links(source: $source, kind: $kind) {
+      ...SearchItemFragment
+    }
+  }
+
+  ${Fragments.SearchItemFragment}
+`;
+
 export const ProjectBoardContainer = compose(
 
   ReduxUtil.connect({
@@ -230,6 +253,32 @@ export const ProjectBoardContainer = compose(
     }
   }),
 
-  QueryItem(ProjectItemQuery)
+  // Current item.
+  QueryItem(ProjectItemQuery),
+
+  // Current items for selected board.
+  graphql(ProjectBoardItemsQuery, {
+    options: (props) => {
+      let { itemKey:source, boardAlias:kind } = props;
+
+      return {
+        variables: {
+          source,
+          kind
+        }
+      };
+    },
+
+    props: ({ ownProps, data }) => {
+      let { errors, loading, refetch, links } = data;
+
+      return {
+        errors,
+        loading,
+        refetch,
+        links
+      };
+    }
+  })
 
 )(SubscriptionWrapper(ProjectBoard));

@@ -17,9 +17,11 @@ class BoardAdapter {
 
   get title() {}
 
-  getItems(project, board) {
-    return [];
+  get editable() {
+    return false;
   }
+
+  getItems(project, board) {}
 
   /**
    * Returns an ordered array of columns.
@@ -197,8 +199,8 @@ export class QueryBoardAdapter extends BoardAdapter {
     return _.get(this._board, 'title', 'Custom board.');
   }
 
-  getItems(project, board) {
-    return _.get(board, 'items', []);
+  get editable() {
+    return true;
   }
 
   getColumns(project, board) {

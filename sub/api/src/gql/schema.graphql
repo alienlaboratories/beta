@@ -263,11 +263,13 @@ type Project implements Item {
   # All projects are owned by a Group (each User has a private Group).
   group:            Group!
 
+  # TODO(burdon): Map type (array of typed values).
+  boards:           [Board]
+
   # Sub-tasks.
   tasks:            [Task]
 
-  # TODO(burdon): Map type (array of typed values).
-  boards:           [Board]
+  items(boardAlias: String!): [Item]
 }
 
 type Task implements Item {
@@ -402,8 +404,12 @@ type RootQuery {
   # Current user.
   viewer: Viewer!
 
-  # Get specific.
+  # Get specific item.
   item(key: KeyInput!): Item!
+
+  # Get linked items.
+  # TODO(burdon): Link type.
+  links(source: KeyInput!, kind: String!): [Item]!
 
   # Search.
   search(filter: FilterInput): SearchResult!

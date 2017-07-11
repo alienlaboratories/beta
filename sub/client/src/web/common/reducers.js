@@ -109,10 +109,10 @@ export class AppAction {
   /**
    * Set canvas state (e.g., current view).
    */
-  static setCanvasState(canvas) {
+  static setCanvasState(state) {
     return {
       type: AppAction.ACTION.CANVAS_STATE,
-      value: canvas
+      value: state
     };
   }
 }

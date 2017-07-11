@@ -185,28 +185,21 @@ export class Resolvers {
       Project: _.assign({}, Resolvers.DefaultItem, {
 
         boards: (obj, args, context) => {
-          return _.map(_.get(obj, 'boards'), board => {
+          return _.map(obj.boards, board => {
             let { alias, title, icon, columns, filter } = board;
 
-            // Look-up filtered items (for custom boards).
-            let promise = filter && database.getItemStore(Database.NAMESPACE.USER).queryItems(context, obj, filter);
-            return Promise.resolve(promise).then(items => {
-              return {
-                alias,
-                title,
-                icon,
-                columns,
+            return {
+              alias,
+              title,
+              icon,
+              columns,
 
-                // NOTE: The filter is serialized (via the custom JSON type).
-                filter,
+              // NOTE: The filter is serialized (via the custom JSON type).
+              filter,
 
-                // Flatten map to an array.
-                itemMeta: _.map(_.get(board, 'itemMeta'), (value, itemId) => ({ itemId, ...value })),
-
-                // Filtered items.
-                items
-              };
-            });
+              // Flatten map to an array.
+              itemMeta: _.map(_.get(board, 'itemMeta'), (value, itemId) => ({ itemId, ...value })),
+            };
           });
         },
 
@@ -346,6 +339,29 @@ export class Resolvers {
           let namespace = Resolvers.getNamespaceForType(type);
           return database.getItemStore(namespace).getItem(context, type, id).then(item => {
             return Resolvers.Defaults(item);
+          });
+        },
+
+        links: (obj, args, context) => {
+          let { source: { type, id }, kind } = args;
+
+          let namespace = Resolvers.getNamespaceForType(type);
+          return database.getItemStore(namespace).getItem(context, type, id).then(item => {
+            switch (type) {
+              case 'Project': {
+                let board = _.find(item.boards, board => board.alias === kind);
+                if (board) {
+                  let { filter } = board;
+                  if (filter) {
+                    return database.getItemStore(namespace).queryItems(context, obj, filter);
+                  }
+                }
+
+                break;
+              }
+            }
+
+            return [];
           });
         },
 

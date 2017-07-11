@@ -33,6 +33,7 @@ export class LabelPicker extends React.Component {
     return ReactUtil.render(this, () => {
       let { labels } = this.props;
 
+      // TODO(burdon): Add clases for colors. Init. hash string and lookup.
       return (
         <div className="ux-label-picker">
           <div>

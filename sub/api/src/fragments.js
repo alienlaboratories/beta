@@ -209,6 +209,7 @@ const ProjectFragment = gql`
       ...GroupFragment
     }
 
+    # TODO(burdon): Move to board items.
     tasks {
       ...NestedTasksFragment
     }
@@ -266,15 +267,10 @@ const ProjectBoardFragment = gql`
   fragment ProjectBoardFragment on Project {
     boards {
       ...BoardFragment
-
-      items {
-        ...SearchItemFragment
-      }
     }
   }
 
   ${BoardFragment}
-  ${SearchItemFragment}
 `;
 
 //
@@ -341,10 +337,6 @@ const ProjectMutationFragment = gql`
     
     boards {
       ...BoardFragment
-
-      items {
-        ...SearchItemFragment
-      }
     }
   }
 

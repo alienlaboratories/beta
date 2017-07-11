@@ -135,13 +135,15 @@ export class Transforms {
     let idx = _.findIndex(map, v => _.get(v, predicate.key) === key);
 
     // NOTE: Must be object mutation (which mutates to object matching the predicate).
-    let value = mutation.value.object;
-    if (value === undefined) {
+    if (_.get(mutation, 'value.null')) {
       if (idx !== -1) {
         // Remove.
         map.splice(idx, 1);
       }
     } else {
+      let value = _.get(mutation, 'value.object');
+      console.assert(value);
+
       if (idx === -1) {
         // Append.
         map.push(Transforms.applyObjectMutations(context, {

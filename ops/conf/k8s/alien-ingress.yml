@@ -19,9 +19,6 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: traefik
 
-#   ingress.kubernetes.io/rewrite-target: /
-#   ingress.kubernetes.io/ssl-redirect: "true"    # TODO(burdon): Doesn't work.
-
 spec:
   rules:
 

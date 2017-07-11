@@ -129,7 +129,7 @@ input KeyValue {
 # Map (stored as array).
 input MapMutationInput {
   predicate:  KeyValue              # Matcher for array object value.
-  value:      ValueInput!
+  value:      ValueInput!           # Null to remove.
 }
 
 # Ordered set.

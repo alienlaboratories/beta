@@ -34,7 +34,8 @@ export class Board extends React.Component {
     columnMapper:     PropTypes.func.isRequired,        // (columns, item) => column.id
     onItemSelect:     PropTypes.func,                   // (item) => {}
     onItemUpdate:     PropTypes.func,                   // (item, mutations) => {}
-    onItemDrop:       PropTypes.func                    // (column, item) => {}
+    onItemDrop:       PropTypes.func,                   // (column, item) => {}
+    showAdd:          PropTypes.bool
   };
 
   static defaultProps = {
@@ -82,7 +83,7 @@ export class Board extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { columnMapper, itemRenderer, itemOrderModel } = this.props;
+      let { columnMapper, itemRenderer, itemOrderModel, showAdd } = this.props;
       let { items, columns } = this.state;
 
       //
@@ -111,11 +112,13 @@ export class Board extends React.Component {
                             onItemSelect={ this.handleItemSelect.bind(this) }/>
             </div>
 
+            { showAdd &&
             <div className="ux-board-column-footer">
               <TextBox className="ux-grow"
                        placeholder="Add Card..."
                        onEnter={ this.handleItemCreate.bind(this, column) }/>
             </div>
+            }
           </div>
         );
       });

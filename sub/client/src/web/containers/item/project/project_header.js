@@ -34,8 +34,6 @@ class ProjectBoardHeader extends React.Component {
     item:           PropTypes.object
   };
 
-  // TODO(burdon): Redux action to select board alias.
-
   handleTitleUpdate(title) {
     let { viewer: { groups }, mutator, item:project } = this.props;
 
@@ -46,23 +44,63 @@ class ProjectBoardHeader extends React.Component {
       .commit();
   }
 
-  handleBoardSelect(alias) {
-    this.props.setBoardAlias(alias);
+  handleBoardSelect(adapter) {
+    let { editing, setBoardAlias } = this.props;
+
+    if (editing) {
+      if (adapter.editable) {
+        console.log('Delete', adapter.alias);
+        let { viewer: { groups }, mutator, item:project } = this.props;
+
+        // TODO(burdon): Factor out.
+        let mutations = [
+          {
+            field: 'boards',
+            value: {
+              map: [{
+                predicate: {
+                  key: 'alias',
+                  value: {
+                    string: adapter.alias
+                  }
+                },
+
+                value: {
+                  null: true
+                }
+              }]
+            }
+          }
+        ];
+
+        mutator.batch(groups, project.bucket)
+          .updateItem(project, mutations)
+          .commit();
+      }
+    } else {
+      setBoardAlias(adapter.alias);
+    }
+  }
+
+  handleBoardEdit() {
+    let { editing, setBoardEdit } = this.props;
+
+    setBoardEdit(!editing);
   }
 
   handleBoardAdd() {
     let { viewer: { groups }, mutator, item:project, search } = this.props;
     if (!QueryParser.isEmpty(search.filter)) {
 
+      // TODO(burdon): Factor out.
       let mutations = [
         {
           field: 'boards',
           value: {
             array: [{
               value: {
-                // TODO(burdon): Missing fields (use FragmentParser.getDefaultObject)
                 // TODO(burdon): Wrapper.
-                json: JSON.stringify({                          // TODO(burdon): Document.
+                json: JSON.stringify({
                   __typename: 'Board',
                   alias: 'query_' + _.size(project.boards),
                   title: 'Query',
@@ -87,7 +125,7 @@ class ProjectBoardHeader extends React.Component {
                       title:      'Commit'
                     }
                   ],
-                  filter: search.filter                         // ???
+                  filter: search.filter
                 })
               }
             }]
@@ -103,18 +141,21 @@ class ProjectBoardHeader extends React.Component {
 
   render() {
     return ReactUtil.render(this, () => {
-      let { item:project, search, boardAlias } = this.props;
+      let { item:project, search, editing, boardAlias } = this.props;
       console.assert(project);
 
       // TODO(burdon): Cache adapters (or get from Redux).
       let icons = _.map(ProjectBoard.getAdapters(project), adapter => {
         return (
           <i key={ adapter.alias }
-             className={ DomUtil.className('ux-icon', adapter.alias === boardAlias && 'ux-selected') }
+             className={ DomUtil.className('ux-icon',
+               editing && adapter.editable && 'ux-icon-editable', adapter.alias === boardAlias && 'ux-selected') }
              title={ adapter.title }
-             onClick={ this.handleBoardSelect.bind(this, adapter.alias) }>{ adapter.icon }</i>
+             onClick={ this.handleBoardSelect.bind(this, adapter) }>{ adapter.icon }</i>
         );
       });
+
+      icons.push(<i key="_spacer" className="ux-icon-spacer"/>);
 
       if (!QueryParser.isEmpty(search.filter)) {
         icons.push(
@@ -122,9 +163,14 @@ class ProjectBoardHeader extends React.Component {
         );
       }
 
+      icons.push(
+        <i key="_edit" className={ DomUtil.className('ux-icon', editing ? 'ux-icon-cancel' : 'ux-icon-edit') }
+           onClick={ this.handleBoardEdit.bind(this) }/>
+      );
+
       return (
         <div className="ux-board-header ux-row ux-grow">
-          <div className="ux-icons">{ icons }</div>
+          <div className={ DomUtil.className('ux-icons', editing && 'ux-editing') }>{ icons }</div>
 
           <div className="ux-title ux-grow">
             <TextBox value={ project.title }
@@ -157,10 +203,11 @@ export const ProjectBoardHeaderContainer = compose(
 
   ReduxUtil.connect({
     mapStateToProps: (state, ownProps) => {
-      let { search, canvas: { boardAlias=ProjectBoard.DEFAULT_ALIAS } } = AppAction.getState(state);
+      let { search, canvas: { editing, boardAlias=ProjectBoard.DEFAULT_ALIAS } } = AppAction.getState(state);
 
       return {
         search,
+        editing,
         boardAlias
       };
     },
@@ -169,7 +216,14 @@ export const ProjectBoardHeaderContainer = compose(
       return {
         setBoardAlias: (boardAlias) => {
           dispatch(AppAction.setCanvasState({
+            editing: false,
             boardAlias
+          }));
+        },
+
+        setBoardEdit: (editing) => {
+          dispatch(AppAction.setCanvasState({
+            editing
           }));
         }
       };

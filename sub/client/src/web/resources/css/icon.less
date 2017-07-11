@@ -24,6 +24,10 @@
   color: @ux-color-xlight;
 }
 
+.ux-icon-spacer {
+  margin: 0 8px;
+}
+
 .ux-icons {
   display: flex;
 
@@ -32,6 +36,16 @@
 
   .ux-icon {
     margin: 0;
+  }
+}
+
+.ux-icons.ux-editing {
+  .ux-icon-editable:hover {
+    background-color: red;
+
+    :after {
+      content: 'cancel' !important;
+    }
   }
 }
 
