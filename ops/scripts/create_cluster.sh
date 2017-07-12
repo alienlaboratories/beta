@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+#
+# Create/manage cluster(s).
+# https://github.com/kubernetes/kops/blob/master/docs/aws.md
+#
+
 # TODO(burdon): Options.
 # TODO(burdon): Bash vars. Incl script?
 # TODO(burdon): Single Python script.

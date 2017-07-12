@@ -5,24 +5,24 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: alien-app-server
+  name: alien-scheduler
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        run: alien-app-server
+        run: alien-scheduler
     spec:
       containers:
-      - name: alien-app-server
+      - name: alien-scheduler
         # NOTE: Don't use the :latest tag in production.
         # https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories
         # http://kubernetes.io/docs/concepts/containers/images/#updating-images
         # http://kubernetes.io/docs/user-guide/config-best-practices/#container-images
-        image: 861694698401.dkr.ecr.us-east-1.amazonaws.com/alien-app-server:latest
+        image: 861694698401.dkr.ecr.us-east-1.amazonaws.com/alien-scheduler:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 3000
+        - containerPort: 9000
 
       # AWS ECR secret.
       # https://github.com/kubernetes/minikube#private-container-registries
@@ -34,14 +34,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: alien-app-server
+  name: alien-scheduler
   labels:
-    run: alien-app-server
+    run: alien-scheduler
 spec:
   # Important for minikube service to be exposed directly.
   type: NodePort
   ports:
   - port: 80
-    targetPort: 3000
+    targetPort: 9000
   selector:
-    run: alien-app-server
+    run: alien-scheduler

@@ -1,4 +1,5 @@
 #
+# Use minikube as Docker Registry (for local builds and testing).
 # https://mtpereira.com/local-development-k8s.html
 #
 
@@ -43,7 +44,9 @@ spec:
       volumes:
       - name: image-store
         emptyDir: {}
+
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -59,7 +62,9 @@ spec:
   - name: registry
     port: 5000
     protocol: TCP
+
 ---
+
 apiVersion: v1
 kind: Pod
 metadata:

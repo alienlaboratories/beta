@@ -1,5 +1,5 @@
 #
-# Express server.
+# Node Express Web server.
 #
 
 apiVersion: extensions/v1beta1
