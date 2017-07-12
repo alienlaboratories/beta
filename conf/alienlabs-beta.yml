@@ -9,7 +9,7 @@ loggly:
 
 queue:
   active: true
-  name: 'test'
+  name: 'tasks'
   options:
-    host: "127.0.0.1"
+    host: "redis"       # TODO(burdon): DNS? Test on minikube.
     port: 6379

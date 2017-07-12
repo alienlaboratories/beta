@@ -40,8 +40,8 @@ metadata:
 spec:
   # Important for minikube service to be exposed directly.
   type: NodePort
+  selector:
+    run: alien-web-server
   ports:
   - port: 80
     targetPort: 3000
-  selector:
-    run: alien-web-server

@@ -3,25 +3,27 @@
 #
 # Start using xhyve (replaces "minikube start").
 # https://mtpereira.com/local-development-k8s.html
+# ~/.minikube
 #
 
 PS4=''
 
-start=$SECONDS
-set -x
-
-# Used by deploy to build/push images.
-MINIKUBE_DOCKER_REPO=${MINIKUBE_DOCKER_REPO:-"localhost:5000"}
-
-# NOTE: memory size is only set on creation (run minkube delete to restart).
-# https://github.com/kubernetes/minikube/issues/567
-minikube start --vm-driver=xhyve --memory=2048 --insecure-registry=${MINIKUBE_DOCKER_REPO}
+minikube start
 
 eval $(minikube docker-env)
 docker info
 
+#
+# Sync clock.
+# Firebase API fails if clock is out of sync.
+# https://github.com/kubernetes/minikube/issues/1378
+#
+
+exec ./minikube_clock_sync.sh
+
+#
+# Check running.
+#
+
 minikube status
 minikube dashboard --url
-
-set +x
-echo "OK [$(( SECONDS - start ))s]"

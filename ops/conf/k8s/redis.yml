@@ -29,8 +29,8 @@ metadata:
   labels:
     run: redis
 spec:
+  selector:
+    run: redis
   ports:
   - port: 6379
     protocol: TCP
-  selector:
-    run: redis

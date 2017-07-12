@@ -148,7 +148,6 @@ else
 
   # Use minikube's docker daemon (minikube must be running).
   eval $(minikube docker-env)
-# eval $(docker-machine env ${DOCKER_MACHINE})
 
   # ECS: EC2 Container Service
   # Get token (valid for 12 hours).
@@ -180,6 +179,9 @@ if [ ${BUILD} -eq 1 ]; then
     DOCKERFILE=${MINIKUBE_DOCKERFILE}
   fi
 
+  # Remove existing.
+# docker images --filter reference=${DOCKER_IMAGE} --format "{{.ID}}" | xargs docker rmi -f
+
   docker build -f ${DOCKERFILE} -t ${DOCKER_IMAGE} .
 fi
 
@@ -187,9 +189,17 @@ if [ ${MINIKUBE} -eq 1 ]; then
   # https://kubernetes.io/docs/getting-started-guides/minikube/#reusing-the-docker-daemon
   # Just make sure you tag your Docker image with something other than ‘latest’
   # and use that tag while you pull the image
-  TAG="test"
+  TAG="testing"
 
-  docker tag ${DOCKER_IMAGE}:latest ${DOCKER_IMAGE}:${TAG}
+  # TODO(burdon): Do we need to push?
+  docker tag ${DOCKER_IMAGE}:latest ${MINIKUBE_DOCKER_REPO}/${DOCKER_IMAGE}:${TAG}
+  docker push ${MINIKUBE_DOCKER_REPO}/${DOCKER_IMAGE}
+
+  # List repos.
+  # https://docs.docker.com/registry/spec/api/#listing-repositories
+  # https://stackoverflow.com/questions/38979231/imagepullbackoff-local-repository-with-minikube
+  curl -s -S $(minikube ip):5000/v2/_catalog
+
 else
   TAG="latest"
 
@@ -225,38 +235,56 @@ fi
 
 kubectl config get-contexts
 
-if [ ${DELETE} -eq 1 ]; then
-  set +x
-  log "Deleting Service: ${SERVICE_CONF}"
-  set -x
+#
+# Patch docker image for minikube repo.
+#
 
-  kubectl delete -f ${SERVICE_CONF}
+if [ ${MINIKUBE} -eq 1 ]; then
+  TMP_DIR=/tmp/k8s
+  mkdir -p ${TMP_DIR}
+  CONF=${SERVICE_CONF}
+  SERVICE_CONF=${TMP_DIR}/$(basename ${SERVICE_CONF})
+  cat ${CONF} | sed -e "s/\(image:\).*/\1 ${MINIKUBE_DOCKER_REPO}\/${DOCKER_IMAGE}:${TAG}/" > ${SERVICE_CONF}
+  echo "Created ${SERVICE_CONF}"
 fi
 
-POD=$(kubectl get pods -l run=${RUN_LABEL} -o name)
-if [ -z "${POD}" ]; then
+#
+# Delete existing Service and Deployment definitions (kills pods).
+#
 
-  # Patch config file for minikube repo.
-  if [ ${MINIKUBE} -eq 1 ]; then
-    CONF=${SERVICE_CONF}
-    SERVICE_CONF="/tmp/${SERVICE_CONF}"
-    cat ${CONF} | sed -e "s/\(image:\).*/\1 ${DOCKER_IMAGE}:${TAG}/" > ${SERVICE_CONF}
+if [ ${DELETE} -eq 1 ]; then
+  SVC=$(kubectl get services -l run=${RUN_LABEL} -o name)
+  if [ -n "${SVC}" ]; then
+    set +x
+    log "Deleting Service: ${SVC}"
+    set -x
 
-    cat ${SERVICE_CONF}
+    kubectl delete -f ${SERVICE_CONF}
   fi
+fi
 
+#
+# Create/upate config.
+#
+
+POD=$(kubectl get pods -l run=${RUN_LABEL} -o name)
+
+set +x
+log "Creating/Updating Service: ${RUN_LABEL}"
+set -x
+
+# Update config.
+kubectl apply -f ${SERVICE_CONF}
+
+#
+# Restart existing pods (i.e., if updating).
+#
+
+if [ -n "${POD}" ]; then
   set +x
-  log "Creating Service: ${SERVICE_CONF}"
+  log "Restarting pods..."
   set -x
 
-  # Create.
-  kubectl create -f ${SERVICE_CONF}
-else
-  set +x
-  log "Restarting Service: ${POD}"
-  set -x
-
-  # Restart.
   kubectl delete ${POD}
 fi
 

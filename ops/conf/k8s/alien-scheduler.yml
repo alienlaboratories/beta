@@ -40,8 +40,16 @@ metadata:
 spec:
   # Important for minikube service to be exposed directly.
   type: NodePort
+  selector:
+    run: alien-scheduler
   ports:
   - port: 80
     targetPort: 9000
-  selector:
-    run: alien-scheduler
+
+# TODO(burdon): Connect to REDIS via DNS. (k get deployments); check cluser add-on and document.
+# Service def at top of config
+# https://kubernetes.io/docs/concepts/services-networking/service/#dns (redis)
+# https://github.com/kubernetes/kubernetes/tree/master/examples/guestbook#dns-service
+# k get service redis
+# proxy to test (or call driectly from CLI)
+# https://kubernetes.io/docs/tasks/access-application-cluster/connecting-frontend-backend/#creating-the-backend-using-a-deployment

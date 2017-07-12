@@ -5,14 +5,14 @@
 #
 
 brew update
-brew outdated | xargs brew upgrade
 
 brew install cask
-brew cask outdated | xargs brew cask reinstall
 
 brew cask install java
 brew cask install minikube
 brew cask install virtualbox
+
+brew cask outdated | xargs brew cask reinstall
 
 brew install bash-completion
 brew install docker
@@ -31,9 +31,12 @@ brew install watchman
 brew install yarn
 brew install --HEAD xhyve
 
-# NOTE: npm 4 required for lerna
-# https://github.com/lerna/lerna/issues/903
-npm install -g npm@4
+brew outdated | xargs brew upgrade
+
+# https://www.wavether.com/2016/09/docker-machine-xhyve-mac-os
+# https://github.com/zchee/docker-machine-driver-xhyve#install
+sudo chown root:wheel $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
+sudo chmod u+s $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
 
 #
 # Requires Java.
@@ -49,6 +52,10 @@ brew install logstash
 # npm ls -g --depth=0 --parseable | grep node_modules | awk -F "/" '{print $NF}' | xargs npm uninstall -g
 # yarn global ls
 #
+
+# NOTE: npm 4 required for lerna
+# https://github.com/lerna/lerna/issues/903
+npm install -g npm@4
 
 yarn config set prefix /usr/local/
 

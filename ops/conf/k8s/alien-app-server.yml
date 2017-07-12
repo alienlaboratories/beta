@@ -20,7 +20,8 @@ spec:
         # http://kubernetes.io/docs/concepts/containers/images/#updating-images
         # http://kubernetes.io/docs/user-guide/config-best-practices/#container-images
         image: 861694698401.dkr.ecr.us-east-1.amazonaws.com/alien-app-server:latest
-        imagePullPolicy: Always
+        imagePullPolicy: Alyways
+#       imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000
 
@@ -40,8 +41,8 @@ metadata:
 spec:
   # Important for minikube service to be exposed directly.
   type: NodePort
+  selector:
+    run: alien-app-server
   ports:
   - port: 80
     targetPort: 3000
-  selector:
-    run: alien-app-server
