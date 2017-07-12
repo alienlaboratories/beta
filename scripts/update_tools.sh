@@ -68,6 +68,9 @@ yarn global add webpack
 
 yarn global upgrade
 
+yarn global bin
+yarn global ls
+
 #
 # Python
 #

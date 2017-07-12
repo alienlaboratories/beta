@@ -25,7 +25,7 @@ export const adminRouter = (config, systemStore, clientManager, options) => {
   let router = express.Router();
 
   let queue;
-  // let queueConfig = _.get(config, 'alien.tasks', {});
+  // let queueConfig = _.get(config, 'alien.queue', {});
   // if (queueConfig.active) {
   //   queue = new Queue(queueConfig.name, queueConfig.options);
   // }

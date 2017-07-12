@@ -66,7 +66,7 @@ config(CONF_DIR).then(config => {
   };
 
   // Queue.
-  let queueConfig = _.get(config, 'alien.tasks', {});
+  let queueConfig = _.get(config, 'alien.queue', {});
   let queue = new Queue(queueConfig.name, queueConfig.options);
 
   queue.process(data => {
