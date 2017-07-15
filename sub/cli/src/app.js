@@ -11,9 +11,6 @@ import { TypeUtil } from 'alien-util';
 
 import { Command, DatabaseCommand, LoginCommand, QueryCommand, StatusCommand, TaskCommand } from './command';
 
-// TODO(burdon): Move parsers into Commands.
-// TODO(burdon): Logging.
-
 /**
  * Command line app.
  */
@@ -38,28 +35,20 @@ export class App {
 
     let commands = this._parser.addSubparsers({ title: 'commands', dest: 'command' });
 
-    commands.addParser('config',  { addHelp: true });
-    commands.addParser('login',   { addHelp: true });
-    commands.addParser('status',  { addHelp: true, aliases: ['stat'] });
-    commands.addParser('task',    { addHelp: true });
+    commands.addParser('config',    { addHelp: true });
+    commands.addParser('login',     { addHelp: true });
+    commands.addParser('stats',     { addHelp: true });
 
     //
     // Query commands.
+    // TODO(burdon): Sub-sub parser's help isn't shown.
     //
 
     let query = commands.addParser('query', { addHelp: true, aliases: ['q'] });
     query.addArgument('query_str', { action: 'store', type: 'string', nargs: '?' });
 
-    //
-    // System commands.
-    // TODO(burdon): Sub-sub parser's help isn't shown.
-    //
-
     let db = commands.addParser('db', { addHelp: true, help: '{users, groups, init, reset, testing}' });
-    let dbCommand = db.addSubparsers({
-      title: 'database',
-      dest: 'db_command'
-    });
+    let dbCommand = db.addSubparsers({ title: 'database', dest: 'db_command' });
 
     dbCommand.addParser('users',    { addHelp: true });
     dbCommand.addParser('groups',   { addHelp: true });
@@ -67,21 +56,27 @@ export class App {
     dbCommand.addParser('reset',    { addHelp: true });
     dbCommand.addParser('testing',  { addHelp: true });
 
+    let task = commands.addParser('task', { addHelp: true, help: '{list}' });
+    let taskCommand = task.addSubparsers({ title: 'task', dest: 'task_command' });
+
+    taskCommand.addParser('list', { addHelp: true });
+
     //
     // Handlers.
     //
 
     // TODO(burdon): Trigger admin commands (as from web site).
-    // TODO(burdon): Trigger tasks (e.g., sync).
-
     // TODO(burdon): Aliases don't preserve the command.
+
     this._handlers = new Map();
-    this._handlers.set(['config'], Command.of(config, (args) => { console.log(TypeUtil.stringify(config, 2)); }));
-    this._handlers.set(['login'], new LoginCommand(config));
-    this._handlers.set(['query', 'q'], new QueryCommand(config));
-    this._handlers.set(['status', 'stat'], new StatusCommand(config));
-    this._handlers.set(['db'], () => new DatabaseCommand(config));
-    this._handlers.set(['task'], () => new TaskCommand(config));
+
+    this._handlers.set(['config'],      Command.of(config, (args) => { console.log(TypeUtil.stringify(config, 2)); }));
+    this._handlers.set(['stats'],       new StatusCommand(config));
+    this._handlers.set(['login'],       new LoginCommand(config));
+
+    this._handlers.set(['db'],          new DatabaseCommand(config));
+    this._handlers.set(['task'],        new TaskCommand(config));
+    this._handlers.set(['query', 'q'],  new QueryCommand(config));
   }
 
   processCommand(args) {
@@ -112,6 +107,7 @@ export class App {
   }
 
   run() {
+    console.log();
     if (process.argv.length === 2) {
       return this.runLoop();
     } else {

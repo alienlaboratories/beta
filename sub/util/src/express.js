@@ -28,7 +28,7 @@ export class ExpressUtil {
     } else {
       res.redirect('https://' + req.hostname + req.url);
     }
-  }
+  };
 
   static Helpers = {
 

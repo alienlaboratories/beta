@@ -19,7 +19,7 @@
     "redis": "^2.7.1",
     "redis-server": "^1.1.0",
     "regenerator-runtime": "^0.10.5",
-    "webpack": "^2.5.0",
+    "webpack": "^2.7.0",
     "webpack-merge": "^4.1.0",
     "webpack-node-externals": "^1.5.4",
     "yaml-loader": "^0.4.0"
@@ -29,7 +29,9 @@
     "alien-services": "0.0.1",
     "alien-util": "0.0.1",
     "babel-polyfill": "^6.23.0",
-    "bull": "^3.0.0-rc.2",
+    "bull": "^3.0.0-rc.4",
+    "debug": "^2.6.8",
+    "googleapis": "^19.0.0",
     "lodash": "^4.17.4",
     "node-yaml": "^3.0.3"
   },

@@ -9,6 +9,8 @@ import { ErrorUtil, Logger, TypeUtil } from 'alien-util';
 
 const logger = Logger.get('queue');
 
+// TODO(burdon): Kill this and SQS. No need for Redis.
+
 /**
  * Queue wrapper (Bull implementation).
  */

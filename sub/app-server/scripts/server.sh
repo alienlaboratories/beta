@@ -35,7 +35,7 @@ set -x
 #
 
 if [ ${BUILD} -eq 1 ]; then
-  webpack
+  webpack --config=webpack-srv.config.js
 fi
 
 node ./dist/server.bundle.js

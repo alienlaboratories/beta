@@ -95,6 +95,7 @@ const srvConfig = webpackMerge(baseConfig, {
     whitelist: [
       'alien-api',
       'alien-core',
+      'alien-core/src/testing',
       'alien-services',
       'alien-util',
     ]}

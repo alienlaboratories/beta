@@ -17,6 +17,7 @@
     "alien-services": "0.0.1",
     "alien-util": "0.0.1",
     "argparse": "^1.0.9",
+    "aws-sdk": "^2.85.0",
     "google-cli-auth": "^0.0.1",
     "lodash": "^4.17.4",
     "node-yaml": "^3.1.0",
@@ -32,6 +33,7 @@
   "scripts": {
     "lint": "eslint -c ../../eslintrc.yml ./src",
     "test": "jest --silent",
-    "start": "babel-node ./index.js"
+    "cli": "babel-node ./alien.js",
+    "start": "hilite nodemon --exec npm run cli"
   }
 }

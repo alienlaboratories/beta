@@ -69,7 +69,6 @@ yarn global add grunt
 yarn global add jest
 yarn global add node-inspector
 yarn global add nodemon
-yarn global add npm
 yarn global add serverless
 yarn global add webpack
 

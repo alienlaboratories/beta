@@ -27,9 +27,9 @@ create_cert()
   done
 
   aws acm request-certificate \
-    --domain-name $DOMAIN \
-    --subject-alternative-names $ALT_NAMES \
-    --domain-validation-options $DOMAIN_NAMES
+    --domain-name ${DOMAIN} \
+    --subject-alternative-names ${ALT_NAMES} \
+    --domain-validation-options ${DOMAIN_NAMES}
 }
 
 # Prevent wildcard expansion.
