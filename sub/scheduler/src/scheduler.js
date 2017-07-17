@@ -26,6 +26,7 @@ const logger = Logger.get('scheduler');
 async function config(baseDir) {
   return await {
     'alien':    await yaml.read(path.join(baseDir, 'alienlabs-dev.yml')),
+    'aws':      await yaml.read(path.join(baseDir, 'aws/aws.yml')),
     'firebase': await yaml.read(path.join(baseDir, 'firebase/alienlabs-dev.yml')),
     'google':   await yaml.read(path.join(baseDir, 'google/alienlabs-dev.yml')),
   };

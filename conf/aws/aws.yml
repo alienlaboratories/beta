@@ -1,0 +1,13 @@
+#
+# AWS defs.
+#
+
+region: "us-east-1"
+
+users:
+  scheduler:
+
+    # Updated 07/16/17 (SQS Full Access)
+    # https://console.aws.amazon.com/iam/home?name=apps#/users
+    aws_access_key_id: "AKIAJVNWJ5KNNZYFJHIA"
+    aws_secret_access_key: "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"
