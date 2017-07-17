@@ -24,43 +24,48 @@ export class QueryCommand extends Command {
     super(config);
   }
 
-  exec(args) {
+  get command() {
+    return {
+      command: 'query <type>',
+      describe: 'Query GraphQL API.',
+      handler: Command.handler(argv => {
+        let query = DEFAULT_QUERY;
+        let variables = {};
 
-    let query = DEFAULT_QUERY;
-    let variables = {};
-
-    if (args.query_str) {
-      query = 'query SearchQuery($filter: FilterInput) { search(filter: $filter) { items { bucket, id, type, title } } }';
-      variables = {
-        filter: {
-          type: args.query_str
+        if (argv.type) {
+          query = 'query SearchQuery($filter: FilterInput) { search(filter: $filter) { items { bucket, id, type, title } } }';
+          variables = {
+            filter: {
+              type: argv.type
+            }
+          };
         }
-      };
-    }
 
-    return this.authenticate().then(token => {
-      let options = {
-        url: this.getUrl(API_URL),
-        headers: AuthUtil.setAuthHeader({
-          'Content-Type': 'application/json',
-        }, token),
-        body: JSON.stringify({
-          query,
-          variables
-        })
-      };
+        return this.authenticate().then(token => {
+          let options = {
+            url: this.getUrl(API_URL),
+            headers: AuthUtil.setAuthHeader({
+              'Content-Type': 'application/json',
+            }, token),
+            body: JSON.stringify({
+              query,
+              variables
+            })
+          };
 
-      return new Promise((resolve, reject) => {
-        request.post(options, (error, response, body) => {
-          if (error) {
-            reject(error);
-          } else {
-            let { data } = JSON.parse(body);
-            console.log(JSON.stringify(data, null, 2));
-            resolve(data);
-          }
+          return new Promise((resolve, reject) => {
+            request.post(options, (error, response, body) => {
+              if (error) {
+                reject(error);
+              } else {
+                let { data } = JSON.parse(body);
+                console.log(JSON.stringify(data, null, 2));
+                resolve(data);
+              }
+            });
+          });
         });
-      });
-    });
+      })
+    };
   }
 }

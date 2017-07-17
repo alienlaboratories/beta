@@ -16,12 +16,12 @@
     "alien-core": "0.0.1",
     "alien-services": "0.0.1",
     "alien-util": "0.0.1",
-    "argparse": "^1.0.9",
     "aws-sdk": "^2.85.0",
     "google-cli-auth": "^0.0.1",
     "lodash": "^4.17.4",
     "node-yaml": "^3.1.0",
-    "request": "^2.81.0"
+    "request": "^2.81.0",
+    "yargs": "^8.0.2"
   },
   "jest": {
     "verbose": false,

@@ -13,7 +13,13 @@ export class LoginCommand extends Command {
     super(config);
   }
 
-  exec(args) {
-    return this.authenticate();
+  get command() {
+    return {
+      command: 'login',
+      describe: 'Authenticate.',
+      handler: Command.handler(argv => {
+        return this.authenticate();
+      })
+    };
   }
 }

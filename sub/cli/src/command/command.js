@@ -12,10 +12,11 @@ import { Authenticator } from '../util/auth';
  */
 export class Command {
 
-  static of(config, callback) {
-    let command = new Command(config);
-    command.exec = callback.bind(command);
-    return command;
+  // TODO(burdon): Async? https://github.com/yargs/yargs/issues/918
+  static handler(handler) {
+    return (argv => {
+      argv._result = handler(argv);
+    });
   }
 
   constructor(config) {
@@ -25,6 +26,16 @@ export class Command {
 
   get config() {
     return this._config;
+  }
+
+  /**
+   * Returns yargs command module.
+   * https://github.com/yargs/yargs/blob/master/docs/advanced.md#providing-a-command-module
+   *
+   * @returns {{ command, aliases, describe, builder, handler }}
+   */
+  get command() {
+    return {};
   }
 
   getUrl(path) {

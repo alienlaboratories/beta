@@ -18,17 +18,23 @@ export class StatusCommand extends Command {
     super(config);
   }
 
-  exec(args) {
-    return new Promise((resolve, reject) => {
-      request(this.getUrl(STATUS_URL), (error, response, body) => {
-        if (error) {
-          reject(error);
-        } else {
-          let data = JSON.parse(body);
-          console.log(JSON.stringify(data, null, 2));
-          resolve(data);
-        }
-      });
-    });
+  get command() {
+    return {
+      command: 'status',
+      describe: 'Server status.',
+      handler: Command.handler(argv => {
+        return new Promise((resolve, reject) => {
+          request(this.getUrl(STATUS_URL), (error, response, body) => {
+            if (error) {
+              reject(error);
+            } else {
+              let data = JSON.parse(body);
+              console.log(JSON.stringify(data, null, 2));
+              resolve(data);
+            }
+          });
+        });
+      })
+    };
   }
 }

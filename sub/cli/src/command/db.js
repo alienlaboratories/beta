@@ -39,41 +39,48 @@ export class DatabaseCommand extends Command {
     this._loader = new Loader(this._database);
   }
 
-  exec(args) {
-    switch (args.db_command) {
+  get command() {
+    return {
+      command: 'db <cmd>',
+      describe: 'Database managment.',
+      builder: yargs => yargs
 
-      case 'users': {
-        return this._systemStore.queryItems({}, {}, { type: 'User' }).then(users => {
-          _.each(users, user => {
-            console.log(JSON.stringify(_.pick(user, 'id', 'email')));
+        .command('users', 'List users.', {}, Command.handler(argv => {
+          return this._systemStore.queryItems({}, {}, { type: 'User' }).then(users => {
+            console.log();
+            _.each(users, user => {
+              console.log(JSON.stringify(_.pick(user, 'id', 'email')));
+            });
           });
-        });
-      }
+        }))
 
-      case 'groups': {
-        return this._systemStore.queryItems({}, {}, { type: 'Group' }).then(users => {
-          _.each(users, user => {
-            console.log(JSON.stringify(_.pick(user, 'id', 'title')));
+        .command('groups', 'List groups.', {}, Command.handler(argv => {
+          return this._systemStore.queryItems({}, {}, { type: 'Group' }).then(users => {
+            console.log();
+            _.each(users, user => {
+              console.log(JSON.stringify(_.pick(user, 'id', 'title')));
+            });
           });
-        });
-      }
+        }))
 
-      case 'init': {
-        let data = fs.readFileSync(path.join(global.ENV.ALIEN_SERVER_DATA_DIR, 'accounts.json'), 'utf8');
-        return Promise.all([
-          this._loader.parse(JSON.parse(data), Database.NAMESPACE.SYSTEM, /^(Group)\.(.+)\.(.+)$/)
-        ]).then(() => {
-          return this._loader.initGroups();
-        });
-      }
+        .command('reset', 'Reset database.', {}, Command.handler(argv => {
+          return this._userDataStore.clear();
+        }))
 
-      case 'reset': {
-        return this._userDataStore.clear();
-      }
+        .command('init', 'Initialize database.', {}, Command.handler(argv => {
+          let data = fs.readFileSync(path.join(global.ENV.ALIEN_SERVER_DATA_DIR, 'accounts.json'), 'utf8');
+          return Promise.all([
+            this._loader.parse(JSON.parse(data), Database.NAMESPACE.SYSTEM, /^(Group)\.(.+)\.(.+)$/)
+          ]).then(() => {
+            return this._loader.initGroups();
+          });
+        }))
 
-      case 'testing': {
-        return new TestGenerator(this._database).generate();
-      }
-    }
+        .command('testing', 'Generate test data.', {}, Command.handler(argv => {
+          return new TestGenerator(this._database).generate();
+        }))
+
+        .help()
+    };
   }
 }

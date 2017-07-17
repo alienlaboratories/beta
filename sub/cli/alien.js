@@ -14,6 +14,8 @@ global.__DEVELOPMENT__    = __ENV__ === 'development';
 global.__TESTING__        = __ENV__ === 'testing';
 
 global.ENV = {
+  ALIEN_CONFIG_AWS: 'aws/aws.yml',
+
   ALIEN_CONFIG_FIREBASE: __PRODUCTION__ ? 'firebase/alienlabs-beta.yml' : 'firebase/alienlabs-dev.yml',
 
   ALIEN_CONFIG_GOOGLE: 'google/alienlabs-dev.yml',
@@ -26,6 +28,7 @@ global.ENV = {
 
 async function config(baseDir) {
   return await {
+    'aws':      await yaml.read(path.join(baseDir, global.ENV.ALIEN_CONFIG_AWS)),
     'firebase': await yaml.read(path.join(baseDir, global.ENV.ALIEN_CONFIG_FIREBASE)),
     'google':   await yaml.read(path.join(baseDir, global.ENV.ALIEN_CONFIG_GOOGLE)),
   };
