@@ -14,11 +14,9 @@ global.__DEVELOPMENT__    = __ENV__ === 'development';
 global.__TESTING__        = __ENV__ === 'testing';
 
 global.ENV = {
-  ALIEN_CONFIG_AWS: 'aws/aws.yml',
-
-  ALIEN_CONFIG_FIREBASE: __PRODUCTION__ ? 'firebase/alienlabs-beta.yml' : 'firebase/alienlabs-dev.yml',
-
-  ALIEN_CONFIG_GOOGLE: 'google/alienlabs-dev.yml',
+  ALIEN_CONFIG_AWS:       __PRODUCTION__ ? 'aws/aws-beta.yml'             : 'aws/aws-dev.yml',
+  ALIEN_CONFIG_FIREBASE:  __PRODUCTION__ ? 'firebase/alienlabs-beta.yml'  : 'firebase/alienlabs-dev.yml',
+  ALIEN_CONFIG_GOOGLE:    'google/alienlabs-dev.yml',
 
   ALIEN_SERVER_CONF_DIR: path.join(__dirname, '../../conf'),
   ALIEN_SERVER_DATA_DIR: path.join(__dirname, '../../data'),

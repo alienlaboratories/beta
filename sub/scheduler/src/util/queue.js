@@ -30,6 +30,18 @@ export class Queue {
     });
   }
 
+  static typeOf(value) {
+    if (_.isString(value)) {
+      return 'String';
+    } else if (_.isNumber(value)) {
+      return 'Number';
+    } else if (_.isBoolean(value)) {
+      return 'Binary';
+    } else {
+      throw new Error('Invalid value: ' + value)
+    }
+  }
+
   constructor(url) {
     console.assert(url);
     this._urn = url;
@@ -39,16 +51,27 @@ export class Queue {
   /**
    * Adds a task.
    *
-   * @param {{}} task
+   * @param {{ type }} attributes
+   * @param {Object} data
    * @returns {Promise}
    */
-  add(task, attributes) {
-    // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#sendMessage-property
+  add(attributes, data={}) {
     return Queue.promisify(callback => {
-      logger.log('Adding task: ' + TypeUtil.stringify(task));
+      logger.log('Adding task: ' + TypeUtil.stringify(attributes));
+
+      // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#sendMessage-property
       this._sqs.sendMessage({
         QueueUrl: this._url,
-        MessageBody: JSON.stringify(task)
+
+        MessageAttributes: _.zipObject(_.map(attributes, (value, key) => [
+          key,
+          {
+            DataType: Queue.typeOf(value),
+            [ Queue.typeOf(value) + 'Value' ]: value
+          }
+        ])),
+
+        MessageBody: JSON.stringify(data)
       }, callback);
     });
   }
@@ -60,10 +83,12 @@ export class Queue {
    * @returns {Queue}
    */
   process(handler) {
-    // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#receiveMessage-property
     return Queue.promisify(callback => {
+
+      // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#receiveMessage-property
       this._sqs.receiveMessage({
         QueueUrl: this._url,
+        AttributeNames: 'All',
         MaxNumberOfMessages: 1,
         VisibilityTimeout: 60,
         WaitTimeSeconds: 60                               // TODO(burdon): Loop.
@@ -75,17 +100,19 @@ export class Queue {
 
       let { Messages } = data;
       return Promise.all(_.map(Messages, message => {
-        let { ReceiptHandle, Body } = message;
+        let { ReceiptHandle, MessageAttributes, Body } = message;
 
-        // Process task.
-        let task = JSON.parse(Body);
-        return handler(task).then(() => {
+        let { type } = MessageAttributes;
+        let data = JSON.parse(Body);
+
+        return handler(data).then(() => {
 
           // Remove the task.
           // NOTE: Tasks must be idempotent.
           // TODO(burdon): Check didn't timeout.
-          // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#deleteMessage-property
           return Queue.promisify(callback => {
+
+            // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#deleteMessage-property
             this._sqs.deleteMessage({
               QueueUrl: this._url,
               ReceiptHandle

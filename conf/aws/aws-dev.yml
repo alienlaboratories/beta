@@ -13,4 +13,4 @@ users:
     aws_secret_access_key: "Q/LSXGwTKs6MSdtDWRnvRPGzBLhaAxKM8Vp4E0pj"
 
 sqs:
-  tasks: "https://queue.amazonaws.com/861694698401/TaskQueue"
+  tasks: "https://sqs.us-east-1.amazonaws.com/861694698401/alien-dev-tasks"

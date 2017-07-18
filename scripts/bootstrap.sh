@@ -41,4 +41,6 @@ done
 # TODO(burdon): https://github.com/lerna/lerna/issues/889
 # yarn
 
+npm update
+
 echo "OK: $(date) [$(( SECONDS - start ))s]"

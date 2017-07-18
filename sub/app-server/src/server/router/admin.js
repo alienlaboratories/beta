@@ -75,6 +75,7 @@ export const adminRouter = (config, systemStore, clientManager, options) => {
 
       case 'task': {
         let { task } = req.body;
+        let { type, userId } = task;
 
         // TODO(burdon): List users.
         // TODO(burdon): Send userIds and client maps with task.
@@ -82,10 +83,14 @@ export const adminRouter = (config, systemStore, clientManager, options) => {
 
         return clientManager.getClients().then(clients => {
           return queue.add({
-            task,
+            type,
+            userId,
 
-            // TODO(burdon): Temp send client map (until persistent and can be accessed by scheduler.
-            clients: _.map(clients, client => _.pick(client, 'userId', 'platform', 'messageToken'))
+            data: {
+
+              // TODO(burdon): Temp send client map (until persistent and can be accessed by scheduler.
+              clients: _.map(clients, client => _.pick(client, 'userId', 'platform', 'messageToken'))
+            }
           }).then(ok);
         });
       }

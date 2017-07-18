@@ -49,7 +49,7 @@
     function sync(service, userId) {
       Site.postJson('/admin/api', {
         action: 'task',
-        task: 'sync.' + service,
+        type: 'sync.' + service,
         userId
       }).then(() => {
         console.log('OK');

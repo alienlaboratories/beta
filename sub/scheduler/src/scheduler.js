@@ -27,7 +27,7 @@ const logger = Logger.get('scheduler');
 async function config(baseDir) {
   return await {
     'alien':    await yaml.read(path.join(baseDir, 'alienlabs-dev.yml')),
-    'aws':      await yaml.read(path.join(baseDir, 'aws/aws.yml')),
+    'aws':      await yaml.read(path.join(baseDir, 'aws/aws-dev.yml')),
     'firebase': await yaml.read(path.join(baseDir, 'firebase/alienlabs-dev.yml')),
     'google':   await yaml.read(path.join(baseDir, 'google/alienlabs-dev.yml')),
   };
@@ -37,6 +37,8 @@ config(CONF_DIR).then(config => {
   let idGenerator = new IdGenerator();
   let matcher = new Matcher();
 
+  // AWS config.
+  // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Config.html#constructor-property
   AWS.config.update({
     region:           _.get(config, 'aws.region'),
     accessKeyId:      _.get(config, 'aws.users.scheduler.aws_access_key_id'),
@@ -76,18 +78,19 @@ config(CONF_DIR).then(config => {
     }
   };
 
+  // Process tasks.
+  // TODO(burdon): Loop.
   queue.process((data, attributes) => {
 
     // TODO(burdon): Get meta data from message attributes.
-    // let { type } = attributes;
-    //
-    // let taskHandler = _.get(tasks, task);
-    // if (!taskHandler) {
-    //   return Promise.reject(new Error('Invalid task:', TypeUtil.stringify(data)));
-    // }
-    //
-    // return taskHandler.execTask(data);
+    let { type } = attributes;
 
+    let taskHandler = _.get(tasks, type);
+    if (!taskHandler) {
+      return Promise.reject(new Error('Invalid task:', TypeUtil.stringify(data)));
+    }
+
+    return taskHandler.execTask(data, attributes);
   });
 
   logger.info('Scheduler =', TypeUtil.stringify(config, 2));
