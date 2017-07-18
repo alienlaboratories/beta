@@ -3,102 +3,96 @@
 //
 
 import _ from 'lodash';
-import BullQueue from 'bull';
+import AWS from 'aws-sdk';
 
-import { ErrorUtil, Logger, TypeUtil } from 'alien-util';
+import { Logger, TypeUtil } from 'alien-util';
 
 const logger = Logger.get('queue');
-
-// TODO(burdon): Kill this and SQS. No need for Redis.
 
 /**
  * Queue wrapper (Bull implementation).
  */
 export class Queue {
 
-  // https://github.com/luin/ioredis/blob/master/API.md#new-redisport-host-options
-  static DEF_OPTS = {
-    host: '127.0.0.1',
-    port: 6379,
+  // TODO(burdon): Test from CLI.
+  // TODO(burdon): System test.
 
-    redis: {
-      db: 0,
-
-      // NOTE Called for each connection.
-      // https://github.com/luin/ioredis#auto-reconnect
-      retryStrategy: (attempt) => {
-        logger.warn('Redis connection retry:', attempt);
-
-        // Back-off.
-        return Math.min(attempt * 100, 3000);
-      }
-    }
-  };
-
-  static TEST_OPS = {
-    redis: {
-      retryStrategy: (attempt) => false
-    }
-  };
-
-  constructor(name, options) {
-
-    // NOTE: ioredis (not redis).
-    // https://github.com/luin/ioredis/blob/master/API.md
-    // https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue
-    this._queue = new BullQueue(name, _.defaultsDeep(options, Queue.DEF_OPTS));
-
-    // https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#events
-    this._queue.on('ready', () => {
-      logger.info('Ready'); // TODO(burdon): Not called.
-    });
-
-    this._queue.on('error', (err) => {
-      logger.error('Error:', ErrorUtil.message(err));
-    });
-
-    this._queue.on('failed', (job, err) => {
-      logger.error(`Failed[${job.id}]:`, ErrorUtil.message(err), TypeUtil.stringify(job.data));
-      logger.error(err);
-    });
-
-    this._queue.on('completed', (job, result) => {
-      logger.log(`Complete[${job.id}]:`, TypeUtil.stringify(result));
+  // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html
+  static promisify(f) {
+    return new Promise((resolve, reject) => {
+      f((err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(data);
+        }
+      });
     });
   }
 
+  constructor(url) {
+    console.assert(url);
+    this._urn = url;
+    this._sqs = new AWS.SQS();
+  }
+
   /**
-   * Adds a job.
+   * Adds a task.
    *
-   * @param value
+   * @param {{}} task
    * @returns {Promise}
    */
-  add(value) {
-    return this._queue.add(value).then(job => {
-      logger.log(`Added[${job.id}]`, TypeUtil.stringify(value));
-      return job;
+  add(task, attributes) {
+    // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#sendMessage-property
+    return Queue.promisify(callback => {
+      logger.log('Adding task: ' + TypeUtil.stringify(task));
+      this._sqs.sendMessage({
+        QueueUrl: this._url,
+        MessageBody: JSON.stringify(task)
+      }, callback);
     });
   }
 
   /**
    * Sets the job processor.
    *
-   * @param {function.<{Data}, {Job}>} handler
+   * @param {function.<{Data}>} handler Handler returns a promise.
    * @returns {Queue}
    */
   process(handler) {
-    this._queue.process(job => {
-      logger.log(`Processing[${job.id}]:`, TypeUtil.stringify(job.data));
-      return Promise.resolve(handler(job.data, job));
-    });
+    // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#receiveMessage-property
+    return Queue.promisify(callback => {
+      this._sqs.receiveMessage({
+        QueueUrl: this._url,
+        MaxNumberOfMessages: 1,
+        VisibilityTimeout: 60,
+        WaitTimeSeconds: 60                               // TODO(burdon): Loop.
+      }, callback);
+    }).then(data => {
+      if (!data) {
+        return Promise.resolve(0);
+      }
 
-    return this;
-  }
+      let { Messages } = data;
+      return Promise.all(_.map(Messages, message => {
+        let { ReceiptHandle, Body } = message;
 
-  /**
-   * Release the connection.
-   */
-  close() {
-    this._queue.close();
+        // Process task.
+        let task = JSON.parse(Body);
+        return handler(task).then(() => {
+
+          // Remove the task.
+          // NOTE: Tasks must be idempotent.
+          // TODO(burdon): Check didn't timeout.
+          // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#deleteMessage-property
+          return Queue.promisify(callback => {
+            this._sqs.deleteMessage({
+              QueueUrl: this._url,
+              ReceiptHandle
+            }, callback);
+          }).then(() => ReceiptHandle);
+        });
+      }));
+    }).then(values => _.size(values));
   }
 }

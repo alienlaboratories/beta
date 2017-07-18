@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-QUEUE=https://queue.amazonaws.com/861694698401/TaskQueue
+QUEUE="https://queue.amazonaws.com/861694698401/TaskQueue"
 
-FILE=/tmp/aws_sqs_message.json
+FILE="/tmp/aws_sqs_message.json"
 
 #
 # Payload

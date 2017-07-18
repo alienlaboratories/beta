@@ -3,6 +3,7 @@
 //
 
 import _ from 'lodash';
+import AWS from 'aws-sdk';
 import path from 'path';
 import yaml from 'node-yaml';
 
@@ -36,6 +37,12 @@ config(CONF_DIR).then(config => {
   let idGenerator = new IdGenerator();
   let matcher = new Matcher();
 
+  AWS.config.update({
+    region:           _.get(config, 'aws.region'),
+    accessKeyId:      _.get(config, 'aws.users.scheduler.aws_access_key_id'),
+    secretAccessKey:  _.get(config, 'aws.users.scheduler.aws_secret_access_key')
+  });
+
   // System store (to look-up credentials).
   let firebase = new Firebase(_.get(config, 'firebase'));
 
@@ -56,8 +63,11 @@ config(CONF_DIR).then(config => {
     serverKey: _.get(config, 'firebase.cloudMessaging.serverKey')
   });
 
+  // Queue.
+  let queue = new Queue(_.get(config, 'aws.sqs.tasks'));
+
   // Task registry.
-  let tasks = {
+  const tasks = {
     sync: {
       google: {
         calendar:   new GoogleCalendarSyncTask(config, database, pushManager),
@@ -66,18 +76,18 @@ config(CONF_DIR).then(config => {
     }
   };
 
-  // Queue.
-  let queueConfig = _.get(config, 'alien.queue', {});
-  let queue = new Queue(queueConfig.name, queueConfig.options);
+  queue.process((data, attributes) => {
 
-  queue.process(data => {
-    let { task } = data;
-    let taskHandler = _.get(tasks, task);
-    if (!taskHandler) {
-      throw new Error('Invalid task:', TypeUtil.stringify(data));
-    }
+    // TODO(burdon): Get meta data from message attributes.
+    // let { type } = attributes;
+    //
+    // let taskHandler = _.get(tasks, task);
+    // if (!taskHandler) {
+    //   return Promise.reject(new Error('Invalid task:', TypeUtil.stringify(data)));
+    // }
+    //
+    // return taskHandler.execTask(data);
 
-    return taskHandler.execTask(data);
   });
 
   logger.info('Scheduler =', TypeUtil.stringify(config, 2));

@@ -6,10 +6,3 @@ loggly:
   # https://alienlabs.loggly.com/tokens
   subdomain: 'alienlabs'
   token: "b41d441c-3131-4d28-9946-96ee95615221"
-
-queue:
-  active: true
-  name: 'tasks'
-  options:
-    host: "redis"       # TODO(burdon): DNS? Test on minikube.
-    port: 6379

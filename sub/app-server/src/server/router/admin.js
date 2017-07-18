@@ -7,10 +7,6 @@ import express from 'express';
 
 import { ExpressUtil, Logger } from 'alien-util';
 
-// TODO(burdon): Webpack fails.
-// Module not found: Error: Can't resolve 'hiredis'
-// https://github.com/liady/webpack-node-externals/issues/34
-// https://github.com/NodeRedis/node_redis/issues/790
 import { Queue } from 'alien-scheduler';
 
 import { isAuthenticated } from 'alien-services';
@@ -24,11 +20,7 @@ export const adminRouter = (config, systemStore, clientManager, options) => {
   console.assert(config && clientManager && options);
   let router = express.Router();
 
-  let queue;
-  let queueConfig = _.get(config, 'alien.queue', {});
-  if (queueConfig.active) {
-    queue = new Queue(queueConfig.name, queueConfig.options);
-  }
+  let queue = new Queue(_.get(config, 'aws.sqs.tasks'));
 
   //
   // Admin pages.
@@ -89,7 +81,7 @@ export const adminRouter = (config, systemStore, clientManager, options) => {
         // let users = await this._database.getQueryProcessor(Database.NAMESPACE.SYSTEM).queryItems({}, {}, { type: 'User' });
 
         return clientManager.getClients().then(clients => {
-          return queue && queue.add({
+          return queue.add({
             task,
 
             // TODO(burdon): Temp send client map (until persistent and can be accessed by scheduler.

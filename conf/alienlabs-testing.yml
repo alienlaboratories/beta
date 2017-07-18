@@ -6,6 +6,3 @@ loggly:
   # https://alienlabs.loggly.com/tokens
   subdomain: 'alienlabs'
   token: "b41d441c-3131-4d28-9946-96ee95615221"
-
-queue:
-  active: false

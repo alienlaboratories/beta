@@ -17,6 +17,9 @@ export class App {
     // TODO(burdon): '*' default command.
     // https://github.com/yargs/yargs/blob/master/docs/advanced.md#commands
     this._yargs = yargs
+      .option('env', {
+        default: 'dev'
+      })
       .exitProcess(false)
       .help();
 

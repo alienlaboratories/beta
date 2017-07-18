@@ -11,3 +11,6 @@ users:
     # https://console.aws.amazon.com/iam/home?name=apps#/users
     aws_access_key_id: "AKIAJVNWJ5KNNZYFJHIA"
     aws_secret_access_key: "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"
+
+sqs:
+  tasks: "https://queue.amazonaws.com/861694698401/TaskQueue"
