@@ -38,13 +38,13 @@ export class Queue {
     } else if (_.isBoolean(value)) {
       return 'Binary';
     } else {
-      throw new Error('Invalid value: ' + value)
+      throw new Error('Invalid value: ' + value);
     }
   }
 
   constructor(url) {
     console.assert(url);
-    this._urn = url;
+    this._url = url;
     this._sqs = new AWS.SQS();
   }
 
@@ -59,18 +59,18 @@ export class Queue {
     return Queue.promisify(callback => {
       logger.log('Adding task: ' + TypeUtil.stringify(attributes));
 
+      let MessageAttributes = {};
+      _.each(attributes, (value, key) => {
+        MessageAttributes[key] = {
+          DataType: Queue.typeOf(value),
+          [ Queue.typeOf(value) + 'Value' ]: value
+        };
+      });
+
       // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#sendMessage-property
       this._sqs.sendMessage({
         QueueUrl: this._url,
-
-        MessageAttributes: _.zipObject(_.map(attributes, (value, key) => [
-          key,
-          {
-            DataType: Queue.typeOf(value),
-            [ Queue.typeOf(value) + 'Value' ]: value
-          }
-        ])),
-
+        MessageAttributes,
         MessageBody: JSON.stringify(data)
       }, callback);
     });
@@ -102,10 +102,9 @@ export class Queue {
       return Promise.all(_.map(Messages, message => {
         let { ReceiptHandle, MessageAttributes, Body } = message;
 
-        let { type } = MessageAttributes;
         let data = JSON.parse(Body);
 
-        return handler(data).then(() => {
+        return handler(MessageAttributes, data).then(() => {
 
           // Remove the task.
           // NOTE: Tasks must be idempotent.

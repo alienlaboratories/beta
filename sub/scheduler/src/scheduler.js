@@ -80,9 +80,7 @@ config(CONF_DIR).then(config => {
 
   // Process tasks.
   // TODO(burdon): Loop.
-  queue.process((data, attributes) => {
-
-    // TODO(burdon): Get meta data from message attributes.
+  queue.process((attributes, data) => {
     let { type } = attributes;
 
     let taskHandler = _.get(tasks, type);

@@ -11,7 +11,6 @@ export * from './src/data/testing';
 
 export * from './src/db/firebase/firebase';
 export * from './src/db/firebase/firebase_item_store';
-//export * from './db/src/redis/redis_item_store';
 
 export * from './src/push/push';
 

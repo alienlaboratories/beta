@@ -30,13 +30,14 @@ export class QueryCommand extends Command {
       describe: 'Query GraphQL API.',
       handler: Command.handler(argv => {
         let query = DEFAULT_QUERY;
+        let { type } = argv;
         let variables = {};
 
         if (argv.type) {
           query = 'query SearchQuery($filter: FilterInput) { search(filter: $filter) { items { bucket, id, type, title } } }';
           variables = {
             filter: {
-              type: argv.type
+              type
             }
           };
         }

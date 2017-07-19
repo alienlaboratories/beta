@@ -5,6 +5,8 @@
 import _ from 'lodash';
 import AWS from 'aws-sdk';
 
+import { Queue } from 'alien-scheduler';
+
 import { Command } from './command';
 
 /**
@@ -15,14 +17,12 @@ export class TaskCommand extends Command {
   constructor(config) {
     super(config);
 
-    // TODO(burdon): Use scheduler queue (instead of AWS).
-
     // https://aws.amazon.com/sdk-for-node-js
     // http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/webpack.html
-
     // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Config.html#constructor-property
     // http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html
 
+    // TODO(burdon): Different instance?
     AWS.config.update({
       region:           _.get(config, 'aws.region'),
       accessKeyId:      _.get(config, 'aws.users.scheduler.aws_access_key_id'),
@@ -30,6 +30,8 @@ export class TaskCommand extends Command {
     });
 
     this._sqs = new AWS.SQS();
+
+    this._queue = new Queue(_.get(config, 'aws.sqs.tasks'));
   }
 
   get command() {
@@ -51,6 +53,17 @@ export class TaskCommand extends Command {
                   resolve();
                 }
               });
+            });
+          })
+        })
+
+        .command({
+          command: 'add <type>',
+          describe: 'Add task.',
+          handler: Command.handler(argv => {
+            let { type } = argv;
+            return this._queue.add({
+              type
             });
           })
         })
