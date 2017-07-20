@@ -93,6 +93,14 @@ pip install --upgrade virtualenv
 pip install --upgrade --user awscli
 
 #
+# GCloud
+# https://cloud.google.com/sdk/docs/quickstart-mac-os-x
+# curl https://sdk.cloud.google.com | bash
+#
+
+gcloud components update
+
+#
 # Extensions:
 # https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm
 # https://chrome.google.com/webstore/detail/chrome-apps-extensions-de/ohmmkhmmmpcnpikjeljgnaoabkaalbgc

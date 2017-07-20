@@ -44,7 +44,7 @@ const sites = {
     home: 'sites/minderlabs',
     defs: {
       css: '/css/minderlabs.css',
-      title: 'Minder Labs'
+      title: 'Alien Labs'
     }
   },
 

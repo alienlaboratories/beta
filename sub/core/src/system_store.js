@@ -133,23 +133,6 @@ export class SystemStore extends DelegateItemStore {
   }
 
   /**
-   * Update the user record's credentials.
-   * NOTE: The GraphQL User definition is a projection of part of this data.
-   * For example, credentials are not exposed through the GQL API.
-   */
-  static updateUser(user, credentials=undefined) {
-    if (credentials) {
-      let { provider } = credentials;
-
-      _.set(user, `credentials.${SystemStore.sanitizeKey(provider)}`, _.omit(credentials, ['provider']));
-    } else {
-      user.active = false;
-    }
-
-    return user;
-  }
-
-  /**
    * Upsert Firebase User Account.
    *
    * Cases:

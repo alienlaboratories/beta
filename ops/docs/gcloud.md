@@ -32,14 +32,11 @@
     gcloud beta pubsub subscriptions list
 ~~~~
 
-4. Subscribe user:
+4. Grant permissions:
+- https://console.cloud.google.com/cloudpubsub/topics/g-mail?project=alienlabs-dev
+    - Select topic.
+    - Add `Pub/Sub Publisher` permission for `serviceAccount:gmail-api-push@system.gserviceaccount.com`
+
+5. Use GMail API (users.watch) to send notifications to topic:
 - Gmail API watch call to send Gmail notifications to the topic.
 - https://developers.google.com/gmail/api/guides/push#getting_gmail_mailbox_updates
-
-
-
-TODO(burdon): Register user (from profile).
-TODO(burdon): Create webhook.
-TODO(burdon): Send message.
-TODO(burdon): Process message.
-TODO(burdon): Notify clients.

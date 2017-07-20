@@ -31,6 +31,41 @@ export class GoogleMailClient {
     this._mail = google.gmail('v1');
   }
 
+  /**
+   * Pub/Sub subscription.
+   *
+   * @param authClient
+   * @param topic
+   * @returns {Promise}
+   */
+  watch(authClient, topic) {
+    logger.log('Watch inbox: ' + topic);
+    return new Promise((resolve, reject) => {
+      let params = {
+        auth: authClient,
+        userId: 'me',
+        resource: {                   // NOTE: Corresponds to request body (undocumented).
+          topicName: topic,
+          labels: ['INBOX']
+        }
+      };
+
+      // NOTE: See source for googleapis module (not documented).
+      // https://developers.google.com/gmail/api/v1/reference/users/watch
+      // https://developers.google.com/gmail/api/guides/push#watch_request
+      this._mail.users.watch(params, (err, response) => {
+        if (err) {
+          // ERROR: User not authorized to perform this action.
+          // Add `Pub/Sub Publisher` permission for `serviceAccount:gmail-api-push@system.gserviceaccount.com`
+          // https://console.cloud.google.com/cloudpubsub/topics
+          reject(err.message);
+        } else {
+          resolve(_.pick(response, ['historyId', 'expiration']));
+        }
+      });
+    });
+  }
+
   list(authClient, query, maxResults) {
     return new Promise((resolve, reject) => {
 
@@ -99,9 +134,6 @@ export class GoogleMailClient {
       logger.log('Results: ' + items.length);
       return _.map(items, item => GoogleMailClient.toItem(item));
     });
-
-    // TODO(burdon): Batch getting messages.
-    // https://developers.google.com/api-client-library/javascript/features/batch
   }
 
   /**
@@ -112,13 +144,16 @@ export class GoogleMailClient {
 
     return new Promise((resolve, reject) => {
 
+      // TODO(burdon): Batch getting messages.
+      // https://developers.google.com/api-client-library/javascript/features/batch
       // TODO(burdon): See framework gmail.py
+      // TODO(burdon): Match labelIds and sync query within tokens.
       // https://www.npmjs.com/package/node-gmail-api
       // https://github.com/pradeep-mishra/google-batch/blob/master/index.js
-      // TODO(burdon): Match labelIds and sync query within tokens.
+
+      // https://developers.google.com/gmail/api/guides/sync
       // https://developers.google.com/gmail/api/v1/reference/users/messages/list
       // https://developers.google.com/apis-explorer/#p/gmail/v1/gmail.users.messages.list?userId=me
-      // https://developers.google.com/gmail/api/guides/sync
       let params = {
         auth: authClient,
         userId: 'me',

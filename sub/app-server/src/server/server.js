@@ -55,6 +55,7 @@ import {
 import { adminRouter } from './router/admin';
 import { appRouter } from './router/app';
 import { clientRouter, ClientManager } from './router/client';
+import { profileRouter } from './router/profile';
 import { hotRouter } from './router/hot';
 import { loggingRouter } from './router/log';
 
@@ -223,6 +224,9 @@ export class AppServer {
 
     // Client registration.
     this._app.use('/client', clientRouter(this._userManager, this._clientManager, this._systemStore));
+
+    // Profile.
+    this._app.use('/profile', profileRouter(this._config, this._systemStore));
   }
 
   /**

@@ -19,3 +19,10 @@ web:
 cli:
   clientId: "933786919888-5p4cnpnqb1fjnkikq6ge6opqu2iljne7.apps.googleusercontent.com"
   clientSecret: "cc0vDu-8rQ6PER7Q012iE10g"
+
+# gcloud auth login
+# gcloud config set project alienlabs-dev
+# gcloud beta pubsub topics list
+pubsub:
+  topic:
+    gmail: "projects/alienlabs-dev/topics/g-mail"
