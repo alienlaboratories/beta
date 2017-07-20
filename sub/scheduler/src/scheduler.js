@@ -12,6 +12,7 @@ import { Database, IdGenerator, Matcher, SystemStore } from 'alien-core';
 import { Firebase, FirebaseItemStore, PushManager } from 'alien-services';
 
 import { Queue } from './util/queue';
+import { Task } from './task';
 
 import { GoogleCalendarSyncTask, GoogleMailSyncTask } from './tasks/sync/google';
 
@@ -34,6 +35,8 @@ async function config(baseDir) {
 }
 
 config(CONF_DIR).then(config => {
+  logger.info('Scheduler =', TypeUtil.stringify(config, 2));
+
   let idGenerator = new IdGenerator();
   let matcher = new Matcher();
 
@@ -60,36 +63,68 @@ config(CONF_DIR).then(config => {
     .registerQueryProcessor(systemStore)
     .registerQueryProcessor(userDataStore);
 
-  // Notifications.
   let pushManager = new PushManager({
     serverKey: _.get(config, 'firebase.cloudMessaging.serverKey')
   });
 
-  // Queue.
-  let queue = new Queue(_.get(config, 'aws.sqs.tasks'));
-
-  // Task registry.
-  const tasks = {
-    sync: {
-      google: {
-        calendar:   new GoogleCalendarSyncTask(config, database, pushManager),
-        mail:       new GoogleMailSyncTask(config, database, pushManager),
-      }
-    }
-  };
-
-  // Process tasks.
-  // TODO(burdon): Loop.
-  queue.process((attributes, data) => {
-    let { type } = attributes;
-
-    let taskHandler = _.get(tasks, type);
-    if (!taskHandler) {
-      return Promise.reject(new Error('Invalid task:', TypeUtil.stringify(data)));
-    }
-
-    return taskHandler.execTask(data, attributes);
-  });
-
-  logger.info('Scheduler =', TypeUtil.stringify(config, 2));
+  new Scheduler(config)
+    .registerHandler('test',                  new TestTask())
+    .registerHandler('sync.google.calendar',  new GoogleCalendarSyncTask(config, database, pushManager))
+    .registerHandler('sync.google.mail',      new GoogleMailSyncTask(config, database, pushManager))
+    .start();
 });
+
+/**
+ * Test task.
+ */
+class TestTask extends Task {
+
+  async execTask(data) {
+    console.log('Test: ' + JSON.stringify(data));
+  }
+}
+
+/**
+ * Task scheduler.
+ */
+class Scheduler {
+
+  // TODO(burdon): Generalize Queue processor.
+
+  constructor(config) {
+    this._handlers = new Map();
+    this._queue = new Queue(_.get(config, 'aws.sqs.tasks'));
+    this._running = false;
+  }
+
+  registerHandler(type, handler) {
+    this._handlers.set(type, handler);
+    return this;
+  }
+
+  async processTask() {
+    return this._queue.process((attributes, data) => {
+      let { type } = attributes;
+
+      let taskHandler = this._handlers.get(type);
+      if (!taskHandler) {
+        return Promise.reject(new Error('Invalid task:', type));
+      }
+
+      console.log('Processing:', type, JSON.stringify(data));
+      return taskHandler.execTask(data);
+    });
+  }
+
+  async start() {
+    this._running = true;
+
+    while (this._running) {
+      await this.processTask();
+    }
+  }
+
+  stop() {
+    this._running = false;
+  }
+}

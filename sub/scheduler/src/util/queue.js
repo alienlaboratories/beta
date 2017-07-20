@@ -42,6 +42,42 @@ export class Queue {
     }
   }
 
+  static objectToAttributes(object) {
+    console.assert(object);
+
+    let attributes = {};
+    _.each(object, (value, key) => {
+      attributes[key] = {
+        DataType: Queue.typeOf(value),
+        [ Queue.typeOf(value) + 'Value' ]: value
+      };
+    });
+
+    return attributes;
+  }
+
+  static attributesToObject(attributes) {
+    console.assert(attributes);
+
+    let object = {};
+    _.each(attributes, (data, key) => {
+      let value;
+      switch (data.DataType) {
+        case 'String': {
+          value = data.StringValue;
+          break;
+        }
+
+        default:
+          throw new Error('Type not handled: ' + data.DataType);
+      }
+
+      object[key] = value;
+    });
+
+    return object;
+  }
+
   constructor(url) {
     console.assert(url);
     this._url = url;
@@ -59,18 +95,10 @@ export class Queue {
     return Queue.promisify(callback => {
       logger.log('Adding task: ' + TypeUtil.stringify(attributes));
 
-      let MessageAttributes = {};
-      _.each(attributes, (value, key) => {
-        MessageAttributes[key] = {
-          DataType: Queue.typeOf(value),
-          [ Queue.typeOf(value) + 'Value' ]: value
-        };
-      });
-
       // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#sendMessage-property
       this._sqs.sendMessage({
         QueueUrl: this._url,
-        MessageAttributes,
+        MessageAttributes: Queue.objectToAttributes(attributes),
         MessageBody: JSON.stringify(data)
       }, callback);
     });
@@ -79,19 +107,20 @@ export class Queue {
   /**
    * Sets the job processor.
    *
-   * @param {function.<{Data}>} handler Handler returns a promise.
+   * @param {function.<{Attributes, Data}>} handler Handler returns a promise.
    * @returns {Queue}
    */
   process(handler) {
     return Queue.promisify(callback => {
+      console.log('Receiving...');
 
       // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#receiveMessage-property
       this._sqs.receiveMessage({
         QueueUrl: this._url,
-        AttributeNames: 'All',
+        MessageAttributeNames: ['All'],
         MaxNumberOfMessages: 1,
         VisibilityTimeout: 60,
-        WaitTimeSeconds: 60
+        WaitTimeSeconds: 20
       }, callback);
 
     }).then(data => {
@@ -103,9 +132,10 @@ export class Queue {
       return Promise.all(_.map(Messages, message => {
         let { ReceiptHandle, MessageAttributes, Body } = message;
 
+        let attributes = Queue.attributesToObject(MessageAttributes);
         let data = JSON.parse(Body);
 
-        return handler(MessageAttributes, data).then(() => {
+        return handler(attributes, data).then(() => {
 
           // Remove the task.
           // NOTE: Tasks must be idempotent.
@@ -117,6 +147,7 @@ export class Queue {
               QueueUrl: this._url,
               ReceiptHandle
             }, callback);
+
           }).then(() => ReceiptHandle);
         });
       }));
