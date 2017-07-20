@@ -1,5 +1,22 @@
 # AWS
 
+## Create AWS Root Account
+
+- Create Corporate Account
+  - https://956243632840.signin.aws.amazon.com/console
+  - Set-up billing
+  - Change org name and email address
+    - My Account 
+      - Edit IAM User: Activate IAM Access 
+  - Customize link
+    - https://alienlabs.signin.aws.amazon.com/console
+  - Set-up password policy and MFA for root account
+
+- Create Users and Groups
+  - Users for people (Console access)  
+  - Users for bots (API access)
+
+
 ## Install AWS CLI.
 
 * Install the AWS command line tools following the
@@ -46,3 +63,4 @@ To test the credentials:
 ```
 aws iam get-user
 ```
+zA{yKgRqgRpmF8JE

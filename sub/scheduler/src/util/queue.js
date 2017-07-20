@@ -91,7 +91,7 @@ export class Queue {
         AttributeNames: 'All',
         MaxNumberOfMessages: 1,
         VisibilityTimeout: 60,
-        WaitTimeSeconds: 60                               // TODO(burdon): Loop.
+        WaitTimeSeconds: 60
       }, callback);
 
     }).then(data => {

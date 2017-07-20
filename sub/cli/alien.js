@@ -33,7 +33,6 @@ async function config(baseDir) {
 }
 
 config(global.ENV.ALIEN_SERVER_CONF_DIR).then(config => {
-//console.log(JSON.stringify(config, null, 2));
   new App(config).start().then(() => {
     // TODO(burdon): Close resources.
     process.exit(0);

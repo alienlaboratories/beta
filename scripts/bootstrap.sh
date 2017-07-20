@@ -27,13 +27,11 @@ fi
 
 #===============================================================================
 # Bootstrap.
+# NOTE: Hoist is required (for server apps) to ensure there aren't multiple
+# copies of modules across different packages (esp. important for graphql, aws-sdk).
 #===============================================================================
 
-# NOTE: hoist is required for node (server) apps (client can us webpack alias).
 lerna bootstrap --hoist
-
-# TODO(burdon): Bug installing app-server/winston.
-#lerna ls | cut -d' ' -f1 | xargs lerna bootstrap --hoist --scope
 
 #MODULES=$(lerna ls | cut -d' ' -f1)
 #for i in ${MODULES};
