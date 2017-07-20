@@ -93,6 +93,7 @@ export class Queue {
         VisibilityTimeout: 60,
         WaitTimeSeconds: 60                               // TODO(burdon): Loop.
       }, callback);
+
     }).then(data => {
       if (!data) {
         return Promise.resolve(0);
