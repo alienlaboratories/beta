@@ -20,7 +20,6 @@
     "webpack": "^2.7.0"
   },
   "dependencies": {
-    "@google-cloud/language": "^0.10.3",
     "alien-api": "0.0.1",
     "alien-core": "0.0.1",
     "alien-util": "0.0.1",

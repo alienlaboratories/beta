@@ -18,6 +18,8 @@
     "alien-services": "0.0.1",
     "alien-util": "0.0.1",
     "aws-sdk": "^2.85.0",
+    "@google-cloud/language": "^0.10.3",
+    "@google-cloud/pubsub": "^0.13.2",
     "google-cli-auth": "^0.0.1",
     "lodash": "^4.17.4",
     "node-yaml": "^3.1.0",

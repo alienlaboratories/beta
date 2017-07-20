@@ -6,7 +6,14 @@ import _ from 'lodash';
 import readline from 'readline';
 import yargs from 'yargs';
 
-import { DatabaseCommand, LoginCommand, QueryCommand, StatusCommand, QueueCommand } from './command';
+import {
+  DatabaseCommand,
+  GCloudCommand,
+  LoginCommand,
+  QueueCommand,
+  QueryCommand,
+  StatusCommand,
+} from './command';
 
 /**
  * Command line app.
@@ -24,7 +31,7 @@ export class App {
       })
 
       // TODO(burdon): Verbose.
-//    console.log(JSON.stringify(config, null, 2));
+      // console.log(JSON.stringify(config, null, 2));
       .option('verbose', {
         default: false
       })
@@ -33,9 +40,10 @@ export class App {
 
     // Config modules.
     _.each([
+      new DatabaseCommand(config),
+      new GCloudCommand(config),
       new LoginCommand(config),
       new StatusCommand(config),
-      new DatabaseCommand(config),
       new QueueCommand(config),
       new QueryCommand(config)
     ], module => {

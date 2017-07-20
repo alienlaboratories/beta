@@ -4,6 +4,7 @@
 #
 
 # Same as Firebase messagingSenderId.
+projectId: "alienlabs-dev"
 projectNumber: "933786919888"
 
 # NOTE: Secret credentials (for whitelisted origins and redirect URIs).
