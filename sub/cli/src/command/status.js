@@ -23,9 +23,6 @@ export class StatusCommand extends Command {
       command: 'status',
       describe: 'Server status.',
       handler: Command.handler(argv => {
-
-        console.log('##', argv);
-
         return new Promise((resolve, reject) => {
           request(this.getUrl(STATUS_URL), (error, response, body) => {
             if (error) {

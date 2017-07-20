@@ -6,7 +6,7 @@ import _ from 'lodash';
 import readline from 'readline';
 import yargs from 'yargs';
 
-import { DatabaseCommand, LoginCommand, QueryCommand, StatusCommand, TaskCommand } from './command';
+import { DatabaseCommand, LoginCommand, QueryCommand, StatusCommand, QueueCommand } from './command';
 
 /**
  * Command line app.
@@ -17,17 +17,26 @@ export class App {
     // TODO(burdon): '*' default command.
     // https://github.com/yargs/yargs/blob/master/docs/advanced.md#commands
     this._yargs = yargs
+      .exitProcess(false)
+
       .option('env', {
         default: 'dev'
       })
-      .exitProcess(false)
+
+      // TODO(burdon): Verbose.
+//    console.log(JSON.stringify(config, null, 2));
+      .option('verbose', {
+        default: false
+      })
+
       .help();
 
+    // Config modules.
     _.each([
       new LoginCommand(config),
       new StatusCommand(config),
       new DatabaseCommand(config),
-      new TaskCommand(config),
+      new QueueCommand(config),
       new QueryCommand(config)
     ], module => {
       this._yargs.command(module.command);
@@ -38,6 +47,7 @@ export class App {
     this._rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
+      terminal: false,                        // Prevent output from being echoed.
       prompt: `[${global.__ENV__}]> `
     });
   }
@@ -55,12 +65,12 @@ export class App {
           });
         });
       } else {
+        console.log();
+
         // CLI mode.
         this._rl.prompt();
         this._rl.on('line', (input) => {
-          // TODO(burdon): Prevent echo of input?
-          let words = input.split(/\W+/);
-          this._yargs.parse(words, (err, argv, output) => {
+          this._yargs.parse(input, (err, argv, output) => {
             if (err) {
               console.error(err);
               process.exit(1);
@@ -71,8 +81,7 @@ export class App {
               console.log();
 
               // TODO(burdon): How to set output?
-              console.log(output);
-              console.log();
+              output && console.log(output);
 
               // Next command.
               this._rl.prompt();
