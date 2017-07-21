@@ -31,7 +31,8 @@ fi
 # copies of modules across different packages (esp. important for graphql, aws-sdk).
 #===============================================================================
 
-lerna bootstrap --hoist
+# https://github.com/lerna/lerna#--hoist-glob
+lerna bootstrap --hoist --nohoist=grunt-*
 
 #MODULES=$(lerna ls | cut -d' ' -f1)
 #for i in ${MODULES};
