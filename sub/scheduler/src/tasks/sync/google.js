@@ -49,7 +49,7 @@ export class GoogleMailSyncTask extends Task {
     logger.log('Sync:', userId, historyId);
 
     // TODO(burdon): Factor out notifications (move into store/query layer.)
-    async function syncAndNotify(user) {
+    const syncAndNotify = async (user) => {
       await this._syncer.sync(user);
 
       // Notify clients.
@@ -59,7 +59,7 @@ export class GoogleMailSyncTask extends Task {
         let { platform, messageToken } = client;
         return this._pushManager.sendMessage(platform, messageToken);
       });
-    }
+    };
 
     // TODO(burdon): Don't Sync all users.
     // TODO(burdon): Pass user ids in task.
