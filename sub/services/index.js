@@ -25,6 +25,7 @@ export * from './src/service/google/google_calendar';
 export * from './src/service/google/google_drive';
 export * from './src/service/google/google_mail';
 export * from './src/service/google/google_plus';
+export * from './src/service/google/notifications';
 
 export * from './src/service/slack/slack_service';
 export * from './src/service/slack/slack_query_processor';

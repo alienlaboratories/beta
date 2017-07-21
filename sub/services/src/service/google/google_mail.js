@@ -28,6 +28,7 @@ export class GoogleMailClient {
 
   constructor() {
     // https://developers.google.com/gmail/api/quickstart/nodejs
+    // https://github.com/google/google-api-nodejs-client/tree/master/apis/gmail (Since poorly documented).
     this._mail = google.gmail('v1');
   }
 

@@ -8,7 +8,6 @@
     $@  all args    
 ~~~~
 
-
 ~~~~
     grep STR * -R --exclude-dir DIR
     grep STR * -R --exclude=*min* DIR
@@ -48,6 +47,10 @@
       esac
       shift
     done
+~~~~
+
+~~~~
+    uuidgen           # Generate uuid (guid)
 ~~~~
 
 

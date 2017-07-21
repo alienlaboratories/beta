@@ -21,8 +21,7 @@ import { AuthUtil, Const, Database, IdGenerator, Matcher, MemoryItemStore, Syste
 import { TestItemStore } from 'alien-core/src/testing';
 import { AppDefs } from 'alien-client';
 import { apiRouter } from 'alien-api/server';
-
-import { Loader } from 'alien-services';
+import { GoogleNotifications, Loader } from 'alien-services';
 
 import {
   getIdToken,
@@ -56,6 +55,7 @@ import { adminRouter } from './router/admin';
 import { appRouter } from './router/app';
 import { clientRouter, ClientManager } from './router/client';
 import { profileRouter } from './router/profile';
+import { webhookRouter } from './router/webhook';
 import { hotRouter } from './router/hot';
 import { loggingRouter } from './router/log';
 
@@ -227,6 +227,13 @@ export class AppServer {
 
     // Profile.
     this._app.use('/profile', profileRouter(this._config, this._systemStore));
+
+    // Webhooks.
+    this._app.use('/hook', webhookRouter(this._config, {
+      hooks: {
+        [_.get(this._config, 'google.pubsub.subscription.gmail.hook')]: GoogleNotifications.Gmail
+      }
+    }));
   }
 
   /**

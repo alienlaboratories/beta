@@ -25,4 +25,10 @@ cli:
 # gcloud beta pubsub topics list
 pubsub:
   topic:
-    gmail: "projects/alienlabs-dev/topics/g-mail"
+    gmail:
+      id: "projects/alienlabs-dev/topics/g-mail"
+
+  subscription:
+    gmail:
+      id: "projects/alienlabs-dev/topics/g-mail"
+      hook: "83CC572F-90DE-406F-ABFB-4C770C2381EB"

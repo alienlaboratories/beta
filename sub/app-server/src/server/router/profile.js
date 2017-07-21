@@ -25,7 +25,7 @@ export const profileRouter = (config, systemStore) => {
 
     switch (action) {
       case 'subscribe.gmail': {
-        let topic = _.get(config, 'google.pubsub.topic.gmail');
+        let topic = _.get(config, 'google.pubsub.topic.gmail.id');
         let credentials = _.get(user, 'credentials.google');
         let authClient = GoogleOAuthProvider.createAuthClient(_.get(config, 'google'), credentials);
         return gmail.watch(authClient, topic).then(repsonse => {

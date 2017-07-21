@@ -5,9 +5,8 @@
 import _ from 'lodash';
 import Random from 'random-seed';
 
-import { TypeUtil } from 'alien-util';
-
 //
+// Base64 encode/decode.
 // If Node (i.e., not DOM) then augment global functions.
 // TODO(burdon): Factor out node/web abstraction layer.
 //
