@@ -54,6 +54,7 @@ export class GoogleMailClient {
       // NOTE: See source for googleapis module (not documented).
       // https://developers.google.com/gmail/api/v1/reference/users/watch
       // https://developers.google.com/gmail/api/guides/push#watch_request
+      // ERROR: Insufficient Permission (if OAuth SCOPE not granted if expired).
       this._mail.users.watch(params, (err, response) => {
         if (err) {
           // ERROR: User not authorized to perform this action.
