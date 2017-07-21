@@ -19,10 +19,7 @@ start=$SECONDS
 
 if [ ${CLEAN} -eq 1 ]; then
   lerna clean --yes
-
   find . -path */node_modules -prune -o -name package-lock.json -print | rm
-
-# find . -path */node_modules -prune -o -name yarn.lock -print
 fi
 
 #===============================================================================
@@ -31,19 +28,11 @@ fi
 # copies of modules across different packages (esp. important for graphql, aws-sdk).
 #===============================================================================
 
+# Grunt plugins must be local to Gruntfile.
 # https://github.com/lerna/lerna#--hoist-glob
 lerna bootstrap --hoist --nohoist=grunt-*
 
-#MODULES=$(lerna ls | cut -d' ' -f1)
-#for i in ${MODULES};
-#do
-#  echo "### $i ###"
-#  lerna bootstrap --concurrency=1 --hoist --scope=$i
-#done
-
-# TODO(burdon): https://github.com/lerna/lerna/issues/889
-# yarn
-
+# Ensure local modules are installed.
 npm update
 
 echo "OK: $(date) [$(( SECONDS - start ))s]"
