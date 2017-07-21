@@ -23,6 +23,7 @@
     "alien-api": "0.0.1",
     "alien-core": "0.0.1",
     "alien-util": "0.0.1",
+    "aws-sdk": "^2.85.0",
     "email-addresses": "^2.0.2",
     "express": "^4.15.2",
     "firebase": "^3.9.0",

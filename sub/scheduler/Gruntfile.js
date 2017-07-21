@@ -2,7 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
-const _ = require('./node_modules/lodash/lodash');
+const _ = require('lodash/lodash');
 const defaults = require('../../tools/grunt/defaults');
 
 /**

@@ -231,7 +231,7 @@ export class AppServer {
     // Webhooks.
     this._app.use('/hook', webhookRouter(this._config, {
       hooks: {
-        [_.get(this._config, 'google.pubsub.subscription.gmail.hook')]: GoogleNotifications.Gmail
+        [_.get(this._config, 'google.pubsub.subscription.gmail.hook')]: GoogleNotifications.Gmail(this._config)
       }
     }));
   }

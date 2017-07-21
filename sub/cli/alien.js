@@ -14,7 +14,7 @@ global.__DEVELOPMENT__    = __ENV__ === 'development';
 global.__TESTING__        = __ENV__ === 'testing';
 
 global.ENV = {
-  ALIEN_CONFIG_AWS:       __PRODUCTION__ ? 'aws/aws-beta.yml'             : 'aws/aws-dev.yml',
+  ALIEN_CONFIG_AWS:       __PRODUCTION__ ? 'aws/aws-dev.yml'              : 'aws/aws-dev.yml',
   ALIEN_CONFIG_FIREBASE:  __PRODUCTION__ ? 'firebase/alienlabs-beta.yml'  : 'firebase/alienlabs-dev.yml',
   ALIEN_CONFIG_GOOGLE:    'google/alienlabs-dev.yml',
 

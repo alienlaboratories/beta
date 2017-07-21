@@ -23,10 +23,10 @@ export default {
 
   HOST, PORT,
 
-  ALIEN_CONFIG:             _.get(process.env, 'ALIEN_CONFIG',              'alienlabs-testing'),
-  ALIEN_CONFIG_AWS:         _.get(process.env, 'ALIEN_CONFIG_AWS',          'aws/aws-dev'),
-  ALIEN_CONFIG_FIREBASE:    _.get(process.env, 'ALIEN_CONFIG_FIREBASE',     'firebase/alienlabs-dev'),
-  ALIEN_CONFIG_GOOGLE:      _.get(process.env, 'ALIEN_CONFIG_GOOGLE',       'google/alienlabs-dev'),
+  ALIEN_CONFIG:             _.get(process.env, 'ALIEN_CONFIG',              'alienlabs-testing.yml'),
+  ALIEN_CONFIG_AWS:         _.get(process.env, 'ALIEN_CONFIG_AWS',          'aws/aws-dev.yml'),
+  ALIEN_CONFIG_FIREBASE:    _.get(process.env, 'ALIEN_CONFIG_FIREBASE',     'firebase/alienlabs-dev.yml'),
+  ALIEN_CONFIG_GOOGLE:      _.get(process.env, 'ALIEN_CONFIG_GOOGLE',       'google/alienlabs-dev.yml'),
 
   // TODO(burdon): Generate real secrets and move to config file.
   ALIEN_SESSION_SECRET:     _.get(process.env, 'ALIEN_SESSION_SECRET',      'alien-session-secret'),

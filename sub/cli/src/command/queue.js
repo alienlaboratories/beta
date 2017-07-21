@@ -5,7 +5,7 @@
 import _ from 'lodash';
 import AWS from 'aws-sdk';
 
-import { Queue } from 'alien-scheduler';
+import { Queue } from 'alien-services';
 
 import { Command } from './command';
 

@@ -4,6 +4,7 @@
 
 import path from 'path';
 import yaml from 'node-yaml';
+import AWS from 'aws-sdk';
 
 import { ErrorUtil, Logger, TypeUtil } from 'alien-util';
 
@@ -47,5 +48,13 @@ ErrorUtil.handleErrors(process, error => {
 config(ENV.ALIEN_SERVER_CONF_DIR).then(config => {
   global.server = new AppServer(config);
   logger.info(AppServer.name, TypeUtil.stringify(global.server.info, 2));
+
+  // TODO(burdon): Factor out.
+  AWS.config.update({
+    region:           _.get(config, 'aws.region'),
+    accessKeyId:      _.get(config, 'aws.users.scheduler.aws_access_key_id'),
+    secretAccessKey:  _.get(config, 'aws.users.scheduler.aws_secret_access_key')
+  });
+
   global.server.init().then(server => server.start());
 });

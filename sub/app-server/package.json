@@ -51,6 +51,7 @@
     "alien-scheduler": "0.0.1",
     "alien-services": "0.0.1",
     "alien-util": "0.0.1",
+    "aws-sdk": "^2.85.0",
     "babel-polyfill": "^6.23.0",
     "body-parser": "^1.17.1",
     "chance": "^1.0.8",

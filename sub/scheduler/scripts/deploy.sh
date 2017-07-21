@@ -16,7 +16,7 @@
 #
 
 # Node packages (merge sub package.json modules).
-export PACKAGE_DIRS="api core scheduler services util"
+export PACKAGE_DIRS="api core services util"
 
 # Docker image name.
 export DOCKER_IMAGE="alien-scheduler"

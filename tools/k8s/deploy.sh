@@ -113,6 +113,7 @@ set -x
 
 #
 # Copy resources for Dockerfile.
+# TODO(burdon): Configure.
 #
 
 cp -R ../../conf dist

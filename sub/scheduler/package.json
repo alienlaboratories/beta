@@ -26,7 +26,6 @@
     "alien-core": "0.0.1",
     "alien-services": "0.0.1",
     "alien-util": "0.0.1",
-    "aws-sdk": "^2.85.0",
     "babel-polyfill": "^6.23.0",
     "debug": "^2.6.8",
     "googleapis": "^19.0.0",

@@ -6,10 +6,7 @@ import _ from 'lodash';
 import express from 'express';
 
 import { ExpressUtil, Logger } from 'alien-util';
-
-import { Queue } from 'alien-scheduler';
-
-import { isAuthenticated } from 'alien-services';
+import { isAuthenticated, Queue } from 'alien-services';
 
 const logger = Logger.get('admin');
 

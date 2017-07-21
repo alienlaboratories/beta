@@ -6,8 +6,11 @@ import _ from 'lodash';
 
 import { Database } from 'alien-core';
 import { GoogleMailSyncer } from 'alien-services';
+import { Logger } from 'alien-util';
 
 import { Task } from '../../task';
+
+const logger = Logger.get('google.mail');
 
 // TODO(burdon): Base class for sync Tasks?
 
@@ -20,7 +23,7 @@ export class GoogleCalendarSyncTask extends Task {
     super();
   }
 
-  async execTask(data) {}
+  async execTask(attributes, data) {}
 }
 
 /**
@@ -30,12 +33,20 @@ export class GoogleMailSyncTask extends Task {
 
   constructor(config, database, pushManager) {
     super();
+    console.assert(config && database && pushManager);
 
-    this._syncer = new GoogleMailSyncer(config, database);
+    this._database = database;
     this._pushManager = pushManager;
+    this._syncer = new GoogleMailSyncer(config, database);
   }
 
-  async execTask(data) {
+  async execTask(attributes, data) {
+    let { userId } = attributes;
+    let { historyId } = data;
+
+    // TODO(burdon): Pass userId (not email address).
+    // TODO(burdon): Use historyId.
+    logger.log('Sync:', userId, historyId);
 
     // TODO(burdon): Factor out notifications (move into store/query layer.)
     async function syncAndNotify(user) {

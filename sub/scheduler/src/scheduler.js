@@ -9,36 +9,38 @@ import yaml from 'node-yaml';
 
 import { Logger, TypeUtil } from 'alien-util';
 import { Database, IdGenerator, Matcher, SystemStore } from 'alien-core';
-import { Firebase, FirebaseItemStore, PushManager } from 'alien-services';
+import { Firebase, FirebaseItemStore, PushManager, Queue } from 'alien-services';
 
-import { Queue } from './util/queue';
 import { Task } from './task';
 
 import { GoogleCalendarSyncTask, GoogleMailSyncTask } from './tasks/sync/google';
 
-// TODO(burdon): Set-up as large test.
-const CONF_DIR = path.join(__dirname, '../../../conf');
-
 const logger = Logger.get('scheduler');
+
+// TODO(burdon): Factor out (see app-server).
+const ENV = {
+  ALIEN_SERVER_CONF_DIR:    _.get(process.env, 'ALIEN_SERVER_CONF_DIR',     path.join(__dirname, '../../../conf')),
+
+  ALIEN_CONFIG:             _.get(process.env, 'ALIEN_CONFIG',              'alienlabs-dev.yml'),
+  ALIEN_CONFIG_AWS:         _.get(process.env, 'ALIEN_CONFIG_AWS',          'aws/aws-dev.yml'),
+  ALIEN_CONFIG_FIREBASE:    _.get(process.env, 'ALIEN_CONFIG_FIREBASE',     'firebase/alienlabs-dev.yml'),
+  ALIEN_CONFIG_GOOGLE:      _.get(process.env, 'ALIEN_CONFIG_GOOGLE',       'google/alienlabs-dev.yml'),
+};
 
 /**
  * Asynchronously load the configuration.
  */
-// TODO(burdon): Dockerfile (see app-server).
 async function config(baseDir) {
   return await {
-    'alien':    await yaml.read(path.join(baseDir, 'alienlabs-dev.yml')),
-    'aws':      await yaml.read(path.join(baseDir, 'aws/aws-dev.yml')),
-    'firebase': await yaml.read(path.join(baseDir, 'firebase/alienlabs-dev.yml')),
-    'google':   await yaml.read(path.join(baseDir, 'google/alienlabs-dev.yml')),
+    'alien':      await yaml.read(path.join(baseDir, ENV.ALIEN_CONFIG)),
+    'aws':        await yaml.read(path.join(baseDir, ENV.ALIEN_CONFIG_AWS)),
+    'firebase':   await yaml.read(path.join(baseDir, ENV.ALIEN_CONFIG_FIREBASE)),
+    'google':     await yaml.read(path.join(baseDir, ENV.ALIEN_CONFIG_GOOGLE)),
   };
 }
 
-config(CONF_DIR).then(config => {
+config(ENV.ALIEN_SERVER_CONF_DIR).then(config => {
   logger.info('Scheduler =', TypeUtil.stringify(config, 2));
-
-  let idGenerator = new IdGenerator();
-  let matcher = new Matcher();
 
   // AWS config.
   // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Config.html#constructor-property
@@ -47,6 +49,9 @@ config(CONF_DIR).then(config => {
     accessKeyId:      _.get(config, 'aws.users.scheduler.aws_access_key_id'),
     secretAccessKey:  _.get(config, 'aws.users.scheduler.aws_secret_access_key')
   });
+
+  let idGenerator = new IdGenerator();
+  let matcher = new Matcher();
 
   // System store (to look-up credentials).
   let firebase = new Firebase(_.get(config, 'firebase'));
@@ -79,8 +84,8 @@ config(CONF_DIR).then(config => {
  */
 class TestTask extends Task {
 
-  async execTask(data) {
-    console.log('Test: ' + JSON.stringify(data));
+  async execTask(attributes, data) {
+    console.log('Test:', JSON.stringify(attributes), JSON.stringify(data));
   }
 }
 
@@ -112,7 +117,7 @@ class Scheduler {
       }
 
       console.log('Processing:', type, JSON.stringify(data));
-      return taskHandler.execTask(data);
+      return taskHandler.execTask(attributes, data);
     });
   }
 
