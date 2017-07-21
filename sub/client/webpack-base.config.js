@@ -18,18 +18,18 @@ const baseConfig = {
   // https://webpack.js.org/configuration/resolve
   resolve: {
 
+    extensions: ['.js'],
+
     // Resolve imports/requires.
     modules: [
       'node_modules'
     ],
 
-    extensions: ['.js'],
-
     alias: {
       // Prevent multiple copies (from npm link).
       // https://facebook.github.io/react/warnings/refs-must-have-owner.html#multiple-copies-of-react
       // http://stackoverflow.com/questions/31169760/how-to-avoid-react-loading-twice-with-webpack-when-developing
-      'react' : path.resolve('./node_modules/react')
+      // 'react' : path.resolve('./node_modules/react')
     }
   },
 

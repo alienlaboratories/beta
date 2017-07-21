@@ -19,19 +19,21 @@ const baseConfig = {
   // https://webpack.js.org/configuration/resolve
   resolve: {
 
+    extensions: ['.js'],
+
     // Resolve imports/requires.
+    // NOTE: Webpack node checks ancestor directories, so hoisted modules (via lerna) are discovered.
+    // https://webpack.js.org/configuration/resolve/#resolve-modules
+    // https://webpack.js.org/concepts/module-resolution/#resolving-rules-in-webpack
     modules: [
       'node_modules'
     ],
 
-    extensions: ['.js'],
-
     alias: {
-      // TODO(burdon): Use lerna hoist or alias?
-      // Prevent multiple copies (from npm link).
+      // Prevent multiple copies (from npm link). (NOTE: lerna hoisting resolves this issue).
       // https://facebook.github.io/react/warnings/refs-must-have-owner.html#multiple-copies-of-react
       // http://stackoverflow.com/questions/31169760/how-to-avoid-react-loading-twice-with-webpack-when-developing
-      'react'                         : path.resolve('./node_modules/react'),
+      // 'react'                      : path.resolve('./node_modules/react'),
 
       // http://stackoverflow.com/questions/40053344/npm-multiple-entry-points
       'alien-client/crx'              : path.resolve('./node_modules/alien-client/src/crx'),
