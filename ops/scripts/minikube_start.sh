@@ -19,7 +19,7 @@ docker info
 # https://github.com/kubernetes/minikube/issues/1378
 #
 
-exec ./minikube_clock_sync.sh
+exec $(dirname "$0")/minikube_clock_sync.sh
 
 #
 # Check running.

@@ -2,7 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
-const _ = require('./node_modules/lodash/lodash');
+const _ = require('lodash');
 const defaults = require('../../tools/grunt/defaults');
 
 /**
@@ -37,6 +37,9 @@ module.exports = (grunt) => {
       }
     },
   }));
+
+  // TODO(burdon): Grunt can't find hoisted modules.
+  // https://github.com/gruntjs/grunt/issues/1599
 
   // https://github.com/gruntjs/grunt-contrib-clean
   grunt.loadNpmTasks('grunt-contrib-clean');

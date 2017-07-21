@@ -6,8 +6,6 @@ region: "us-east-1"
 
 account: "861694698401"
 
-# minderlabs "956243632840"
-
 users:
   scheduler:
 

@@ -20,7 +20,7 @@ spec:
         # http://kubernetes.io/docs/concepts/containers/images/#updating-images
         # http://kubernetes.io/docs/user-guide/config-best-practices/#container-images
         image: 861694698401.dkr.ecr.us-east-1.amazonaws.com/alien-app-server:latest
-        imagePullPolicy: Alyways
+        imagePullPolicy: Always
 #       imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000

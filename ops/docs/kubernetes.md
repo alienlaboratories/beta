@@ -11,7 +11,7 @@
   
 ~~~~
   docker login
-  aws ecr get-login --region us-east-1
+  aws ecr get-login --no-include-email --region us-east-1
 ~~~~
 
 
@@ -24,7 +24,7 @@
   export IMAGE_NAME=alien-web-server
   export ECR_REPO=861694698401.dkr.ecr.us-east-1.amazonaws.com/alien-web-server
 
-  aws ecr get-login
+  aws ecr get-login --no-include-email
 
   docker build -t ${IMAGE_NAME} .
   docker tag ${IMAGE_NAME}:latest ${ECR_REPO}:latest
@@ -166,7 +166,7 @@ NOTE: The UI shows the HTTPS Not Secure Warning (proceed via the Advanced option
   docker pull 861694698401.dkr.ecr.us-east-1.amazonaws.com/alien-app-server:latest
 ~~~~
 
-* Re-authenticate: `aws ecr get-login`
+* Re-authenticate: `aws ecr get-login --no-include-email`
 
 ~~~~
   kubectl get nodes

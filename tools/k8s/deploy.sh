@@ -155,8 +155,10 @@ else
   # http://docs.aws.amazon.com/cli/latest/reference/ecr/get-login.html
   # Errors if minikube's docker service isn't running.
   # Cannot connect to the Docker daemon... Is the docker daemon running?
+  # NOTE: Docker no longer supports -e so suppress with --no-include-email
+  # https://github.com/aws/aws-cli/issues/1926
   set +x
-  eval $(aws ecr get-login)
+  eval $(aws ecr get-login --no-include-email)
   set -x
 
   DOCKER_REPO=${AWS_ECS_DOCKER_REPO}
