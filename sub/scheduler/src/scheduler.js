@@ -6,7 +6,7 @@ import _ from 'lodash';
 import path from 'path';
 import yaml from 'node-yaml';
 
-import { Logger, TypeUtil } from 'alien-util';
+import { ErrorUtil, Logger, TypeUtil } from 'alien-util';
 import { Database, IdGenerator, Matcher, SystemStore } from 'alien-core';
 import { AWSUtil, Firebase, FirebaseItemStore, PushManager, AWSQueue } from 'alien-services';
 
@@ -109,7 +109,8 @@ class Scheduler {
         return Promise.reject(new Error('Invalid task:', type));
       }
 
-      console.log('Processing:', type, JSON.stringify(data));
+      // TODO(burdon): Get message attributes (e.g., job handle).
+      logger.log('Processing:', type, JSON.stringify(attributes));
       return taskHandler.execTask(attributes, data);
     });
   }
@@ -118,7 +119,9 @@ class Scheduler {
     this._running = true;
 
     while (this._running) {
-      await this.processTask();
+      await this.processTask().catch(err => {
+        logger.error(ErrorUtil.message(err));
+      });
     }
   }
 

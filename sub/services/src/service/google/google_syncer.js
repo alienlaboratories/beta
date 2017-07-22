@@ -16,20 +16,22 @@ const logger = Logger.get('google.sync');
  */
 export class GoogleSyncer extends Syncer {
 
-  async sync(user) {
+  async doSync(user) {
+
     // TODO(burdon): Store sync status.
     if (!_.get(user, 'credentials.google.refresh_token')) {
-      logger.log('No refresh token for: ' + user.email);
-      return;
+      return Promise.reject(`User[${user.id}]: Missing refresh token.`);
     }
 
     let authClient = GoogleOAuthProvider.createAuthClient(
       _.get(this._config, 'google'), _.get(user, 'credentials.google'));
 
-    let tokens = await GoogleOAuthProvider.refreshAccessToken(authClient);
-    let { access_token } = tokens;
+    let tokens = await GoogleOAuthProvider.refreshAccessToken(authClient).catch(err => {
+      return Promise.reject(`User[${user.id}]: Can't refresh token: ${err.message}`);
+    });
 
     // TODO(burdon): Save updated token.
+    let { access_token } = tokens;
     _.set(user, 'credentials.google.access_token', access_token);
 
     let items = await this._doSync(user, authClient);

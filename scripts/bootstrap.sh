@@ -19,6 +19,9 @@ start=$SECONDS
 
 if [ ${CLEAN} -eq 1 ]; then
   lerna clean --yes
+
+  # These seem to go stale.
+  rm package-logk.json
   find . -path */node_modules -prune -o -name package-lock.json -print | rm
 fi
 

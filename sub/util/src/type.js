@@ -46,8 +46,8 @@ export class TypeUtil {
     if (value.length > len) {
       let mid = Math.floor(len / 2);
       let left = value.substring(0, mid);
-      let right = value.substring(value.length - (mid - 3));
-      return left + '...' + right;
+      let right = value.substring(value.length - (mid - 5));
+      return left + ' ... ' + right;
     }
 
     return value;

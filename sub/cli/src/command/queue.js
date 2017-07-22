@@ -102,24 +102,55 @@ export class QueueCommand extends Command {
           })
         })
 
+        .command({
+          command: 'add <queue> [params...]',
+          describe: 'Add task.',
+          handler: Command.handler(argv => {
+            let { queue, params } = argv;
+
+            // q add sync.google.mail userId:google-116465153085296292090
+            let attributes = {};
+            _.each(params, param => {
+              let keyValue = param.split(':');
+              attributes[keyValue[0]] = keyValue[1];
+            });
+
+            return new Promise((resolve, reject) => {
+              // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#purgeQueue-property
+              this._sqs.sendMessage({
+                QueueUrl: queue,
+                MessageAttributes: AWSUtil.objectToAttributes(attributes),
+                MessageBody: JSON.stringify({})
+              }, (err, data) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  console.log(JSON.stringify(data, null, 2));
+                  resolve();
+                }
+              });
+            });
+          })
+        })
+
         // TODO(burdon): Separate AWS/queue abstraction.
         .command({
-          command: 'add <type> [params...]',
+          command: 'task <type> [params...]',
           describe: 'Add task.',
           handler: Command.handler(argv => {
             let { type, params } = argv;
 
-            let args = {
+            let attributes = {
               type
             };
 
             // q add sync.google.mail userId:google-116465153085296292090
             _.each(params, param => {
               let keyValue = param.split(':');
-              args[keyValue[0]] = keyValue[1];
+              attributes[keyValue[0]] = keyValue[1];
             });
 
-            return this._queue.add(args);
+            return this._queue.add(attributes);
           })
         })
 

@@ -9,5 +9,5 @@ import { Syncer } from '../syncer';
  */
 export class EvernoteSyncer extends Syncer {
 
-  async sync(user) {}
+  async doSync(user) {}
 }

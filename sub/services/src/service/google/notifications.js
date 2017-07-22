@@ -2,14 +2,15 @@
 // Copyright 2017 Minder Labs.
 //
 
+import _ from 'lodash';
 import { Logger } from 'alien-util';
 
-import { AWSQueue } from '../../util/queue';
+import { AWSQueue } from '../../util/aws/aws';
 
 const logger = Logger.get('google.notifications');
 
 /**
- * Google notification handlers.
+ * Google (webhook) notification handlers.
  */
 export class GoogleNotifications {
 

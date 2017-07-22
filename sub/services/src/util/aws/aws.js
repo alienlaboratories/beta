@@ -105,21 +105,33 @@ export class AWSQueue extends Queue {
   }
 
   add(attributes, data={}) {
-    return Queue.promisify(callback => {
+    return AWSUtil.promisify(callback => {
       logger.log('Adding task: ' + TypeUtil.stringify(attributes));
 
       // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#sendMessage-property
       this._sqs.sendMessage({
         QueueUrl: this._url,
-        MessageAttributes: Queue.objectToAttributes(attributes),
+        MessageAttributes: AWSUtil.objectToAttributes(attributes),
         MessageBody: JSON.stringify(data)
       }, callback);
     });
   }
 
+  remove(ReceiptHandle) {
+    return AWSUtil.promisify(callback => {
+
+      // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#deleteMessage-property
+      this._sqs.deleteMessage({
+        QueueUrl: this._url,
+        ReceiptHandle
+      }, callback);
+
+    }).then(() => ReceiptHandle);
+  }
+
   process(handler) {
-    return Queue.promisify(callback => {
-      console.log('Receiving...');
+    return AWSUtil.promisify(callback => {
+      logger.log('Receiving...');
 
       // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#receiveMessage-property
       this._sqs.receiveMessage({
@@ -139,23 +151,24 @@ export class AWSQueue extends Queue {
       return Promise.all(_.map(Messages, message => {
         let { ReceiptHandle, MessageAttributes, Body } = message;
 
-        let attributes = Queue.attributesToObject(MessageAttributes);
+        let attributes = AWSUtil.attributesToObject(MessageAttributes);
         let data = JSON.parse(Body);
 
         return handler(attributes, data).then(() => {
+          logger.log('OK: ' + TypeUtil.truncate(ReceiptHandle, 32));
 
           // Remove the task.
           // NOTE: Tasks must be idempotent.
           // TODO(burdon): Check didn't timeout.
-          return Queue.promisify(callback => {
+          return this.remove(ReceiptHandle);
+        }).catch(err => {
+          err && logger.error(err);
 
-            // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#deleteMessage-property
-            this._sqs.deleteMessage({
-              QueueUrl: this._url,
-              ReceiptHandle
-            }, callback);
-
-          }).then(() => ReceiptHandle);
+          // TODO(burdon): Delete tasks that fail?
+          // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#deleteMessage-property
+          return this.remove(ReceiptHandle).then(() => {
+            return Promise.reject(new Error(`Job failed: [${TypeUtil.truncate(ReceiptHandle, 32)}]`));
+          });
         });
       }));
     }).then(values => _.size(values));

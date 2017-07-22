@@ -75,7 +75,10 @@ export class GoogleMailClient {
       // https://github.com/SpiderStrategies/node-gmail-api/issues/29 [burdon]
       // https://developers.google.com/apis-explorer/#p/gmail/v1/gmail.users.messages.list?userId=me
       let gmail = new Gmail(_.get(authClient, 'credentials.access_token'));
-      let stream = gmail.messages(query, { max: maxResults, fields: ['id', 'labelIds', 'snippet', 'payload'] });
+      let stream = gmail.messages(query, {
+        max: maxResults,
+        fields: ['id', 'labelIds', 'snippet', 'payload']
+      });
 
       // TODO(burdon): Extract email.
       // TODO(burdon): Tokenize snippet and do keyword extraction.
@@ -107,7 +110,8 @@ export class GoogleMailClient {
           to
         };
 
-        console.log(from.address.padStart(20), subject);
+        // TODO(burdon): Get historyId.
+        console.log(`## [${TypeUtil.truncate(from.address, 32).padEnd(32)}]: ${subject}`);
 
         messages.push(item);
       });
@@ -220,7 +224,7 @@ export class GoogleMailServiceProvider extends OAuthServiceProvider {
 export class GoogleMailSyncer extends GoogleSyncer {
 
   constructor(config, database) {
-    super(config, database);
+    super(config, database, 'google.mail');
 
     // Gmail client.
     this._client = new GoogleMailClient();
