@@ -103,10 +103,14 @@ export class QueueCommand extends Command {
         })
 
         .command({
-          command: 'add <type>',
+          command: 'add <type> [param]',
           describe: 'Add task.',
           handler: Command.handler(argv => {
-            let { type } = argv;
+            let { type, param } = argv;
+
+            console.log('##', param);
+            return;
+
             return this._queue.add({
               type
             });

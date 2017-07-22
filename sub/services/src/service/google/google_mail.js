@@ -107,6 +107,8 @@ export class GoogleMailClient {
           to
         };
 
+        console.log(from.address.padStart(20), subject);
+
         messages.push(item);
       });
 
