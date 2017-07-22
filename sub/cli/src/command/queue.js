@@ -107,14 +107,23 @@ export class QueueCommand extends Command {
         })
 
         // TODO(burdon): Task queue specific? (Make Queue SQS abstraction not task specific).
+        // q add sync.google.mail userId:google-116465153085296292090
         .command({
-          command: 'add <type>',
+          command: 'add <type> [param]',
           describe: 'Add task.',
           handler: Command.handler(argv => {
-            let { type } = argv;
-            return this._queue.add({
+            let { type, param='' } = argv;
+
+            let args = {
               type
-            });
+            };
+
+            if (param) {
+              let keyValue = param.split(':');
+              args[keyValue[0]] = keyValue[1];
+            }
+
+            return this._queue.add(args);
           })
         })
 
