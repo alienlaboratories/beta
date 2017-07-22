@@ -3,13 +3,12 @@
 //
 
 import _ from 'lodash';
-import AWS from 'aws-sdk';
 import path from 'path';
 import yaml from 'node-yaml';
 
 import { Logger, TypeUtil } from 'alien-util';
 import { Database, IdGenerator, Matcher, SystemStore } from 'alien-core';
-import { Firebase, FirebaseItemStore, PushManager, Queue } from 'alien-services';
+import { AWSUtil, Firebase, FirebaseItemStore, PushManager, AWSQueue } from 'alien-services';
 
 import { Task } from './task';
 
@@ -42,13 +41,7 @@ async function config(baseDir) {
 config(ENV.ALIEN_SERVER_CONF_DIR).then(config => {
   logger.info('Scheduler =', TypeUtil.stringify(config, 2));
 
-  // AWS config.
-  // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Config.html#constructor-property
-  AWS.config.update({
-    region:           _.get(config, 'aws.region'),
-    accessKeyId:      _.get(config, 'aws.users.scheduler.aws_access_key_id'),
-    secretAccessKey:  _.get(config, 'aws.users.scheduler.aws_secret_access_key')
-  });
+  AWSUtil.config(config);
 
   let idGenerator = new IdGenerator();
   let matcher = new Matcher();
@@ -74,8 +67,8 @@ config(ENV.ALIEN_SERVER_CONF_DIR).then(config => {
 
   new Scheduler(config)
     .registerHandler('test',                  new TestTask())
-    .registerHandler('sync.google.calendar',  new GoogleCalendarSyncTask(config, database, pushManager))
-    .registerHandler('sync.google.mail',      new GoogleMailSyncTask(config, database, pushManager))
+    .registerHandler('sync.google.calendar',  new GoogleCalendarSyncTask(config, database, systemStore, pushManager))
+    .registerHandler('sync.google.mail',      new GoogleMailSyncTask(config, database, systemStore, pushManager))
     .start();
 });
 
@@ -94,11 +87,11 @@ class TestTask extends Task {
  */
 class Scheduler {
 
-  // TODO(burdon): Generalize Queue processor.
+  // TODO(burdon): Generalize Queue processor (no longer a scheduler).
 
   constructor(config) {
     this._handlers = new Map();
-    this._queue = new Queue(_.get(config, 'aws.sqs.tasks'));
+    this._queue = new AWSQueue(_.get(config, 'aws.sqs.tasks'));
     this._running = false;
   }
 

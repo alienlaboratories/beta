@@ -225,6 +225,7 @@ export class GoogleMailSyncer extends GoogleSyncer {
   }
 
   async _doSync(user, authClient) {
+    console.assert(user && authClient);
 
     // TODO(burdon): Store and user sync point.
     let query = 'label:UNREAD';
@@ -288,6 +289,7 @@ export class GoogleMailSyncer extends GoogleSyncer {
     //
 
     if (!_.isEmpty(items)) {
+      console.log('Updating items: ' + _.size(items));
       return this._database.getItemStore(Database.NAMESPACE.USER).upsertItems(context, items);
     }
   }

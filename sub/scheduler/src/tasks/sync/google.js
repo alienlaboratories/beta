@@ -2,28 +2,23 @@
 // Copyright 2017 Alien Labs.
 //
 
-import _ from 'lodash';
-
-import { Database } from 'alien-core';
 import { GoogleMailSyncer } from 'alien-services';
-import { Logger } from 'alien-util';
 
 import { Task } from '../../task';
-
-const logger = Logger.get('google.mail');
-
-// TODO(burdon): Base class for sync Tasks?
 
 /**
  * Sync calendar.
  */
 export class GoogleCalendarSyncTask extends Task {
 
-  constructor(config, database, pushManager) {
+  constructor(config, database, systemStore, pushManager) {
     super();
+    console.assert(config && database && systemStore && pushManager);
   }
 
-  async execTask(attributes, data) {}
+  async execTask(attributes, data) {
+//  let { userId } = attributes;
+  }
 }
 
 /**
@@ -31,39 +26,34 @@ export class GoogleCalendarSyncTask extends Task {
  */
 export class GoogleMailSyncTask extends Task {
 
-  constructor(config, database, pushManager) {
+  constructor(config, database, systemStore, pushManager) {
     super();
-    console.assert(config && database && pushManager);
+    console.assert(config && database && systemStore && pushManager);
 
     this._database = database;
+    this._systemStore = systemStore;
     this._pushManager = pushManager;
     this._syncer = new GoogleMailSyncer(config, database);
   }
 
   async execTask(attributes, data) {
     let { userId } = attributes;
-    let { historyId } = data;
+//  let { historyId } = data;
 
-    // TODO(burdon): Pass userId (not email address).
+    // Do sync.
     // TODO(burdon): Use historyId.
-    logger.log('Sync:', userId, historyId);
+    let user = await this._systemStore.getUser(userId);
+    await this._syncer.sync(user);
 
+    // Notify clients.
     // TODO(burdon): Factor out notifications (move into store/query layer.)
-    const syncAndNotify = async (user) => {
-      await this._syncer.sync(user);
-
-      // Notify clients.
-      // TODO(burdon): Currently ClientStore is in-memory (Hack sends client map as part of the job data).
-      let clients = _.filter(_.get(data, 'clients'), client => client.userId === user.id);
-      await _.map(clients, client => {
-        let { platform, messageToken } = client;
-        return this._pushManager.sendMessage(platform, messageToken);
-      });
-    };
-
-    // TODO(burdon): Don't Sync all users.
-    // TODO(burdon): Pass user ids in task.
-    let users = await this._database.getQueryProcessor(Database.NAMESPACE.SYSTEM).queryItems({}, {}, { type: 'User' });
-    await _.map(users, user => syncAndNotify(user));
+    // TODO(burdon): Currently ClientStore is in-memory (Hack sends client map as part of the job data).
+    /*
+    let clients = _.filter(_.get(data, 'clients'), client => client.userId === user.id);
+    await _.map(clients, client => {
+      let { platform, messageToken } = client;
+      return this._pushManager.sendMessage(platform, messageToken);
+    });
+    */
   }
 }

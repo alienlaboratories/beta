@@ -6,7 +6,7 @@ import _ from 'lodash';
 import express from 'express';
 
 import { ExpressUtil, Logger } from 'alien-util';
-import { isAuthenticated, Queue } from 'alien-services';
+import { isAuthenticated, AWSQueue } from 'alien-services';
 
 const logger = Logger.get('admin');
 
@@ -17,7 +17,7 @@ export const adminRouter = (config, systemStore, clientManager, options) => {
   console.assert(config && clientManager && options);
   let router = express.Router();
 
-  let queue = new Queue(_.get(config, 'aws.sqs.tasks'));
+  let queue = new AWSQueue(_.get(config, 'aws.sqs.tasks'));
 
   //
   // Admin pages.
