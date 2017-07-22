@@ -61,7 +61,7 @@ ADD src/server/views        $HOME/app/views
 # Required for OAuth callback.
 ENV ALIEN_SERVER_URL="https://app.robotik.io"
 
-ENV ALIEN_CONFIG="alienlabs-beta"
+ENV ALIEN_CONFIG="alienlabs-beta.yml"
 ENV ALIEN_CONFIG_AWS="aws/aws-dev.yml"
 ENV ALIEN_CONFIG_FIREBASE="firebase/alienlabs-beta.yml"
 ENV ALIEN_CONFIG_GOOGLE="google/alienlabs-dev.yml"

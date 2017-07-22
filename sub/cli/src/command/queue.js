@@ -5,7 +5,7 @@
 import _ from 'lodash';
 import AWS from 'aws-sdk';
 
-import { Queue } from 'alien-services';
+import { AWSUtil, AWSQueue } from 'alien-services';
 
 import { Command } from './command';
 
@@ -22,15 +22,11 @@ export class QueueCommand extends Command {
     // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Config.html#constructor-property
     // http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html
 
-    AWS.config.update({
-      region:           _.get(config, 'aws.region'),
-      accessKeyId:      _.get(config, 'aws.users.scheduler.aws_access_key_id'),
-      secretAccessKey:  _.get(config, 'aws.users.scheduler.aws_secret_access_key')
-    });
+    AWSUtil.config(config);
 
     this._sqs = new AWS.SQS();
 
-    this._queue = new Queue(_.get(config, 'aws.sqs.tasks'));
+    this._queue = new AWSQueue(_.get(config, 'aws.sqs.tasks'));
   }
 
   // TODO(burdon): Make this SQS (q) command (not task).
@@ -106,22 +102,22 @@ export class QueueCommand extends Command {
           })
         })
 
-        // TODO(burdon): Task queue specific? (Make Queue SQS abstraction not task specific).
-        // q add sync.google.mail userId:google-116465153085296292090
+        // TODO(burdon): Separate AWS/queue abstraction.
         .command({
-          command: 'add <type> [param]',
+          command: 'add <type> [params...]',
           describe: 'Add task.',
           handler: Command.handler(argv => {
-            let { type, param='' } = argv;
+            let { type, params } = argv;
 
             let args = {
               type
             };
 
-            if (param) {
+            // q add sync.google.mail userId:google-116465153085296292090
+            _.each(params, param => {
               let keyValue = param.split(':');
               args[keyValue[0]] = keyValue[1];
-            }
+            });
 
             return this._queue.add(args);
           })
