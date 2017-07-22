@@ -102,18 +102,24 @@ export class QueueCommand extends Command {
           })
         })
 
+        // TODO(burdon): Separate AWS/queue abstraction.
         .command({
-          command: 'add <type> [param]',
+          command: 'add <type> [params...]',
           describe: 'Add task.',
           handler: Command.handler(argv => {
-            let { type, param } = argv;
+            let { type, params } = argv;
 
-            console.log('##', param);
-            return;
-
-            return this._queue.add({
+            let args = {
               type
+            };
+
+            // q add sync.google.mail userId:google-116465153085296292090
+            _.each(params, param => {
+              let keyValue = param.split(':');
+              args[keyValue[0]] = keyValue[1];
             });
+
+            return this._queue.add(args);
           })
         })
 
