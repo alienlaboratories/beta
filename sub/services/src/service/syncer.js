@@ -20,10 +20,10 @@ export class Syncer {
 
   // TODO(burdon): Store sync state and pass into method.
 
-  async sync(user) {
+  async sync(user, attributes) {
     logger.log(`Sync[${this._id}]: ${user.id}`);
-    return this.doSync(user);
+    return this.doSync(user, attributes);
   }
 
-  async doSync(user) {}
+  async doSync(user, attributes) {}
 }

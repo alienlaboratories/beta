@@ -34,6 +34,7 @@
     "jsonwebtoken": "^7.4.0",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
+    "multiparty": "^4.1.3",
     "node-gmail-api": "^0.6.0",
     "node-yaml": "^3.1.0",
     "passport": "^0.3.2",
@@ -41,6 +42,8 @@
     "passport-jwt": "^2.2.1",
     "redis": "^2.7.1",
     "request": "^2.81.0",
+    "sanitize-html": "^1.14.1",
+    "split": "^1.0.0",
     "swig": "^1.4.2",
     "uuid": "^3.0.1"
   },
@@ -57,7 +60,6 @@
   "scripts": {
     "lint": "eslint -c ../../eslintrc.yml ./src",
     "test": "jest --silent --testNamePattern='^((?!Integration).)*$'",
-    "all-tests": "jest --verbose",
-    "admin": "babel-node src/admin.js"
+    "all-tests": "jest --verbose"
   }
 }

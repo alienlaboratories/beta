@@ -5,6 +5,7 @@
 import _ from 'lodash';
 import google from 'googleapis';
 import Gmail from 'node-gmail-api';
+import sanitize from 'sanitize-html';
 
 import { Database } from 'alien-core';
 import { ErrorUtil, Logger, TypeUtil } from 'alien-util';
@@ -25,6 +26,13 @@ const logger = Logger.get('google.mail');
  * https://developers.google.com/gmail/api/v1/reference
  */
 export class GoogleMailClient {
+
+  static messageRequest(id) {
+    return {
+      'Content-Type': 'application/http',
+      'body': 'GET ' + GoogleApiUtil.API + '/gmail/v1/users/me/messages/' + id + '\n'   // NOTE: "\n" is important.
+    };
+  }
 
   constructor() {
     // https://developers.google.com/gmail/api/quickstart/nodejs
@@ -47,7 +55,7 @@ export class GoogleMailClient {
         userId: 'me',
         resource: {                   // NOTE: Corresponds to request body (undocumented).
           topicName: topic,
-          labels: ['INBOX']
+          labels: [ 'INBOX' ]
         }
       };
 
@@ -62,58 +70,116 @@ export class GoogleMailClient {
           // https://console.cloud.google.com/cloudpubsub/topics
           reject(err.message);
         } else {
-          resolve(_.pick(response, ['historyId', 'expiration']));
+          resolve(_.pick(response, [ 'historyId', 'expiration' ]));
         }
       });
     });
   }
 
-  list(authClient, query, maxResults) {
+  /**
+   * Fetches a single page of history.
+   */
+  history(authClient, startHistoryId, maxResults) {
+
+    const fetcher = (pageToken, pageSize, i) => {
+
+      // https://developers.google.com/gmail/api/v1/reference/users/history/list
+      let params = {
+        auth: authClient,
+        userId: 'me',
+        labelId: 'INBOX',
+        historyTypes: [
+//        'labelAdded',             // TODO(burdon): Monitor labels (ignore DRAFT).
+//        'labelRemoved',
+          'messageAdded',
+//        'messageDeleted'
+        ],
+        maxResults: pageSize,
+        pageToken,
+        startHistoryId
+      };
+
+      return new Promise((resolve, reject) => {
+        this._mail.users.history.list(params, (err, response) => {
+          if (err) {
+            reject(err.message);
+          } else {
+            let objects = [];
+
+            let { history, nextPageToken, historyId } = response;
+            _.each(history, event => {
+              // NOTE: history.messages only contain { id, threadId } and labels changed.
+              let { messagesAdded } = event;
+
+              _.each(messagesAdded, messageAdded => {
+                let { message } = messageAdded;
+                let { labelIds } = message;
+                if (_.indexOf(labelIds, 'DRAFT') === -1) {
+                  objects.push(message);
+                }
+              });
+            });
+
+            resolve({ nextPageToken, objects, meta: { historyId } });
+          }
+        });
+      });
+    };
+
+    // TODO(burdon): Separate method?
+    return GoogleApiUtil.request(fetcher, maxResults).then(result => {
+      let { objects, meta } = result;
+
+      // Individual GET requests.
+      let batchRequests = _.map(objects, message => GoogleMailClient.messageRequest(message.id));
+      return GoogleApiUtil.batch(authClient, batchRequests).then(result => {
+        let items = [];
+        _.each(result, message => {
+          let item = GoogleMailClient.parseMessage(message);
+          if (item) {
+            items.push(item);
+          }
+        });
+
+        return {
+          items,
+          meta
+        };
+      });
+    });
+  }
+
+  /**
+   * Uses third-party API to retrieve messages (and bodies) since Google doesn't implement
+   * batch requests (to retrieve payloads after querying for metadata) in the Node API.
+   *
+   * @param authClient
+   * @param query
+   * @param maxResults
+   * @returns {Promise}
+   */
+  messages(authClient, query, maxResults) {
     return new Promise((resolve, reject) => {
+
+      // TODO(burdon): Implement paging, historyId.
 
       // https://github.com/SpiderStrategies/node-gmail-api
       // https://github.com/SpiderStrategies/node-gmail-api/issues/29 [burdon]
       // https://developers.google.com/apis-explorer/#p/gmail/v1/gmail.users.messages.list?userId=me
       let gmail = new Gmail(_.get(authClient, 'credentials.access_token'));
-      let stream = gmail.messages(query, {
-        max: maxResults,
-        fields: ['id', 'labelIds', 'snippet', 'payload']
-      });
-
-      // TODO(burdon): Extract email.
-      // TODO(burdon): Tokenize snippet and do keyword extraction.
-      // TODO(burdon): To/From linking.
-      // TODO(burdon): To/From ranking.
 
       let messages = [];
 
+      let stream = gmail.messages(query, {
+        max: maxResults,
+        fields: [ 'historyId', 'internalDate', 'threadId', 'id', 'labelIds', 'snippet', 'payload' ]
+      });
+
       stream.on('data', (message) => {
-        let { id, labelIds, snippet, payload } = message;
-
-        let to = _.chain(payload.headers)
-          .filter(header => header.name === 'To')
-          .map(i => DataUtil.parseEmail(i.value))
-          .value();
-
-        let from = DataUtil.parseEmail(_.find(payload.headers, header => header.name === 'From').value);
-
-        let subject = _.find(payload.headers, header => header.name === 'Subject').value;
-
-        let item = {
-          namespace: NAMESPACE,
-          type: 'Message',
-          id: id,
-          title: subject,
-          gmail_labels: labelIds,
-          snippet,
-          from,
-          to
-        };
-
-        // TODO(burdon): Get historyId.
-        console.log(`## [${TypeUtil.truncate(from.address, 32).padEnd(32)}]: ${subject}`);
-
-        messages.push(item);
+        let item = GoogleMailClient.parseMessage(message);
+        if (item) {
+          messages.push(item);
+        }
       });
 
       stream.on('error', (err) => {
@@ -129,71 +195,114 @@ export class GoogleMailClient {
   }
 
   /**
-   * Get list of documents matching the query.
+   * Parse message to Item.
    *
-   * @param {google.auth.OAuth2} authClient
-   * @param query
-   * @param maxResults
-   * @returns {Promise.<{Item}>}
+   * @param message
+   * @returns {{namespace: string, type: string, id: *, title, description: *, gmail_labels: *, snippet: *, from: {name, address}, to}}
    */
-  listIds(authClient, query, maxResults) {
-    logger.log(`Query(${maxResults}): <${query}>`);
-    return GoogleApiUtil.request(this._list.bind(this, authClient, query), maxResults).then(items => {
-      logger.log('Results: ' + items.length);
-      return _.map(items, item => GoogleMailClient.toItem(item));
+  static parseMessage(message) {
+    let { historyId, internalDate, id, labelIds, snippet, payload } = message;
+
+    // Let Google detect spam.
+    // UNREAD, INBOX, IMPORTANT, CATEGORY_PERSONAL, CATEGORY_PROMOTIONS, CATEGORY_UPDATES
+    const filterLabelIds = [ 'IMPORTANT', 'SENT' ];
+    let match = _.intersection(filterLabelIds, labelIds)
+    if (!match.length) {
+      logger.log('Skipping', labelIds, snippet);
+      return;
+    }
+
+    let to = _.chain(payload.headers)
+      .filter(header => header.name === 'To')
+      .map(i => DataUtil.parseEmail(i.value))
+      .value();
+
+    let from = DataUtil.parseEmail(_.find(payload.headers, header => header.name === 'From').value);
+
+    let subject = _.find(payload.headers, header => header.name === 'Subject').value;
+
+    // The payload either contains an array of parts, or a single part that is inside the payload.
+    let body;
+    _.each(_.get(payload, 'parts', [ payload ]), part => {
+      if (body) {
+        return;
+      }
+
+      let result = GoogleMailClient.parsePart(part);
+      body = _.get(result, 'body');
     });
-  }
 
-  /**
-   * Fetches a single page of results.
-   */
-  _list(authClient, query, pageSize, pageToken, num) {
-    logger.log(`Page(${num}): ${pageSize}`);
-
-    return new Promise((resolve, reject) => {
-
-      // TODO(burdon): Batch getting messages.
-      // https://developers.google.com/api-client-library/javascript/features/batch
-      // TODO(burdon): See framework gmail.py
-      // TODO(burdon): Match labelIds and sync query within tokens.
-      // https://www.npmjs.com/package/node-gmail-api
-      // https://github.com/pradeep-mishra/google-batch/blob/master/index.js
-
-      // https://developers.google.com/gmail/api/guides/sync
-      // https://developers.google.com/gmail/api/v1/reference/users/messages/list
-      // https://developers.google.com/apis-explorer/#p/gmail/v1/gmail.users.messages.list?userId=me
-      let params = {
-        auth: authClient,
-        userId: 'me',
-        pageSize,
-        pageToken
-      };
-
-      this._mail.users.messages.list(params, (err, response) => {
-        if (err) {
-          reject(err.message);
-        } else {
-          resolve({
-            items: response.messages,
-            nextPageToken: response.nextPageToken
-          });
-        }
-      });
-    });
-  }
-
-  /**
-   * Convert Drive result to a schema object Item.
-   */
-  static toItem(message) {
     let item = {
       namespace: NAMESPACE,
       type: 'Message',
-      id: message.id,
-      title: message.subject
+      id: id,
+      title: subject,
+      description: body,
+      gmail_labels: labelIds,
+      snippet,
+      from,
+      to
     };
 
+    logger.log(`Message: ${historyId} ${internalDate} [${TypeUtil.truncate(from.address, 32).padEnd(32)}]: ${subject}`);
     return item;
+  }
+
+  /**
+   * Assumes we're interested in the first part that matches.
+   *
+   * @param part
+   * @returns {{body: *}}
+   */
+  static parsePart(part) {
+    let { headers, body: { data } } = part;
+
+    // Decode map.
+    // NOTE: May be multiple values?
+    headers = _.mapValues(_.keyBy(headers, 'name'), 'value');
+
+    // TODO(burdon): Strip body. Remove whitespace.
+
+    // Decode content.
+    // TODO(burdon): Images, attachments, etc.
+    // TODO(burdon): Tokenize snippet and do keyword extraction?
+    let body;
+    let contentType = headers['Content-Type'].replace(/ /g,'').split(';');
+    switch (contentType[0]) {
+      case 'text/plain': {
+        body = atob(data);
+        body = body.replace(/[\n\r]/g, '');
+        break;
+      }
+
+      // TODO(burdon): Prefer HTML?
+      case 'text/html': {
+        // https://www.npmjs.com/package/sanitize-html
+        // NOTE: https://www.npmjs.com/package/striptags has no deps.
+        body = sanitize(atob(data), {
+          allowedTags: [ 'a' ],
+          allowedAttributes: {
+            'a': [ 'href' ]
+          }
+        });
+
+        body = body.replace(/\n/g, '');
+        break;
+      }
+
+      case 'multipart/alternative': {
+        _.each(part.parts, part => {
+          if (body) {
+            return;
+          }
+
+          body = GoogleMailClient.parsePart(part);
+        });
+        break;
+      }
+    }
+
+    return { body };
   }
 }
 
@@ -223,6 +332,8 @@ export class GoogleMailServiceProvider extends OAuthServiceProvider {
  */
 export class GoogleMailSyncer extends GoogleSyncer {
 
+  // https://developers.google.com/gmail/api/guides/sync
+
   constructor(config, database) {
     super(config, database, 'google.mail');
 
@@ -230,17 +341,21 @@ export class GoogleMailSyncer extends GoogleSyncer {
     this._client = new GoogleMailClient();
   }
 
-  async _doSync(user, authClient) {
-    console.assert(user && authClient);
+  async _doSync(authClient, user, attributes) {
+    console.assert(authClient && user && attributes);
+
+    let { historyId } = attributes;
 
     // TODO(burdon): Store and user sync point.
+    // https://developers.google.com/gmail/api/v1/reference/users/history/list (historyId)
+    // https://developers.google.com/gmail/api/v1/reference/users/messages/list
     let query = 'label:UNREAD';
 
     //
     // Retrieve messages.
     //
     logger.log('Syncing: ' + user.email);
-    let messages = await this._client.list(authClient, query, 10);
+    let messages = await this._client.messages(authClient, query, 10);
     logger.log(`Results[${user.email}/${query}]:`,
       TypeUtil.stringify(_.map(messages, result => _.pick(result, 'from', 'title')), 2));
     if (_.isEmpty(messages)) {
@@ -295,7 +410,7 @@ export class GoogleMailSyncer extends GoogleSyncer {
     //
 
     if (!_.isEmpty(items)) {
-      console.log('Updating items: ' + _.size(items));
+      logger.log('Updating items: ' + _.size(items));
       return this._database.getItemStore(Database.NAMESPACE.USER).upsertItems(context, items);
     }
   }

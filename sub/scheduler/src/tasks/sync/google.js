@@ -38,12 +38,11 @@ export class GoogleMailSyncTask extends Task {
 
   async execTask(attributes, data) {
     let { userId } = attributes;
-//  let { historyId } = data;
+    let { historyId } = data;
 
     // Do sync.
-    // TODO(burdon): Use historyId.
     let user = await this._systemStore.getUser(userId);
-    await this._syncer.sync(user);
+    await this._syncer.sync(user, { historyId });
 
     // Notify clients.
     // TODO(burdon): Factor out notifications (move into store/query layer.)

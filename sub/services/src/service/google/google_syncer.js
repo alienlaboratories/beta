@@ -16,7 +16,7 @@ const logger = Logger.get('google.sync');
  */
 export class GoogleSyncer extends Syncer {
 
-  async doSync(user) {
+  async doSync(user, attributes) {
 
     // TODO(burdon): Store sync status.
     if (!_.get(user, 'credentials.google.refresh_token')) {
@@ -42,13 +42,14 @@ export class GoogleSyncer extends Syncer {
   /**
    * Perform sync batch.
    *
-   * @param user
    * @param authClient
+   * @param user
+   * @param attributes
    * @returns {Promise.<[{Item}]>} Synced items.
    * @private
    */
   // TODO(burdon): Batching? Multiple tasks?
-  async _doSync(user, authClient) {
+  async _doSync(authClient, user, attributes) {
     throw new Error('Not implemented');
   }
 }

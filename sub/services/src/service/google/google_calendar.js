@@ -5,7 +5,12 @@
 import _ from 'lodash';
 import google from 'googleapis';
 
+import { Logger } from 'alien-util';
+
 import { OAuthServiceProvider } from '../service';
+import { GoogleApiUtil } from './util';
+
+const logger = Logger.get('google.calendar');
 
 const NAMESPACE = 'google.com/calendar';
 
@@ -21,23 +26,39 @@ export class GoogleCalendarClient {
   }
 
   // TODO(burdon): syncToken
-  list(authClient, query, maxResults) {
+  // TODO(burdon): GoogleApiUtil.request
+  events(authClient, query, maxResults) {
+    return GoogleApiUtil.request(this._list.bind(this, authClient, query), maxResults).then(result => {
+      let { objects } = result;
+      return _.map(objects, object => GoogleCalendarClient.toItem(object));
+    });
+  }
+
+  /**
+   * Fetches a single page of results.
+   */
+  _list(authClient, query, pageSize, pageToken, num) {
+    logger.log(`Page(${num}): ${pageSize}`);
+
     return new Promise((resolve, reject) => {
+
       // https://developers.google.com/google-apps/calendar/v3/reference/events/list
-      this._calendar.events.list({
+      let params = {
         auth: authClient,
         q: query,
         calendarId: 'primary',
         timeMin: (new Date()).toISOString(),
-        maxResults,
+        maxResults: pageSize,
         singleEvents: true,
         orderBy: 'startTime'
-      }, (err, response) => {
+      };
+
+      this._calendar.events.list(params, (err, response) => {
         if (err) {
-          reject(err);
+          reject(err.message);
         } else {
-          let items = _.map(response.items, item => GoogleCalendarClient.toItem(item));
-          resolve(items);
+          let { events:objects, nextPageToken } = response;
+          resolve({ objects, nextPageToken });
         }
       });
     });

@@ -20,6 +20,11 @@ import { GoogleMailClient } from './google_mail';
 
 const logger = Logger.get('test');
 
+//
+// Testing:
+// babel-node src/service/google/testing.js mail
+//
+
 // TODO(burdon): Set-up as large test.
 // TODO(burdon): Generalize to test all services.
 // TODO(burdon): Test syncers.
@@ -72,11 +77,16 @@ config(CONF_DIR).then(config => {
     console.assert(user);
 
     let authClient = GoogleOAuthProvider.createAuthClient(_.get(config, 'google'), _.get(user, 'credentials.google'));
-    GoogleOAuthProvider.refreshAccessToken(authClient).then(({ access_token }) => {
+    return GoogleOAuthProvider.refreshAccessToken(authClient).then(({ access_token }) => {
       _.set(user, 'credentials.google.access_token', access_token);
-      testApi(authClient, email, service).catch(err => {
-        console.err(err);
-      });
+
+      return testApi(authClient, email, service)
+        .then(() => {
+          console.log('OK');
+        })
+        .catch(err => {
+          console.error(err);
+        });
     });
   });
 });
@@ -87,34 +97,42 @@ function testApi(authClient, email, service) {
   switch (service) {
 
     case 'calendar': {
-      let query = '';
-
       let client = new GoogleCalendarClient();
-      return client.list(authClient, query, num).then(results => {
+
+      let query = '';
+      return client.events(authClient, query, num).then(results => {
         logger.log(`Results for ${query}:\n`,
           TypeUtil.stringify(_.map(results, result => _.pick(result, 'id', 'title')), 2, true));
       });
     }
 
     case 'drive': {
+      let client = new GoogleDriveClient();
+
       const text = 'entube';
       const query = `fullText contains "${text}"`;
-
-      let client = new GoogleDriveClient();
-      return client.list(authClient, query, num).then(results => {
+      return client.files(authClient, query, num).then(results => {
         logger.log(`Results for ${email}:\n`,
           TypeUtil.stringify(_.map(results, result => _.pick(result, 'id', 'title')), 2, true));
       });
     }
 
     case 'mail': {
-      let query = 'label:UNREAD';
-
       let client = new GoogleMailClient();
-      return client.list(authClient, query, num).then(results => {
+
+      /*
+      let query = 'label:UNREAD';
+      return client.messages(authClient, query, num).then(results => {
         logger.log(`Results for ${query}:\n`,
           TypeUtil.stringify(_.map(results, result => _.pick(result, 'id', 'title', 'from')), 2, true));
       });
+      */
+
+      return client.history(authClient, 10324051).then(results => {
+        console.log('Messages', JSON.stringify(results, null, 2));
+      });
     }
   }
+
+  return Promise.reject('Invalid type: ' + service);
 }

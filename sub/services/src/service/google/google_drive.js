@@ -35,11 +35,11 @@ export class GoogleDriveClient {
    * @param maxResults
    * @returns {Promise.<{Item}>}
    */
-  list(authClient, query, maxResults) {
+  files(authClient, query, maxResults) {
     logger.log(`Query(${maxResults}): <${query}>`);
-    return GoogleApiUtil.request(this._list.bind(this, authClient, query), maxResults).then(items => {
-      logger.log('Results: ' + items.length);
-      return _.map(items, item => GoogleDriveClient.toItem(item));
+    return GoogleApiUtil.request(this._list.bind(this, authClient, query), maxResults).then(result => {
+      let { objects } = result;
+      return _.map(objects, object => GoogleDriveClient.toItem(object));
     });
   }
 
@@ -65,10 +65,8 @@ export class GoogleDriveClient {
         if (err) {
           reject(err.message);
         } else {
-          resolve({
-            items: response.files,
-            nextPageToken: response.nextPageToken
-          });
+          let { files:objects, nextPageToken } = response;
+          resolve({ objects, nextPageToken });
         }
       });
     });
@@ -139,7 +137,7 @@ export class GoogleDriveQueryProcessor extends QueryProcessor {
 
     // TODO(burdon): Cache client?
     let authClient = this._authProvider.createAuthClient(_.get(context, 'credentials.google'));
-    return this._client.list(authClient, query, maxResults).then(items => {
+    return this._client.files(authClient, query, maxResults).then(items => {
       return items;
     }).catch(err => {
       throw ErrorUtil.error('Google Drive', err);
