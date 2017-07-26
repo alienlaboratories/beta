@@ -35,8 +35,10 @@ const CONF_DIR = path.join(__dirname, '../../../../../conf');
 const email = 'rich.burdon@gmail.com';
 
 let service = 'mail';
+let arg = 0;
 if (process.argv.length > 2) {
   service = process.argv[2];
+  arg = process.argv[3];
 }
 
 /**
@@ -128,7 +130,7 @@ function testApi(authClient, email, service) {
       });
       */
 
-      return client.history(authClient, 10324051).then(results => {
+      return client.history(authClient, arg).then(results => {
         console.log('Messages', JSON.stringify(results, null, 2));
       });
     }
