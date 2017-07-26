@@ -32,7 +32,7 @@ export const clientRouter = (userManager, clientManager, systemStore, options={}
 
     // Register the client (and create it if necessary).
     let clientId = req.headers[Const.HEADER.CLIENT_ID];
-    clientManager.register(user.id, platform, clientId, messageToken).then(client => {
+    return clientManager.register(user.id, platform, clientId, messageToken).then(client => {
       if (!client) {
         throw new HttpError(400, 'Invalid client: ' + clientId);
       } else {
@@ -49,7 +49,7 @@ export const clientRouter = (userManager, clientManager, systemStore, options={}
   router.post('/unregister', hasJwtHeader(), (req, res, next) => {
     let clientId = req.headers[Const.HEADER.CLIENT_ID];
     let user = req.user;
-    clientManager.unregister(user.id, clientId).then(() => {
+    return clientManager.unregister(user.id, clientId).then(() => {
       res.end();
     }).catch(next);
   });

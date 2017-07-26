@@ -65,7 +65,11 @@ export const getIdToken = (user) => {
 /**
  * Handles OAuth login flow:
  *
- * /app => /user/login => /oauth/login/google => /oauth/callback/google => /app
+ * => /user/login
+ *   => /oauth/login/google => handler => passport.authenticate()
+ *     => https://accounts.google.com (via OAuthProvider)
+ *       => /oauth/callback/google => <Passport.authenticate() => authCallback> => handler
+ *         => /home
  *
  * @param userManager
  * @param systemStore
@@ -258,70 +262,85 @@ export const oauthRouter = (userManager, systemStore, oauthRegistry, config={}) 
       // TODO(burdon): Handle JSONP/CRX failure.
       failureRedirect: '/home'
     }), (req, res) => {
+      // NOTE: authCallback (registered with passport) is called first.
+
       let user = req.user;
       let state = OAuthProvider.decodeState(req.query.state);
-      logger.log('Logged in: ' + JSON.stringify(_.pick(user, ['id', 'email'])) + ' [' + JSON.stringify(state) + ']');
+      logger.log('Logged in: ' + JSON.stringify(_.pick(user, ['id', 'email'])) + '; state=' + JSON.stringify(state));
 
-      let { redirectType } = state;
-      switch (redirectType) {
+      let { redirectType, scopes=[] } = state;
 
-        //
-        // JSONP callback for cross-domain requests from client (result passed to script callback):
-        //
-        // /user/refresh_id_token
-        //   => /oauth/login/google
-        //     => accounts.google.com/o/oauth2/v2/auth
-        //       => /oauth/callback/google
-        //         <script>callback({ ... })</script>
-        //
-        case 'jsonp': {
-          let { jsonp_callback } = state;
+      const handleCallback = () => {
+        switch (redirectType) {
 
-          let response = {
-            credentials: _.pick(getUserSession(user), ['id_token', 'id_token_exp'])
-          };
+          //
+          // JSONP callback for cross-domain requests from client (result passed to script callback):
+          //
+          // /user/refresh_id_token
+          //   => /oauth/login/google
+          //     => accounts.google.com/o/oauth2/v2/auth
+          //       => /oauth/callback/google
+          //         <script>callback({ ... })</script>
+          //
+          case 'jsonp': {
+            let { jsonp_callback } = state;
 
-          // Send script that invokes JSONP callback.
-          res.send(`${jsonp_callback}(${JSON.stringify(response)});`);
-          break;
+            let response = {
+              credentials: _.pick(getUserSession(user), ['id_token', 'id_token_exp'])
+            };
+
+            // Send script that invokes JSONP callback.
+            res.send(`${jsonp_callback}(${JSON.stringify(response)});`);
+            break;
+          }
+
+          //
+          // CRX Auth flow (result encoded in URL params):
+          //
+          // chrome.identity.launchWebAuthFlow (CRX)
+          //   => /oauth/login/google
+          //     => https://accounts.google.com/o/oauth2/auth
+          //       => /oauth/callback/google
+          //         => https://ofdkhkelcafdphpddfobhbbblgnloian.chromiumapp.org/google (CRX)
+          //
+          case 'crx': {
+            let { redirectUrl, requestId  } = state;
+
+            let response = {
+              requestId,
+
+              // Credentials.
+              credentials: JSON.stringify(_.pick(getUserSession(user), ['id_token', 'id_token_exp'])),
+
+              // Canonical profile.
+              userProfile: JSON.stringify(_.pick(user, ['email', 'displayName', 'photoUrl'])),
+            };
+
+            // This isn't a JSON response, it needs to be encoded as URL params. It's easier to flatten the config.
+            res.redirect(HttpUtil.toUrl(redirectUrl, response));
+            break;
+          }
+
+          //
+          // Redirect after successful callback.
+          //
+          default: {
+            let { redirectUrl = '/home' } = state;
+            res.redirect(redirectUrl);
+            break;
+          }
         }
+      };
 
-        //
-        // CRX Auth flow (result encoded in URL params):
-        //
-        // chrome.identity.launchWebAuthFlow (CRX)
-        //   => /oauth/login/google
-        //     => https://accounts.google.com/o/oauth2/auth
-        //       => /oauth/callback/google
-        //         => https://ofdkhkelcafdphpddfobhbbblgnloian.chromiumapp.org/google (CRX)
-        //
-        case 'crx': {
-          let { redirectUrl, requestId  } = state;
+      // Update scope.
+      // TODO(burdon): State only contains new scopes.
+      let path = `credentials.${provider.providerId}`;
+      _.set(user, `${path}.scopes`, _.uniq(_.concat(_.get(user, `${path}.scopes`, []), scopes)));
+      _.set(user, `${path}.granted`, _.now());
 
-          let response = {
-            requestId,
-
-            // Credentials.
-            credentials: JSON.stringify(_.pick(getUserSession(user), ['id_token', 'id_token_exp'])),
-
-            // Canonical profile.
-            userProfile: JSON.stringify(_.pick(user, ['email', 'displayName', 'photoUrl'])),
-          };
-
-          // This isn't a JSON response, it needs to be encoded as URL params. It's easier to flatten the config.
-          res.redirect(HttpUtil.toUrl(redirectUrl, response));
-          break;
-        }
-
-        //
-        // Redirect after successful callback.
-        //
-        default: {
-          let { redirectUrl = '/home' } = state;
-          res.redirect(redirectUrl);
-          break;
-        }
-      }
+      return systemStore.updateUser(user).then(() => {
+        handleCallback();
+      });
     });
   });
 

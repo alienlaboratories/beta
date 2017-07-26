@@ -141,6 +141,7 @@ export class IdGenerator {
    * http://stackoverflow.com/questions/18724037/datetime-unix-timestamp-contains-milliseconds
    * @return {number} GraphQL Timestamp.
    */
+  // TODO(burdon): Factor out.
   static timestamp() {
     return _.now();
   }
