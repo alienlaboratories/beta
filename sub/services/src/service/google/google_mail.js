@@ -347,27 +347,31 @@ export class GoogleMailSyncer extends GoogleSyncer {
   async _doSync(authClient, user, attributes) {
     console.assert(authClient && user && attributes);
 
-    let { historyId } = attributes;
-
     // TODO(burdon): Store and user sync point.
-    // https://developers.google.com/gmail/api/v1/reference/users/history/list (historyId)
-    // https://developers.google.com/gmail/api/v1/reference/users/messages/list
-    let query = 'label:UNREAD';
+
+    let { historyId } = attributes;
+    if (historyId) {
+      logger.log(`Syncing[${user.email}]: ${query}`);
+      return this._client.history(authClient, historyId).then(result => {
+        logger.log(`Results[${user.email}]:`, TypeUtil.stringify(result));
+      });
+    }
 
     //
     // Retrieve messages.
     //
-    logger.log('Syncing: ' + user.email);
-    let messages = await this._client.messages(authClient, query, 10);
-    logger.log(`Results[${user.email}/${query}]:`,
-      TypeUtil.stringify(_.map(messages, result => _.pick(result, 'from', 'title')), 2));
-    if (_.isEmpty(messages)) {
+    let query = 'label:UNREAD';
+    logger.log(`Syncing[${user.email}]: ${query}`);
+    let { items } = await this._client.messages(authClient, query, 10);
+    logger.log(`Results[${user.email}]:`,
+      TypeUtil.stringify(_.map(items, result => _.pick(result, 'from', 'title')), 2));
+    if (_.isEmpty(items)) {
       return;
     }
 
     // Build map of senders.
     let messagesBySender = new Map();
-    _.each(messages, message => {
+    _.each(items, message => {
       TypeUtil.defaultMap(messagesBySender, message.from.address, Array).push(message);
     });
     logger.log('Senders:', JSON.stringify(Array.from(messagesBySender.keys())));
@@ -391,7 +395,7 @@ export class GoogleMailSyncer extends GoogleSyncer {
     //
     // Create list of items (Contacts and Messages) to upsert.
     //
-    let items = [];
+    let upsertItems = [];
     _.each(contacts, contact => {
       let messages = messagesBySender.get(contact.email);
       if (!_.isEmpty(messages)) {
@@ -399,12 +403,12 @@ export class GoogleMailSyncer extends GoogleSyncer {
         contact.messages = _.map(messages, message => {
           // TODO(burdon): Which bucket should this belong to?
           message.bucket = group.id;
-          items.push(message);
+          upsertItems.push(message);
           return message.id;
         });
 
         // TODO(burdon): Add to schema.
-        items.push(contact);
+        upsertItems.push(contact);
       }
     });
 
@@ -412,9 +416,9 @@ export class GoogleMailSyncer extends GoogleSyncer {
     // Upsert the items.
     //
 
-    if (!_.isEmpty(items)) {
-      logger.log('Updating items: ' + _.size(items));
-      return this._database.getItemStore(Database.NAMESPACE.USER).upsertItems(context, items);
+    if (!_.isEmpty(upsertItems)) {
+      logger.log('Updating items: ' + _.size(upsertItems));
+      return this._database.getItemStore(Database.NAMESPACE.USER).upsertItems(context, upsertItems);
     }
   }
 }

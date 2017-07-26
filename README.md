@@ -1,5 +1,9 @@
 # Alien Beta
 
+## Bugs
+
+https://goo.gl/forms/4xsB0Jf3g1elC4Qq1
+
 ## Getting Started
 
 ### Development Tools
