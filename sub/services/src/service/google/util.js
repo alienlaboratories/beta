@@ -29,6 +29,24 @@ export class GoogleApiUtil {
   static MAX_BATCH_SIZE = 100;
 
   /**
+   * Promisify Google API requests.
+   * @param {Function} f Function to invoke with standard (err, response) callback.
+   * @returns {Promise.<{Result}>}
+   */
+  // TODO(burdon): Use uniformly.
+  static promisify(f) {
+    return new Promise((resolve, reject) => {
+      f((err, response) => {
+        if (err) {
+          reject(err.message);
+        } else {
+          resolve(response);
+        }
+      });
+    });
+  }
+
+  /**
    * Iteratively process requests (pages) to collect a single result.
    *
    * @param {function.<pageToken, pageSize, i>} fetcher Returns { nextPageToken, objects, meta }
@@ -84,7 +102,10 @@ export class GoogleApiUtil {
    * @returns {Promise.<[{ message }]>}
    */
   static batch(authClient, requests) {
-    console.assert(authClient && _.size(requests));
+    console.assert(authClient);
+    if (!_.size(requests)) {
+      return Promise.resolve([]);
+    }
 
     // https://github.com/google/google-api-nodejs-client/blob/master/lib/apirequest.ts
     // https://github.com/google/google-api-nodejs-client/blob/548263fe8e64b9af27c9b21cc7a1179f8d0601dc/MIGRATING.md#batch-requests

@@ -82,47 +82,42 @@ export class GoogleMailClient {
   history(authClient, startHistoryId, maxResults) {
 
     const fetcher = (pageToken, pageSize, i) => {
+      return GoogleApiUtil.promisify(callback => {
 
-      // https://developers.google.com/gmail/api/v1/reference/users/history/list
-      let params = {
-        auth: authClient,
-        userId: 'me',
-        labelId: 'INBOX',
-        historyTypes: [
-//        'labelAdded',             // TODO(burdon): Monitor labels (ignore DRAFT).
-//        'labelRemoved',
-          'messageAdded',
-//        'messageDeleted'
-        ],
-        maxResults: pageSize,
-        pageToken,
-        startHistoryId
-      };
+        // https://developers.google.com/gmail/api/v1/reference/users/history/list
+        let params = {
+          auth: authClient,
+          userId: 'me',
+          labelId: 'INBOX',
+          historyTypes: [
+//          'labelAdded',             // TODO(burdon): Monitor labels (ignore DRAFT).
+//          'labelRemoved',
+            'messageAdded',
+//          'messageDeleted'
+          ],
+          maxResults: pageSize,
+          pageToken,
+          startHistoryId
+        };
 
-      return new Promise((resolve, reject) => {
-        this._mail.users.history.list(params, (err, response) => {
-          if (err) {
-            reject(err.message);
-          } else {
-            let objects = [];
+        this._mail.users.history.list(params, callback);
+      }).then(response => {
+        let { history, nextPageToken, historyId } = response;
 
-            let { history, nextPageToken, historyId } = response;
-            _.each(history, event => {
-              // NOTE: history.messages only contain { id, threadId } and labels changed.
-              let { messagesAdded } = event;
-
-              _.each(messagesAdded, messageAdded => {
-                let { message } = messageAdded;
-                let { labelIds } = message;
-                if (_.indexOf(labelIds, 'DRAFT') === -1) {
-                  objects.push(message);
-                }
-              });
-            });
-
-            resolve({ nextPageToken, objects, meta: { historyId } });
-          }
+        let objects = [];
+        _.each(history, event => {
+          // NOTE: history.messages only contain { id, threadId } and labels changed.
+          let { messagesAdded } = event;
+          _.each(messagesAdded, messageAdded => {
+            let { message } = messageAdded;
+            let { labelIds } = message;
+            if (_.indexOf(labelIds, 'DRAFT') === -1) {
+              objects.push(message);
+            }
+          });
         });
+
+        return { nextPageToken, objects, meta: { historyId } };
       });
     };
 
@@ -351,7 +346,7 @@ export class GoogleMailSyncer extends GoogleSyncer {
 
     let { historyId } = attributes;
     if (historyId) {
-      logger.log(`Syncing[${user.email}]: ${query}`);
+      logger.log(`Syncing[${user.email}]: ${historyId}`);
       return this._client.history(authClient, historyId).then(result => {
         logger.log(`Results[${user.email}]:`, TypeUtil.stringify(result));
       });

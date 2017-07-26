@@ -81,9 +81,6 @@ config(CONF_DIR).then(config => {
       _.set(user, 'credentials.google.access_token', access_token);
 
       return testApi(authClient, email, service)
-        .then(() => {
-          console.log('OK');
-        })
         .catch(err => {
           console.error(err);
         });

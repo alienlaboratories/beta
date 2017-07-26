@@ -34,7 +34,7 @@ export class GoogleSyncer extends Syncer {
     let { access_token } = tokens;
     _.set(user, 'credentials.google.access_token', access_token);
 
-    let items = await this._doSync(user, authClient);
+    let items = await this._doSync(authClient, user, attributes);
     logger.log('Items:', TypeUtil.stringify(items));
     return items;
   }
@@ -48,7 +48,6 @@ export class GoogleSyncer extends Syncer {
    * @returns {Promise.<[{Item}]>} Synced items.
    * @private
    */
-  // TODO(burdon): Batching? Multiple tasks?
   async _doSync(authClient, user, attributes) {
     throw new Error('Not implemented');
   }

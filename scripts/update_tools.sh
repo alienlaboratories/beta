@@ -59,6 +59,7 @@ npm install -g npm@4
 
 yarn config set prefix /usr/local/
 
+yarn global add create-react-native-app
 yarn global add babel-cli
 yarn global add babel-eslint
 yarn global add eslint
