@@ -35,10 +35,8 @@ const CONF_DIR = path.join(__dirname, '../../../../../conf');
 const email = 'rich.burdon@gmail.com';
 
 let service = 'mail';
-let arg = 0;
 if (process.argv.length > 2) {
   service = process.argv[2];
-  arg = process.argv[3];
 }
 
 /**
@@ -102,9 +100,10 @@ function testApi(authClient, email, service) {
       let client = new GoogleCalendarClient();
 
       let query = '';
-      return client.events(authClient, query, num).then(results => {
-        logger.log(`Results for ${query}:\n`,
-          TypeUtil.stringify(_.map(results, result => _.pick(result, 'id', 'title')), 2, true));
+      return client.events(authClient, query, num).then(result => {
+        let { items } = result;
+        logger.log(`Results for ${query}\n` +
+          TypeUtil.stringify(_.map(items, item => _.pick(item, 'id', 'title')), 2, true));
       });
     }
 
@@ -113,26 +112,29 @@ function testApi(authClient, email, service) {
 
       const text = 'entube';
       const query = `fullText contains "${text}"`;
-      return client.files(authClient, query, num).then(results => {
-        logger.log(`Results for ${email}:\n`,
-          TypeUtil.stringify(_.map(results, result => _.pick(result, 'id', 'title')), 2, true));
+      return client.files(authClient, query, num).then(result => {
+        let { items } = result;
+        logger.log(`Results for ${email}\n` +
+          TypeUtil.stringify(_.map(items, item => _.pick(item, 'id', 'title')), 2, true));
       });
     }
 
     case 'mail': {
       let client = new GoogleMailClient();
 
-      /*
-      let query = 'label:UNREAD';
-      return client.messages(authClient, query, num).then(results => {
-        logger.log(`Results for ${query}:\n`,
-          TypeUtil.stringify(_.map(results, result => _.pick(result, 'id', 'title', 'from')), 2, true));
-      });
-      */
-
-      return client.history(authClient, arg).then(results => {
-        console.log('Messages', JSON.stringify(results, null, 2));
-      });
+      let historyId = process.argv[3];
+      if (historyId) {
+        return client.history(authClient, historyId).then(result => {
+          console.log(`Results for ${historyId}\n` + JSON.stringify(result, null, 2));
+        });
+      } else {
+        let query = 'label:UNREAD';
+        return client.messages(authClient, query, num).then(result => {
+          let { historyId, items } = result;
+          logger.log(`Results for ${query} [${historyId}]\n` +
+            TypeUtil.stringify(_.map(items, item => _.pick(item, 'id', 'title', 'from')), 2, true));
+        });
+      }
     }
   }
 

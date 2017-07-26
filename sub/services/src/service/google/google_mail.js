@@ -160,15 +160,14 @@ export class GoogleMailClient {
    */
   messages(authClient, query, maxResults) {
     return new Promise((resolve, reject) => {
-
-      // TODO(burdon): Implement paging, historyId.
+      let historyId;
 
       // https://github.com/SpiderStrategies/node-gmail-api
       // https://github.com/SpiderStrategies/node-gmail-api/issues/29 [burdon]
       // https://developers.google.com/apis-explorer/#p/gmail/v1/gmail.users.messages.list?userId=me
       let gmail = new Gmail(_.get(authClient, 'credentials.access_token'));
 
-      let messages = [];
+      let items = [];
 
       let stream = gmail.messages(query, {
         max: maxResults,
@@ -176,9 +175,10 @@ export class GoogleMailClient {
       });
 
       stream.on('data', (message) => {
+        historyId = message.historyId;
         let item = GoogleMailClient.parseMessage(message);
         if (item) {
-          messages.push(item);
+          items.push(item);
         }
       });
 
@@ -189,7 +189,10 @@ export class GoogleMailClient {
       stream.on('finish', () => {
         // TODO(burdon): Doesn't exit.
         // https://github.com/SpiderStrategies/node-gmail-api/issues/30 [burdon]
-        resolve(messages);
+        resolve({
+          historyId,
+          items
+        });
       });
     });
   }
@@ -204,10 +207,10 @@ export class GoogleMailClient {
     let { historyId, internalDate, id, labelIds, snippet, payload } = message;
 
     // Let Google detect spam.
-    // UNREAD, INBOX, IMPORTANT, CATEGORY_PERSONAL, CATEGORY_PROMOTIONS, CATEGORY_UPDATES
-    const filterLabelIds = [ 'IMPORTANT', 'SENT' ];
-    let match = _.intersection(filterLabelIds, labelIds)
-    if (!match.length) {
+    // UNREAD, INBOX, IMPORTANT, CATEGORY_PERSONAL, CATEGORY_PROMOTIONS, CATEGORY_UPDATES, CATEGORY_FORUMS
+    let match = _.intersection(labelIds, [ 'CATEGORY_PERSONAL', 'IMPORTANT', 'SENT' ]);
+    let exclude = _.intersection(labelIds, [ 'CATEGORY_PROMOTIONS', 'CATEGORY_UPDATES', 'CATEGORY_FORUMS' ]);
+    if (!match.length || exclude.length) {
       logger.log('Skipping', labelIds, snippet);
       return;
     }
@@ -219,7 +222,7 @@ export class GoogleMailClient {
 
     let from = DataUtil.parseEmail(_.find(payload.headers, header => header.name === 'From').value);
 
-    let subject = _.find(payload.headers, header => header.name === 'Subject').value;
+    let subject = (_.find(payload.headers, header => header.name === 'Subject') || { value: snippet }).value;
 
     // The payload either contains an array of parts, or a single part that is inside the payload.
     let body;

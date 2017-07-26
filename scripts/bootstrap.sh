@@ -23,6 +23,7 @@ if [ ${CLEAN} -eq 1 ]; then
   # These seem to go stale.
   rm package-logk.json
   find . -path */node_modules -prune -o -name package-lock.json -print | rm
+  find sub/ -name node_modules -maxdepth 2 | xargs rm -rf
 fi
 
 #===============================================================================

@@ -4,6 +4,10 @@
   "description": "Alien Beta.",
   "license": "UNLICENSED",
   "repository": "https://github.com/alienlabs/beta",
+  "private": true,
+  "workspaces": [
+    "sub/*"
+  ],
   "devDependencies": {
     "babel-eslint": "^7.2.3",
     "eslint": "^4.3.0",
