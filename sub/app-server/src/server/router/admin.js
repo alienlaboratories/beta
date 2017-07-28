@@ -2,11 +2,10 @@
 // Copyright 2017 Alien Labs.
 //
 
-import _ from 'lodash';
 import express from 'express';
 
 import { ExpressUtil, Logger } from 'alien-util';
-import { isAuthenticated, AWSQueue } from 'alien-services';
+import { isAuthenticated } from 'alien-services';
 
 const logger = Logger.get('admin');
 
@@ -16,8 +15,6 @@ const logger = Logger.get('admin');
 export const adminRouter = (config, systemStore, clientManager, options) => {
   console.assert(config && clientManager && options);
   let router = express.Router();
-
-  let queue = new AWSQueue(_.get(config, 'aws.sqs.tasks'));
 
   //
   // Admin pages.
@@ -68,28 +65,6 @@ export const adminRouter = (config, systemStore, clientManager, options) => {
 
       case 'client.invalidate': {
         return clientManager.invalidateClient(clientId).then(ok);
-      }
-
-      case 'task': {
-        let { task } = req.body;
-        let { type, userId } = task;
-
-        // TODO(burdon): List users.
-        // TODO(burdon): Send userIds and client maps with task.
-        // let users = await this._database.getQueryProcessor(Database.NAMESPACE.SYSTEM).queryItems({}, {}, { type: 'User' });
-
-        return clientManager.getClients().then(clients => {
-          return queue.add({
-            type,
-            userId,
-
-            data: {
-
-              // TODO(burdon): Temp send client map (until persistent and can be accessed by scheduler.
-              clients: _.map(clients, client => _.pick(client, 'userId', 'platform', 'messageToken'))
-            }
-          }).then(ok);
-        });
       }
     }
 

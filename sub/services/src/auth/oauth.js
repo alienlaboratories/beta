@@ -393,7 +393,6 @@ export class OAuthRegistry {
  */
 export class OAuthProvider {
 
-  // TODO(burdon): Not used.
   static PATH = '/oauth';
 
   /**

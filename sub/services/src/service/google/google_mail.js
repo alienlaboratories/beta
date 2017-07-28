@@ -309,6 +309,8 @@ export class GoogleMailClient {
  */
 export class GoogleMailServiceProvider extends OAuthServiceProvider {
 
+  // TODO(burdon): Bad abstraction: should reference OAuthServiceProvider (possibly multiple).
+
   static SCOPES = [
     'https://www.googleapis.com/auth/gmail.readonly'
   ];
@@ -333,7 +335,7 @@ export class GoogleMailSyncer extends GoogleSyncer {
   // https://developers.google.com/gmail/api/guides/sync
 
   constructor(config, database) {
-    super(config, database, 'google.mail');
+    super(config, database, NAMESPACE);
 
     // Gmail client.
     this._client = new GoogleMailClient();

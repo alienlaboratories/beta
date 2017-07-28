@@ -191,7 +191,6 @@ export class AppServer {
     // User manager.
     this._userManager = new UserManager(this._googleAuthProvider, this._systemStore);
 
-    // TODO(burdon): Factor out path constants (e.g., OAuthProvider.PATH).
     // NOTE: This must be defined ("used') before other services.
     this._app.use(OAuthProvider.PATH, oauthRouter(this._userManager, this._systemStore, this._oauthRegistry, {
       app: this._app  // TODO(burdon): Externalize app.use().
@@ -430,7 +429,8 @@ export class AppServer {
           user,
           groups,
           idToken: getIdToken(user),
-          providers: this._oauthRegistry.providers,
+          oauthProviders: this._oauthRegistry.providers,
+          serviceProviders: this._serviceRegistry.providers,
 //        crxUrl: _.get(this._config, 'app.crxUrl')       // TODO(burdon): ???
         });
       })

@@ -134,18 +134,6 @@ export class ID {
  */
 export class IdGenerator {
 
-  /**
-   * UTC timestamp (milliseonds)
-   * https://en.wikipedia.org/wiki/Unix_time
-   * https://docs.python.org/2/library/time.html#time.time (NOTE: Python counts in seconds).
-   * http://stackoverflow.com/questions/18724037/datetime-unix-timestamp-contains-milliseconds
-   * @return {number} GraphQL Timestamp.
-   */
-  // TODO(burdon): Factor out.
-  static timestamp() {
-    return _.now();
-  }
-
   // TODO(burdon): Factor out random.
   // TODO(burdon): Ensure consistent with server.
   constructor(seed=undefined) {

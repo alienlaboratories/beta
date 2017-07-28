@@ -14,13 +14,58 @@
 {{/section}}
 
 {{#section 'body'}}
+
   <div class="site-panel">
-    <h2>User</h2>
-    <pre class="site-json">{{{ json user 2 }}}</pre>
+    <h2>Credentials</h2>
+    <table>
+    {{#each user.credentials}}
+      <tr>
+        <td>{{ @key }}</td>
+        <td>{{ time this.granted }}</td>
+        <td>
+          {{#each this.scopes }}
+            <div>{{ this }}</div>
+          {{/each}}
+        </td>
+      </tr>
+    {{/each}}
+    </table>
+  </div>
+
+  <div class="site-panel">
+    <h2>Services</h2>
+    <table>
+    {{#each serviceProviders}}
+      <tr>
+        <td>{{ this.id }}</td>
+      </tr>
+    {{/each}}
+    </table>
+  </div>
+
+  <div class="site-panel">
+    <h2>Syncers</h2>
+    <table>
+    {{#each user.credentials}}
+      <tr>
+        <td>{{ @key }}</td>
+        <td>
+        </td>
+      </tr>
+    {{/each}}
+    </table>
   </div>
 
   <div class="site-panel">
     <button onclick="subGmail()">Gmail Subscribe</button>
+  </div>
+
+
+
+
+  <div class="site-panel">
+    <h2>User</h2>
+    <pre class="site-json">{{{ json user 2 }}}</pre>
   </div>
 
   <div class="site-panel">
@@ -36,7 +81,7 @@
 //  new Words().start(3, 30);
 
     function subGmail() {
-      Site.postJson('/profile/api', { action: 'subscribe.gmail' }).then(() => {
+      Site.postJson('/profile/api', { action: 'subscribe.google.mail' }).then(() => {
         document.location.reload();
       });
     }

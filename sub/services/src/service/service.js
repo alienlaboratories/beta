@@ -37,6 +37,8 @@ export class ServiceProvider {
  */
 export class OAuthServiceProvider extends ServiceProvider {
 
+  // TODO(burdon): Remove. ServiceProvider should optionally reference an OAuthServiceProvider.
+
   /**
    * @param {OAuthProvider} authProvider
    * @param {string} id
@@ -51,8 +53,17 @@ export class OAuthServiceProvider extends ServiceProvider {
     this._scopes = _.concat(AuthDefs.OPENID_LOGIN_SCOPES, scopes);
   }
 
+  get authProviderId() {
+    return this._authProvider.providerId;
+  }
+
+  // TODO(burdon): Service providers may require auth from multiple OAuth providers.
   get link() {
     return this._authProvider.createAuthUrl(this._scopes);
+  }
+
+  get scopes() {
+    return this._scopes;
   }
 }
 

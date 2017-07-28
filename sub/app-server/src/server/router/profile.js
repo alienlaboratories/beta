@@ -5,10 +5,7 @@
 import _ from 'lodash';
 import express from 'express';
 
-import { Logger } from 'alien-util';
 import { GoogleMailClient, GoogleOAuthProvider, isAuthenticated } from 'alien-services';
-
-const logger = Logger.get('profile');
 
 /**
  * Admin endpoints.
@@ -24,7 +21,7 @@ export const profileRouter = (config, systemStore) => {
     let { action } = req.body;
 
     switch (action) {
-      case 'subscribe.gmail': {
+      case 'subscribe.google.mail': {
         let topic = _.get(config, 'google.pubsub.topic.gmail.id');
         let credentials = _.get(user, 'credentials.google');
         let authClient = GoogleOAuthProvider.createAuthClient(_.get(config, 'google'), credentials);
@@ -32,7 +29,7 @@ export const profileRouter = (config, systemStore) => {
           let { historyId, expiration } = repsonse;
 
           // TODO(burdon): Separate store for sync state.
-          _.set(user, 'sync.google.mail.pubsub', {
+          _.set(user, 'service.google_com.mail.subscription', {
             historyId,
             expiration
           });

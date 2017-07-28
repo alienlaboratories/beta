@@ -12,7 +12,7 @@ const logger = Logger.get('sync');
 export class Syncer {
 
   constructor(config, database, id) {
-    console.assert(config && database);
+    console.assert(config && database && id);
     this._config = config;
     this._database = database;
     this._id = id;

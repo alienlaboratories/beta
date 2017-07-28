@@ -207,8 +207,8 @@ test('Matches comparators.', () => {
   let context = {};
   let root = {};
 
-  let now = moment().unix();
-  let anHourAgo = moment().subtract(1, 'hr').unix();
+  let now = moment().valueOf();
+  let anHourAgo = moment().subtract(1, 'hr').valueOf();
 
   let item1 = {
     modified: anHourAgo
@@ -222,5 +222,5 @@ test('Matches comparators.', () => {
   expect(matcher.matchItem(context, root,
     { expr: { comp: 'GT',  field: 'modified', value: { timestamp: now } } }, item1)).toBe(false);
   expect(matcher.matchItem(context, root,
-    { expr: { comp: 'GT',  field: 'modified', value: { timestamp: -3600 * 2 } } }, item1)).toBe(true);
+    { expr: { comp: 'GT',  field: 'modified', value: { timestamp: -3600 * 1000 * 2 } } }, item1)).toBe(true);
 });

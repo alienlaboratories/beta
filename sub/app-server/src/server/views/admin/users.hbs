@@ -18,8 +18,6 @@
         <th>Admin</th>
         <th>ID</th>
         <th>Email</th>
-        <th/>
-        <th colspan="3">Tasks</th>
       </tr>
       </thead>
       <tbody>
@@ -29,31 +27,9 @@
         <td>{{ admin }}</td>
         <td>{{ id }}</td>
         <td>{{ email }}</td>
-        <td/>
-        <!--
-        <td>{{ json . }}</td>
-        -->
-        <td>
-          <i class="site-icon material-icons" onclick="sync('google.mail',      '{{ id }}')">mail</i>
-          <i class="site-icon material-icons" onclick="sync('google.calendar',  '{{ id }}')">event</i>
-        </td>
       </tr>
       {{/each}}
       </tbody>
     </table>
   </div>
-{{/section}}
-
-{{#section 'script'}}
-  <script>
-    function sync(service, userId) {
-      Site.postJson('/admin/api', {
-        action: 'task',
-        type: 'sync.' + service,
-        userId
-      }).then(() => {
-        console.log('OK');
-      });
-    }
-  </script>
 {{/section}}

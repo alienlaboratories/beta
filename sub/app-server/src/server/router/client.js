@@ -110,8 +110,8 @@ export class ClientStore {
     return new Promise((resolve, reject) => {
       this._clientMap.forEach((client, clientId) => {
         console.assert(client.created);
-        let ago = moment().unix() - client.created;
-        if (!client.registered && ago > 60) {
+        let ago = moment().valueOf().subtract(client.created);
+        if (!client.registered && ago.seconds() > 60) {
           this._clientMap.delete(clientId);
           logger.log('Flushed: ' + JSON.stringify(client));
         }
@@ -174,7 +174,7 @@ export class ClientManager {
   create(userId, platform, registered=false, messageToken=undefined) {
     console.assert(userId && platform, JSON.stringify({ userId, platform }));
 
-    let ts = moment().unix();
+    let ts = moment().valueOf();
     let client = {
       id: this._idGenerator.createId('C-'),
       platform,
@@ -221,7 +221,7 @@ export class ClientManager {
       } else {
         // Update the existing client.
         return this._clientStore.saveClient(_.assign(client, {
-          registered: moment().unix(),
+          registered: moment().valueOf(),
           messageToken
         }));
       }

@@ -90,7 +90,7 @@ export class ExpressUtil {
      * @return {string}
      */
     time: function(value) {
-      return value && moment.unix(value).fromNow();
+      return value && moment(value).fromNow();
     }
   };
 

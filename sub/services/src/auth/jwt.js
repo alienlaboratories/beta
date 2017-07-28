@@ -49,12 +49,12 @@ export class JwtUtil {
    * @returns {{ token, exp }} JWT id token and expiration time.
    */
   static createToken(userId) {
-    let idTokenExp = moment().add(...AuthDefs.JWT_EXPIRATION).unix();
+    let idTokenExp = moment().add(...AuthDefs.JWT_EXPIRATION).valueOf();
 
     // https://www.npmjs.com/package/jsonwebtoken
     let idToken = jwt.sign({
       aud: ALIEN_JWT_AUDIENCE,
-      iat: moment().unix(),
+      iat: moment().valueOf(),
       exp: idTokenExp,
       data: {
         // TODO(burdon): Add clientId for extra security?

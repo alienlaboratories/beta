@@ -72,7 +72,7 @@ interface Item {
   fkey:             String              # Opaque foreign key (i.e., not Key).
 
   alias:            String              # Short-name for URLs (unique, human-readable).
-  created:          Timestamp!
+  created:          Timestamp!          # Unix ms timestamp: _.now()
   modified:         Timestamp!
   labels:           [String]
 

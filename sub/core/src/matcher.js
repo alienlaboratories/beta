@@ -246,7 +246,7 @@ export class Matcher {
     // Relative timestamp.
     if (inputValue.timestamp) {
       if (inputValue.timestamp <= 0) {
-        inputValue.timestamp = moment().subtract(-inputValue.timestamp, 's').unix();
+        inputValue.timestamp = moment().subtract(-inputValue.timestamp, 'ms').valueOf();
       }
     }
 

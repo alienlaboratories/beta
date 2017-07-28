@@ -3,11 +3,27 @@
 //
 
 import _ from 'lodash';
+import moment from 'moment';
 
 /**
  * Type utils.
  */
 export class TypeUtil {
+
+  /**
+   * UTC timestamp (milliseonds)
+   *
+   * https://momentjs.com/docs/#/displaying/unix-timestamp-milliseconds
+   * https://stackoverflow.com/questions/18724037/datetime-unix-timestamp-contains-milliseconds
+   * https://www.ecma-international.org/ecma-262/6.0/#sec-time-values-and-time-range
+   * https://en.wikipedia.org/wiki/Unix_time (NOTE: Not Unix time, which is in seconds).
+   * https://docs.python.org/2/library/time.html#time.time (NOTE: Python counts in seconds).
+   *
+   * @return {number} GraphQL Timestamp.
+   */
+  static timestamp() {
+    return moment().valueOf();      // === _.now();
+  }
 
   /**
    * Convert Map ot Object.
