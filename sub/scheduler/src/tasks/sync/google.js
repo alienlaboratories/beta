@@ -38,11 +38,21 @@ export class GoogleMailSyncTask extends Task {
 
   async execTask(attributes, data) {
     let { userId } = attributes;
-    let { historyId } = data;
+
+    // This is the current end-point.
+//  let { historyId } = data;
 
     // Do sync.
     let user = await this._systemStore.getUser(userId);
-    await this._syncer.sync(user, { historyId });
+
+    // TODO(burdon): Generalize Sync task.
+    // TODO(burdon): Use const (see also profileRouter).
+    let state = _.get(user, 'service.google_com.mail.sync', {});
+    let newState = await this._syncer.sync(user, state);
+
+    // Update state.
+    _.set(user, 'service.google_com.mail.sync', newState);
+    await this._systemStore.updateUser(user);
 
     // Notify clients.
     // TODO(burdon): Factor out notifications (move into store/query layer.)

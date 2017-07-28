@@ -110,7 +110,7 @@ class Scheduler {
       }
 
       // TODO(burdon): Get message attributes (e.g., job handle).
-      logger.log('Processing:', type, JSON.stringify(attributes));
+      logger.log('Processing:', type, JSON.stringify(attributes), TypeUtil.stringify(data));
       return taskHandler.execTask(attributes, data);
     });
   }

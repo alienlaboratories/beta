@@ -91,6 +91,9 @@ config(CONF_DIR).then(config => {
 function testApi(authClient, email, service) {
   const num = 20;
 
+  // TODO(burdon): Opt verbose (yargs).
+  let verbose = true;
+
   switch (service) {
 
     case 'calendar': {
@@ -98,9 +101,7 @@ function testApi(authClient, email, service) {
 
       let query = '';
       return client.events(authClient, query, num).then(result => {
-        let { items } = result;
-        logger.log(`Results for ${query}\n` +
-          TypeUtil.stringify(_.map(items, item => _.pick(item, 'id', 'title')), 2, true));
+        logger.log('Result:', TypeUtil.stringify(result));
       });
     }
 
@@ -110,9 +111,7 @@ function testApi(authClient, email, service) {
       const text = 'entube';
       const query = `fullText contains "${text}"`;
       return client.files(authClient, query, num).then(result => {
-        let { items } = result;
-        logger.log(`Results for ${email}\n` +
-          TypeUtil.stringify(_.map(items, item => _.pick(item, 'id', 'title')), 2, true));
+        logger.log('Result:', TypeUtil.stringify(result));
       });
     }
 
@@ -121,15 +120,25 @@ function testApi(authClient, email, service) {
 
       let historyId = process.argv[3];
       if (historyId) {
+        logger.log('History:', historyId);
         return client.history(authClient, historyId).then(result => {
-          console.log(`Results for ${historyId}\n` + JSON.stringify(result, null, 2));
+          logger.log('Result:', TypeUtil.stringify(result));
+          if (verbose) {
+            let { items } = result;
+            logger.log(TypeUtil.stringify(
+              _.map(items, item => _.pick(item, 'id', 'title', 'from', 'snippet')), 2, true));
+          }
         });
       } else {
         let query = 'label:UNREAD';
+        logger.log('Query:', query);
         return client.messages(authClient, query, num).then(result => {
-          let { historyId, items } = result;
-          logger.log(`Results for ${query} [${historyId}]\n` +
-            TypeUtil.stringify(_.map(items, item => _.pick(item, 'id', 'title', 'from')), 2, true));
+          logger.log('Result:', TypeUtil.stringify(result));
+          if (verbose) {
+            let { items } = result;
+            logger.log(TypeUtil.stringify(
+              _.map(items, item => _.pick(item, 'id', 'title', 'from', 'snippet')), 2, true));
+          }
         });
       }
     }

@@ -49,13 +49,13 @@ export class GoogleApiUtil {
   /**
    * Iteratively process requests (pages) to collect a single result.
    *
-   * @param {function.<pageToken, pageSize, i>} fetcher Returns { nextPageToken, objects, meta }
+   * @param {function.<pageToken, pageSize, i>} fetcher Returns { nextPageToken, objects, state }
    * @param maxResults
-   * @returns {Promise.<{ objects, meta }>}
+   * @returns {Promise.<{ statem, objects }>}
    */
   static request(fetcher, maxResults=GoogleApiUtil.DEF_RESULTS) {
     if (maxResults === 0) {
-      return Promise.resolve([]);
+      return Promise.resolve();
     }
 
     //
@@ -76,12 +76,12 @@ export class GoogleApiUtil {
       // Invoke the fetcher.
       //
       return fetcher(pageToken, pageSize, i).then(response => {
-        let { nextPageToken, objects, meta } = response;
-        _.assign(result, { meta });
+        let { nextPageToken, state, objects } = response;
+        _.assign(result, { state });
 
         // Append results.
         result.objects = _.concat(result.objects, objects);
-        logger.info(`Results [${i}]: ${_.size(result.objects)}/${maxResults} ${JSON.stringify(meta)}`);
+        logger.info(`Results [${i}]: ${_.size(result.objects)}/${maxResults} ${JSON.stringify(state)}`);
 
         // Recursively fetch more.
         if (nextPageToken && _.size(objects) === pageSize && _.size(result.objects) < maxResults) {

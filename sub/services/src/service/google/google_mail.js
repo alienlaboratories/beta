@@ -117,13 +117,14 @@ export class GoogleMailClient {
           });
         });
 
-        return { nextPageToken, objects, meta: { historyId } };
+        return { nextPageToken, state: { historyId }, objects };
       });
     };
 
     // TODO(burdon): Separate method?
     return GoogleApiUtil.request(fetcher, maxResults).then(result => {
-      let { objects, meta } = result;
+      let { objects, state } = result;
+      let { historyId } = state;
 
       // Individual GET requests.
       let batchRequests = _.map(objects, message => GoogleMailClient.messageRequest(message.id));
@@ -137,8 +138,8 @@ export class GoogleMailClient {
         });
 
         return {
-          items,
-          meta
+          historyId,
+          items
         };
       });
     });
@@ -182,7 +183,7 @@ export class GoogleMailClient {
       });
 
       stream.on('finish', () => {
-        // TODO(burdon): Doesn't exit.
+        // TODO(burdon): Doesn't exit?
         // https://github.com/SpiderStrategies/node-gmail-api/issues/30 [burdon]
         resolve({
           historyId,
@@ -341,36 +342,44 @@ export class GoogleMailSyncer extends GoogleSyncer {
     this._client = new GoogleMailClient();
   }
 
-  async _doSync(authClient, user, attributes) {
-    console.assert(authClient && user && attributes);
-
-    // TODO(burdon): Store and user sync point.
-
-    let { historyId } = attributes;
-    if (historyId) {
-      logger.log(`Syncing[${user.email}]: ${historyId}`);
-      return this._client.history(authClient, historyId).then(result => {
-        logger.log(`Results[${user.email}]:`, TypeUtil.stringify(result));
-      });
-    }
+  async _doSync(authClient, user, state) {
+    console.assert(authClient && user && state);
+    let { historyId:currentHistoryId } = state;
 
     //
     // Retrieve messages.
     //
-    let query = 'label:UNREAD';
-    logger.log(`Syncing[${user.email}]: ${query}`);
-    let { items } = await this._client.messages(authClient, query, 10);
-    logger.log(`Results[${user.email}]:`,
-      TypeUtil.stringify(_.map(items, result => _.pick(result, 'from', 'title')), 2));
-    if (_.isEmpty(items)) {
-      return;
+
+    let result;
+    if (historyId) {
+      // Called on notification.
+      logger.log(`Syncing[${user.email}]: ${currentHistoryId}`);
+      result = await this._client.history(authClient, currentHistoryId);
+    } else {
+      // Called if no sync state.
+      let query = 'label:UNREAD';
+      logger.log(`Syncing[${user.email}]: ${query}`);
+      result = await this._client.messages(authClient, query, 10);
     }
 
+    logger.log(`Result[${user.email}]:`, TypeUtil.stringify(result));
+    let { historyId } = result;
+
+    return {
+      state: { historyId }
+    };
+  }
+
+
+
+
+
+
+  // TODO(burdon): !!!
+  /*
+  async _processMessages() {
     // Build map of senders.
     let messagesBySender = new Map();
-    _.each(items, message => {
-      TypeUtil.defaultMap(messagesBySender, message.from.address, Array).push(message);
-    });
     logger.log('Senders:', JSON.stringify(Array.from(messagesBySender.keys())));
 
     //
@@ -413,9 +422,13 @@ export class GoogleMailSyncer extends GoogleSyncer {
     // Upsert the items.
     //
 
-    if (!_.isEmpty(upsertItems)) {
+    if (_.isEmpty(upsertItems)) {
+      return [];
+    } else {
       logger.log('Updating items: ' + _.size(upsertItems));
-      return this._database.getItemStore(Database.NAMESPACE.USER).upsertItems(context, upsertItems);
+      return this._database.getItemStore(Database.NAMESPACE.USER)
+        .upsertItems(context, upsertItems);
     }
   }
+  */
 }
