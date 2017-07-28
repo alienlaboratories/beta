@@ -351,7 +351,7 @@ export class GoogleMailSyncer extends GoogleSyncer {
     //
 
     let result;
-    if (historyId) {
+    if (currentHistoryId) {
       // Called on notification.
       logger.log(`Syncing[${user.email}]: ${currentHistoryId}`);
       result = await this._client.history(authClient, currentHistoryId);

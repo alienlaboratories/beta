@@ -19,7 +19,7 @@ export class Syncer {
   }
 
   async sync(user, state) {
-    logger.log(`Sync[${this._id}]: ${user.id} ${state}`);
+    logger.log(`Sync[${this._id}]: ${user.id} ${JSON.stringify(state)}`);
     return this.doSync(user, state);
   }
 

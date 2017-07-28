@@ -35,11 +35,12 @@ const baseConfig = {
       // http://stackoverflow.com/questions/31169760/how-to-avoid-react-loading-twice-with-webpack-when-developing
       // 'react'                      : path.resolve('./node_modules/react'),
 
+      // NOTE: Assumes yarn workspaces (hoist packages to root).
       // http://stackoverflow.com/questions/40053344/npm-multiple-entry-points
-      'alien-client/crx'              : path.resolve('./node_modules/alien-client/src/crx'),
-      'alien-client/graphiql'         : path.resolve('./node_modules/alien-client/src/graphiql/graphiql'),
-      'alien-client/web-app'          : path.resolve('./node_modules/alien-client/src/web/app'),
-      'alien-client/web-test-apollo'  : path.resolve('./node_modules/alien-client/src/web/testing/apollo/apollo.js'),
+      'alien-client/crx'              : path.resolve('../../node_modules/alien-client/src/crx'),
+      'alien-client/graphiql'         : path.resolve('../../node_modules/alien-client/src/graphiql/graphiql'),
+      'alien-client/web-app'          : path.resolve('../../node_modules/alien-client/src/web/app'),
+      'alien-client/web-test-apollo'  : path.resolve('../../node_modules/alien-client/src/web/testing/apollo/apollo.js'),
     }
   },
 
