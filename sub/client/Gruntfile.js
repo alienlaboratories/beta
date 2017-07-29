@@ -2,7 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
-const _ = require('./node_modules/lodash/lodash');
+const _ = require('lodash');
 const defaults = require('../../tools/grunt/defaults');
 
 /**
@@ -131,6 +131,10 @@ module.exports = (grunt) => {
     },
   }));
 
+  // Hoisted modules.
+  let cwd = process.cwd();
+  process.chdir('../../');
+
   // https://github.com/gruntjs/grunt-contrib-clean
   grunt.loadNpmTasks('grunt-contrib-clean');
 
@@ -157,6 +161,8 @@ module.exports = (grunt) => {
 
   // https://webpack.github.io/docs/usage-with-grunt.html
   grunt.loadNpmTasks('grunt-webpack');
+
+  process.chdir(cwd);
 
   //
   // Tasks

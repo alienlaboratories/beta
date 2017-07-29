@@ -1,42 +1,26 @@
 #!/usr/bin/env bash
 
-#===============================================================================
-# Options.
-#===============================================================================
-
-CLEAN=0
-
-for i in "$@"
-do
-case $i in
-  --clean)
-  CLEAN=1
-  ;;
-esac
-done
-
 start=$SECONDS
 
-if [ ${CLEAN} -eq 1 ]; then
-  lerna clean --yes
+#
+# Yarn replaces lerna as the package manager for monospaces.
+#
 
-  # These seem to go stale.
-  rm package-logk.json
-  find . -path */node_modules -prune -o -name package-lock.json -print | rm
-  find sub/ -name node_modules -maxdepth 2 | xargs rm -rf
-fi
+yarn install
 
-#===============================================================================
-# Bootstrap.
-# NOTE: Hoist is required (for server apps) to ensure there aren't multiple
-# copies of modules across different packages (esp. important for graphql, aws-sdk).
-#===============================================================================
+# Grunt doesn't work if plugins are hoisted.
+# TODO(burdon): https://github.com/yarnpkg/yarn/issues/4049
 
-# Grunt plugins must be local to Gruntfile.
-# https://github.com/lerna/lerna#--hoist-glob
-lerna bootstrap --hoist --nohoist=grunt-*
+for dir in ./sub/*/
+do
+  dir=${dir%*/}
+  package=${dir##*/}
 
-# Ensure local modules are installed.
-npm update
+  if [ -e ${dir}/Gruntfile.js ]
+  then
+    echo "Linking grunt: ${package}"
+    ln -fs ../../../node_modules/grunt sub/${package}/node_modules/
+  fi
+done
 
 echo "OK: $(date) [$(( SECONDS - start ))s]"

@@ -363,44 +363,49 @@ export class GoogleMailSyncer extends GoogleSyncer {
     }
 
     logger.log(`Result[${user.email}]:`, TypeUtil.stringify(result));
-    let { historyId } = result;
+    let { items, historyId } = result;
+
+    //
+    // Process.
+    //
+
+    await this._processMessages(user, items);
 
     return {
       state: { historyId }
     };
   }
 
+  async _processMessages(user, messages) {
 
-
-
-
-
-  // TODO(burdon): !!!
-  /*
-  async _processMessages() {
+    //
     // Build map of senders.
-    let messagesBySender = new Map();
-    logger.log('Senders:', JSON.stringify(Array.from(messagesBySender.keys())));
+    //
 
-    //
-    // TODO(burdon): Need design for default groups.
+    let messagesBySender = new Map();
+    _.each(messages, message => {
+      TypeUtil.defaultMap(messagesBySender, message.from.address, Array).push(message);
+    });
+
     // Get the default group.
-    //
+    // TODO(burdon): Need design for default groups.
     let groups = await this._database.getQueryProcessor(Database.NAMESPACE.SYSTEM).getGroups(user.id);
     let group = groups[0];
+    let context = { buckets: [ group.id ] };
 
-    // Create the request context.
-    let context = { buckets: [group.id] };
-    logger.log('Context:', JSON.stringify(context));
+    //
+    // Query for contacts.
+    //
 
-    // TODO(burdon): Get only Contacts that match From email address.
+    // TODO(burdon): Currently only Contacts that match the From email address.
     let filter = { type: 'Contact' };
     let contacts = await this._database.getQueryProcessor(Database.NAMESPACE.USER).queryItems(context, {}, filter);
-    logger.log('Contacts:', TypeUtil.stringify(contacts));
+    logger.log('Contacts:', _.map(contacts, contact => contact.title));
 
     //
     // Create list of items (Contacts and Messages) to upsert.
     //
+
     let upsertItems = [];
     _.each(contacts, contact => {
       let messages = messagesBySender.get(contact.email);
@@ -422,13 +427,9 @@ export class GoogleMailSyncer extends GoogleSyncer {
     // Upsert the items.
     //
 
-    if (_.isEmpty(upsertItems)) {
-      return [];
-    } else {
+    if (!_.isEmpty(upsertItems)) {
       logger.log('Updating items: ' + _.size(upsertItems));
-      return this._database.getItemStore(Database.NAMESPACE.USER)
-        .upsertItems(context, upsertItems);
+      await this._database.getItemStore(Database.NAMESPACE.USER).upsertItems(context, upsertItems);
     }
   }
-  */
 }

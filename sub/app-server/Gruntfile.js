@@ -38,14 +38,17 @@ module.exports = (grunt) => {
     },
   }));
 
-  // TODO(burdon): Grunt can't find hoisted modules.
-  // https://github.com/gruntjs/grunt/issues/1599
+  // Hoisted modules.
+  let cwd = process.cwd();
+  process.chdir('../../');
 
   // https://github.com/gruntjs/grunt-contrib-clean
   grunt.loadNpmTasks('grunt-contrib-clean');
 
   // https://www.npmjs.com/package/grunt-version
   grunt.loadNpmTasks('grunt-version');
+
+  process.chdir(cwd);
 
   //
   // Tasks

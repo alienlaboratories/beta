@@ -13,7 +13,6 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "fakeredis": "^2.0.0",
-    "grunt": "^1.0.1",
     "memcached-mock": "^0.1.0",
     "mockfirebase": "^0.12.0",
     "regenerator-runtime": "^0.10.5",
