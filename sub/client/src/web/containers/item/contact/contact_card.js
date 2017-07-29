@@ -11,11 +11,26 @@ import { Fragments } from 'alien-api';
 import { ReactUtil } from '../../../util/react';
 import { Card, CardCanvas } from '../../../components/card';
 import { Image } from '../../../components/image';
+import { List } from '../../../components/list';
+import { ListItem } from '../../../components/list_item';
 
 import { QueryItem } from '../item_container';
 import { TaskList } from '../task/task_list';
 
 import './contact.less';
+
+/**
+ * Renders task title and status checkbox.
+ */
+// TODO(burdon): Factor out.
+export const MessageItemRenderer = ({ item }) => {
+  return (
+    <ListItem item={ item } className="ux-form-row">
+      <ListItem.Icon icon="mail"/>
+      <ListItem.Text field="title"/>
+    </ListItem>
+  );
+};
 
 /**
  * Contact card.
@@ -34,7 +49,7 @@ export class ContactCard extends React.Component {
         return;
       }
 
-      let { meta, email, tasks } = contact;
+      let { meta, email, tasks, messages } = contact;
 
       return (
         <Card mutator={ mutator } viewer={ viewer } item={ contact } showLabels={ true } sections={ sections }>
@@ -48,6 +63,10 @@ export class ContactCard extends React.Component {
 
           <Card.Section id="tasks" title="Tasks">
             <TaskList mutator={ mutator } viewer={ viewer } parent={ contact } tasks={ tasks }/>
+          </Card.Section>
+
+          <Card.Section id="messages" title="Messages">
+            <List items={ messages } itemRenderer={ MessageItemRenderer }/>
           </Card.Section>
 
         </Card>

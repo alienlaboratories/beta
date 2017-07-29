@@ -410,12 +410,20 @@ export class GoogleMailSyncer extends GoogleSyncer {
     _.each(contacts, contact => {
       let messages = messagesBySender.get(contact.email);
       if (!_.isEmpty(messages)) {
-        // Add messages to contact.
-        contact.messages = _.map(messages, message => {
+        if (!contact.messages) {
+          contact.messages = [];
+        }
+
+        // Add unique messages.
+        _.each(messages, message => {
           // TODO(burdon): Which bucket should this belong to?
           message.bucket = group.id;
+
+          // TODO(burdon): Test unique?
           upsertItems.push(message);
-          return message.id;
+          if (_.indexOf(contact.messages, message.id) === -1) {
+            contact.messages.unshift(message.id);
+          }
         });
 
         // TODO(burdon): Add to schema.
