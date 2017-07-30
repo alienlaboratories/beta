@@ -46,7 +46,7 @@ export class Database {
   static NAMESPACE = {
     SYSTEM:         'system',
     SETTINGS:       'settings',
-    USER:           'user',
+    USER:           'user',           // TODO(burdon): Rename data.
     CLIENT:         'client',
     LOCAL:          'local'
   };
@@ -151,7 +151,7 @@ export class Database {
    * @param itemMutations
    * @param items
    */
-  fireMutationNotification(context, itemMutations, items) {
+  fireMutationNotification(context, itemMutations=[], items=[]) {
     this._onMutation && this._onMutation(context, itemMutations, items);
   }
 

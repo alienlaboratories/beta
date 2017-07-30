@@ -55,18 +55,19 @@ config(ENV.ALIEN_SERVER_CONF_DIR).then(config => {
   let clientManager = new ClientManager(config,
     new FirebaseItemStore(new IdGenerator('C-'), matcher, firebase.db, Database.NAMESPACE.CLIENT, false));
 
-  let userDataStore =
+  let dataStore =
     new FirebaseItemStore(idGenerator, matcher, firebase.db, Database.NAMESPACE.USER, true);
 
   let database = new Database()
     .registerItemStore(systemStore)
-    .registerItemStore(userDataStore)
+    .registerItemStore(dataStore)
     .registerQueryProcessor(systemStore)
-    .registerQueryProcessor(userDataStore)
+    .registerQueryProcessor(dataStore)
 
     .onMutation((context, itemMutations, items) => {
       // Notify clients of changes.
-      clientManager.invalidateClients(context.clientId);
+      logger.log('Invalidating...');
+      clientManager.invalidateClients();
     });
 
   new Scheduler(config)

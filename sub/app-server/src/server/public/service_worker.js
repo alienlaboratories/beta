@@ -54,10 +54,12 @@ self.addEventListener('install', (event) => {
             messagingSenderId
           });
 
-          // TODO(burdon): Do notifications?
           // Retrieve an instance of Firebase Messaging so that it can handle background messages.
+          // https://firebase.google.com/docs/reference/js/firebase.messaging.Messaging#setBackgroundMessageHandler
           // eslint-disable-next-line no-undef
           firebase.messaging().setBackgroundMessageHandler(data => {
+            // TODO(burdon): Show notification -- or trigger sync anyway.
+            // NOTE: This is called if Chrome doesn't currently have focus.
             console.log('Message:', JSON.stringify(data));
           });
         });

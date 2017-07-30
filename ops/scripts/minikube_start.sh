@@ -8,6 +8,10 @@
 
 PS4=''
 
+# https://github.com/zchee/docker-machine-driver-xhyve#install
+sudo chown root:wheel $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
+sudo chmod u+s $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve
+
 minikube start
 
 eval $(minikube docker-env)

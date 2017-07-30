@@ -246,13 +246,14 @@ export class ClientManager {
         throw new Error('Invalid client: ' + clientId);
       }
 
-      if (!client.messageToken) {
+      let { platform, messageToken } = client;
+      if (!messageToken) {
         logger.warn('No message token for client: ' + clientId);
         return Promise.resolve();
       }
 
       logger.log('Sending invalidation to client: ' + clientId);
-      return this._pushManager.sendMessage(client.platform, client.messageToken, clientId, true);
+      return this._pushManager.sendMessage(platform, messageToken, null, true);
     });
   }
 }

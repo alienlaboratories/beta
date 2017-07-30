@@ -13,7 +13,7 @@ import { QueryRegistry } from 'alien-core';
  *
  * HOC: https://facebook.github.io/react/docs/higher-order-components.html
  */
-export const SubscriptionWrapper = (Component) => {
+export const SubscriptionWrapper = (Component, refetcher) => {
 
   // TODO(burdon): Subscriptions?
   // addGraphQLSubscriptions(networkInterface, wsClient) SubscriptionNetworkInterface
@@ -34,7 +34,13 @@ export const SubscriptionWrapper = (Component) => {
 
     componentWillMount() {
       let { cid, refetch } = this.props;
-      this.context.queryRegistry.registerQuery(cid, refetch);
+      this.context.queryRegistry.registerQuery(cid, () => {
+        if (refetcher) {
+          refetcher(this.props);
+        } else {
+          refetch();
+        }
+      });
     }
 
     componentWillUnmount() {

@@ -27,14 +27,14 @@ export class DatabaseCommand extends Command {
     this._systemStore = new SystemStore(
       new FirebaseItemStore(idGenerator, matcher, firebase.db, Database.NAMESPACE.SYSTEM, false));
 
-    this._userDataStore =
+    this._dataStore =
       new FirebaseItemStore(idGenerator, matcher, firebase.db, Database.NAMESPACE.USER, true);
 
     this._database = new Database()
       .registerItemStore(this._systemStore)
-      .registerItemStore(this._userDataStore)
+      .registerItemStore(this._dataStore)
       .registerQueryProcessor(this._systemStore)
-      .registerQueryProcessor(this._userDataStore);
+      .registerQueryProcessor(this._dataStore);
 
     this._loader = new Loader(this._database);
   }
@@ -64,7 +64,7 @@ export class DatabaseCommand extends Command {
         }))
 
         .command('reset', 'Reset database.', {}, Command.handler(argv => {
-          return this._userDataStore.clear();
+          return this._dataStore.clear();
         }))
 
         .command('init', 'Initialize database.', {}, Command.handler(argv => {

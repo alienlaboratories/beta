@@ -110,7 +110,7 @@ export const oauthRouter = (userManager, systemStore, oauthRegistry, config={}) 
     let { id, session } = userInfo;
     userManager.getUserFromId(id).then(user => {
       if (!user) {
-        throw new Error('Invalid User ID: ' + id);
+        return done('Invalid User ID: ' + id, false);
       }
 
       user.session = session;

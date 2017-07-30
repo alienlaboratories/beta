@@ -147,7 +147,7 @@ export class AppServer {
     this._clientStore =
       new FirebaseItemStore(new IdGenerator('C-'), this._matcher, this._firebase.db, Database.NAMESPACE.CLIENT, false);
 
-    this._userDataStore = __TESTING__ ?
+    this._dataStore = __TESTING__ ?
       // TODO(burdon): Config file for testing options.
       new TestItemStore(new MemoryItemStore(this._idGenerator, this._matcher, Database.NAMESPACE.USER), { delay: 0 }) :
       new FirebaseItemStore(new IdGenerator(), this._matcher, this._firebase.db, Database.NAMESPACE.USER, true);
@@ -157,11 +157,11 @@ export class AppServer {
     this._database = new Database()
       .registerItemStore(this._systemStore)
       .registerItemStore(this._settingsStore)
-      .registerItemStore(this._userDataStore)
+      .registerItemStore(this._dataStore)
 
       .registerQueryProcessor(this._systemStore)
       .registerQueryProcessor(this._settingsStore)
-      .registerQueryProcessor(this._userDataStore)
+      .registerQueryProcessor(this._dataStore)
 
       .onMutation((context, itemMutations, items) => {
         // TODO(burdon): Options.
@@ -471,7 +471,7 @@ export class AppServer {
       app: this._app,
 
       handleDatabaseDump: (__PRODUCTION__ ? () => {
-        return this._userDataStore.dump().then(debug => {
+        return this._dataStore.dump().then(debug => {
           logger.log('Database:\n', JSON.stringify(debug, null, 2));
         });
       } : null),

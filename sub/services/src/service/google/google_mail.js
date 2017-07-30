@@ -377,6 +377,7 @@ export class GoogleMailSyncer extends GoogleSyncer {
   }
 
   async _processMessages(user, messages) {
+    logger.log('Processing: ', TypeUtil.stringify({ messages }));
 
     //
     // Build map of senders.
@@ -389,9 +390,11 @@ export class GoogleMailSyncer extends GoogleSyncer {
 
     // Get the default group.
     // TODO(burdon): Need design for default groups.
+    // TODO(burdon): This becomes unstable if multiple groups.
     let groups = await this._database.getQueryProcessor(Database.NAMESPACE.SYSTEM).getGroups(user.id);
     let group = groups[0];
     let context = { buckets: [ group.id ] };
+    logger.log('Context: ', JSON.stringify(context));
 
     //
     // Query for contacts.
@@ -438,6 +441,9 @@ export class GoogleMailSyncer extends GoogleSyncer {
     if (!_.isEmpty(upsertItems)) {
       logger.log('Updating items: ' + _.size(upsertItems));
       await this._database.getItemStore(Database.NAMESPACE.USER).upsertItems(context, upsertItems);
+
+      // TODO(burdon): Make automatic.
+      this._database.fireMutationNotification(context);
     }
   }
 }

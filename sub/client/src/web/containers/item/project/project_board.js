@@ -269,10 +269,11 @@ export const ProjectBoardContainer = compose(
     props: ({ ownProps, data }) => {
       let { errors, loading, refetch, links } = data;
 
+      // TODO(burdon): Disambiguate props.
       return {
         errors,
         loading,
-        refetch,
+        refetchBoardItems: () => refetch(),
         links
       };
     }
@@ -281,5 +282,8 @@ export const ProjectBoardContainer = compose(
   // Current item.
   QueryItem(ProjectItemQuery)
 
-// TODO(burdon): Calls refetch (disambiguate since each graphql container overwrites this property).
-)(SubscriptionWrapper(ProjectBoard));
+)(SubscriptionWrapper(ProjectBoard, (props) => {
+  let { refetch, refetchBoardItems } = props;
+  refetch();
+  refetchBoardItems();
+}));
