@@ -6,11 +6,12 @@ import _ from 'lodash';
 import express from 'express';
 import moment from 'moment';
 
-import { Const } from 'alien-core';
+import { Const, Database } from 'alien-core';
 import { Async, HttpError, Logger } from 'alien-util';
 
 import { hasJwtHeader } from '../auth/oauth';
 import { PushManager } from './push';
+import { FirebaseItemStore } from '../db/firebase/firebase_item_store';
 
 const logger = Logger.get('client');
 
@@ -59,26 +60,56 @@ export const clientRouter = (userManager, clientManager, systemStore, options={}
 };
 
 /**
- * Client store.
+ *
  */
 export class ClientStore {
 
-  // TODO(burdon): Persistence and Memory versions. (See FirebaseItemStore).
-  
-  constructor() {
-    this._clientMap = new Map();
+  constructor(idGenerator) {
+    console.assert(idGenerator);
+    this._idGenerator = idGenerator;
   }
 
   /**
    * Get clients sorted by newest first.
    */
   getClients() {
+    console.assert(false);
+  }
+
+  getClient(clientId) {
+    console.assert(false);
+  }
+
+  updateClient(client) {
+    console.assert(false);
+  }
+
+  deleteClient(clientId) {
+    console.assert(false);
+  }
+
+  flushClients() {
+    console.assert(false);
+  }
+}
+
+/**
+ * Memory Client store.
+ */
+export class MemoryClientStore extends ClientStore {
+
+  constructor(idGenerator) {
+    super(idGenerator);
+
+    this._clientMap = new Map();
+  }
+
+  getClients() {
     return new Promise((resolve, reject) => {
       resolve(Array.from(this._clientMap.values()).sort((a, b) => { return b.registered - a.registered; }));
     });
   }
 
-  // TODO(burdon): Multiple IDs.
   getClient(clientId) {
     return new Promise((resolve, reject) => {
       console.assert(clientId);
@@ -87,7 +118,19 @@ export class ClientStore {
     });
   }
 
-  // TODO(burdon): Multiple IDs.
+  updateClient(client) {
+    return new Promise((resolve, reject) => {
+      console.assert(client);
+
+      if (!client.id) {
+        client.id = this._idGenerator.createId();
+      }
+
+      this._clientMap.set(client.id, client);
+      resolve(client);
+    });
+  }
+
   deleteClient(clientId) {
     return new Promise((resolve, reject) => {
       this._clientMap.delete(clientId);
@@ -95,15 +138,7 @@ export class ClientStore {
     });
   }
 
-  saveClient(client) {
-    return new Promise((resolve, reject) => {
-      console.assert(client);
-      this._clientMap.set(client.id, client);
-      resolve(client);
-    });
-  }
-
-  flush() {
+  flushClients() {
     logger.log('Flushing stale clients...');
 
     // TODO(burdon): Flush clients with no activity in 30 days.
@@ -123,6 +158,18 @@ export class ClientStore {
 }
 
 /**
+ * Firebase Client Store.
+ */
+export class FirebaseClientStore extends ClientStore {
+
+  constructor(idGenerator, matcher, db) {
+    super();
+
+    this._itemStore = new FirebaseItemStore(idGenerator, matcher, db, Database.NAMESPACE.CLIENT);
+  }
+}
+
+/**
  * Manages client connections.
  *
  * Web:
@@ -137,14 +184,14 @@ export class ClientStore {
  */
 export class ClientManager {
 
-  // TODO(burdon): Rename methods: verbClient
+  // TODO(burdon): nounVerb.
 
   // TODO(burdon): Expire web clients after 1 hour (force reconnect if client re-appears).
 
-  constructor(config, idGenerator) {
-    console.assert(config && idGenerator);
-    this._idGenerator = idGenerator;
-    this._clientStore = new ClientStore();
+  constructor(config, clientStore) {
+    console.assert(config && clientStore);
+    this._clientStore = clientStore;
+
     this._pushManager = new PushManager({
       serverKey: _.get(config, 'firebase.cloudMessaging.serverKey')
     });
@@ -153,8 +200,8 @@ export class ClientManager {
   /**
    * Flush Web clients that haven't registered.
    */
-  flush() {
-    return this._clientStore.flush();
+  flushClients() {
+    return this._clientStore.flushClients();
   }
 
   getClients() {
@@ -176,7 +223,6 @@ export class ClientManager {
 
     let ts = moment().valueOf();
     let client = {
-      id: this._idGenerator.createId('C-'),
       platform,
       userId,
       created: ts,
@@ -185,7 +231,7 @@ export class ClientManager {
     };
 
     logger.log('Created: ' + JSON.stringify(_.pick(client, ['platform', 'id'])));
-    return this._clientStore.saveClient(client);
+    return this._clientStore.updateClient(client);
   }
 
   /**
@@ -220,7 +266,7 @@ export class ClientManager {
         return this.create(userId, platform, true, messageToken);
       } else {
         // Update the existing client.
-        return this._clientStore.saveClient(_.assign(client, {
+        return this._clientStore.updateClient(_.assign(client, {
           registered: moment().valueOf(),
           messageToken
         }));

@@ -44,10 +44,11 @@ export class Database {
 
   // TODO(burdon): Move to resolver.
   static NAMESPACE = {
-    SYSTEM:   'system',
-    SETTINGS: 'settings',
-    USER:     'user',
-    LOCAL:    'local'
+    SYSTEM:         'system',
+    SETTINGS:       'settings',
+    USER:           'user',
+    CLIENT:         'client',
+    LOCAL:          'local'
   };
 
   // TODO(burdon): Move to GraphQL.

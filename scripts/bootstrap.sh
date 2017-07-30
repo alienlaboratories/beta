@@ -3,8 +3,31 @@
 start=$SECONDS
 
 #
-# Yarn replaces lerna as the package manager for monospaces.
+# Options
 #
+
+CLEAN=0
+
+for i in "$@"
+do
+case $i in
+  --clean)
+  CLEAN=1
+  ;;
+esac
+done
+
+if [ ${CLEAN} -eq 1 ]; then
+  lerna clean --yes
+  find . -name yarn.json | xargs rm
+fi
+
+#
+# Yarn replaces lerna as the package manager for monospaces.
+# https://github.com/yarnpkg/website/pull/580/commits/85747b353125aded8f28bab4970a1177ba6f815e
+#
+
+yarn config set workspaces-experimental true
 
 yarn install
 
@@ -15,6 +38,8 @@ for dir in ./sub/*/
 do
   dir=${dir%*/}
   package=${dir##*/}
+
+  mkdir -p ${dir}/node_modules
 
   if [ -e ${dir}/Gruntfile.js ]
   then

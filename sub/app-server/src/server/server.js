@@ -21,7 +21,7 @@ import { AuthUtil, Const, Database, IdGenerator, Matcher, MemoryItemStore, Syste
 import { TestItemStore } from 'alien-core/src/testing';
 import { AppDefs } from 'alien-client';
 import { apiRouter } from 'alien-api/server';
-import { clientRouter, ClientManager, GoogleNotifications, Loader } from 'alien-services';
+import { clientRouter, ClientManager, MemoryClientStore, GoogleNotifications, Loader } from 'alien-services';
 
 import {
   getIdToken,
@@ -218,7 +218,7 @@ export class AppServer {
       .registerProvider(new AlienExtractorServiceProvider());
 
     // Client manager.
-    this._clientManager = new ClientManager(this._config, new IdGenerator());
+    this._clientManager = new ClientManager(this._config, new MemoryClientStore(new IdGenerator('C-')));
 
     // Client registration.
     this._app.use('/client', clientRouter(this._userManager, this._clientManager, this._systemStore));

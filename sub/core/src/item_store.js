@@ -210,7 +210,7 @@ export class BaseItemStore extends ItemStore {
     }
 
     // Standard metadata.
-    let ts = _.now()
+    let ts = _.now();
     _.defaults(item, {
       created: ts,
       modified: ts

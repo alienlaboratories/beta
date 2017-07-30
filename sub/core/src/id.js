@@ -136,7 +136,13 @@ export class IdGenerator {
 
   // TODO(burdon): Factor out random.
   // TODO(burdon): Ensure consistent with server.
-  constructor(seed=undefined) {
+  constructor(prefix=undefined, seed=undefined) {
+    if (_.isNumber(prefix)) {
+      seed = prefix;
+      prefix = undefined;
+    }
+
+    this._prefix = prefix;
     this._random = Random.create(seed);
   }
 
@@ -144,13 +150,13 @@ export class IdGenerator {
    * Unique ID compatible with server.
    * @returns {string}
    */
-  createId(prefix=undefined) {
+  createId() {
     const s4 = () => {
       return Math.floor(this._random.floatBetween(1, 2) * 0x10000)
         .toString(16)
         .substring(1);
     };
 
-    return (prefix || '') + s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+    return (this._prefix || '') + s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
   }
 }

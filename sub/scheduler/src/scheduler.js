@@ -8,7 +8,7 @@ import yaml from 'node-yaml';
 
 import { ErrorUtil, Logger, TypeUtil } from 'alien-util';
 import { Database, IdGenerator, Matcher, SystemStore } from 'alien-core';
-import { AWSUtil, Firebase, FirebaseItemStore, ClientManager, AWSQueue } from 'alien-services';
+import { AWSUtil, Firebase, FirebaseItemStore, ClientManager, MemoryClientStore, AWSQueue } from 'alien-services';
 
 import { Task } from './task';
 
@@ -56,7 +56,7 @@ config(ENV.ALIEN_SERVER_CONF_DIR).then(config => {
     new FirebaseItemStore(idGenerator, matcher, firebase.db, Database.NAMESPACE.USER, true);
 
   // Client manager.
-  let clientManager = new ClientManager(config, new IdGenerator());
+  let clientManager = new ClientManager(config, new MemoryClientStore(new IdGenerator('C-')));
 
   let database = new Database()
     .registerItemStore(systemStore)

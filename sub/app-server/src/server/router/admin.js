@@ -60,7 +60,7 @@ export const adminRouter = (config, systemStore, clientManager, options) => {
     switch (action) {
 
       case 'client.flush': {
-        return clientManager.flush().then(ok);
+        return clientManager.flushClients().then(ok);
       }
 
       case 'client.invalidate': {
