@@ -94,6 +94,18 @@ export class MemoryItemStore extends BaseItemStore {
     }));
   }
 
+  deleteItems(context, type, itemIds) {
+    console.assert(context && type && itemIds);
+
+    _.each(this.getBucketKeys(context, type), bucketId => {
+      _.each(itemIds, itemId => {
+        this._items.delete(bucketId + '/' + itemId);
+      });
+    });
+
+    return Promise.resolve([]);
+  }
+
   /**
    * Reset the store, for debugging.
    */

@@ -138,10 +138,14 @@ export class AppServer {
     // Database.
     //
 
-    this._settingsStore = new MemoryItemStore(this._idGenerator, this._matcher, Database.NAMESPACE.SETTINGS, false);
+    this._settingsStore =
+      new MemoryItemStore(this._idGenerator, this._matcher, Database.NAMESPACE.SETTINGS, false);
 
     this._systemStore = new SystemStore(
       new FirebaseItemStore(new IdGenerator(), this._matcher, this._firebase.db, Database.NAMESPACE.SYSTEM, false));
+
+    this._clientStore =
+      new FirebaseItemStore(new IdGenerator('C-'), this._matcher, this._firebase.db, Database.NAMESPACE.CLIENT, false);
 
     this._userDataStore = __TESTING__ ?
       // TODO(burdon): Config file for testing options.
@@ -218,7 +222,7 @@ export class AppServer {
       .registerProvider(new AlienExtractorServiceProvider());
 
     // Client manager.
-    this._clientManager = new ClientManager(this._config, new MemoryClientStore(new IdGenerator('C-')));
+    this._clientManager = new ClientManager(this._config, this._clientStore);
 
     // Client registration.
     this._app.use('/client', clientRouter(this._userManager, this._clientManager, this._systemStore));

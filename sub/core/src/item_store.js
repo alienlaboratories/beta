@@ -94,6 +94,16 @@ export class ItemStore extends QueryProcessor {
    *
    * @param context
    * @param type
+   * @param id
+   */
+  deleteItem(context, type, id) {
+    return this.deleteItems(context, type, [id]).then(items => items[0]);
+  }
+
+  /**
+   *
+   * @param context
+   * @param type
    * @param itemIds
    * @return {Promise<[Item]>} Retrieved items or [].
    */
@@ -109,6 +119,16 @@ export class ItemStore extends QueryProcessor {
    * @return {Promise<[Item]>} Updated items.
    */
   upsertItems(context, items) {
+    throw new Error('Not implemented');
+  }
+
+  /**
+   *
+   * @param context
+   * @param type
+   * @param itemIds
+   */
+  deleteItems(context, type, itemIds) {
     throw new Error('Not implemented');
   }
 

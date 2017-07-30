@@ -6,12 +6,11 @@ import _ from 'lodash';
 import express from 'express';
 import moment from 'moment';
 
-import { Const, Database } from 'alien-core';
-import { Async, HttpError, Logger } from 'alien-util';
+import { Const } from 'alien-core';
+import { Async, HttpError, Logger, TypeUtil } from 'alien-util';
 
 import { hasJwtHeader } from '../auth/oauth';
 import { PushManager } from './push';
-import { FirebaseItemStore } from '../db/firebase/firebase_item_store';
 
 const logger = Logger.get('client');
 
@@ -34,7 +33,7 @@ export const clientRouter = (userManager, clientManager, systemStore, options={}
 
     // Register the client (and create it if necessary).
     let clientId = req.headers[Const.HEADER.CLIENT_ID];
-    return clientManager.register(user.id, platform, clientId, messageToken).then(client => {
+    return clientManager.registerClient(user.id, platform, clientId, messageToken).then(client => {
       if (!client) {
         throw new HttpError(400, 'Invalid client: ' + clientId);
       } else {
@@ -51,123 +50,13 @@ export const clientRouter = (userManager, clientManager, systemStore, options={}
   router.post('/unregister', hasJwtHeader(), (req, res, next) => {
     let clientId = req.headers[Const.HEADER.CLIENT_ID];
     let user = req.user;
-    return clientManager.unregister(user.id, clientId).then(() => {
+    return clientManager.unregisterClient(user.id, clientId).then(() => {
       res.end();
     }).catch(next);
   });
 
   return router;
 };
-
-/**
- *
- */
-export class ClientStore {
-
-  constructor(idGenerator) {
-    console.assert(idGenerator);
-    this._idGenerator = idGenerator;
-  }
-
-  /**
-   * Get clients sorted by newest first.
-   */
-  getClients() {
-    console.assert(false);
-  }
-
-  getClient(clientId) {
-    console.assert(false);
-  }
-
-  updateClient(client) {
-    console.assert(false);
-  }
-
-  deleteClient(clientId) {
-    console.assert(false);
-  }
-
-  flushClients() {
-    console.assert(false);
-  }
-}
-
-/**
- * Memory Client store.
- */
-export class MemoryClientStore extends ClientStore {
-
-  constructor(idGenerator) {
-    super(idGenerator);
-
-    this._clientMap = new Map();
-  }
-
-  getClients() {
-    return new Promise((resolve, reject) => {
-      resolve(Array.from(this._clientMap.values()).sort((a, b) => { return b.registered - a.registered; }));
-    });
-  }
-
-  getClient(clientId) {
-    return new Promise((resolve, reject) => {
-      console.assert(clientId);
-      let client = this._clientMap.get(clientId);
-      resolve(client);
-    });
-  }
-
-  updateClient(client) {
-    return new Promise((resolve, reject) => {
-      console.assert(client);
-
-      if (!client.id) {
-        client.id = this._idGenerator.createId();
-      }
-
-      this._clientMap.set(client.id, client);
-      resolve(client);
-    });
-  }
-
-  deleteClient(clientId) {
-    return new Promise((resolve, reject) => {
-      this._clientMap.delete(clientId);
-      resolve();
-    });
-  }
-
-  flushClients() {
-    logger.log('Flushing stale clients...');
-
-    // TODO(burdon): Flush clients with no activity in 30 days.
-    return new Promise((resolve, reject) => {
-      this._clientMap.forEach((client, clientId) => {
-        console.assert(client.created);
-        let ago = moment().valueOf().subtract(client.created);
-        if (!client.registered && ago.seconds() > 60) {
-          this._clientMap.delete(clientId);
-          logger.log('Flushed: ' + JSON.stringify(client));
-        }
-      });
-
-      resolve();
-    });
-  }
-}
-
-/**
- * Firebase Client Store.
- */
-export class FirebaseClientStore extends ClientStore {
-
-  constructor(idGenerator, matcher, db) {
-    super();
-
-    this._itemStore = new FirebaseItemStore(idGenerator, matcher, db, Database.NAMESPACE.CLIENT);
-  }
-}
 
 /**
  * Manages client connections.
@@ -184,28 +73,48 @@ export class FirebaseClientStore extends ClientStore {
  */
 export class ClientManager {
 
-  // TODO(burdon): nounVerb.
-
   // TODO(burdon): Expire web clients after 1 hour (force reconnect if client re-appears).
 
-  constructor(config, clientStore) {
-    console.assert(config && clientStore);
-    this._clientStore = clientStore;
+  static STALE = 60;
+
+  constructor(config, itemStore) {
+    console.assert(config && itemStore);
+    this._itemStore = itemStore;
 
     this._pushManager = new PushManager({
       serverKey: _.get(config, 'firebase.cloudMessaging.serverKey')
     });
+
+    this._context = {
+      groupId: 'system'
+    };
   }
 
   /**
    * Flush Web clients that haven't registered.
    */
   flushClients() {
-    return this._clientStore.flushClients();
+    logger.log('Flushing stale clients...');
+
+    let now = moment().valueOf();
+    return this._itemStore.queryItems(this._context, {}, { type: 'Client' }).then(clients => {
+      let clientIds = _.compact(_.each(clients, client => {
+        if (!client.registered && now.subtract(client.created).seconds() >= ClientManager.STALE) {
+          return client.id;
+        }
+      }));
+
+      return _.size(clientIds) ? this._itemStore.deleteItems(this._context, 'Client', clientIds) : Promise.resolve([]);
+    });
   }
 
+  /**
+   * Retrun clients sorted by age.
+   */
   getClients() {
-    return this._clientStore.getClients();
+    return this._itemStore.queryItems(this._context, {}, { type: 'Client' }).then(clients => {
+      return clients.sort((a, b) => { return b.registered - a.registered; });
+    });
   }
 
   /**
@@ -218,11 +127,12 @@ export class ClientManager {
    * @param {string} messageToken
    * @returns {Promise<Client>}
    */
-  create(userId, platform, registered=false, messageToken=undefined) {
+  createClient(userId, platform, registered=false, messageToken=undefined) {
     console.assert(userId && platform, JSON.stringify({ userId, platform }));
 
     let ts = moment().valueOf();
     let client = {
+      type: 'Client',
       platform,
       userId,
       created: ts,
@@ -231,7 +141,7 @@ export class ClientManager {
     };
 
     logger.log('Created: ' + JSON.stringify(_.pick(client, ['platform', 'id'])));
-    return this._clientStore.updateClient(client);
+    return this._itemStore.upsertItem(this._context, client);
   }
 
   /**
@@ -243,12 +153,12 @@ export class ClientManager {
    * @param {string} messageToken
    * @returns {Promise<Client>}
    */
-  register(userId, platform, clientId=undefined, messageToken=undefined) {
+  registerClient(userId, platform, clientId=undefined, messageToken=undefined) {
     console.assert(userId && platform, JSON.stringify({ platform, userId }));
-    logger.log('Registering: ' + JSON.stringify({ platform, clientId }));
+    logger.log('Registering: ' + TypeUtil.stringify({ platform, clientId, messageToken }));
 
     // Get existing client.
-    return Async.promiseOf(clientId && this._clientStore.getClient(clientId)).then(client => {
+    return Async.promiseOf(clientId && this._itemStore.getItem(this._context, 'Client', clientId)).then(client => {
       if (client) {
         // TODO(burdon): Check created time matches?
         // Verify existing client matches registration.
@@ -261,15 +171,15 @@ export class ClientManager {
         logger.warn('Invalid or expired client: ' + clientId);
       }
 
-      if (!client) {
-        // Create a new client if required.
-        return this.create(userId, platform, true, messageToken);
-      } else {
+      if (client) {
         // Update the existing client.
-        return this._clientStore.updateClient(_.assign(client, {
+        return this._itemStore.upsertItem(this._context, _.assign(client, {
           registered: moment().valueOf(),
           messageToken
         }));
+      } else {
+        // Create a new client if required.
+        return this.createClient(userId, platform, true, messageToken);
       }
     }).then(client => {
       logger.log('Registered: ' + JSON.stringify(client));
@@ -281,13 +191,13 @@ export class ClientManager {
    * Called by web client on page unload.
    * @param userId
    * @param clientId
+   * @returns {Promise<{string}>}
    */
-  // TODO(burdon): Async.
-  unregister(userId, clientId) {
+  unregisterClient(userId, clientId) {
     console.assert(userId && clientId, JSON.stringify({ userId, clientId }));
 
     logger.log('UnRegistered: ' + clientId);
-    return this._clientStore.deleteClient(clientId);
+    return this._itemStore.deleteItem(this._context, 'Client', clientId);
   }
 
   /**
@@ -300,7 +210,7 @@ export class ClientManager {
    * @return {Promise}
    */
   invalidateClients(senderId=undefined) {
-    return this._clientStore.getClients().then(clients => {
+    return this._itemStore.queryItems(this._context, {}, { type: 'Client' }).then(clients => {
 
       // Create map of tokens by platform.
       let messageTokenMap = {};
@@ -331,7 +241,7 @@ export class ClientManager {
    * @param clientId Client to invalidate.
    */
   invalidateClient(clientId) {
-    return this._clientStore.getClient(clientId).then(client => {
+    return this._itemStore.getItem(this._context, 'Client', clientId).then(client => {
       if (!client) {
         throw new Error('Invalid client: ' + clientId);
       }

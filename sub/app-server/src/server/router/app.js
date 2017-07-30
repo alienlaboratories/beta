@@ -83,7 +83,7 @@ export const appRouter = (config, clientManager, options) => {
     // Create the client.
     // TODO(burdon): Mobile web?
     // TODO(burdon): Client should register after startup? (might store ID -- esp. if has worker, etc.)
-    return clientManager.create(user.id, Const.PLATFORM.WEB).then(client => {
+    return clientManager.createClient(user.id, Const.PLATFORM.WEB).then(client => {
       console.assert(client);
 
       //

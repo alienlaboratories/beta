@@ -117,9 +117,11 @@ export class TypeUtil {
    * @param {Object} value
    */
   static compact(value) {
-    return _.omitBy(value, v => _.isNil(v)    // Null/undefined scalar.
-      || (_.isString(v) && _.isEmpty(v))      // Empty string.
-      || (_.isObject(v) && _.isEmpty(v)));    // Empty array/object.
+    return _.omitBy(value, value => {
+      return _.isNil(value)                             // Null/undefined scalar.
+        || (_.isString(value) && _.isEmpty(value))      // Empty string.
+        || (_.isObject(value) && _.isEmpty(value));     // Empty array/object.
+    });
   }
 
   /**

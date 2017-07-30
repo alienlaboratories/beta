@@ -84,9 +84,6 @@ export class FirebaseItemStore extends BaseItemStore {
     });
   }
 
-  /**
-   *
-   */
   queryItems(context, root={}, filter={}) {
 
     // Gather results from all buckets.
@@ -104,9 +101,6 @@ export class FirebaseItemStore extends BaseItemStore {
     });
   }
 
-  /**
-   *
-   */
   getItems(context, type, itemIds) {
 
     // Gather results frome each bucket.
@@ -144,9 +138,6 @@ export class FirebaseItemStore extends BaseItemStore {
     }
   }
 
-  /**
-   *
-   */
   upsertItems(context, items) {
     let promises = [];
 
@@ -163,7 +154,7 @@ export class FirebaseItemStore extends BaseItemStore {
 
         // https://firebase.google.com/docs/database/web/read-and-write
         let ref = this._db.ref(key);
-        ref.set(item, error => {
+        ref.set(_.omitBy(item, value => _.isNil(value)), error => {
           if (error) {
             logger.error('Invalid item: ' + JSON.stringify(item));
             reject(error);
@@ -172,6 +163,25 @@ export class FirebaseItemStore extends BaseItemStore {
           }
         });
       }));
+    });
+
+    return Promise.all(promises);
+  }
+
+  deleteItems(context, type, itemIds) {
+    let promises = [];
+
+    _.each(itemIds, itemId => {
+      // TODO(burdon): Conservatively delete from all buckets.
+      if (this._buckets) {
+        _.each(_.get(context, 'buckets'), bucket => {
+          let key = this.key(_.compact([ bucket, type, itemId ]));
+          promises.push(this._db.ref(key).remove());
+        });
+      } else {
+        let key = this.key(_.compact([ type, itemId ]));
+        promises.push(this._db.ref(key).remove());
+      }
     });
 
     return Promise.all(promises);
