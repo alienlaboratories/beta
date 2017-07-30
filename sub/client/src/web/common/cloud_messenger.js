@@ -78,7 +78,9 @@ class CloudMessenger {
     this._eventListener.emit({ type: 'network.recv' });
 
     // Ignore invalidations from self.
-    if (_.get(this._config, 'registration.clientId') !== data.senderId || data.force) {
+    let { senderId, force } = data;
+    if (force || _.get(this._config, 'client.id') !== senderId) {
+      // TODO(burdon): Batch on server?
       // TODO(burdon): Use collapse key to determine if first message can be skipped.
       this._messages.push(data);
       this._delay(() => {
@@ -94,6 +96,8 @@ class CloudMessenger {
 }
 
 /**
+ * FCM for Web push messages.
+ *
  * https://firebase.google.com/docs/cloud-messaging/js/client
  * https://github.com/firebase/quickstart-js/blob/master/messaging/index.html
  *
@@ -133,7 +137,8 @@ export class FirebaseCloudMessenger extends CloudMessenger {
         firebase.messaging().useServiceWorker(registration);
 
         // https://firebase.google.caom/docs/cloud-messaging/js/receive#handle_messages_when_your_web_app_is_in_the_foreground
-        firebase.messaging().onMessage(data => {
+        firebase.messaging().onMessage(message => {
+          let { data } = message;
           this.fireMessage(data);
         });
 
@@ -186,6 +191,8 @@ export class FirebaseCloudMessenger extends CloudMessenger {
 }
 
 /**
+ * GCM for CRX push messages.
+ *
  * https://developer.chrome.com/apps/gcm
  * https://developers.google.com/cloud-messaging/gcm
  *

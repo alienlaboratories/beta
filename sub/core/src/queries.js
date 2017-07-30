@@ -32,7 +32,7 @@ export class QueryRegistry {
    * @param id
    * @param refetch
    */
-  register(id, refetch) {
+  registerQuery(id, refetch) {
     console.assert(id);
     console.assert(refetch, 'Component must have refetch prop.');
     this._components.set(id, { refetch });
@@ -43,7 +43,7 @@ export class QueryRegistry {
    * Unregister query.
    * @param id
    */
-  unregister(id) {
+  unregisterQuery(id) {
     console.assert(id);
     this._components.delete(id);
     logger.log(`Unregistered[${this._components.size}]: ${id}`);

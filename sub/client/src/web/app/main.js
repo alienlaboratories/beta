@@ -30,7 +30,7 @@ export class WebApp extends BaseApp {
 
     // FCM Push Messenger.
     this._cloudMessenger = new FirebaseCloudMessenger(this._config, this._eventListener).listen(message => {
-      if (_.get(this._config, 'options.invalidate')) {
+      if (_.get(this._config, 'options.invalidations')) {
         this._queryRegistry.invalidate();
       }
     });

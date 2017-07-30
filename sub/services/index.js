@@ -12,7 +12,8 @@ export * from './src/data/testing';
 export * from './src/db/firebase/firebase';
 export * from './src/db/firebase/firebase_item_store';
 
-export * from './src/push/push';
+export * from './src/client/client';
+export * from './src/client/push';
 
 export * from './src/service/service';
 

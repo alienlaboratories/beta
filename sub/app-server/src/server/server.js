@@ -21,7 +21,7 @@ import { AuthUtil, Const, Database, IdGenerator, Matcher, MemoryItemStore, Syste
 import { TestItemStore } from 'alien-core/src/testing';
 import { AppDefs } from 'alien-client';
 import { apiRouter } from 'alien-api/server';
-import { GoogleNotifications, Loader } from 'alien-services';
+import { clientRouter, ClientManager, GoogleNotifications, Loader } from 'alien-services';
 
 import {
   getIdToken,
@@ -53,7 +53,6 @@ import {
 
 import { adminRouter } from './router/admin';
 import { appRouter } from './router/app';
-import { clientRouter, ClientManager } from './router/client';
 import { profileRouter } from './router/profile';
 import { webhookRouter } from './router/webhook';
 import { hotRouter } from './router/hot';

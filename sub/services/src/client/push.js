@@ -86,6 +86,9 @@ export class PushManager {
         if (error || response.statusCode !== 200) {
           throw new Error(`Messaging Error [${response.statusCode}]: ${error || response.statusMessage}`);
         } else {
+          // https://firebase.google.com/docs/cloud-messaging/server#response
+          let { results } = JSON.parse(body);
+          logger.log('Result:', JSON.stringify(results));
           resolve();
         }
       });

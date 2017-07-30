@@ -16,9 +16,9 @@ const logger = Logger.get('google.sync');
  */
 export class GoogleCalendarSyncTask extends Task {
 
-  constructor(config, database, systemStore, pushManager) {
+  constructor(config, database, systemStore) {
     super();
-    console.assert(config && database && systemStore && pushManager);
+    console.assert(config && database && systemStore);
   }
 
   async execTask(attributes, data) {
@@ -31,13 +31,12 @@ export class GoogleCalendarSyncTask extends Task {
  */
 export class GoogleMailSyncTask extends Task {
 
-  constructor(config, database, systemStore, pushManager) {
+  constructor(config, database, systemStore) {
     super();
-    console.assert(config && database && systemStore && pushManager);
+    console.assert(config && database && systemStore);
 
     this._database = database;
     this._systemStore = systemStore;
-    this._pushManager = pushManager;
     this._syncer = new GoogleMailSyncer(config, database);
   }
 
@@ -60,16 +59,5 @@ export class GoogleMailSyncTask extends Task {
     _.set(user, 'service.google_com.mail.sync', newState);
     await this._systemStore.updateUser(user);
     logger.log('Updated state:', JSON.stringify(newState));
-
-    // Notify clients.
-    // TODO(burdon): Factor out notifications (move into store/query layer.)
-    // TODO(burdon): Currently ClientStore is in-memory (Hack sends client map as part of the job data).
-    /*
-    let clients = _.filter(_.get(data, 'clients'), client => client.userId === user.id);
-    await _.map(clients, client => {
-      let { platform, messageToken } = client;
-      return this._pushManager.sendMessage(platform, messageToken);
-    });
-    */
   }
 }

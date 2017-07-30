@@ -34,12 +34,12 @@ export const SubscriptionWrapper = (Component) => {
 
     componentWillMount() {
       let { cid, refetch } = this.props;
-      this.context.queryRegistry.register(cid, refetch);
+      this.context.queryRegistry.registerQuery(cid, refetch);
     }
 
     componentWillUnmount() {
       let { cid } = this.props;
-      this.context.queryRegistry.unregister(cid);
+      this.context.queryRegistry.unregisterQuery(cid);
     }
 
     render() {

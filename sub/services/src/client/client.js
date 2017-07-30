@@ -8,7 +8,9 @@ import moment from 'moment';
 
 import { Const } from 'alien-core';
 import { Async, HttpError, Logger } from 'alien-util';
-import { hasJwtHeader, PushManager } from 'alien-services';
+
+import { hasJwtHeader } from '../auth/oauth';
+import { PushManager } from './push';
 
 const logger = Logger.get('client');
 
@@ -16,7 +18,6 @@ const logger = Logger.get('client');
  * Client endpoints.
  * @return {Router}
  */
-// TODO(burdon): Move to alien-services
 export const clientRouter = (userManager, clientManager, systemStore, options={}) => {
   console.assert(userManager && clientManager);
   let router = express.Router();
@@ -62,8 +63,7 @@ export const clientRouter = (userManager, clientManager, systemStore, options={}
  */
 export class ClientStore {
 
-  // TODO(burdon): ALL Async.
-  // TODO(burdon): Persistence and Memory versions.
+  // TODO(burdon): Persistence and Memory versions. (See FirebaseItemStore).
   
   constructor() {
     this._clientMap = new Map();

@@ -30,7 +30,7 @@ const config = _.defaultsDeep(window.config, {
   options: {
     debugInfo: (window.config.env !== 'production') && false,
     optimisticResponse: true,
-    invalidations: false,
+    invalidations: true,
     networkDelay: 0
   },
 

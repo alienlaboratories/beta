@@ -253,9 +253,6 @@ export const ProjectBoardContainer = compose(
     }
   }),
 
-  // Current item.
-  QueryItem(ProjectItemQuery),
-
   // Current items for selected board.
   graphql(ProjectBoardItemsQuery, {
     options: (props) => {
@@ -279,6 +276,10 @@ export const ProjectBoardContainer = compose(
         links
       };
     }
-  })
+  }),
 
+  // Current item.
+  QueryItem(ProjectItemQuery)
+
+// TODO(burdon): Calls refetch (disambiguate since each graphql container overwrites this property).
 )(SubscriptionWrapper(ProjectBoard));

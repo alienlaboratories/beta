@@ -8,7 +8,7 @@ import yaml from 'node-yaml';
 
 import { ErrorUtil, Logger, TypeUtil } from 'alien-util';
 import { Database, IdGenerator, Matcher, SystemStore } from 'alien-core';
-import { AWSUtil, Firebase, FirebaseItemStore, PushManager, AWSQueue } from 'alien-services';
+import { AWSUtil, Firebase, FirebaseItemStore, ClientManager, AWSQueue } from 'alien-services';
 
 import { Task } from './task';
 
@@ -55,20 +55,24 @@ config(ENV.ALIEN_SERVER_CONF_DIR).then(config => {
   let userDataStore =
     new FirebaseItemStore(idGenerator, matcher, firebase.db, Database.NAMESPACE.USER, true);
 
+  // Client manager.
+  let clientManager = new ClientManager(config, new IdGenerator());
+
   let database = new Database()
     .registerItemStore(systemStore)
     .registerItemStore(userDataStore)
     .registerQueryProcessor(systemStore)
-    .registerQueryProcessor(userDataStore);
+    .registerQueryProcessor(userDataStore)
 
-  let pushManager = new PushManager({
-    serverKey: _.get(config, 'firebase.cloudMessaging.serverKey')
-  });
+    .onMutation((context, itemMutations, items) => {
+      // Notify clients of changes.
+      clientManager.invalidateClients(context.clientId);
+    });
 
   new Scheduler(config)
     .registerHandler('test',                  new TestTask())
-    .registerHandler('sync.google.calendar',  new GoogleCalendarSyncTask(config, database, systemStore, pushManager))
-    .registerHandler('sync.google.mail',      new GoogleMailSyncTask(config, database, systemStore, pushManager))
+    .registerHandler('sync.google.calendar',  new GoogleCalendarSyncTask(config, database, systemStore))
+    .registerHandler('sync.google.mail',      new GoogleMailSyncTask(config, database, systemStore))
     .start();
 });
 
