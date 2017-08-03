@@ -102,7 +102,7 @@ export class GoogleMailClient {
 
         this._mail.users.history.list(params, callback);
       }).then(response => {
-        let { history, nextPageToken, historyId } = response;
+        let { nextPageToken, historyId, history } = response;
 
         let objects = [];
         _.each(history, event => {

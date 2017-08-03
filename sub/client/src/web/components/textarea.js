@@ -25,16 +25,18 @@ export class TextArea extends React.Component {
     rows:           4
   };
 
-  state = {
-    initialValue:   undefined,
-    value:          undefined
-  };
+  constructor() {
+    super(...arguments);
+
+    this.state = {
+      value: this.props.value
+    };
+  }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.value !== this.state.value) {
       this.setState({
-        initialValue:   nextProps.value,
-        value:          nextProps.value
+        value: nextProps.value
       });
     }
   }

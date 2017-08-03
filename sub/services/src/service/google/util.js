@@ -51,7 +51,7 @@ export class GoogleApiUtil {
    *
    * @param {function.<pageToken, pageSize, i>} fetcher Returns { nextPageToken, objects, state }
    * @param maxResults
-   * @returns {Promise.<{ statem, objects }>}
+   * @returns {Promise.<{ state, objects }>}
    */
   static request(fetcher, maxResults=GoogleApiUtil.DEF_RESULTS) {
     if (maxResults === 0) {
@@ -62,6 +62,8 @@ export class GoogleApiUtil {
     // Array of results.
     //
     let result = {
+
+      // TODO(burdon): Generalize collector.
       objects: []
     };
 

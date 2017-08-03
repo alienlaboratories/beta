@@ -68,7 +68,7 @@ export class ID {
 
   static key(item) {
     console.assert(item.type && item.id, 'Invalid item: ' + JSON.stringify(item));
-    return _.pick(item, 'namespace', 'bucket', 'type', 'id');
+    return _.omitBy(_.pick(item, 'namespace', 'bucket', 'type', 'id'), _.isNil);
   }
 
   static keyEqual(key1, key2) {

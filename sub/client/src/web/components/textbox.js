@@ -45,13 +45,13 @@ export class TextBox extends React.Component {
   };
 
   static defaultProps = {
-    delay: 100
+    delay:          100
   };
 
   constructor() {
     super(...arguments);
 
-    // Maintain the current value so that componentWillReceiveProps doesn't overwrite current edits.
+    // Maintain the current value so that componentWillReceiveProps doesn't overwrite active edits.
     this._currentValue = this.props.value;
 
     this.state = {

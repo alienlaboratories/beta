@@ -275,7 +275,7 @@ export class Card extends React.Component {
 
             {/* TODO(burdon): Extend details. */}
             { sections &&
-            <Card.Section id="notes" title="Notes" open={ false }>
+            <Card.Section id="notes" title="Notes" open={ true }>
               <div className="ux-card-padding">
                 <TextArea className="ux-font-xsmall"
                           value={ description }

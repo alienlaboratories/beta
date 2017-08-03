@@ -2,6 +2,7 @@
 
 #
 # OS/X Developer Tools Set-up.
+# TODO(burdon): brew bundle (Brewfile)
 #
 
 brew update

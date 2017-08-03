@@ -37,38 +37,30 @@ export class GoogleDriveClient {
    */
   files(authClient, query, maxResults) {
     logger.log(`Query(${maxResults}): <${query}>`);
-    return GoogleApiUtil.request(this._list.bind(this, authClient, query), maxResults).then(result => {
+
+    const fetcher = (pageToken, pageSize, i) => {
+      return GoogleApiUtil.promisify(callback => {
+
+        // https://developers.google.com/drive/v3/reference/files/list
+        let params = {
+          auth: authClient,
+          q: query,
+          fields: 'nextPageToken, files(id, name, webViewLink, mimeType)',
+          spaces: 'drive',
+          pageSize,
+          pageToken
+        };
+
+        this._drive.files.list(params, callback);
+      }).then(response => {
+        let { nextPageToken, files } = response;
+        return { nextPageToken, objects: files };
+      });
+    };
+
+    return GoogleApiUtil.request(fetcher, maxResults).then(result => {
       let { objects } = result;
       return _.map(objects, object => GoogleDriveClient.toItem(object));
-    });
-  }
-
-  /**
-   * Fetches a single page of results.
-   */
-  _list(authClient, query, pageSize, pageToken, num) {
-    logger.log(`Page(${num}): ${pageSize}`);
-
-    return new Promise((resolve, reject) => {
-
-      // https://developers.google.com/drive/v3/reference/files/list
-      let params = {
-        auth: authClient,
-        q: query,
-        fields: 'nextPageToken, files(id, name, webViewLink, mimeType)',
-        spaces: 'drive',
-        pageSize,
-        pageToken
-      };
-
-      this._drive.files.list(params, (err, response) => {
-        if (err) {
-          reject(err.message);
-        } else {
-          let { files:objects, nextPageToken } = response;
-          resolve({ objects, nextPageToken });
-        }
-      });
     });
   }
 

@@ -25,42 +25,33 @@ export class GoogleCalendarClient {
     this._calendar = google.calendar('v3');
   }
 
-  // TODO(burdon): syncToken
-  // TODO(burdon): GoogleApiUtil.request
   events(authClient, query, maxResults) {
-    return GoogleApiUtil.request(this._list.bind(this, authClient, query), maxResults).then(result => {
+
+    const fetcher = (pageToken, pageSize, i) => {
+      return GoogleApiUtil.promisify(callback => {
+
+        // https://developers.google.com/google-apps/calendar/v3/reference/events/list
+        let params = {
+          auth: authClient,
+          q: query,
+          calendarId: 'primary',
+          timeMin: (new Date()).toISOString(),
+          maxResults: pageSize,
+          singleEvents: true,
+          orderBy: 'startTime'
+        };
+
+        this._calendar.events.list(params, callback);
+      }).then(response => {
+        // TODO(burdon): syncToken
+        let { nextPageToken, events } = response;
+        return { nextPageToken, objects: events };
+      });
+    };
+
+    return GoogleApiUtil.request(fetcher, maxResults).then(result => {
       let { objects } = result;
       return _.map(objects, object => GoogleCalendarClient.toItem(object));
-    });
-  }
-
-  /**
-   * Fetches a single page of results.
-   */
-  _list(authClient, query, pageSize, pageToken, num) {
-    logger.log(`Page(${num}): ${pageSize}`);
-
-    return new Promise((resolve, reject) => {
-
-      // https://developers.google.com/google-apps/calendar/v3/reference/events/list
-      let params = {
-        auth: authClient,
-        q: query,
-        calendarId: 'primary',
-        timeMin: (new Date()).toISOString(),
-        maxResults: pageSize,
-        singleEvents: true,
-        orderBy: 'startTime'
-      };
-
-      this._calendar.events.list(params, (err, response) => {
-        if (err) {
-          reject(err.message);
-        } else {
-          let { events:objects, nextPageToken } = response;
-          resolve({ objects, nextPageToken });
-        }
-      });
     });
   }
 
