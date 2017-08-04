@@ -6,3 +6,14 @@ loggly:
   # https://alienlabs.loggly.com/tokens
   subdomain: 'alienlabs'
   token: "b41d441c-3131-4d28-9946-96ee95615221"
+
+#
+# uuidgen
+#
+
+webhook:
+  testing: "14E2FD50-F675-4ADA-B132-CEE9950D044A"
+  google_mail_notification: "83CC572F-90DE-406F-ABFB-4C770C2381EB"
+
+apikey:
+  alexa: "56D125A6-7090-46BF-86A3-84C7577188F3"
