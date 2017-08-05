@@ -18,6 +18,10 @@ const logger = Logger.get('webhook');
 export const webhookRouter = (config, options) => {
   const router = express.Router();
 
+  _.each(_.get(options, 'hooks'), (handler, id) => {
+    logger.log('Hook: ' + id);
+  });
+
   // TODO(burdon): Hook registry (from config file).
   router.post('/:id', (req, res) => {
     let { id } = req.params;
@@ -33,6 +37,7 @@ export const webhookRouter = (config, options) => {
           logger.error(err);
           res.status(500).send();
         });
+
     } else {
       logger.warn('Invalid hook: ' + id);
       res.status(500).send();
