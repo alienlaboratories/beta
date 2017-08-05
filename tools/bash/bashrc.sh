@@ -20,9 +20,9 @@ export PROJECTS_HOME=${PROJECTS_HOME:-$HOME/projects}
 export PROJECT_HOME=${PROJECTS_HOME}/src/alienlabs/beta
 
 # ~/.aws/credentials
-export AWS_PROFILE="robotik"
+export AWS_PROFILE="alienlabs"
 
-export ROBOTIK_S3_BUCKET="cluster.beta.kube.robotik.io"
+export ALIEN_S3_BUCKET="cluster.beta.kube.alienlabs.io"
 
 #
 # Docker
@@ -42,7 +42,7 @@ alias k='kubectl'
 
 alias kc='kubectl config get-contexts'
 alias kc-mini='kubectl config use-context minikube'
-alias kc-beta='kubectl config use-context beta.kube.robotik.io'
+alias kc-beta='kubectl config use-context beta.kube.alienlabs.io'
 
 # Remote shell.
 function ksh() {

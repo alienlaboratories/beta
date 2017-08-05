@@ -49,10 +49,10 @@
 
 ~~~~
   # Map registered URI (in Google Console Credentials) to localhost.
-  # http://minikube.robotik.io:9000/oauth/callback/google
+  # http://minikube.alienlabs.io:9000/oauth/callback/google
 
   sudo vi /etc/hosts
-  127.0.0.1 minikube.robotik.io
+  127.0.0.1 minikube.alienlabs.io
   
   # Port forward (CTRL-C to exit).
   SERVICE="alien-app-server"
@@ -60,7 +60,7 @@
   
   # OAuth flow
   127.0.0.1:9000/oauth/login/google
-    => https://googe.com&redirect=minikube.robotik.io:9000 
+    => https://googe.com&redirect=minikube.alienlabs.io:9000 
       => /etc/hosts 
         => ssh -L
           => http://192.168.64.2:30058

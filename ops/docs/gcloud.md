@@ -20,7 +20,7 @@
         - https://www.google.com/webmasters/tools/home?hl=en
     - Register domain with API manager:
         - https://console.cloud.google.com/apis/credentials/domainverification?project=alienlabs-dev
-        - Add https://app.robotik.io
+        - Add https://app.alienlabs.io
         
 3. Configure subscription:
 - https://cloud.google.com/pubsub/docs/push
@@ -28,7 +28,7 @@
 - https://console.cloud.google.com/cloudpubsub/subscriptions?project=alienlabs-dev
 
 ~~~~
-    gcloud beta pubsub subscriptions create "g-mail" --topic="g-mail" --push-endpoint="https://app.robotik.io/hook/gmail"
+    gcloud beta pubsub subscriptions create "g-mail" --topic="g-mail" --push-endpoint="https://app.alienlabs.io/hook/gmail"
     gcloud beta pubsub subscriptions list
 ~~~~
 

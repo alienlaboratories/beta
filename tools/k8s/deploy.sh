@@ -30,10 +30,10 @@ function log { echo; echo -e "${COL_GREEN}###\n### $1\n###${COL_RESET}"; echo; }
 #===============================================================================
 
 # Default cluster.
-ALIEN_CLUSTER="beta.kube.robotik.io"
+ALIEN_CLUSTER="beta.kube.alienlabs.io"
 
 # https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories
-AWS_ECS_DOCKER_REPO="861694698401.dkr.ecr.us-east-1.amazonaws.com"
+AWS_ECS_DOCKER_REPO="956243632840.dkr.ecr.us-east-1.amazonaws.com"
 
 # Minikube runs insecure Docker daemon.
 # https://mtpereira.com/local-development-k8s.html
@@ -174,7 +174,7 @@ if [ ${BUILD} -eq 1 ]; then
   DOCKERFILE='./Dockerfile'
   if [ ${MINIKUBE} -eq 1 ]; then
     MINIKUBE_DOCKERFILE='./dist/Dockerfile'
-    MINIKUBE_APP_SERVER_URL='http://minikube.robotik.io:9000'
+    MINIKUBE_APP_SERVER_URL='http://minikube.alienlabs.io:9000'
 
     cat ${DOCKERFILE} | sed -e "s~ENV APP_SERVER_URL\(.*\)~ENV APP_SERVER_URL=\"${MINIKUBE_APP_SERVER_URL}\"~g" > \
       ${MINIKUBE_DOCKERFILE}

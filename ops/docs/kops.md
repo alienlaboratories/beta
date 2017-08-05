@@ -7,7 +7,7 @@
 
 ~~~~
   # DNS lookup.
-  dig robotik.io
+  dig alienlabs.io
 ~~~~
 
 
@@ -103,17 +103,19 @@ TODO(burdon): Add users to kops group.
 - http://docs.aws.amazon.com/cli/latest/reference/s3api
 
 ~~~~
-  export ROBOTIK_CLUSTERS=kube.robotik.io
+  scripts/aws/create_s3_bucket
 
-  export CLUSTER=beta.${ROBOTIK_CLUSTERS}
+  export ALIEN_CLUSTERS=kube.alienlabs.io
 
-  export ROBOTIK_S3_BUCKET=cluster.${CLUSTER}
+  export CLUSTER=beta.${ALIEN_CLUSTERS}
+
+  export ALIEN_S3_BUCKET=cluster.${CLUSTER}
 
   # Note: Delete via console.
-  aws s3api create-bucket --bucket ${ROBOTIK_S3_BUCKET}
-  aws s3api put-bucket-versioning --bucket ${ROBOTIK_S3_BUCKET} --versioning-configuration Status=Enabled
+  aws s3api create-bucket --bucket ${ALIEN_S3_BUCKET}
+  aws s3api put-bucket-versioning --bucket ${ALIEN_S3_BUCKET} --versioning-configuration Status=Enabled
   
-  export KOPS_STATE_STORE=s3://${ROBOTIK_S3_BUCKET}
+  export KOPS_STATE_STORE=s3://${ALIEN_S3_BUCKET}
   export KOPS_STATE_S3_ACL=public-read
   
   aws s3 ls
@@ -124,7 +126,7 @@ TODO(burdon): Configure ACLs: http://docs.aws.amazon.com/AmazonS3/latest/dev/acl
 - http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl
 
 
-### Route 53 Hosted Zone
+### Route-53 Hosted Zone
 
 * Create Hosted Zone.
   - NOTE: we have one hosted zone for all clusters.
@@ -133,10 +135,10 @@ TODO(burdon): Configure ACLs: http://docs.aws.amazon.com/AmazonS3/latest/dev/acl
   - https://github.com/kubernetes/kops/blob/master/docs/aws.md#scenario-3-subdomain-for-clusters-in-route53-leaving-the-domain-at-another-registrar
 
 ~~~~
-  export ROBOTIK_CLUSTERS=kube.robotik.io
+  export ALIEN_CLUSTERS=kube.alienlabs.io
 
   ID=$(uuidgen) && aws route53 create-hosted-zone \
-      --name ${ROBOTIK_CLUSTERS} --caller-reference $ID | jq .DelegationSet.NameServers
+      --name ${ALIEN_CLUSTERS} --caller-reference $ID | jq .DelegationSet.NameServers
 
   # Get existing name servers.
   HZC=$(aws route53 list-hosted-zones | jq '.HostedZones[] | select(.Name=="${CLUSTER}.") | .Id')
@@ -148,7 +150,7 @@ TODO(burdon): Configure ACLs: http://docs.aws.amazon.com/AmazonS3/latest/dev/acl
 
 * Create subdomin with 4 NS records above.
   - https://console.aws.amazon.com/route53/home#resource-record-sets:Z2CBLP82419UJ2
-  - https://domains.google.com/registrar#z=a&d=1022025,robotik.io&chp=z,d
+  - https://domains.google.com/registrar#z=a&d=1022025,alienlabs.io&chp=z,d
 
 
 ### Creating the Cluster
@@ -167,9 +169,9 @@ TODO(burdon): Configure ACLs: http://docs.aws.amazon.com/AmazonS3/latest/dev/acl
   kubectl cluster-info
 
   # Creates IAM roles:
-  # nodes.beta.kube.robotik.io
-  # masters.beta.kube.robotik.io
-  # Sets kubectl context to beta.kube.robotik.io
+  # nodes.beta.kube.alienlabs.io
+  # masters.beta.kube.alienlabs.io
+  # Sets kubectl context to beta.kube.alienlabs.io
   
   # Delete (this terminates nodes).
   # https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#Instances:sort=instanceId
@@ -234,7 +236,7 @@ TODO(burdon): Copy config file to source repo on update.
 NOTE: Keep DNS at Google Domains to simplify GMail, etc.
   
 - Synthetic records:
-  - Create @ => www.robotik.io (301 Forward Path).
+  - Create @ => www.alienlabs.io (301 Forward Path).
   - G-Suite (for MX, etc.)
 
 - Subdomain NS records => Route 53 NS records.

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-QUEUE="https://queue.amazonaws.com/861694698401/TaskQueue"
+QUEUE="https://queue.amazonaws.com/956243632840/TaskQueue"
 
 FILE="/tmp/aws_sqs_message.json"
 

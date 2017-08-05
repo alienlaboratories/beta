@@ -4,7 +4,7 @@
 
 region: "us-east-1"
 
-account: "861694698401"
+account: "956243632840"
 
 users:
   scheduler:
@@ -15,4 +15,4 @@ users:
     aws_secret_access_key: "Q/LSXGwTKs6MSdtDWRnvRPGzBLhaAxKM8Vp4E0pj"
 
 sqs:
-  tasks: "https://sqs.us-east-1.amazonaws.com/861694698401/alien-dev-tasks"
+  tasks: "https://sqs.us-east-1.amazonaws.com/956243632840/alien-dev-tasks"

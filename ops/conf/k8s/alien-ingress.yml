@@ -24,7 +24,7 @@ spec:
 
   #
   # NOTE: host must match DNS CNAME (directed to AWS Route 53).
-  # https://domains.google.com/registrar#z=a&d=1022025,robotik.io
+  # https://domains.google.com/registrar#z=a&d=1022025,alienlabs.io
   # https://medium.com/@patrickeasters/using-traefik-with-tls-on-kubernetes-cb67fb43a948
   #
 
@@ -32,14 +32,14 @@ spec:
   # App server.
   #
 
-  - host: app.robotik.io
+  - host: app.alienlabs.io
     http:
       paths:
       - backend:
           serviceName: alien-app-server
           servicePort: 80
 
-  - host: mobile.robotik.io
+  - host: mobile.alienlabs.io
     http:
       paths:
       - backend:

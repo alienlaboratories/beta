@@ -66,7 +66,7 @@ export const appRouter = (config, clientManager, options) => {
     let { bundle='web', platform='web' } = req.query;
 
     // TODO(burdon): Detect mobile (also redirect if detect platform).
-    // mobile.robotik.io
+    // mobile.alienlabs.io
     // https://nodejs.org/docs/v0.4.12/api/http.html#http.ServerRequest
     let sub = req.hostname.split('.')[0];
     switch (sub) {

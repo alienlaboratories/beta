@@ -19,7 +19,7 @@ spec:
         # https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories
         # http://kubernetes.io/docs/concepts/containers/images/#updating-images
         # http://kubernetes.io/docs/user-guide/config-best-practices/#container-images
-        image: 861694698401.dkr.ecr.us-east-1.amazonaws.com/alien-app-server:latest
+        image: 956243632840.dkr.ecr.us-east-1.amazonaws.com/alien-app-server:latest
         imagePullPolicy: Always
 #       imagePullPolicy: IfNotPresent
         ports:

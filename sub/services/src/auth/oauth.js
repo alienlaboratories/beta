@@ -438,7 +438,7 @@ export class OAuthProvider {
     console.assert(providerId && serverUrl);
     this._providerId = providerId;
 
-    // Auth is limited to registered domain (e.g., app.robotik.io).
+    // Auth is limited to registered domain (e.g., app.alienlabs.io).
     this._callbackUrl = HttpUtil.joinUrl(serverUrl, '/oauth/callback/' + SystemStore.sanitizeKey(providerId));
   }
 

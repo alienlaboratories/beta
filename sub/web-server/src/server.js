@@ -49,7 +49,7 @@ const sites = {
   },
 
   robotik: {
-    hosts: ['robotik.io'],
+    hosts: ['alienlabs.io'],
     home: 'sites/robotik',
     defs: {
       css: '/css/robotik.css',

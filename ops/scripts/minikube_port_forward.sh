@@ -2,23 +2,23 @@
 
 #
 # For OAuth we register a Callback URI:
-# http://minikube.robotik.io:9000/oauth/callback/google
+# http://minikube.alienlabs.io:9000/oauth/callback/google
 # https://console.developers.google.com/apis/credentials?project=alienlabs-dev
 #
-# /etc/hosts redirects minikube.robotik.io to 127.0.0.1
+# /etc/hosts redirects minikube.alienlabs.io to 127.0.0.1
 # Then port forwarding redirects this to the minikube service URL.
 #
-# http://minikube.robotik.io:9000/user/login/google
-#   => https://google.com?redirect=minikube.robotik.io:9000
+# http://minikube.alienlabs.io:9000/user/login/google
+#   => https://google.com?redirect=minikube.alienlabs.io:9000
 #     => /etc/hosts
 #       => ssh -L
 #         => http://192.168.64.2:30058
-#           => http://minikube.robotik.io:9000/user/callback/google
+#           => http://minikube.alienlabs.io:9000/user/callback/google
 #
 
 set -x
 
-HOST="minikube.robotik.io"
+HOST="minikube.alienlabs.io"
 PORT=9000
 
 SERVICE="alien-app-server"

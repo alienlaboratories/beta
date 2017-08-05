@@ -5,7 +5,7 @@
 # NOTE: Even on minikube it sometimes takes a minute for the container to start (Waiting: ContainerCreating).
 #
 
-export RUN_LABEL=alien-scheduler
+export RUN_LABEL=alien-worker
 
 POD=$(kubectl get pods -o name | grep ${RUN_LABEL})
 

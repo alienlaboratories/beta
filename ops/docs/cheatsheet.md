@@ -11,7 +11,7 @@ TODO(burdon): Shell command to print this.
 
 ~~~~
   kubectl config get-contexts
-  kubectl config use-context beta.kube.robotik.io
+  kubectl config use-context beta.kube.alienlabs.io
 
   # Start proxy to cluster.
   # Dashboard: http://127.0.0.1:8001/ui

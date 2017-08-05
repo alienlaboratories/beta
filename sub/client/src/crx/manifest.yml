@@ -73,7 +73,7 @@ permissions:
 
   - "http://127.0.0.1/*"
   - "http://localhost/*"
-  - "http://minikube.robotik.io/*"
+  - "http://minikube.alienlabs.io/*"
 
   - "https://accounts.google.com/o/oauth2/auth/*"
 
@@ -127,7 +127,7 @@ content_scripts:
 #     - "<all_urls>"
 
       - "http://localhost/testing/*"
-      - "http://minikube.robotik.io/testing/*"
+      - "http://minikube.alienlabs.io/testing/*"
 
       - "https://*.google.com/*"
       - "https://*.slack.com/*"
@@ -186,7 +186,7 @@ oauth2:
 # Segment analytics pulls in other scripts depending on which integrations are enabled.
 # https://segment.com/minderlabs/sources/jsweb/integrations
 
-content_security_policy: "script-src 'self' 'unsafe-eval' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com https://apis.google.com https://cdn.segment.com https://www.google-analytics.com https://www.googleadservices.com https://*.intercom.io https://js.intercomcdn.com https://alienlabs.io https://robotik.io; object-src 'self'"
+content_security_policy: "script-src 'self' 'unsafe-eval' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com https://apis.google.com https://cdn.segment.com https://www.google-analytics.com https://www.googleadservices.com https://*.intercom.io https://js.intercomcdn.com https://alienlabs.io https://alienlabs.io; object-src 'self'"
 
 #
 # https://developer.chrome.com/extensions/manifest/externally_connectable

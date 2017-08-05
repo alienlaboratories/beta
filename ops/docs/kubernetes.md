@@ -22,7 +22,7 @@
 
 ~~~~
   export IMAGE_NAME=alien-web-server
-  export ECR_REPO=861694698401.dkr.ecr.us-east-1.amazonaws.com/alien-web-server
+  export ECR_REPO=956243632840.dkr.ecr.us-east-1.amazonaws.com/alien-web-server
 
   aws ecr get-login --no-include-email
 
@@ -85,7 +85,7 @@ Auth:
   kubectl create -f https://raw.githubusercontent.com/kubernetes/kops/master/addons/kubernetes-dashboard/v1.5.0.yaml
 
   # Access dashboard via proxy.
-  # https://api.beta.kube.robotik.io/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard
+  # https://api.beta.kube.alienlabs.io/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard
   kubectl proxy
   open http://localhost:8001/ui
 
@@ -119,12 +119,12 @@ NOTE: The UI shows the HTTPS Not Secure Warning (proceed via the Advanced option
 
 ~~~~
   aws acm request-certificate \
-    --domain-name robotik.io \
-    --subject-alternative-names www.robotik.io beta.robotik.io admin.robotik.io \
+    --domain-name alienlabs.io \
+    --subject-alternative-names www.alienlabs.io beta.alienlabs.io admin.alienlabs.io \
     --domain-validation-options \
-  DomainName=www.robotik.io,ValidationDomain=robotik.io,\
-  DomainName=beta.robotik.io,ValidationDomain=robotik.io,\
-  DomainName=admin.robotik.io,ValidationDomain=robotik.io
+  DomainName=www.alienlabs.io,ValidationDomain=alienlabs.io,\
+  DomainName=beta.alienlabs.io,ValidationDomain=alienlabs.io,\
+  DomainName=admin.alienlabs.io,ValidationDomain=alienlabs.io
 ~~~~
 
 # TODO(burdon): *.domain
@@ -163,7 +163,7 @@ NOTE: The UI shows the HTTPS Not Secure Warning (proceed via the Advanced option
   
   # Test if image can be downloaded (i.e., registry is accessible, and network OK).
   eval $(minikube docker-env)
-  docker pull 861694698401.dkr.ecr.us-east-1.amazonaws.com/alien-app-server:latest
+  docker pull 956243632840.dkr.ecr.us-east-1.amazonaws.com/alien-app-server:latest
 ~~~~
 
 * Re-authenticate: `aws ecr get-login --no-include-email`
@@ -190,7 +190,7 @@ NOTE: The UI shows the HTTPS Not Secure Warning (proceed via the Advanced option
 
 - ELB Security Group (Inbound): https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#SecurityGroups:sort=groupId
 - https://console.aws.amazon.com/support/home?region=us-east-1#/case/?displayId=2164614881&language=en
-- nodes.beta.kube.robotik.io
+- nodes.beta.kube.alienlabs.io
 - https://github.com/kubernetes/community/blob/master/contributors/design-proposals/aws_under_the_hood.md#nodeport-and-loadbalancer-services  
 - https://kubernetes.io/docs/concepts/services-networking/ingress
 - https://kubernetes.io/docs/concepts/services-networking/service/#external-ips  
