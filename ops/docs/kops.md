@@ -90,7 +90,7 @@ TODO(burdon): Add users to kops group.
   
 ~~~~
   # Create the user and group.
-  ./scripts/create_kops_user.sh
+  ./scripts/aws/create_kops_user.sh
   
   export AWS_PROFILE=robotik
 ~~~~
