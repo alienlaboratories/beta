@@ -14,7 +14,7 @@ import { Task } from './task';
 
 import { GoogleCalendarSyncTask, GoogleMailSyncTask } from './tasks/sync/google';
 
-const logger = Logger.get('scheduler');
+const logger = Logger.get('worker');
 
 // TODO(burdon): Factor out (see app-server).
 const ENV = {
@@ -39,7 +39,7 @@ async function config(baseDir) {
 }
 
 config(ENV.ALIEN_SERVER_CONF_DIR).then(config => {
-  logger.info('Scheduler =', TypeUtil.stringify(config, 2));
+  logger.info('Worker =', TypeUtil.stringify(config, 2));
 
   AWSUtil.config(config);
 
@@ -70,7 +70,7 @@ config(ENV.ALIEN_SERVER_CONF_DIR).then(config => {
       clientManager.invalidateClients();
     });
 
-  new Scheduler(config)
+  new Worker(config)
     .registerHandler('test',                  new TestTask())
     .registerHandler('sync.google.calendar',  new GoogleCalendarSyncTask(config, database, systemStore))
     .registerHandler('sync.google.mail',      new GoogleMailSyncTask(config, database, systemStore))
@@ -88,11 +88,9 @@ class TestTask extends Task {
 }
 
 /**
- * Task scheduler.
+ * Task Worker.
  */
-class Scheduler {
-
-  // TODO(burdon): Generalize Queue processor (no longer a scheduler).
+class Worker {
 
   constructor(config) {
     this._handlers = new Map();

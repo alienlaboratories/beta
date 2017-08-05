@@ -188,9 +188,9 @@ const srvConfig = webpackMerge(baseConfig, {
       'alien-client',
       'alien-core',
       'alien-core/src/testing',
-      'alien-scheduler',
       'alien-services',
-      'alien-util'
+      'alien-util',
+      'alien-worker'
     ]}
   )]
 });

@@ -1,4 +1,4 @@
-# alien-scheduler
+# alien-worker
 
 ## Alternatives
 

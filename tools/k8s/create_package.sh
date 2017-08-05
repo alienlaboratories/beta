@@ -23,7 +23,7 @@ done
 # Otherwise: npm ERR! 404 'alien-xxx' is not in the npm registry.
 #
 
-MODULES="alien-api alien-core alien-client alien-scheduler alien-services alien-util"
+MODULES="alien-api alien-client alien-core alien-services alien-util alien-worker"
 
 JQ_DELETE=""
 for mod in ${MODULES[@]}; do

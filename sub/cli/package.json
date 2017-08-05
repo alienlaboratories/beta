@@ -14,9 +14,9 @@
   },
   "dependencies": {
     "alien-core": "0.0.1",
-    "alien-scheduler": "0.0.1",
     "alien-services": "0.0.1",
     "alien-util": "0.0.1",
+    "alien-worker": "0.0.1",
     "aws-sdk": "^2.85.0",
     "@google-cloud/language": "^0.10.3",
     "@google-cloud/pubsub": "^0.13.2",

@@ -1,7 +1,7 @@
 #
 # Copyright 2017 Alien Labs.
 #
-# Alien Scheduler
+# Alien Task Worker
 #
 
 #
@@ -68,4 +68,4 @@ USER nx
 # Startup.
 #
 
-CMD [ "node", "dist/scheduler.bundle.js" ]
+CMD [ "node", "dist/worker.bundle.js" ]

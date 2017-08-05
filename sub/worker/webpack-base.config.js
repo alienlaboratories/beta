@@ -76,9 +76,9 @@ const srvConfig = webpackMerge(baseConfig, {
   target: 'node',
 
   entry: {
-    scheduler: [
+    worker: [
       'babel-polyfill',
-      path.resolve(baseConfig.context, 'src/scheduler.js')
+      path.resolve(baseConfig.context, 'src/worker.js')
     ]
   },
 

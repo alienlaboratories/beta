@@ -1,9 +1,9 @@
 {
-  "name": "alien-scheduler",
+  "name": "alien-worker",
   "version": "0.0.1",
-  "description": "Alien Scheduler.",
+  "description": "Alien Task Worker.",
   "license": "UNLICENSED",
-  "repository": "https://github.com/alienlabs/beta/tree/master/sub/scheduler",
+  "repository": "https://github.com/alienlabs/beta/tree/master/sub/worker",
   "main": "index.js",
   "devDependencies": {
     "babel-cli": "^6.24.1",
@@ -34,7 +34,7 @@
   "scripts": {
     "lint": "eslint -c ../../eslintrc.yml ./src",
     "test": "jest --silent",
-    "server": "BABEL_DISABLE_CACHE=1 hilite babel-node src/scheduler.js",
+    "server": "BABEL_DISABLE_CACHE=1 hilite babel-node src/worker.js",
     "start": "hilite nodemon --exec npm run server"
   }
 }
