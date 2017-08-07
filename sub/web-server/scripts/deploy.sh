@@ -17,4 +17,4 @@ export SERVICE_CONF="../../ops/conf/k8s/alien-web-server.yml"
 babel-node src/tools/markdown.js
 
 # Run deploy.
-../../tools/k8s/deploy.sh $@
+../../ops/scripts/deploy.sh $@

@@ -14,7 +14,7 @@ export ZONES="us-east-1d"
 
 aws ec2 describe-availability-zones
 
-dig ns ${ALIEN_CLUSTERS}
+dig ns ${ALIEN_K8S_HOSTED_ZONE}
 
 #
 # Create cluster.
@@ -30,7 +30,7 @@ kops create cluster ${CLUSTER} \
     --zones=${ZONES} \
     --master-count=1 \
     --node-count=1 \
-    --dns-zone=${ALIEN_CLUSTERS} \
+    --dns-zone=${ALIEN_K8S_HOSTED_ZONE} \
     --yes
 
 # TODO(burdon): How should this be managed? Contans secrets.

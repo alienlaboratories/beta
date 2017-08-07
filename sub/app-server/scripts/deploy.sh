@@ -16,7 +16,7 @@
 #
 
 # Node packages (merge sub package.json modules).
-export PACKAGE_DIRS="api core scheduler services util"
+export PACKAGE_DIRS="api core services util worker"
 
 # Docker image name.
 export DOCKER_IMAGE="alien-app-server"
@@ -28,4 +28,4 @@ export RUN_LABEL="alien-app-server"
 export SERVICE_CONF="../../ops/conf/k8s/alien-app-server.yml"
 
 # Run deploy.
-../../tools/k8s/deploy.sh $@
+../../ops/scripts/deploy.sh $@

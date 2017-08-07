@@ -77,6 +77,24 @@
     kubectl create -f https://raw.githubusercontent.com/kubernetes/kops/master/addons/kubernetes-dashboard/v1.5.0.yaml
 ~~~~
 
+
+## Minikube
+
+- Set-up docker daemon for local Dockerfile image builds (which are then pushed to ECS)
+
+~~~~
+    minikube status
+    minikube dashboard --url
+
+    kubectl apply -f ./conf/k8s/local-docker-registry.yml
+    
+    eval $(minikube docker-env)
+    docker info
+
+    eval $(aws ecr get-login --no-include-email)    
+~~~~
+
+
 ## Create Docker Repos
 
-- 
+- https://console.aws.amazon.com/ecs/home

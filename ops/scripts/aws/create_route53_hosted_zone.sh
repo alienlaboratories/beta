@@ -10,4 +10,4 @@ source ${DIR}/config.sh
 # https://github.com/kubernetes/kops/blob/master/docs/aws.md#scenario-3-subdomain-for-clusters-in-route53-leaving-the-domain-at-another-registrar
 #
 
-aws route53 create-hosted-zone --name ${ALIEN_CLUSTERS} --caller-reference $(uuidgen) | jq ".DelegationSet.NameServers"
+aws route53 create-hosted-zone --name ${ALIEN_K8S_HOSTED_ZONE} --caller-reference $(uuidgen) | jq ".DelegationSet.NameServers"

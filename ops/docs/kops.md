@@ -105,9 +105,9 @@ TODO(burdon): Add users to kops group.
 ~~~~
   scripts/aws/create_s3_bucket
 
-  export ALIEN_CLUSTERS=kube.alienlabs.io
+  export ALIEN_K8S_HOSTED_ZONE=kube.alienlabs.io
 
-  export CLUSTER=beta.${ALIEN_CLUSTERS}
+  export CLUSTER=beta.${ALIEN_K8S_HOSTED_ZONE}
 
   export ALIEN_S3_BUCKET=cluster.${CLUSTER}
 
@@ -135,10 +135,10 @@ TODO(burdon): Configure ACLs: http://docs.aws.amazon.com/AmazonS3/latest/dev/acl
   - https://github.com/kubernetes/kops/blob/master/docs/aws.md#scenario-3-subdomain-for-clusters-in-route53-leaving-the-domain-at-another-registrar
 
 ~~~~
-  export ALIEN_CLUSTERS=kube.alienlabs.io
+  export ALIEN_K8S_HOSTED_ZONE=kube.alienlabs.io
 
   ID=$(uuidgen) && aws route53 create-hosted-zone \
-      --name ${ALIEN_CLUSTERS} --caller-reference $ID | jq .DelegationSet.NameServers
+      --name ${ALIEN_K8S_HOSTED_ZONE} --caller-reference $ID | jq .DelegationSet.NameServers
 
   # Get existing name servers.
   HZC=$(aws route53 list-hosted-zones | jq '.HostedZones[] | select(.Name=="${CLUSTER}.") | .Id')

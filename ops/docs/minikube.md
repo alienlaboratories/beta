@@ -92,7 +92,7 @@
 - https://kubernetes.io/docs/getting-started-guides/minikube/#reusing-the-docker-daemon
 - https://mtpereira.com/local-development-k8s.html
   - Minikube Dashboard:
-    - http://192.168.64.2:30000/#!/service?namespace=kube-system
+    - http://192.168.64.2:30000/#!/service?namespace=kube-system (kube-registry)
 
 ~~~~
   kubectl apply -f ./conf/k8s/local-docker-registry.yml

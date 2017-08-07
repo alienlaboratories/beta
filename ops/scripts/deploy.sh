@@ -8,7 +8,9 @@
 # directly inside minikube's local docker daemon.)
 #===============================================================================
 
-DIR="$(dirname "$0")"
+DIR=$(dirname "${BASH_SOURCE[0]}")
+
+source ${DIR}/aws/config.sh
 
 PS4=''  # Don't print "+" in trace.
 
@@ -25,33 +27,11 @@ COL_RED='\033[0;31m'
 function log { echo; echo -e "${COL_GREEN}###\n### $1\n###${COL_RESET}"; echo; }
 
 #===============================================================================
-# Globals.
-# TODO(burdon): Standardize tools env. Prefix globals with ALIEN_
+# Required:
+# DOCKER_IMAGE
+# RUN_LABEL
+# SERVICE_CONF
 #===============================================================================
-
-# Default cluster.
-ALIEN_CLUSTER="beta.kube.alienlabs.io"
-
-# TODO(burdon): Factor out account.
-# https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories
-AWS_ECS_DOCKER_REPO="956243632840.dkr.ecr.us-east-1.amazonaws.com"
-
-# Minikube runs insecure Docker daemon.
-# https://mtpereira.com/local-development-k8s.html
-MINIKUBE_DOCKER_REPO="localhost:5000"
-
-#===============================================================================
-# Options.
-#===============================================================================
-
-# Docker image name.
-DOCKER_IMAGE=${DOCKER_IMAGE:-"alien-app-server"}
-
-# Kubernetes service label.
-RUN_LABEL=${RUN_LABEL:-"alien-app-server"}
-
-# Kubernetes Deployment and Service config.
-SERVICE_CONF=${SERVICE_CONF:-"../../ops/conf/k8s/alien-app-server.yml"}
 
 #===============================================================================
 # Options.
@@ -234,7 +214,7 @@ set -x
 if [ ${MINIKUBE} -eq 1 ]; then
   kubectl config set-context minikube
 else
-  kubectl config use-context ${ALIEN_CLUSTER}
+  kubectl config use-context ${CLUSTER}
 fi
 
 kubectl config get-contexts

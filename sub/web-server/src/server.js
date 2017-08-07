@@ -13,7 +13,6 @@ import path from 'path';
 
 import { ExpressUtil, HttpError, Logger } from 'alien-util';
 
-import { Const } from './const';
 import META from './meta';
 
 const __ENV__ = _.get(process.env, 'NODE_ENV', 'development');
@@ -166,7 +165,7 @@ export class WebServer {
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify({
         env: __ENV__,
-        version: Const.APP_VERSION
+        version: META.APP_VERSION
       }, null, 2));
     });
   }

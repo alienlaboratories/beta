@@ -14,6 +14,14 @@ sudo chmod u+s $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machi
 
 minikube start
 
+#
+# Docker daemon
+# https://kubernetes.io/docs/getting-started-guides/minikube/#reusing-the-docker-daemon
+#
+#
+
+kubectl apply -f ./conf/k8s/local-docker-registry.yml
+
 eval $(minikube docker-env)
 docker info
 

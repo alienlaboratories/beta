@@ -28,4 +28,4 @@ export RUN_LABEL="alien-worker"
 export SERVICE_CONF="../../ops/conf/k8s/alien-worker.yml"
 
 # Run deploy.
-../../tools/k8s/deploy.sh $@
+../../ops/scripts/deploy.sh $@
