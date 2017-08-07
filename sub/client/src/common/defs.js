@@ -11,7 +11,7 @@ export const AppDefs = {
   APP_VERSION: '0.0.1',
 
   // Name for static components (e.g., CRX).
-  APP_NAME: 'robotik',
+  APP_NAME: 'alien',
 
   // Root router path.
   APP_PATH: '/app',

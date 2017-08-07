@@ -462,7 +462,7 @@ export class AppServer {
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify({
         env: __ENV__,
-        version: Const.APP_VERSION
+        version: META.APP_VERSION
       }, null, 2));
     });
 
