@@ -9,7 +9,7 @@
 # Update ingress config.
 kubectl apply -f ./conf/k8s/alien-ingress.yml
 
-# Error if already exists.
+# TODO(burdon): Error if already exists.
 kubectl delete configmap traefik-conf
 kubectl create configmap traefik-conf --from-file=./conf/k8s/traefik.toml
 

@@ -78,7 +78,7 @@
 - https://github.com/kubernetes/dashboard
 
 Auth:
-- https://kubernetes.io/docs/admin/authorization/
+- https://kubernetes.io/docs/admin/authorization
 
 ~~~~
   # Install.

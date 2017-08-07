@@ -1,6 +1,6 @@
 # Alien Labs
 
-Alien Labs is an early stage angel-funded technology startup based in Brooklyn, New York. 
+Alien Labs is an angel-funded technology startup based in Brooklyn, New York. 
 We develop core technologies and applications for business professionals.
 The company was founded by senior ex-Google engineers with extensive experience developing internet-scale 
 infrastructure and applications.

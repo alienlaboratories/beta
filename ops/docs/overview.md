@@ -71,6 +71,11 @@
     kops get clusters
 ~~~~
 
+- Install Dashboard extension:
+
+~~~~    
+    kubectl create -f https://raw.githubusercontent.com/kubernetes/kops/master/addons/kubernetes-dashboard/v1.5.0.yaml
+~~~~
 
 ## Create Docker Repos
 

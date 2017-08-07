@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
-export ALIEN_CLUSTERS=kube.alienlabs.io
+export ALIEN_AWS_ACCOUNT_ID="956243632840"
 
-export CLUSTER_NAME=beta
+export ALIEN_CLUSTERS="kube.alienlabs.io"
 
-export CLUSTER=${CLUSTER_NAME}.${ALIEN_CLUSTERS}
+export CLUSTER_NAME="beta"
 
-export ALIEN_S3_BUCKET=cluster.${CLUSTER}
+export CLUSTER="${CLUSTER_NAME}.${ALIEN_CLUSTERS}"
 
-export KOPS_STATE_STORE=s3://${ALIEN_S3_BUCKET}
+export ALIEN_S3_BUCKET="cluster.${CLUSTER}"
+
+export KOPS_STATE_STORE="s3://${ALIEN_S3_BUCKET}"

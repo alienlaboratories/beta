@@ -234,13 +234,21 @@ TODO(burdon): Copy config file to source repo on update.
 ## DNS (Google Domains)
 
 NOTE: Keep DNS at Google Domains to simplify GMail, etc.
+
+- Subdomain NS records => Route 53 NS records.
+  
+- Configure reverse-proxy:
+  - www CNAME => Traefik ELB
+
+~~~~
+  kubectl describe service traefik-proxy | sed -n 's/^LoadBalancer Ingress:.\(.*\)/\1/p' 
+  dig www.alienlabs.io
+~~~~
   
 - Synthetic records:
   - Create @ => www.alienlabs.io (301 Forward Path).
   - G-Suite (for MX, etc.)
 
-- Subdomain NS records => Route 53 NS records.
-  
 - Google Admin Console
   - Add Domain Alias
 

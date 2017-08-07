@@ -32,6 +32,7 @@ function log { echo; echo -e "${COL_GREEN}###\n### $1\n###${COL_RESET}"; echo; }
 # Default cluster.
 ALIEN_CLUSTER="beta.kube.alienlabs.io"
 
+# TODO(burdon): Factor out account.
 # https://console.aws.amazon.com/ecs/home?region=us-east-1#/repositories
 AWS_ECS_DOCKER_REPO="956243632840.dkr.ecr.us-east-1.amazonaws.com"
 
