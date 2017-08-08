@@ -15,7 +15,7 @@
 # Get the ELB's IP (LoadBalancer Ingress):
 #   kubectl describe service traefik-proxy | sed -n 's/^LoadBalancer Ingress:.\(.*\)/\1/p'
 #
-# Then configure DNS (e.g., www CNAME a59e5a2b1278911e7be8c0e9a1a6c20a-1435393237.us-east-1.elb.amazonaws.com)
+# Then configure DNS (set www CNAME to point to ELB endpoint).
 # NOTE: The IP changes when the Service is deleted and recreated (need to update DNS).
 #
 
