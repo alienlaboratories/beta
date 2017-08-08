@@ -13,7 +13,7 @@ gcloud beta pubsub topics list
 # https://console.cloud.google.com/apis/credentials/domainverification?project=alienlabs-dev
 
 # https://cloud.google.com/pubsub/docs/access_control
-# TODO(burdon): Permissions: `Pub/Sub Publisher` for `serviceAccount:gmail-api-push@system.gserviceaccount.com`
+# TODO(burdon): Permissions: `Pub/Sub Publisher` for `serviceAccount:gmail-api-push@system.gserviceaccount.com` (from console only).
 
 # https://console.cloud.google.com/cloudpubsub/subscriptions?project=alienlabs-dev
 gcloud beta pubsub subscriptions create "gmail" --topic="gmail" --push-endpoint="https://app.alienlabs.io/hook/${WEBHOOK_GMAIL}"
