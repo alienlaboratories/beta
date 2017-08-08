@@ -7,7 +7,7 @@ import google from 'googleapis';
 
 import { Logger } from 'alien-util';
 
-import { OAuthServiceProvider } from '../service';
+import { ServiceProvider } from '../service';
 import { GoogleApiUtil } from './util';
 
 const logger = Logger.get('google.calendar');
@@ -79,14 +79,14 @@ export class GoogleCalendarClient {
 /**
  * Google Plus Service provider.
  */
-export class GoogleCalendarServiceProvider extends OAuthServiceProvider {
+export class GoogleCalendarServiceProvider extends ServiceProvider {
 
   static SCOPES = [
     'https://www.googleapis.com/auth/calendar.readonly'
   ];
 
   constructor(authProvider) {
-    super(authProvider, NAMESPACE, GoogleCalendarServiceProvider.SCOPES);
+    super(NAMESPACE, authProvider, GoogleCalendarServiceProvider.SCOPES);
   }
 
   get meta() {

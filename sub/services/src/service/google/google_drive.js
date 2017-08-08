@@ -8,7 +8,7 @@ import google from 'googleapis';
 import { ErrorUtil, Logger } from 'alien-util';
 import { ItemStore, QueryProcessor } from 'alien-core';
 
-import { OAuthServiceProvider } from '../service';
+import { ServiceProvider } from '../service';
 import { GoogleApiUtil } from './util';
 
 const NAMESPACE = 'google.com/drive';
@@ -140,14 +140,14 @@ export class GoogleDriveQueryProcessor extends QueryProcessor {
 /**
  * Google Drive service provider.
  */
-export class GoogleDriveServiceProvider extends OAuthServiceProvider {
+export class GoogleDriveServiceProvider extends ServiceProvider {
 
   static SCOPES = [
     'https://www.googleapis.com/auth/drive.readonly'
   ];
 
   constructor(authProvider) {
-    super(authProvider, NAMESPACE, GoogleDriveServiceProvider.SCOPES);
+    super(NAMESPACE, authProvider, GoogleDriveServiceProvider.SCOPES);
   }
 
   get meta() {

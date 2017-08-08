@@ -98,6 +98,7 @@ class Worker {
     this._running = false;
   }
 
+  // TODO(burdon): Get from ServiceRegistry.
   registerHandler(type, handler) {
     this._handlers.set(type, handler);
     return this;
