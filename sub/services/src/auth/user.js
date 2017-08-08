@@ -14,22 +14,22 @@ import { JwtUtil } from './jwt';
 export class UserManager {
 
   /**
-   * @param loginAuthProvider OAuth provider.
+   * @param loginOAuthHandler OAuth provider.
    * @param systemStore The system store manages Users and Groups.
    */
-  constructor(loginAuthProvider, systemStore) {
-    console.assert(loginAuthProvider && systemStore);
-    this._loginAuthProvider = loginAuthProvider;
+  constructor(loginOAuthHandler, systemStore) {
+    console.assert(loginOAuthHandler && systemStore);
+    this._loginOAuthHandler = loginOAuthHandler;
     this._systemStore = systemStore;
   }
 
   /**
-   * Gets the login OAuthProvider.
+   * Gets the login OAuthHandler.
    *
-   * @returns {OAuthProvider}
+   * @returns {OAuthHandler}
    */
-  get loginAuthProvider() {
-    return this._loginAuthProvider;
+  get loginOAuthHandler() {
+    return this._loginOAuthHandler;
   }
 
   /**
@@ -58,13 +58,13 @@ export const loginRouter = (userManager, oauthRegistry, systemStore, options) =>
   let router = express.Router();
 
   // OAuth provider used for login.
-  let loginAuthProvider = userManager.loginAuthProvider;
+  let loginOAuthHandler = userManager.loginOAuthHandler;
 
   //
   // Login.
   //
   router.get('/login', (req, res) => {
-    res.redirect(HttpUtil.toUrl('/oauth/login/' + loginAuthProvider.providerId, req.query));
+    res.redirect(HttpUtil.toUrl('/oauth/login/' + loginOAuthHandler.providerId, req.query));
   });
 
   //
@@ -83,7 +83,7 @@ export const loginRouter = (userManager, oauthRegistry, systemStore, options) =>
     let { callback } = req.query;
     console.assert(callback);
 
-    res.redirect(HttpUtil.toUrl('/oauth/login/' + loginAuthProvider.providerId, {
+    res.redirect(HttpUtil.toUrl('/oauth/login/' + loginOAuthHandler.providerId, {
       redirectType: 'jsonp',
       callback
     }));
@@ -95,7 +95,7 @@ export const loginRouter = (userManager, oauthRegistry, systemStore, options) =>
   router.post('/get_id_token', (req, res) => {
     let { credentials } = req.body;
 
-    loginAuthProvider.getUserProfile(credentials).then(userProfile => {
+    loginOAuthHandler.getUserProfile(credentials).then(userProfile => {
       systemStore.getUserByEmail(userProfile.email).then(user => {
         let { token } = JwtUtil.createToken(user.id);
         res.send({ email: userProfile.email, token });

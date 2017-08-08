@@ -26,4 +26,4 @@ cli:
 pubsub:
   topic:
     gmail:
-      id: "projects/alienlabs-dev/topics/g-mail"
+      id: "projects/alienlabs-dev/topics/gmail"

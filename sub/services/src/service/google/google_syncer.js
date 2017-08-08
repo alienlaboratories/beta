@@ -5,7 +5,7 @@
 import _ from 'lodash';
 
 import { Syncer } from '../syncer';
-import { GoogleOAuthProvider } from './google_oauth';
+import { GoogleOAuthHandler } from './google_oauth';
 
 /**
  * Base class for Google syncers.
@@ -21,11 +21,11 @@ export class GoogleSyncer extends Syncer {
     }
 
     // TODO(burdon): Use constants.
-    let authClient = GoogleOAuthProvider.createAuthClient(
+    let authClient = GoogleOAuthHandler.createAuthClient(
       _.get(this._config, 'google'), _.get(user, 'credentials.google'));
 
     // TODO(burdon): Save updated token.
-    let tokens = await GoogleOAuthProvider.refreshAccessToken(authClient)
+    let tokens = await GoogleOAuthHandler.refreshAccessToken(authClient)
       .catch(err => {
         return Promise.reject(`User[${user.id}]: Can't refresh token: ${err.message}`);
       });

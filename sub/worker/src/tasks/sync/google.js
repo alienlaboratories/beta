@@ -51,12 +51,12 @@ export class GoogleMailSyncTask extends Task {
 
     // TODO(burdon): Generalize Sync task.
     // TODO(burdon): Use const (see also profileRouter).
-    let state = _.get(user, 'service.google_com.mail.sync', {});
+    let state = _.get(user, 'service.google.mail.sync', {});
     logger.log('Current state:', JSON.stringify(state));
     let { state:newState } = await this._syncer.sync(user, state);
 
     // Update state.
-    _.set(user, 'service.google_com.mail.sync', newState);
+    _.set(user, 'service.google.mail.sync', newState);
     await this._systemStore.updateUser(user);
     logger.log('Updated state:', JSON.stringify(newState));
   }

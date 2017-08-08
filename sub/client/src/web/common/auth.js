@@ -72,7 +72,7 @@ export class AuthManager {
       logger.log('Authenticating...');
 
       // TODO(burdon): Factor out.
-      const OAuthProvider = {
+      const OAuthHandler = {
         provider: 'google',
         requestUrl: NetUtil.getUrl('/oauth/login/google', this._config.server),
         scope: AuthDefs.GOOGLE_LOGIN_SCOPES
@@ -80,12 +80,12 @@ export class AuthManager {
 
       let requestParams = {
         redirectType: 'crx',
-        redirectUrl: chrome.identity.getRedirectURL(OAuthProvider.provider),    // Registered URL.
+        redirectUrl: chrome.identity.getRedirectURL(OAuthHandler.provider),    // Registered URL.
         requestId: String(Date.now())                                           // Verified below.
       };
 
       let options = {
-        url: HttpUtil.toUrl(OAuthProvider.requestUrl, requestParams),
+        url: HttpUtil.toUrl(OAuthHandler.requestUrl, requestParams),
 
         // Show login screen if necessary.
         interactive: true

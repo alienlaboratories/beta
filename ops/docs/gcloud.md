@@ -10,7 +10,7 @@
 - https://console.cloud.google.com/cloudpubsub/topicList?project=alienlabs-dev
 
 ~~~~
-    gcloud beta pubsub topics create "g-mail"
+    gcloud beta pubsub topics create "gmail"
     gcloud beta pubsub topics list
 ~~~~
 
@@ -28,14 +28,13 @@
 - https://console.cloud.google.com/cloudpubsub/subscriptions?project=alienlabs-dev
 
 ~~~~
-    gcloud beta pubsub subscriptions create "g-mail" --topic="g-mail" --push-endpoint="https://app.alienlabs.io/hook/gmail"
+    gcloud beta pubsub subscriptions create "gmail" --topic="gmail" --push-endpoint="https://app.alienlabs.io/hook/gmail"
     gcloud beta pubsub subscriptions list
 ~~~~
 
 4. Grant permissions:
-- https://console.cloud.google.com/cloudpubsub/topics/g-mail?project=alienlabs-dev
-    - Select topic.
-    - Add `Pub/Sub Publisher` permission for `serviceAccount:gmail-api-push@system.gserviceaccount.com`
+- https://console.cloud.google.com/cloudpubsub/topics/gmail?project=alienlabs-dev
+    - Select topic, then add `Pub/Sub Publisher` permission for `serviceAccount:gmail-api-push@system.gserviceaccount.com`
 
 5. Use GMail API (users.watch) to send notifications to topic:
 - Gmail API watch call to send Gmail notifications to the topic.

@@ -11,12 +11,22 @@ import { AuthDefs } from 'alien-core';
  */
 export class ServiceProvider {
 
+  // TODO(burdon): Map to syncer. Event subscriptions called from worker? Dependencies. Map of TaskHandlers?
+  // TODO(burdon): ServiceRegistry. Syncer is a capability of a service?
+
   /**
    * @param {string} id
+   * @param {OAuthHandler} oauthHandler
+   * @param {[string]} scopes
    */
-  constructor(id) {
+  constructor(id, oauthHandler=null, scopes=null) {
     console.assert(id);
     this._id = id;
+
+    this._oauthHandler = oauthHandler;
+
+    // Adds minimal OpenID scopes (ID, email) requird by passport.
+    this._scopes = scopes && _.concat(AuthDefs.OPENID_LOGIN_SCOPES, scopes);
   }
 
   get id() {
@@ -27,39 +37,15 @@ export class ServiceProvider {
     throw new Error('Not implemented');
   }
 
-  get link() {
-    throw new Error('Not implemented');
-  }
-}
-
-/**
- * OAuth Service Provider.
- */
-export class OAuthServiceProvider extends ServiceProvider {
-
-  // TODO(burdon): Remove. ServiceProvider should optionally reference an OAuthServiceProvider.
-
-  /**
-   * @param {OAuthProvider} authProvider
-   * @param {string} id
-   * @param {[string]} scopes
-   */
-  constructor(authProvider, id, scopes) {
-    super(id);
-    console.assert(authProvider && _.isArray(scopes));
-    this._authProvider = authProvider;
-
-    // Adds minimal OpenID scopes (ID, email) requird by passport.
-    this._scopes = _.concat(AuthDefs.OPENID_LOGIN_SCOPES, scopes);
+  get oauthProfiderId() {
+    return this._oauthHandler && this._oauthHandler.providerId;
   }
 
-  get authProviderId() {
-    return this._authProvider.providerId;
-  }
-
+  // TODO(burdon): Rename authLink.
+  // TODO(burdon): Post auth trigger (e.g., register subscription).
   // TODO(burdon): Service providers may require auth from multiple OAuth providers.
   get link() {
-    return this._authProvider.createAuthUrl(this._scopes);
+    return this._oauthHandler && this._oauthHandler.createAuthUrl(this._scopes);
   }
 
   get scopes() {

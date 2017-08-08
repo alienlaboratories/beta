@@ -8,7 +8,7 @@ import google from 'googleapis';
 import { ErrorUtil, Logger } from 'alien-util';
 import { ItemStore, QueryProcessor } from 'alien-core';
 
-import { OAuthServiceProvider } from '../service';
+import { ServiceProvider } from '../service';
 import { GoogleApiUtil } from './util';
 
 const NAMESPACE = 'google.com/drive';
@@ -109,13 +109,13 @@ export class GoogleDriveQueryProcessor extends QueryProcessor {
   }
 
   /**
-   * @param {GoogleOAuthProvider} authProvider
+   * @param {GoogleOAuthHandler} oauthHandler
    */
-  constructor(authProvider) {
+  constructor(oauthHandler) {
     super(NAMESPACE);
-    console.assert(authProvider);
+    console.assert(oauthHandler);
 
-    this._authProvider = authProvider;
+    this._oauthHandler = oauthHandler;
     this._client = new GoogleDriveClient();
   }
 
@@ -128,7 +128,7 @@ export class GoogleDriveQueryProcessor extends QueryProcessor {
     let maxResults = filter.count || ItemStore.DEFAULT_COUNT;
 
     // TODO(burdon): Cache client?
-    let authClient = this._authProvider.createAuthClient(_.get(context, 'credentials.google'));
+    let authClient = this._oauthHandler.createAuthClient(_.get(context, 'credentials.google'));
     return this._client.files(authClient, query, maxResults).then(items => {
       return items;
     }).catch(err => {
@@ -140,14 +140,14 @@ export class GoogleDriveQueryProcessor extends QueryProcessor {
 /**
  * Google Drive service provider.
  */
-export class GoogleDriveServiceProvider extends OAuthServiceProvider {
+export class GoogleDriveServiceProvider extends ServiceProvider {
 
   static SCOPES = [
     'https://www.googleapis.com/auth/drive.readonly'
   ];
 
-  constructor(authProvider) {
-    super(authProvider, NAMESPACE, GoogleDriveServiceProvider.SCOPES);
+  constructor(oauthHandler) {
+    super(NAMESPACE, oauthHandler, GoogleDriveServiceProvider.SCOPES);
   }
 
   get meta() {

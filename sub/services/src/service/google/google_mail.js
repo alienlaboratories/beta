@@ -11,7 +11,7 @@ import { Database } from 'alien-core';
 import { ErrorUtil, Logger, TypeUtil } from 'alien-util';
 
 import { DataUtil } from '../../util/data';
-import { OAuthServiceProvider } from '../service';
+import { ServiceProvider } from '../service';
 
 import { GoogleSyncer } from './google_syncer';
 import { GoogleApiUtil } from './util';
@@ -308,16 +308,14 @@ export class GoogleMailClient {
 /**
  * Google Mail Service provider.
  */
-export class GoogleMailServiceProvider extends OAuthServiceProvider {
-
-  // TODO(burdon): Bad abstraction: should reference OAuthServiceProvider (possibly multiple).
+export class GoogleMailServiceProvider extends ServiceProvider {
 
   static SCOPES = [
     'https://www.googleapis.com/auth/gmail.readonly'
   ];
 
-  constructor(authProvider) {
-    super(authProvider, NAMESPACE, GoogleMailServiceProvider.SCOPES);
+  constructor(oauthHandler) {
+    super(NAMESPACE, oauthHandler, GoogleMailServiceProvider.SCOPES);
   }
 
   get meta() {

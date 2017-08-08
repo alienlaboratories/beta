@@ -67,7 +67,7 @@ export const getIdToken = (user) => {
  *
  * => /user/login
  *   => /oauth/login/google => handler => passport.authenticate()
- *     => https://accounts.google.com (via OAuthProvider)
+ *     => https://accounts.google.com (via OAuthHandler)
  *       => /oauth/callback/google => <Passport.authenticate() => authCallback> => handler
  *         => /home
  *
@@ -170,7 +170,7 @@ export const oauthRouter = (userManager, systemStore, oauthRegistry, config={}) 
     }
 
     // Get user profile.
-    let userProfile = OAuthProvider.getCanonicalUserProfile(profile);
+    let userProfile = OAuthHandler.getCanonicalUserProfile(profile);
 
     // Register/update user.
     // TODO(burdon): Register vs update?
@@ -247,7 +247,7 @@ export const oauthRouter = (userManager, systemStore, oauthRegistry, config={}) 
         include_granted_scopes: true,
 
         // State passed to callback.
-        state: OAuthProvider.encodeState(state)
+        state: OAuthHandler.encodeState(state)
       });
 
       logger.log('Logging in: ' + JSON.stringify(state));
@@ -265,7 +265,7 @@ export const oauthRouter = (userManager, systemStore, oauthRegistry, config={}) 
       // NOTE: authCallback (registered with passport) is called first.
 
       let user = req.user;
-      let state = OAuthProvider.decodeState(req.query.state);
+      let state = OAuthHandler.decodeState(req.query.state);
       logger.log('Logged in: ' + JSON.stringify(_.pick(user, ['id', 'email'])) + '; state=' + JSON.stringify(state));
 
       let { redirectType, scopes=[] } = state;
@@ -391,7 +391,9 @@ export class OAuthRegistry {
 /**
  * OAuth Provider.
  */
-export class OAuthProvider {
+export class OAuthHandler {
+
+  // TODO(burdon): Rename Handler?
 
   static PATH = '/oauth';
 

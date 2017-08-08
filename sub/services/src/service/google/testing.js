@@ -12,7 +12,7 @@ import { Database, IdGenerator, Matcher, SystemStore } from 'alien-core';
 import { Firebase } from '../../db/firebase/firebase';
 import { FirebaseItemStore } from '../../db/firebase/firebase_item_store';
 
-import { GoogleOAuthProvider } from './google_oauth';
+import { GoogleOAuthHandler } from './google_oauth';
 
 import { GoogleCalendarClient } from './google_calendar';
 import { GoogleDriveClient } from './google_drive';
@@ -76,8 +76,8 @@ config(CONF_DIR).then(config => {
     let user = _.find(items, item => item.email === email);
     console.assert(user);
 
-    let authClient = GoogleOAuthProvider.createAuthClient(_.get(config, 'google'), _.get(user, 'credentials.google'));
-    return GoogleOAuthProvider.refreshAccessToken(authClient).then(({ access_token }) => {
+    let authClient = GoogleOAuthHandler.createAuthClient(_.get(config, 'google'), _.get(user, 'credentials.google'));
+    return GoogleOAuthHandler.refreshAccessToken(authClient).then(({ access_token }) => {
       _.set(user, 'credentials.google.access_token', access_token);
 
       return testApi(authClient, email, service)

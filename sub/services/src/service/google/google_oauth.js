@@ -10,7 +10,7 @@ import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth';
 import { ErrorUtil, HttpError, Logger } from 'alien-util';
 import { AuthDefs } from 'alien-core';
 
-import { OAuthProvider } from '../../auth/oauth';
+import { OAuthHandler } from '../../auth/oauth';
 
 const logger = Logger.get('oauth.google');
 
@@ -38,7 +38,7 @@ const logger = Logger.get('oauth.google');
  * https://www.googleapis.com/oauth2/v1/tokeninfo?{id_token|access_token}=XXX (validate token).
  * https://console.developers.google.com/apis/credentials?project=alienlabs-dev
  */
-export class GoogleOAuthProvider extends OAuthProvider {
+export class GoogleOAuthHandler extends OAuthHandler {
 
   // TODO(burdon): Implement revoke.
   // https://developers.google.com/identity/protocols/OAuth2UserAgent#tokenrevoke
@@ -102,7 +102,7 @@ export class GoogleOAuthProvider extends OAuthProvider {
         if (error) {
           reject(new Error(error));
         } else {
-          resolve(OAuthProvider.getCanonicalUserProfile(profile));
+          resolve(OAuthHandler.getCanonicalUserProfile(profile));
         }
       });
     });
@@ -116,7 +116,7 @@ export class GoogleOAuthProvider extends OAuthProvider {
   }
 
   //
-  // OAuthProvider interface.
+  // OAuthHandler interface.
   // https://developers.google.com/identity/protocols/googlescopes
   //
 
@@ -130,7 +130,7 @@ export class GoogleOAuthProvider extends OAuthProvider {
    * @return {google.auth.OAuth2}
    */
   createAuthClient(credentials=undefined, callback=undefined) {
-    return GoogleOAuthProvider.createAuthClient(this._config, credentials, callback);
+    return GoogleOAuthHandler.createAuthClient(this._config, credentials, callback);
   }
 
   /**
@@ -156,7 +156,7 @@ export class GoogleOAuthProvider extends OAuthProvider {
       // Incremental Auth.
       include_granted_scopes: true,
 
-      state: OAuthProvider.encodeState({ redirectUrl: '/services', scopes })
+      state: OAuthHandler.encodeState({ redirectUrl: '/services', scopes })
     });
   }
 
@@ -204,7 +204,7 @@ export class GoogleOAuthProvider extends OAuthProvider {
   getUserProfile(credentials) {
     console.assert(credentials);
     let authClient = this.createAuthClient(credentials);
-    return GoogleOAuthProvider.getUserProfile(authClient);
+    return GoogleOAuthHandler.getUserProfile(authClient);
   }
 
   revokeCredentials(credentials) {

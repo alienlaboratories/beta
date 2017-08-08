@@ -2,21 +2,21 @@
 // Copyright 2017 Alien Labs.
 //
 
-import { OAuthServiceProvider } from '../service';
+import { ServiceProvider } from '../service';
 
 const NAMESPACE = 'google.com/plus';
 
 /**
  * Google Plus Service provider.
  */
-export class GooglePlusServiceProvider extends OAuthServiceProvider {
+export class GooglePlusServiceProvider extends ServiceProvider {
 
   static SCOPES = [
     'https://www.googleapis.com/auth/plus.login'
   ];
 
-  constructor(authProvider) {
-    super(authProvider, NAMESPACE, GooglePlusServiceProvider.SCOPES);
+  constructor(oauthHandler) {
+    super(NAMESPACE, oauthHandler, GooglePlusServiceProvider.SCOPES);
   }
 
   get meta() {
