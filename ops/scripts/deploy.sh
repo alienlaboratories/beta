@@ -6,6 +6,8 @@
 # This script can be used to create or update a running service on the cluster,
 # or to test a new image on the local minikube (by building the docker image
 # directly inside minikube's local docker daemon.)
+#
+# https://kubernetes.io/docs/user-guide/kubectl/v1.7/
 #===============================================================================
 
 DIR=$(dirname "${BASH_SOURCE[0]}")

@@ -12,7 +12,7 @@ const logger = Logger.get('webhook');
 /**
  * Webhook router.
  * @param config
- * @param { hooks } options
+ * @param {{hooks}} options
  * @returns {Router}
  */
 export const webhookRouter = (config, options) => {

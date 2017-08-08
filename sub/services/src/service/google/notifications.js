@@ -27,6 +27,7 @@ export class GoogleNotifications {
   static Gmail = (config, systemStore) => {
     let queue = new AWSQueue(_.get(config, 'aws.sqs.tasks'));
 
+    // TODO(burdon): Error handling.
     // TODO(burdon): Authenticate client?
     // https://developers.google.com/webmasters/APIs-Google.html
     // https://developers.google.com/gmail/api/guides/push#receiving_notifications

@@ -23,6 +23,7 @@ cli:
 # gcloud auth login
 # gcloud config set project alienlabs-dev
 # gcloud beta pubsub topics list
+# https://console.cloud.google.com/cloudpubsub/topicList?project=alienlabs-dev
 pubsub:
   topic:
     gmail:

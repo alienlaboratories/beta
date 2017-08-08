@@ -6,7 +6,7 @@ import _ from 'lodash';
 import path from 'path';
 import yaml from 'node-yaml';
 
-import { ErrorUtil, Logger, TypeUtil } from 'alien-util';
+import { Async, ErrorUtil, Logger, TypeUtil } from 'alien-util';
 import { Database, IdGenerator, Matcher, SystemStore } from 'alien-core';
 import { AWSUtil, Firebase, FirebaseItemStore, ClientManager, AWSQueue } from 'alien-services';
 
@@ -125,6 +125,9 @@ class Worker {
     while (this._running) {
       await this.processTask().catch(err => {
         logger.error(ErrorUtil.message(err));
+
+        // TODO(burdon): Back-off?
+        return Async.timeout(5000);
       });
     }
   }

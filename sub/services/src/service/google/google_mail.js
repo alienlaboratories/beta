@@ -55,7 +55,7 @@ export class GoogleMailClient {
         userId: 'me',
         resource: {                   // NOTE: Corresponds to request body (undocumented).
           topicName: topic,
-          labels: [ 'INBOX' ]
+          labels: ['INBOX']
         }
       };
 
@@ -70,7 +70,7 @@ export class GoogleMailClient {
           // https://console.cloud.google.com/cloudpubsub/topics
           reject(err.message);
         } else {
-          resolve(_.pick(response, [ 'historyId', 'expiration' ]));
+          resolve(_.pick(response, ['historyId', 'expiration']));
         }
       });
     });

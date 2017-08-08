@@ -18,14 +18,17 @@ export class AWSUtil {
 
   /**
    * AWS config.
-   * @param { aws } config
+   * @param {{ aws }} config
+   * @param {string} user
    */
-  static config(config) {
+  static config(config, user='worker') {
+    console.assert(user);
+
     // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Config.html#constructor-property
     AWS.config.update({
       region:           _.get(config, 'aws.region'),
-      accessKeyId:      _.get(config, 'aws.users.scheduler.aws_access_key_id'),
-      secretAccessKey:  _.get(config, 'aws.users.scheduler.aws_secret_access_key')
+      accessKeyId:      _.get(config, `aws.users.${user}.aws_access_key_id`),
+      secretAccessKey:  _.get(config, `aws.users.${user}.aws_secret_access_key`)
     });
   }
 

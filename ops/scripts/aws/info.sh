@@ -46,3 +46,6 @@ echo
 kops validate cluster ${CLUSTER}
 
 #kops toolbox dump --name=${CLUSTER} --state=${KOPS_STATE_STORE}
+
+kubectl get all
+

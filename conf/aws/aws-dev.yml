@@ -7,12 +7,13 @@ region: "us-east-1"
 account: "956243632840"
 
 users:
-  scheduler:
+  worker:
 
-    # Updated 07/16/17 (SQS Full Access)
+    # Updated 08/08/17 (SQS Full Access)
     # https://console.aws.amazon.com/iam/home?name=apps#/users
-    aws_access_key_id: "AKIAJVNWJ5KNNZYFJHIA"
-    aws_secret_access_key: "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"
+    aws_access_key_id: "AKIAIITHGURVGOKBU7WA"
+    aws_secret_access_key: "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"
 
+# https://console.aws.amazon.com/sqs/home?region=us-east-1
 sqs:
-  tasks: "https://sqs.us-east-1.amazonaws.com/956243632840/alien-dev-tasks"
+  tasks: "https://sqs.us-east-1.amazonaws.com/956243632840/TaskQueue"
