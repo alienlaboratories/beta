@@ -109,13 +109,13 @@ export class GoogleDriveQueryProcessor extends QueryProcessor {
   }
 
   /**
-   * @param {GoogleOAuthProvider} authProvider
+   * @param {GoogleOAuthHandler} oauthHandler
    */
-  constructor(authProvider) {
+  constructor(oauthHandler) {
     super(NAMESPACE);
-    console.assert(authProvider);
+    console.assert(oauthHandler);
 
-    this._authProvider = authProvider;
+    this._oauthHandler = oauthHandler;
     this._client = new GoogleDriveClient();
   }
 
@@ -128,7 +128,7 @@ export class GoogleDriveQueryProcessor extends QueryProcessor {
     let maxResults = filter.count || ItemStore.DEFAULT_COUNT;
 
     // TODO(burdon): Cache client?
-    let authClient = this._authProvider.createAuthClient(_.get(context, 'credentials.google'));
+    let authClient = this._oauthHandler.createAuthClient(_.get(context, 'credentials.google'));
     return this._client.files(authClient, query, maxResults).then(items => {
       return items;
     }).catch(err => {
@@ -146,8 +146,8 @@ export class GoogleDriveServiceProvider extends ServiceProvider {
     'https://www.googleapis.com/auth/drive.readonly'
   ];
 
-  constructor(authProvider) {
-    super(NAMESPACE, authProvider, GoogleDriveServiceProvider.SCOPES);
+  constructor(oauthHandler) {
+    super(NAMESPACE, oauthHandler, GoogleDriveServiceProvider.SCOPES);
   }
 
   get meta() {

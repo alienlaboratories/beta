@@ -25,8 +25,38 @@ export class GoogleCalendarClient {
     this._calendar = google.calendar('v3');
   }
 
-  events(authClient, query, maxResults) {
+  watch(authClient, channelId, webhookUrl) {
+    console.assert(authClient && channelId && webhookUrl);
+    logger.log('Watch inbox: ' + webhookUrl);
 
+    return new Promise((resolve, reject) => {
+
+      // https://developers.google.com/google-apps/calendar/v3/push
+      // https://github.com/google/google-api-nodejs-client/blob/master/apis/calendar/v3.ts
+      let params = {
+        auth: authClient,
+
+        calendarId: '',                           // TODO(burdon): list.
+
+        id: channelId,                            // X-Goog-Channel-ID (response).
+        type: 'web_hook',
+        address: webhookUrl,                      // HTTPS POST (webhook). TODO(burdon): Check not blocked by robots.txt
+        token: 'source=google.com/calendar',      // X-Goog-Channel-Token (response).
+        expiration: 3600 * 24 * 7
+      };
+
+      // https://developers.google.com/google-apps/calendar/v3/reference/events/watch
+      this._calendar.events.watch(params, (err, response) => {
+        if (err) {
+          reject(err.message);
+        } else {
+          resolve(_.pick(response, [ 'expiration' ]));
+        }
+      });
+    });
+  }
+
+  events(authClient, query, maxResults) {
     const fetcher = (pageToken, pageSize, i) => {
       return GoogleApiUtil.promisify(callback => {
 
@@ -85,8 +115,8 @@ export class GoogleCalendarServiceProvider extends ServiceProvider {
     'https://www.googleapis.com/auth/calendar.readonly'
   ];
 
-  constructor(authProvider) {
-    super(NAMESPACE, authProvider, GoogleCalendarServiceProvider.SCOPES);
+  constructor(oauthHandler) {
+    super(NAMESPACE, oauthHandler, GoogleCalendarServiceProvider.SCOPES);
   }
 
   get meta() {

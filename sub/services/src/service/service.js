@@ -16,17 +16,17 @@ export class ServiceProvider {
 
   /**
    * @param {string} id
-   * @param {OAuthProvider} authProvider
+   * @param {OAuthHandler} oauthHandler
    * @param {[string]} scopes
    */
-  constructor(id, authProvider=null, scopes=null``) {
+  constructor(id, oauthHandler=null, scopes=null) {
     console.assert(id);
     this._id = id;
 
-    this._authProvider = authProvider;
+    this._oauthHandler = oauthHandler;
 
     // Adds minimal OpenID scopes (ID, email) requird by passport.
-    this._scopes = _.concat(AuthDefs.OPENID_LOGIN_SCOPES, scopes);
+    this._scopes = scopes && _.concat(AuthDefs.OPENID_LOGIN_SCOPES, scopes);
   }
 
   get id() {
@@ -37,15 +37,15 @@ export class ServiceProvider {
     throw new Error('Not implemented');
   }
 
-  get authProviderId() {
-    return this._authProvider.providerId;
+  get oauthProfiderId() {
+    return this._oauthHandler && this._oauthHandler.providerId;
   }
 
   // TODO(burdon): Rename authLink.
   // TODO(burdon): Post auth trigger (e.g., register subscription).
   // TODO(burdon): Service providers may require auth from multiple OAuth providers.
   get link() {
-    return this._authProvider && this._authProvider.createAuthUrl(this._scopes);
+    return this._oauthHandler && this._oauthHandler.createAuthUrl(this._scopes);
   }
 
   get scopes() {

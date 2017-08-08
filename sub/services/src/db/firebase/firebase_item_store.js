@@ -19,7 +19,7 @@ const logger = Logger.get('store.firebase');
  * /system                  /User     /user-1             System data.
  * /system                  /Group    /group-1
  * /user        /bucket-1   /Task     /task-1             First party data.
- * /google_com  /bucket-2   /Contact  /contact-1          Third-party data.
+ * /google      /bucket-2   /Contact  /contact-1          Third-party data.
  */
 export class FirebaseItemStore extends BaseItemStore {
 

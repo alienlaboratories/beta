@@ -33,7 +33,7 @@ import {
   Firebase,
   FirebaseItemStore,
 
-  OAuthProvider,
+  OAuthHandler,
   OAuthRegistry,
   ServiceRegistry,
   UserManager,
@@ -41,7 +41,7 @@ import {
   AlienAnalyzerServiceProvider,
   AlienExtractorServiceProvider,
 
-  GoogleOAuthProvider,
+  GoogleOAuthHandler,
   GoogleCalendarServiceProvider,
   GoogleDriveQueryProcessor,
   GoogleDriveServiceProvider,
@@ -175,10 +175,10 @@ export class AppServer {
     //
 
     // Default login.
-    this._googleAuthProvider = new GoogleOAuthProvider(_.get(this._config, 'google'), ENV.ALIEN_SERVER_URL);
+    this._googleOAuthHandler = new GoogleOAuthHandler(_.get(this._config, 'google'), ENV.ALIEN_SERVER_URL);
 
     this._database
-      .registerQueryProcessor(new GoogleDriveQueryProcessor(this._googleAuthProvider));
+      .registerQueryProcessor(new GoogleDriveQueryProcessor(this._googleOAuthHandler));
   }
 
   /**
@@ -189,13 +189,13 @@ export class AppServer {
 
     // OUath providers.
     this._oauthRegistry = new OAuthRegistry()
-      .registerProvider(this._googleAuthProvider);
+      .registerProvider(this._googleOAuthHandler);
 
     // User manager.
-    this._userManager = new UserManager(this._googleAuthProvider, this._systemStore);
+    this._userManager = new UserManager(this._googleOAuthHandler, this._systemStore);
 
     // NOTE: This must be defined ("used') before other services.
-    this._app.use(OAuthProvider.PATH, oauthRouter(this._userManager, this._systemStore, this._oauthRegistry, {
+    this._app.use(OAuthHandler.PATH, oauthRouter(this._userManager, this._systemStore, this._oauthRegistry, {
       app: this._app  // TODO(burdon): Externalize app.use().
     }));
 
@@ -213,10 +213,10 @@ export class AppServer {
 
     // Service registry.
     this._serviceRegistry = new ServiceRegistry()
-      .registerProvider(new GoogleCalendarServiceProvider(this._googleAuthProvider))
-      .registerProvider(new GoogleDriveServiceProvider(this._googleAuthProvider))
-      .registerProvider(new GoogleMailServiceProvider(this._googleAuthProvider))
-      .registerProvider(new GooglePlusServiceProvider(this._googleAuthProvider))
+      .registerProvider(new GoogleCalendarServiceProvider(this._googleOAuthHandler))
+      .registerProvider(new GoogleDriveServiceProvider(this._googleOAuthHandler))
+      .registerProvider(new GoogleMailServiceProvider(this._googleOAuthHandler))
+      .registerProvider(new GooglePlusServiceProvider(this._googleOAuthHandler))
       .registerProvider(new SlackServiceProvider())
       .registerProvider(new AlienAnalyzerServiceProvider())
       .registerProvider(new AlienExtractorServiceProvider());
@@ -306,7 +306,29 @@ export class AppServer {
       // {{#if (env "production")}} ... {{/if}}
       env: (key) => {
         return key === __ENV__;
+      },
+
+      // Check user has credentials for service.
+      hasCredentials: (serviceProvider, user) => {
+        let active = false;
+
+        if (serviceProvider.oauthProfiderId) {
+          let credentials = _.get(user, `credentials.${serviceProvider.oauthProfiderId}`, {});
+
+          if (credentials) {
+            active = true;
+            _.each(serviceProvider.scopes, scope => {
+              if (_.indexOf(credentials.scopes, scope) === -1) {
+                active = false;
+                return false;
+              }
+            });
+          }
+        }
+
+        return active;
       }
+
     });
 
     // https://www.npmjs.com/package/express-handlebars#configuration-and-defaults
@@ -436,7 +458,7 @@ export class AppServer {
           user,
           groups,
           idToken: getIdToken(user),
-          oauthProviders: this._oauthRegistry.providers,
+          OAuthHandlers: this._oauthRegistry.providers,
           serviceProviders: this._serviceRegistry.providers,
 //        crxUrl: _.get(this._config, 'app.crxUrl')       // TODO(burdon): ???
         });

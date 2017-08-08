@@ -15,8 +15,8 @@ export class GooglePlusServiceProvider extends ServiceProvider {
     'https://www.googleapis.com/auth/plus.login'
   ];
 
-  constructor(authProvider) {
-    super(NAMESPACE, authProvider, GooglePlusServiceProvider.SCOPES);
+  constructor(oauthHandler) {
+    super(NAMESPACE, oauthHandler, GooglePlusServiceProvider.SCOPES);
   }
 
   get meta() {

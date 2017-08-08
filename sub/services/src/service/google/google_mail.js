@@ -314,8 +314,8 @@ export class GoogleMailServiceProvider extends ServiceProvider {
     'https://www.googleapis.com/auth/gmail.readonly'
   ];
 
-  constructor(authProvider) {
-    super(NAMESPACE, authProvider, GoogleMailServiceProvider.SCOPES);
+  constructor(oauthHandler) {
+    super(NAMESPACE, oauthHandler, GoogleMailServiceProvider.SCOPES);
   }
 
   get meta() {
