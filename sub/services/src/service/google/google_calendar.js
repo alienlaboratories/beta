@@ -35,22 +35,21 @@ export class GoogleCalendarClient {
       // https://github.com/google/google-api-nodejs-client/blob/master/apis/calendar/v3.ts
       let params = {
         auth: authClient,
-
-        calendarId: '',                           // TODO(burdon): list.
-
+        calendarId: 'primary',
         id: channelId,                            // X-Goog-Channel-ID (response).
         type: 'web_hook',
         address: webhookUrl,                      // HTTPS POST (webhook). TODO(burdon): Check not blocked by robots.txt
         token: 'source=google.com/calendar',      // X-Goog-Channel-Token (response).
-        expiration: 3600 * 24 * 7
+        expiration: 3600 * 24 * 7                 // TODO(burdon): Const.
       };
 
+      // TODO(burdon): required entity.resource
       // https://developers.google.com/google-apps/calendar/v3/reference/events/watch
       this._calendar.events.watch(params, (err, response) => {
         if (err) {
-          reject(err.message);
+          reject(JSON.stringify(_.pick(err, ['code', 'message'])));
         } else {
-          resolve(_.pick(response, [ 'expiration' ]));
+          resolve(_.pick(response, ['expiration']));
         }
       });
     });
@@ -63,8 +62,8 @@ export class GoogleCalendarClient {
         // https://developers.google.com/google-apps/calendar/v3/reference/events/list
         let params = {
           auth: authClient,
-          q: query,
           calendarId: 'primary',
+          q: query,
           timeMin: (new Date()).toISOString(),
           maxResults: pageSize,
           singleEvents: true,

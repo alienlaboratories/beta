@@ -68,7 +68,7 @@ export class GoogleMailClient {
           // ERROR: User not authorized to perform this action.
           // Add `Pub/Sub Publisher` permission for `serviceAccount:gmail-api-push@system.gserviceaccount.com`
           // https://console.cloud.google.com/cloudpubsub/topics
-          reject(err.message);
+          reject(JSON.stringify(_.pick(err, ['code', 'message'])));
         } else {
           resolve(_.pick(response, ['historyId', 'expiration']));
         }

@@ -228,7 +228,9 @@ export class AppServer {
     this._app.use('/client', clientRouter(this._userManager, this._clientManager, this._systemStore));
 
     // Profile.
-    this._app.use('/profile', profileRouter(this._config, this._systemStore));
+    this._app.use('/profile', profileRouter(this._config, this._systemStore, {
+      serverUrl: ENV.ALIEN_SERVER_URL
+    }));
 
     // Webhooks.
     this._app.use('/hook', webhookRouter(this._config, {
