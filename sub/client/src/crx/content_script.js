@@ -4,13 +4,15 @@
 
 import { HttpUtil, KeyListener, Logger, WindowMessenger } from 'alien-util';
 
+import { InspectorRegistry } from './util/inspector';
+
 import {
-  InspectorRegistry,
   GmailInspector,
   GoogleInboxInspector,
+  LinkedInInspector,
   SlackInspector,
-  TestInspector
-} from './util/inspector';
+  TestInspector,
+} from './util/inspectors';
 
 import { SidebarCommand, KeyCodes } from './common';
 
@@ -133,7 +135,11 @@ class ContentScript {
         case SidebarCommand.INITIALIZED: {
           // Hack to give sidebar time to complete initial render.
           setTimeout(() => {
-            this.sidebar.initialized().open().then(visible => updateVisibility(visible));
+            this.sidebar.initialized().open()
+              .then(visible => updateVisibility(visible))
+              .then(() => {
+                this._inspectorRegistry.update();
+              });
           }, 500);
 
           break;
@@ -196,12 +202,15 @@ class ContentScript {
     //
     // Listen for context updates from the Inspectors.
     //
-    new InspectorRegistry()
+    this._inspectorRegistry = new InspectorRegistry()
       .add(new TestInspector())
       .add(new GmailInspector())
       .add(new GoogleInboxInspector())
+      .add(new LinkedInInspector())
       .add(new SlackInspector())
       .init(context => {
+        // TODO(burdon): Cache initial context and pass to opening sidebar.
+        logger.log('Context: ' + JSON.stringify(context));
 
         // Send update to SidebarApp.
         const send = () => {
@@ -349,6 +358,6 @@ class Frame {
 const app = new ContentScript();
 
 // Auto-open if testing tag.
-if ($('#crx-testing')[0]) {
+if ($('#crx-auto-open').is(':checked')) {
   app.sidebar.open();
 }

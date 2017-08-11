@@ -70,10 +70,15 @@ config(ENV.ALIEN_SERVER_CONF_DIR).then(config => {
       clientManager.invalidateClients();
     });
 
+  // TODO(burdon): Registry by attributes. E.g.,
+  // .registerHandler({ type: 'sync', service: 'google.com/calendar' }, task)
+
   new Worker(config)
-    .registerHandler('test',                  new TestTask())
-    .registerHandler('sync.google.calendar',  new GoogleCalendarSyncTask(config, database, systemStore))
-    .registerHandler('sync.google.mail',      new GoogleMailSyncTask(config, database, systemStore))
+    .registerHandler('test', new TestTask())
+    .registerHandler('sync', new SyncTask()
+      .registerHandler('google.com/calendar', new GoogleCalendarSyncTask(config, database, systemStore))
+      .registerHandler('google.mail/mail', new GoogleMailSyncTask(config, database, systemStore))
+    )
     .start();
 });
 
@@ -84,6 +89,32 @@ class TestTask extends Task {
 
   async execTask(attributes, data) {
     console.log('Test:', JSON.stringify(attributes), JSON.stringify(data));
+  }
+}
+
+/**
+ * Sync multiplexer.
+ */
+class SyncTask extends Task {
+
+  constructor() {
+    super();
+    this._syncHandlersByService = new Map();
+  }
+
+  registerHandler(service, handler) {
+    this._syncHandlersByService.set(service, handler);
+    return this;
+  }
+
+  async execTask(attributes, data) {
+    let { service } = attributes;
+    let syncHandler = this._syncHandlersByService.get(service);
+    if (!syncHandler) {
+      return Promise.reject(new Error('Syncer for service not registered: ' + service));
+    }
+
+    return syncHandler.execTask(attributes, data);
   }
 }
 
@@ -110,7 +141,7 @@ class Worker {
 
       let taskHandler = this._handlers.get(type);
       if (!taskHandler) {
-        return Promise.reject(new Error('Invalid task:', type));
+        return Promise.reject(new Error('Invalid task: ' + type));
       }
 
       // TODO(burdon): Get message attributes (e.g., job handle).

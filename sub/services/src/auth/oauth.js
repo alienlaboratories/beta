@@ -7,7 +7,7 @@ import express from 'express';
 import passport from 'passport';
 
 import { Logger, HttpError, HttpUtil } from 'alien-util';
-import { AuthDefs, SystemStore } from 'alien-core';
+import { AuthDefs, ID } from 'alien-core';
 
 import { JwtUtil } from './jwt';
 
@@ -383,7 +383,7 @@ export class OAuthRegistry {
 
   registerProvider(provider) {
     console.assert(provider && provider.providerId);
-    this._providers.set(SystemStore.sanitizeKey(provider.providerId), provider);
+    this._providers.set(ID.sanitizeKey(provider.providerId), provider);
     return this;
   }
 }
@@ -441,7 +441,7 @@ export class OAuthHandler {
     this._providerId = providerId;
 
     // Auth is limited to registered domain (e.g., app.alienlabs.io).
-    this._callbackUrl = HttpUtil.joinUrl(serverUrl, '/oauth/callback/' + SystemStore.sanitizeKey(providerId));
+    this._callbackUrl = HttpUtil.joinUrl(serverUrl, '/oauth/callback/' + ID.sanitizeKey(providerId));
   }
 
   /**

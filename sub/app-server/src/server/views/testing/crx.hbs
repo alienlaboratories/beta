@@ -14,20 +14,25 @@
 {{/section}}
 
 {{#section 'body'}}
-  <div class="site-panel">
+  <div class="site-panel site-toolbar">
     <label>
       <select id="content-select">
         <option>Empty</option>
       </select>
+    </label>
+
+    <div class="site-grow"></div>
+
+    <!-- Triggers CRX to open automatically. -->
+    <label>`
+      <input type="checkbox" id="crx-auto-open" {{ checked autoOpen }}/>
+      Auto-open
     </label>
   </div>
 
   <div class="site-panel">
     <div id="content" class="test-content"></div>
   </div>
-
-  <!-- Triggers CRX to open automatically. -->
-  <div id="crx-testing"></div>
 {{/section}}
 
 {{#section 'script'}}
@@ -51,9 +56,13 @@
       $('#content-select').append($('<option>').attr('value', key).text(value.title));
     });
 
+    $('#crx-auto-open').click(event => {
+      let checked = $(event.target).is(':checked');
+      document.location.href = checked ? '?autoOpen=true' : '?';
+    });
+
     $('#content-select').change(event => {
       let item = ITEMS[$(event.target).val()];
-      console.log('Selected: ' + JSON.stringify(item));
       let content = $('#content').empty();
       if (item) {
         let { title, email, meta: { thumbnailUrl } } = item;

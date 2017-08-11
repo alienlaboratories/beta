@@ -5,6 +5,7 @@
 import _ from 'lodash';
 
 import { Logger } from 'alien-util';
+import { ID } from 'alien-core';
 
 import { DelegateItemStore } from './item_store';
 
@@ -17,16 +18,6 @@ const logger = Logger.get('system');
  */
 export class SystemStore extends DelegateItemStore {
 
-  // TODO(burdon): Namespace prefix Group/alienlabs_com/xxx, Group/system, etc?
-
-  /**
-   * Make legal firebase key.
-   */
-  static sanitizeKey(str) {
-    console.assert(str);
-    return str.replace(/\W+/g, '_');
-  }
-
   /**
    * Create a User ID.
    *
@@ -38,7 +29,7 @@ export class SystemStore extends DelegateItemStore {
     console.assert(provider, userId);
 
     // TODO(burdon): Change to '/' (fix hierarchical keys for FirebaseItemStore).
-    return SystemStore.sanitizeKey(provider) + '-' + userId;
+    return ID.sanitizeKey(provider) + '-' + userId;
   }
 
   constructor(itemStore) {
@@ -257,7 +248,7 @@ export class SystemStore extends DelegateItemStore {
   static updateUserCredential(user, credentials=undefined) {
     if (credentials) {
       let { provider } = credentials;
-      let key = `credentials.${SystemStore.sanitizeKey(provider)}`;
+      let key = `credentials.${ID.sanitizeKey(provider)}`;
 
       // Merge credentials.
       // NOTE: refresh_token is only returned when first accessed.

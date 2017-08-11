@@ -35,6 +35,19 @@ export class TypeUtil {
   }
 
   /**
+   * Deep merge including concatenation of arrays.
+   * @param obj
+   * @param src
+   */
+  static deepMerge(obj, src) {
+    return _.merge(obj, src, (obj, src) => {
+      if (_.isArray(obj)) {
+        return obj.concat(src);
+      }
+    });
+  }
+
+  /**
    * Right-pad given string.
    * @param text
    * @param length

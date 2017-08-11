@@ -45,6 +45,9 @@ do
   then
     echo "Linking grunt: ${package}"
     ln -fs ../../../node_modules/grunt sub/${package}/node_modules/
+
+    # E.g., for webpack-dev-server
+    ln -fs ../../../node_modules/.bin sub/${package}/node_modules/.bin
   fi
 done
 

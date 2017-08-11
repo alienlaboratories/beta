@@ -2,7 +2,7 @@
 // Copyright 2017 Alien Labs.
 //
 
-import { Logger } from 'alien-util';
+import { Logger, TypeUtil } from 'alien-util';
 
 const logger = Logger.get('inspector');
 
@@ -35,20 +35,22 @@ export class InspectorRegistry {
       _.each(this._inspectors, inspector => {
         if (inspector.shouldObservePage()) {
           logger.log('Inspector: ' + inspector.constructor.name);
-          let { context, rootNode } = inspector.getPageState();
-          if (context) {
-            // TODO(madadam): This happens too early, before the sidebar is loaded. Need to keep it cached
-            // and supply it when the sidebar is done loading.
-            callback(context);
-          }
-          if (rootNode) {
-            inspector.start(rootNode, callback);
-          }
+          inspector.start(callback);
         }
       });
-    }, 1000);
+    }, 1000);  // TODO(burdon): Time to load page.
 
     return this;
+  }
+
+  update() {
+    logger.log('Update...');
+    _.each(this._inspectors, inspector => {
+      if (inspector.shouldObservePage()) {
+        logger.log('Inspector: ' + inspector.constructor.name);
+        inspector.update();
+      }
+    });
   }
 }
 
@@ -57,7 +59,7 @@ export class InspectorRegistry {
  *
  * TODO(burdon): Make declarative and load dynamic rules from server.
  */
-class Inspector {
+export class Inspector {
 
   constructor() {
     this._callback = null;
@@ -65,22 +67,42 @@ class Inspector {
     // DOM mutation observer.
     // https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
     this._observer = new MutationObserver(mutations => {
-      let context = this.inspect(mutations);
-      logger.log('Context: ' + JSON.stringify(context));
-      if (this._callback && context) {
+      let context = this.getContext();
+
+      _.each(mutations, mutation => {
+        TypeUtil.deepMerge(context, this.getItems(context, mutation.target));
+      });
+
+      if (this._callback) {
         this._callback(context);
       }
     });
   }
 
-  start(rootNode, callback) {
-    console.assert(rootNode && callback);
+  /**
+   * Being listening for DOM changes.
+   * @param {Function.<{context}>} callback
+   */
+  start(callback) {
+    console.assert(callback);
     this._callback = callback;
 
+    let rootNode = this.getRootNode();
     this._observer.observe(rootNode, {
       subtree: true,
       childList: true
     });
+
+    this.update();
+  }
+
+  update() {
+    let rootNode = this.getRootNode();
+    let context = this.getContext();
+
+    TypeUtil.deepMerge(context, this.getItems(context, rootNode));
+
+    this._callback(context);
   }
 
   stop() {
@@ -99,259 +121,27 @@ class Inspector {
   }
 
   /**
-   *
-   * @return {{context, rootNode}}
-   */
-  getPageState() {
-    return {
-      context: this.getInitialContext(),
-      rootNode: this.getRootNode()
-    };
-  }
-
-  getInitialContext() {
-    return null;
-  }
-
-  /**
    * @return the CSS selector for the root of mutation changes.
    */
   getRootNode() {
-    return null;
+    return $('body')[0];
   }
 
   /**
-   * Process the mutations.
-   * @param mutations
-   * @return {object} Context object.
+   * Gets the initial page context.
+   * @returns {{}}
    */
-  inspect(mutations) {
+  getContext() {
+    return {};
+  }
+
+  /**
+   * Process updates to the given DOM node.
+   * @param context
+   * @param node
+   * @return {[{Item}]} Context object.
+   */
+  getItems(context, node) {
     return null;
-  }
-}
-
-/**
- * Test inspector.
- */
-export class TestInspector extends Inspector {
-
-  static PATH = '/testing/crx';
-
-  shouldObservePage() {
-    return document.location.href.endsWith(TestInspector.PATH);
-  }
-
-  getRootNode() {
-    return $('#content')[0];
-  }
-
-  /*
-   * <div id="content">
-   *   <div email="__EMAIL__">__NAME__</div>
-   */
-  inspect(mutations) {
-    let context = null;
-
-    _.each(mutations, mutation => {
-      let root = $(mutation.target).find('> div');
-      if (root[0]) {
-        let name = root.text();
-        let email = root.attr('email');
-        let thumbnailUrl = root.find('img').attr('src');
-
-        if (name && email) {
-          context = {
-            items: [{
-              type: 'Contact',
-              title: name,
-              meta: {
-                thumbnailUrl
-              },
-              email
-            }]
-          };
-
-          return false;
-        }
-      }
-    });
-
-    return context;
-  }
-}
-
-/**
- * Gmail
- */
-export class GmailInspector extends Inspector {
-
-  static PATH = 'https://mail.google.com';
-
-  shouldObservePage() {
-    return document.location.href.startsWith(GmailInspector.PATH);
-  }
-
-  getRootNode() {
-    return $('div[role="main"]')[0];
-  }
-
-  /*
-   * <div role="main">
-   *   <table role="presentation">
-   *     <div role="list">
-   *       <div role="listitem">
-   *         <h3 class="iw">
-   *           <span email="__EMAIL__" name="__NAME__">__NAME__</span>
-   */
-  inspect(mutations) {
-    let context = null;
-
-    _.each(mutations, mutation => {
-
-      // TODO(burdon): Get closest parent for thread ID.
-//    let root = $(mutation.target).find('div[role="listitem"] h3 span');
-      let root = $('div[role="main"] div[role="listitem"] h3 span');
-      if (root[0]) {
-        let name = root.text();
-        let email = root.attr('email');
-        if (name && email) {
-          context = {
-            items: [{
-              type: 'Contact',
-              title: name,
-              email: email
-            }]
-          };
-
-          return false;
-        }
-      }
-    });
-
-    return context;
-  }
-}
-
-/**
- * Google Inbox inspector.
- */
-export class GoogleInboxInspector extends Inspector {
-
-  static PATH = 'https://inbox.google.com';
-
-  shouldObservePage() {
-    return document.location.href.startsWith(GoogleInboxInspector.PATH);
-  }
-
-  getRootNode() {
-    // TODO(burdon): Document where this is and how stable it is.
-    return $('.yDSKFc')[0];
-  }
-
-  /*
-   * <div role="list" data-item-id="#gmail:thread-f:1557184509751026059">
-   *   <div role="listitem" data-msg-id="#msg-f:1557184509751026059">
-   *     ...
-   *     <div>
-   *       ...
-   *       <div>
-   *         <img email="__EMAIL__" src="__THUMBNAILURL__">  [40x40]
-   *
-   *       <div role="heading">
-   *         ...
-   *           <div email="__EMAIL__">__NAME__</div>
-   */
-  inspect(mutations) {
-    let context = null;
-
-    _.each(mutations, mutation => {
-      let listItems = $(mutation.target).find('div[role=list] div[role=listitem][data-msg-id]');
-      if (listItems.length) {
-        let emails = new Set();
-        context = {
-          items: _.compact(_.map(listItems, listItem => {
-            let header = $(listItem).find('div[role=heading] div[email]:first');
-            let email = header.attr('email');
-
-            if (!emails.has(email)) {
-              emails.add(email);
-
-              let title = header.text();
-
-              // TODO(burdon): First time opening a thread, the img.src is invalid.
-              let img = $(listItem).find('img[email]:first');
-              let thumbnailUrl = $(img).attr('src');
-              if (thumbnailUrl && thumbnailUrl.startsWith('//')) {
-                thumbnailUrl = 'https:' + thumbnailUrl;
-              }
-
-              return {
-                type: 'Contact',
-                title,
-                meta: {
-                  thumbnailUrl
-                },
-                email
-              };
-            }
-          }))
-        };
-
-        return false;
-      }
-    });
-
-    return context;
-  }
-}
-
-/**
- * Slack Inspector
- */
-export class SlackInspector extends Inspector {
-
-  static PATH_RE = /https:\/\/([^\.]+)\.slack\.com\/messages\/([^\/]+)\//;
-
-  shouldObservePage() {
-    this._matches = document.location.href.match(SlackInspector.PATH_RE);
-    return this._matches;
-  }
-
-  getContextFromDocumentLocation() {
-    let context = [];
-    this._matches = document.location.href.match(SlackInspector.PATH_RE);
-    if (this._matches && this._matches.length === 3) {
-      context = [
-        {
-          key: 'slack_team',
-          value: {
-            string: this._matches[1]
-          }
-        },
-        {
-          key: 'slack_channel',
-          value: {
-            string: this._matches[2]
-          }
-        }
-      ];
-    }
-
-    // TODO(madadam): Unify other uses (email) and return context (array of KeyValues) not dict { context: [..] }.
-    return {
-      context
-    };
-  }
-
-  getInitialContext() {
-    return this.getContextFromDocumentLocation();
-  }
-
-  getRootNode() {
-    return $('#client_header')[0];
-  }
-
-  inspect(mutations) {
-    return this.getContextFromDocumentLocation();
   }
 }

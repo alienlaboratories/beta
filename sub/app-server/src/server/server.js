@@ -533,14 +533,21 @@ export class AppServer {
 
     // Test CRX.
     this._app.get('/testing/crx', isAuthenticated(), (req, res) => {
-      res.render('testing/crx');
+      let { autoOpen } = req.query;
+
+      res.render('testing/crx', {
+        autoOpen
+      });
     });
 
     // Register the GraphiQL test console.
     this._app.get(AppDefs.GRAPHIQL_PATH, isAuthenticated(), (req, res) => {
+      let { clientId } = req.query;
+
       let headers = {};
       AuthUtil.setAuthHeader(headers, getIdToken(req.user));
-      headers[Const.HEADER.CLIENT_ID] = req.query.clientId;
+      headers[Const.HEADER.CLIENT_ID] = clientId;
+
       res.render('testing/graphiql', {
         config: {
           graphql: AppDefs.GRAPHQL_PATH,

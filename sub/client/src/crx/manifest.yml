@@ -35,8 +35,8 @@
 
 manifest_version:   2
 
-name:               "Robotik"
-short_name:         "Robotik"
+name:               "Alien"
+short_name:         "Alien"
 version:            "0.0.2"                       # grunt version:crx:patch (uses version.json)
 author:             "Alien Labs"
 description:        "Automated intelligence."
@@ -131,6 +131,10 @@ content_scripts:
 
       - "https://*.google.com/*"
       - "https://*.slack.com/*"
+
+      # TODO(burdon): Make open and have CS decide.
+      - "https://*.linkedin.com/*"
+      - "https://*.crunchbase.com/*"
 
     js:
       # NOTE: Cannot be symlink (must be copied).

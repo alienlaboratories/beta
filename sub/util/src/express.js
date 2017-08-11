@@ -47,6 +47,15 @@ export class ExpressUtil {
     },
 
     /**
+     * checked attribute.
+     * @param value
+     * @returns {string}
+     */
+    checked: function(value) {
+      return value ? 'checked' : '';
+    },
+
+    /**
      * Encode URI.
      * @param {string} value
      * @return {string}

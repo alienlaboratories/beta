@@ -109,11 +109,13 @@ export class Layout extends React.Component {
           break;
         }
 
+        /*
         default: {
           links = <NavButtons navigator={ navigator }/>;
           navbar = nav && <Layout.MobileNavbar/>;
           break;
         }
+        */
       }
 
       let sidebar = <SidePanel viewer={ viewer } navigator={ navigator } typeRegistry={ typeRegistry }/>;

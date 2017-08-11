@@ -28,6 +28,16 @@ if (typeof btoa === 'undefined') {
  */
 export class ID {
 
+  // TODO(burdon): Namespace prefix Group/alienlabs_com/xxx, Group/system, etc?
+
+  /**
+   * Make legal key.
+   */
+  static sanitizeKey(str) {
+    console.assert(str);
+    return str.replace(/\W+/g, '_');
+  }
+
   // TODO(burdon): GUID: {Namespace/Bucket/Type/ID}
   // Items may be cloned into other Namespaces that reference the original Item (e.g., Google Docs).
   // Items may be moved across Buckets (e.g., transfer of ownership).

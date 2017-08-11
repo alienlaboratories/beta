@@ -45,7 +45,10 @@
         <!-- TODO(burdon): Assumes syncer. -->
         {{#if (hasCredentials this ../user)}}
         <td>
-          <button onclick="subscribe('{{ this.id }}')">Subscribe</button>
+          <button onclick="action('sync', '{{ this.id }}')">Sync</button>
+        </td>
+        <td>
+          <button onclick="action('subscribe', '{{ this.id }}')">Subscribe</button>
         </td>
         {{/if}}
       </tr>
@@ -70,8 +73,8 @@
   <script>
 //  new Words().start(3, 30);
 
-    function subscribe(service) {
-      Site.postJson('/profile/api', { action: `subscribe`, service }).then(() => {
+    function action(action, service) {
+      Site.postJson('/profile/api', { action, service }).then(() => {
         document.location.reload();
       });
     }

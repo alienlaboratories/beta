@@ -6,7 +6,7 @@ import _ from 'lodash';
 import express from 'express';
 
 import { Logger } from 'alien-util';
-import { GoogleCalendarClient, GoogleMailClient, GoogleOAuthHandler, isAuthenticated } from 'alien-services';
+import { AWSQueue, GoogleCalendarClient, GoogleMailClient, GoogleOAuthHandler, isAuthenticated } from 'alien-services';
 
 const logger = Logger.get('profile');
 
@@ -25,8 +25,20 @@ export const profileRouter = (config, systemStore, options={}) => {
 
     let credentials = _.get(user, 'credentials.google');
     let authClient = GoogleOAuthHandler.createAuthClient(_.get(config, 'google'), credentials);
+    let queue = new AWSQueue(_.get(config, 'aws.sqs.tasks'));
 
     switch (action) {
+
+      case 'sync': {
+        let { service } = req.body;
+
+        return queue.add({
+          type: 'sync',
+          service,
+          userId: user.id
+        });
+      }
+
       case 'subscribe': {
         let { service } = req.body;
 

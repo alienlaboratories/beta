@@ -41,8 +41,9 @@ export class GoogleNotifications {
       // Look-up user ID.
       logger.log('Gmail:', emailAddress, historyId);
       return systemStore.getUserByEmail(emailAddress).then(user => {
-        queue.add({
-          type: 'sync.google.mail',
+        return queue.add({
+          type: 'sync',
+          service: 'google.com/mail',
           userId: user.id
         }, {
           historyId
