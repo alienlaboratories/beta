@@ -9,12 +9,12 @@
       <excludeFolder url="file://$MODULE_DIR$/sub/client/dist" />
       <excludeFolder url="file://$MODULE_DIR$/sub/client/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/sub/core/dist" />
-      <excludeFolder url="file://$MODULE_DIR$/sub/scheduler/dist" />
-      <excludeFolder url="file://$MODULE_DIR$/sub/scheduler/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/sub/mobile/alien/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/sub/services/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/sub/util/dist" />
       <excludeFolder url="file://$MODULE_DIR$/sub/web-server/dist" />
       <excludeFolder url="file://$MODULE_DIR$/sub/web-server/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/sub/worker/dist" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

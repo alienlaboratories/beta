@@ -5,6 +5,13 @@
 # TODO(burdon): brew bundle (Brewfile)
 #
 
+#
+# Apps:
+# IntelliJ
+# Expo (Mac and Android)
+# Genymotion
+#
+
 brew update
 
 brew install cask
@@ -66,6 +73,7 @@ yarn global add babel-eslint
 yarn global add eslint
 yarn global add eslint-plugin-import
 yarn global add eslint-plugin-react
+yarn global add exp
 yarn global add firebase-tools
 yarn global add grunt
 yarn global add jest
