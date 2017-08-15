@@ -22,7 +22,7 @@ export class App {
 
   constructor(config) {
     // TODO(burdon): '*' default command.
-    // https://github.com/yargs/yargs/blob/master/docs/advanced.md#commands
+    // https://github.com/yargs/yargs/blob/master/docs/examples.md
     this._yargs = yargs
       .exitProcess(false)
 
@@ -34,6 +34,11 @@ export class App {
       // console.log(JSON.stringify(config, null, 2));
       .option('verbose', {
         default: false
+      })
+
+      // https://github.com/yargs/yargs/blob/master/docs/advanced.md#commands
+      .command(['quit', 'exit'], 'Quit', () => {
+        process.exit(0);
       })
 
       .help();
@@ -61,12 +66,15 @@ export class App {
   }
 
   start() {
+
     // http://yargs.js.org/docs/#api-parseargs-context-parsecallback
     return new Promise((resolve, reject) => {
 
+      // First two args are "node", <script>
+      process.argv.splice(0, 2);
+
       // Command line mode.
-      if (process.argv.length > 2) {
-        process.argv.splice(0, 2);
+      if (process.argv.length > 0) {
         this._yargs.parse(process.argv, (err, argv, output) => {
           Promise.resolve(argv._result).then(result => {
             resolve(result);

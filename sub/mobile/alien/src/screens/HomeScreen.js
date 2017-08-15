@@ -16,7 +16,7 @@ import {
 import { WebBrowser } from 'expo';
 
 /**
- * Home
+ * Home screen.
  */
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -33,7 +33,7 @@ export default class HomeScreen extends React.Component {
           contentContainerStyle={styles.contentContainer}>
           <View style={styles.welcomeContainer}>
             <Image
-              source={ require('../assets/images/nexus.png') }
+              source={ require('../../assets/images/nexus.png') }
               style={styles.welcomeImage}
             />
           </View>
