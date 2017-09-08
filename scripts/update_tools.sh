@@ -58,6 +58,7 @@ brew install logstash
 # https://github.com/lerna/lerna/issues/903
 npm install -g npm@4
 
+# ~/.config/yarn/global/node_modules
 yarn config set prefix /usr/local/
 
 yarn global add create-react-native-app
