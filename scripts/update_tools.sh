@@ -29,7 +29,6 @@ brew install node
 brew install python
 brew install redis
 brew install watchman
-brew install yarn
 brew install --HEAD xhyve
 
 brew outdated | xargs brew upgrade
@@ -57,6 +56,7 @@ brew install logstash
 # NOTE: npm 4 required for lerna
 # https://github.com/lerna/lerna/issues/903
 npm install -g npm@4
+npm install -g yarn
 
 yarn config set prefix /usr/local/
 
