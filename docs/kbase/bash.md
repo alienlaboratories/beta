@@ -27,6 +27,15 @@
     ps -u root | grep nginx | grep -v grep | awk '{print $2}'
     
     dig www.darkzerk.net
+
+    # Get hostname stripping .local
+    hostname | sed 's/\([^\.]*\).*/\1/'
+
+    # Gen SSH key (Add ~/.ssh/id_rsa.pub entry to https://github.com/settings/keys)
+    # Add: https://github.com/settings/keys
+    ssh-keygen -t rsa -b 4096 -C $(hostname | sed 's/\([^\.]*\).*/\1/')/$USER
+    ssh-agent
+    ssh-add
 ~~~~
 
 ~~~~
