@@ -1,3 +1,7 @@
+//
+// Copyright 2017 Alien Labs.
+//
+
 import { Notifications } from 'expo';
 import React from 'react';
 import { StackNavigator } from 'react-navigation';

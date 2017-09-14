@@ -1,5 +1,5 @@
 //
-//
+// Copyright 2017 Alien Labs.
 //
 
 import React from 'react';

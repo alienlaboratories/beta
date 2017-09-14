@@ -1,3 +1,7 @@
+//
+// Copyright 2017 Alien Labs.
+//
+
 const tintColor = '#2f95dc';
 
 export default {

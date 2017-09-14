@@ -1,13 +1,18 @@
+//
+// Copyright 2017 Alien Labs.
+//
+
 import React from 'react';
-import { Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { TabNavigator, TabBarBottom } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 
 import HomeScreen from '../screens/HomeScreen';
-import LinksScreen from '../screens/LinksScreen';
+import SearchScreen from '../screens/SearchScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+
+import { IconUtil } from '../util/icon';
 
 /**
  *
@@ -17,8 +22,8 @@ export default TabNavigator(
     Home: {
       screen: HomeScreen,
     },
-    Links: {
-      screen: LinksScreen,
+    Search: {
+      screen: SearchScreen,
     },
     Settings: {
       screen: SettingsScreen,
@@ -27,24 +32,23 @@ export default TabNavigator(
   {
     navigationOptions: ({ navigation }) => ({
       tabBarIcon: ({ focused }) => {
-        const { routeName } = navigation.state;
         let iconName;
+
+        const { routeName } = navigation.state;
         switch (routeName) {
+
           case 'Home':
-            iconName = Platform.OS === 'ios'
-              ? `ios-information-circle${focused ? '' : '-outline'}`
-              : 'md-information-circle';
+            iconName = IconUtil.getIcon('ios-home', 'md-home', focused);
             break;
-          case 'Links':
-            iconName = Platform.OS === 'ios'
-              ? `ios-link${focused ? '' : '-outline'}`
-              : 'md-link';
+
+          case 'Search':
+            iconName = IconUtil.getIcon('ios-search', 'md-search', focused);
             break;
+
           case 'Settings':
-            iconName = Platform.OS === 'ios'
-              ? `ios-options${focused ? '' : '-outline'}`
-              : 'md-options';
+            iconName = IconUtil.getIcon('ios-options', 'md-options', focused);
         }
+
         return (
           <Ionicons
             name={iconName}

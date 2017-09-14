@@ -14,3 +14,4 @@
 
 - Auto updates on save; does not require USB or Genymotion.
 - In dev mode, things are slower.
+    

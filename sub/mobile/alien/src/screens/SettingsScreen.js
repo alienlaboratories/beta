@@ -1,6 +1,13 @@
+//
+// Copyright 2017 Alien Labs.
+//
+
 import React from 'react';
 import { ExpoConfigView } from '@expo/samples';
 
+/**
+ *
+ */
 export default class SettingsScreen extends React.Component {
   static navigationOptions = {
     title: 'app.json',
