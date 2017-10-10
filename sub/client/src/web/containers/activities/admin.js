@@ -125,6 +125,7 @@ const AdminQuery = gql`
 export default Activity.compose(
 
   graphql(AdminQuery, {
+
     options: (props) => ({
       variables: {
         groupFilter: {

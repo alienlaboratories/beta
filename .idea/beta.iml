@@ -23,7 +23,6 @@
     <orderEntry type="library" name="jquery-DefinitelyTyped" level="application" />
     <orderEntry type="library" name="Chrome Extenions" level="application" />
     <orderEntry type="library" name="aws-lambda-DefinitelyTyped" level="application" />
-    <orderEntry type="library" name="react-DefinitelyTyped" level="application" />
     <orderEntry type="library" name="react-dnd-DefinitelyTyped" level="application" />
     <orderEntry type="library" name="react-router-DefinitelyTyped" level="application" />
     <orderEntry type="library" name="react-dom-DefinitelyTyped" level="application" />
